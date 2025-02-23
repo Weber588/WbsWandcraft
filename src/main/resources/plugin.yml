@@ -1,0 +1,7 @@
+name: WbsWandcraft
+version: 0.0.1
+api-version: 1.21
+main: wbs.wandcraft.WbsWandcraft
+description: Craftable/configurable wands
+depend:
+  - WbsUtils
