@@ -1,14 +1,16 @@
 package wbs.wandcraft.spell.attributes.modifier;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
+import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.CustomPersistentDataTypes;
 
-public class SpellAttributeModifier<T> {
+public class SpellAttributeModifier<T> implements ComponentRepresentable {
     public static final NamespacedKey ATTRIBUTE_KEY = WbsWandcraft.getKey("attribute");
     public static final NamespacedKey MODIFIER_TYPE = WbsWandcraft.getKey("modifier");
     public static final NamespacedKey MODIFIER_VALUE = WbsWandcraft.getKey("modifier_value");
@@ -53,5 +55,11 @@ public class SpellAttributeModifier<T> {
         }
 
         return attribute.createModifier(container);
+    }
+
+
+    @Override
+    public Component toComponent() {
+        return type.asComponent(attribute, modifierValue);
     }
 }

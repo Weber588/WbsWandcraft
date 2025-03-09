@@ -11,6 +11,7 @@ public class SpellExtensionManager {
     private static final Set<SpellExtensionRegistration<?>> SETUP_EVENTS = new HashSet<>();
 
     static {
+        registerSpellExtension(CastableSpell.class, CastableSpell::setupCastable);
         registerSpellExtension(RangedSpell.class, RangedSpell::setupRanged);
         registerSpellExtension(AbstractProjectileSpell.class, AbstractProjectileSpell::setupProjectile);
         registerSpellExtension(DamageSpell.class, DamageSpell::setUpDamage);

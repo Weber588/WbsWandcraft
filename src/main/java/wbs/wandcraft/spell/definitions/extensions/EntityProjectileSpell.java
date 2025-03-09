@@ -5,15 +5,17 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import wbs.utils.util.commands.brigadier.argument.WbsEnumArgumentType;
 import wbs.utils.util.entities.WbsEntityUtil;
-import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.CustomPersistentDataTypes;
 
 public interface EntityProjectileSpell extends AbstractProjectileSpell {
     SpellAttribute<EntityType> PROJECTILE_TYPE = new SpellAttribute<>(
             "projectile_type",
             new CustomPersistentDataTypes.PersistentEnumType<>(EntityType.class),
+            new WbsEnumArgumentType<>(EntityType.class),
             EntityType.ARROW
     );
 

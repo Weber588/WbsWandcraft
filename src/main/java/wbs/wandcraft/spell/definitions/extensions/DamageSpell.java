@@ -1,11 +1,11 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
-import org.bukkit.persistence.PersistentDataType;
-import wbs.wandcraft.spell.definitions.AbstractSpellDefinition;
+import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.definitions.AbstractSpellDefinition;
 
 public interface DamageSpell extends AbstractSpellDefinition {
-    SpellAttribute<Double> DAMAGE = new SpellAttribute<>("damage", PersistentDataType.DOUBLE, 1.0);
+    SpellAttribute<Double> DAMAGE = new DoubleSpellAttribute("damage", 0, 1.0);
 
     default void setUpDamage() {
         addAttribute(DAMAGE);

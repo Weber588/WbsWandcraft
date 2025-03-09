@@ -223,7 +223,7 @@ public abstract class MissileObject extends KinematicMagicObject {
 
 		// World was unloaded; destroy this object
 		if (world == null) {
-			WbsWandcraft.getInstance().getLogger().info("A world was unloaded unexepectedly; a missile was deleted.");
+			WbsWandcraft.getInstance().getLogger().warning("A world was unloaded unexepectedly; a missile was deleted.");
 			remove(true);
 			return null;
 		}

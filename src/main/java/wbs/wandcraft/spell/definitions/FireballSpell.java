@@ -2,19 +2,19 @@ package wbs.wandcraft.spell.definitions;
 
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.persistence.PersistentDataType;
 import wbs.utils.util.entities.selector.RadiusSelector;
+import wbs.wandcraft.objects.generics.DynamicProjectileObject;
+import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
 import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
-import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
-import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 
 import java.util.List;
 
 public class FireballSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell, DurationalSpell {
-    public static SpellAttribute<Double> BLAST_RADIUS = new SpellAttribute<>("blast_radius", PersistentDataType.DOUBLE, 5.0);
+    public static SpellAttribute<Double> BLAST_RADIUS = new DoubleSpellAttribute("blast_radius", 0,5.0);
 
     public FireballSpell() {
         super("fireball");
@@ -60,5 +60,4 @@ public class FireballSpell extends SpellDefinition implements CustomProjectileSp
 
         return true;
     }
-
 }

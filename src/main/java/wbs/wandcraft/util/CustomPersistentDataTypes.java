@@ -1,11 +1,13 @@
 package wbs.wandcraft.util;
 
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEnums;
+import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -13,11 +15,12 @@ import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.SpellManager;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
 import wbs.wandcraft.spell.modifier.ModifierScope;
 import wbs.wandcraft.spell.modifier.SpellModifier;
+import wbs.wandcraft.wand.Wand;
+import wbs.wandcraft.wand.WandInventoryType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,9 +28,10 @@ import java.util.Objects;
 
 public class CustomPersistentDataTypes {
     public static final PersistentKeyType NAMESPACED_KEY = new PersistentKeyType();
-    public static final PersistentSpellInstanceType SPELL_MODIFIER = new PersistentSpellInstanceType();
+    public static final PersistentSpellModifierType SPELL_MODIFIER = new PersistentSpellModifierType();
     public static final PersistentSpellInstanceType SPELL_INSTANCE = new PersistentSpellInstanceType();
     public static final PersistentAttributeModifierType SPELL_ATTRIBUTE_MODIFIER = new PersistentAttributeModifierType();
+    public static final PersistentWandType WAND = new PersistentWandType();
 
     public static class PersistentKeyType implements PersistentDataType<String, NamespacedKey> {
         @Override
@@ -51,6 +55,87 @@ public class CustomPersistentDataTypes {
         }
     }
 
+    public static class PersistentWandType implements PersistentDataType<PersistentDataContainer, Wand> {
+        private static final NamespacedKey INVENTORY = WbsWandcraft.getKey("inventory");
+        private static final NamespacedKey INVENTORY_TYPE = WbsWandcraft.getKey("type");
+        private static final NamespacedKey WAND_ATTRIBUTES = WbsWandcraft.getKey("wand_attributes");
+
+        @Override
+        public @NotNull Class<PersistentDataContainer> getPrimitiveType() {
+            return PersistentDataContainer.class;
+        }
+
+        @Override
+        public @NotNull Class<Wand> getComplexType() {
+            return Wand.class;
+        }
+
+        @Override
+        public @NotNull PersistentDataContainer toPrimitive(@NotNull Wand wand, @NotNull PersistentDataAdapterContext context) {
+            PersistentDataContainer container = context.newPersistentDataContainer();
+
+            wand.writeAttributes(container, WAND_ATTRIBUTES);
+
+            PersistentDataContainer itemsContainer = context.newPersistentDataContainer();
+            wand.getItems().rowMap().forEach((row, columnMap) -> {
+                PersistentDataContainer columnContainer = context.newPersistentDataContainer();
+
+                columnMap.forEach((column, item) -> {
+                    columnContainer.set(WbsWandcraft.getKey(column.toString()), WbsPersistentDataType.ITEM_AS_BYTES, item);
+                });
+
+                itemsContainer.set(WbsWandcraft.getKey(row.toString()), PersistentDataType.TAG_CONTAINER, columnContainer);
+            });
+
+            container.set(INVENTORY, PersistentDataType.TAG_CONTAINER, itemsContainer);
+            container.set(INVENTORY_TYPE, NAMESPACED_KEY, wand.getInventoryType().getKey());
+
+            return container;
+        }
+
+        @Override
+        public @NotNull Wand fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
+            NamespacedKey typeKey = container.get(INVENTORY_TYPE, NAMESPACED_KEY);
+            if (typeKey == null) {
+                throw new IllegalStateException("inventory type (typeKey) missing!");
+            }
+
+            WandInventoryType type = WandcraftRegistries.WAND_INVENTORY_TYPES.get(typeKey);
+
+            if (type == null) {
+                throw new IllegalStateException("Wand inventory type missing for key " + typeKey.asString());
+            }
+
+            Wand wand = new Wand(type);
+
+            wand.readAttributes(container, WAND_ATTRIBUTES);
+
+            PersistentDataContainer itemsContainer = container.get(INVENTORY, PersistentDataType.TAG_CONTAINER);
+            if (itemsContainer != null) {
+                for (NamespacedKey rowKey : itemsContainer.getKeys()) {
+                    PersistentDataContainer rowContainer = itemsContainer.get(rowKey, PersistentDataType.TAG_CONTAINER);
+
+                    if (rowContainer != null) {
+                        for (NamespacedKey columnKey : rowContainer.getKeys()) {
+                            ItemStack item = rowContainer.get(columnKey, WbsPersistentDataType.ITEM_AS_BYTES);
+
+                            if (item != null) {
+                                Integer row = Integer.valueOf(rowKey.value());
+                                Integer column = Integer.valueOf(columnKey.value());
+
+                                wand.getItems().put(row, column, item);
+                            }
+                        }
+                    }
+                }
+
+                container.set(INVENTORY, PersistentDataType.TAG_CONTAINER, itemsContainer);
+            }
+
+            return wand;
+        }
+    }
+
     public static class PersistentSpellInstanceType implements PersistentDataType<PersistentDataContainer, SpellInstance> {
         private static final NamespacedKey ATTRIBUTES = WbsWandcraft.getKey( "attributes");
         private static final NamespacedKey DEFINITION = WbsWandcraft.getKey( "definition");
@@ -69,12 +154,7 @@ public class CustomPersistentDataTypes {
         public @NotNull PersistentDataContainer toPrimitive(@NotNull SpellInstance spellInstance, @NotNull PersistentDataAdapterContext context) {
             PersistentDataContainer container = context.newPersistentDataContainer();
 
-            PersistentDataContainer attributes = context.newPersistentDataContainer();
-            for (SpellAttributeInstance<?> attribute : spellInstance.getAttributes()) {
-                attribute.writeTo(attributes);
-            }
-
-            container.set(ATTRIBUTES, PersistentDataType.TAG_CONTAINER, attributes);
+            spellInstance.writeAttributes(container, ATTRIBUTES);
             container.set(DEFINITION, NAMESPACED_KEY, spellInstance.getDefinition().getKey());
 
             return container;
@@ -83,18 +163,17 @@ public class CustomPersistentDataTypes {
         @Override
         public @NotNull SpellInstance fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
             NamespacedKey definitionKey = container.get(DEFINITION, NAMESPACED_KEY);
+            if (definitionKey == null) {
+                throw new IllegalStateException("Spell definition key missing!");
+            }
 
-            SpellDefinition definition = SpellManager.get(definitionKey);
+            SpellDefinition definition = WandcraftRegistries.SPELLS.get(definitionKey);
+            if (definition == null) {
+                throw new IllegalStateException("Spell definition not recognised:" + definitionKey.asString());
+            }
 
             SpellInstance spellInstance = new SpellInstance(definition);
-
-            PersistentDataContainer attributes = container.get(ATTRIBUTES, PersistentDataType.TAG_CONTAINER);
-            if (attributes == null) {
-                throw new IllegalStateException("Attributes field missing from spell instance PDC!");
-            }
-            for (SpellAttribute<?> attribute : definition.getAttributes()) {
-                spellInstance.setAttribute(attribute.getInstance(attributes));
-            }
+            spellInstance.readAttributes(container, ATTRIBUTES);
 
             return spellInstance;
         }
@@ -136,7 +215,7 @@ public class CustomPersistentDataTypes {
                 effectContainer.set(DEFINITION, NAMESPACED_KEY, effect.getDefinition().getKey());
 
                 PersistentDataContainer attributes = context.newPersistentDataContainer();
-                for (SpellAttributeInstance<?> attribute : effect.getAttributes()) {
+                for (SpellAttributeInstance<?> attribute : effect.getAttributeValues()) {
                     attribute.writeTo(attributes);
                 }
 
@@ -188,7 +267,7 @@ public class CustomPersistentDataTypes {
                         );
                         SpellAttributeInstance<?> instance = attribute.getInstance(attributesContainer);
 
-                        effectInstance.addAttribute(instance);
+                        effectInstance.setAttribute(instance);
                     }
                 }
 

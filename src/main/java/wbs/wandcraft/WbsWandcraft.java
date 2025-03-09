@@ -1,10 +1,14 @@
 package wbs.wandcraft;
 
 import org.bukkit.NamespacedKey;
+import wbs.utils.util.commands.brigadier.WbsCommand;
 import wbs.utils.util.plugin.WbsPlugin;
+import wbs.wandcraft.commands.CommandBuildSpell;
+import wbs.wandcraft.commands.CommandBuildWand;
+import wbs.wandcraft.events.WandEvents;
+import wbs.wandcraft.events.WandInventoryEvents;
 
 public class WbsWandcraft extends WbsPlugin {
-
     public static NamespacedKey getKey(String key) {
         return new NamespacedKey(getInstance(), key);
     }
@@ -17,5 +21,18 @@ public class WbsWandcraft extends WbsPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        WbsCommand.getStatic(this, "wandcraft")
+                .addSubcommands(
+                        WbsCommand.getStatic(this, "build").addSubcommands(
+                                new CommandBuildWand(this, "wand"),
+                                new CommandBuildSpell(this, "spell")
+                        )
+                )
+                .addAliases("wbswandcraft", "wandc", "wwc")
+                .register();
+
+        registerListener(new WandInventoryEvents());
+        registerListener(new WandEvents());
     }
 }

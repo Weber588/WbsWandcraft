@@ -1,9 +1,11 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.event.SpellTriggeredEvent;
@@ -50,5 +52,10 @@ public abstract class SpellDefinition implements AbstractSpellDefinition {
     @Override
     public @NotNull NamespacedKey getKey() {
         return key;
+    }
+
+    @Override
+    public Component displayName() {
+        return Component.text(WbsStrings.capitalizeAll(key.value().replaceAll("_", " ")));
     }
 }
