@@ -17,6 +17,7 @@ public class SpellExtensionManager {
         registerSpellExtension(DamageSpell.class, DamageSpell::setUpDamage);
         registerSpellExtension(DurationalSpell.class, DurationalSpell::setUpDurational);
         registerSpellExtension(EntityProjectileSpell.class, EntityProjectileSpell::setupEntityProjectile);
+        registerSpellExtension(ParticleSpell.class, ParticleSpell::setupParticles);
     }
 
     public static <T extends AbstractSpellDefinition> void registerSpellExtension(Class<T> clazz, Consumer<T> setupMethod) {

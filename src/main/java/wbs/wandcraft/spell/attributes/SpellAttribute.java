@@ -8,7 +8,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStrings;
@@ -18,20 +17,25 @@ import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.util.CustomPersistentDataTypes;
 
-@NullMarked
+import java.util.LinkedList;
+
 public class SpellAttribute<T> implements Keyed {
+    @NotNull
     private final NamespacedKey key;
+    @NotNull
     private final PersistentDataType<?, T> type;
+    @NotNull
     private final ArgumentType<T> argumentType;
     private final T defaultValue;
 
-    public SpellAttribute(NamespacedKey key, PersistentDataType<?, T> type, ArgumentType<T> argumentType, T defaultValue) {
+    public SpellAttribute(@NotNull NamespacedKey key, @NotNull PersistentDataType<?, T> type, @NotNull ArgumentType<T> argumentType, T defaultValue) {
         this.key = key;
         this.type = type;
         this.argumentType = argumentType;
         this.defaultValue = defaultValue;
 
         WandcraftRegistries.ATTRIBUTES.register(this);
+        new LinkedList<>();
     }
 
     public SpellAttribute(@Subst("key") String nativeKey, PersistentDataType<?, T> type, ArgumentType<T> argumentType, T defaultValue) {
@@ -62,7 +66,7 @@ public class SpellAttribute<T> implements Keyed {
         return type;
     }
 
-    public ArgumentType<T> getArgumentType() {
+    public @NotNull ArgumentType<T> getArgumentType() {
         return argumentType;
     }
 

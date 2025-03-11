@@ -1,8 +1,11 @@
 package wbs.wandcraft.spell.definitions;
 
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import wbs.utils.util.entities.selector.RadiusSelector;
+import wbs.utils.util.particles.NormalParticleEffect;
+import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -24,6 +27,7 @@ public class FireballSpell extends SpellDefinition implements CustomProjectileSp
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
         projectile.setOnHit((result) -> explode(result.getHitPosition().toLocation(projectile.world), context));
+        projectile.setParticle(new WbsParticleGroup().addEffect(new NormalParticleEffect(), Particle.FLAME));
     }
 
     private boolean explode(Location location, CastContext context) {

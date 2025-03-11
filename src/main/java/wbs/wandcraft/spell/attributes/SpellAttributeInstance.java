@@ -9,10 +9,9 @@ import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 
 public final class SpellAttributeInstance<T> implements ComponentRepresentable {
     private final SpellAttribute<T> attribute;
-    @NotNull
     private T value;
 
-    public SpellAttributeInstance(SpellAttribute<T> attribute, @NotNull T value) {
+    public SpellAttributeInstance(SpellAttribute<T> attribute, T value) {
         this.attribute = attribute;
         this.value = value;
     }
@@ -42,7 +41,9 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable {
     }
 
     public void writeTo(PersistentDataContainer attributes) {
-        attributes.set(attribute.getKey(), attribute.type(), value());
+        if (value() != null) {
+            attributes.set(attribute.getKey(), attribute.type(), value());
+        }
     }
 
     public <O> void modify(SpellAttributeModifier<O> modifier) {
@@ -56,6 +57,7 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable {
     public Component toComponent() {
         return attribute().displayName().color(NamedTextColor.GOLD)
                 .append(Component.text(": "))
-                .append(Component.text(value().toString()).color(NamedTextColor.AQUA));
+                // Use implicit toString for value(), as it may be null
+                .append(Component.text(value() + "").color(NamedTextColor.AQUA));
     }
 }

@@ -77,6 +77,10 @@ public abstract class MagicObject {
 	        public void run() {
 				cancel = tick();
 
+				if (!cancel && effects != null) {
+					effects.play(getLocation());
+				}
+
 				age++;
 
 				if (cancel || !active || age >= maxAge) {

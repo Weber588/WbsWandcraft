@@ -9,5 +9,4 @@ public interface AbstractProjectileSpell extends CastableSpell {
     default void setupProjectile() {
         addAttribute(SPEED);
     }
-
 }

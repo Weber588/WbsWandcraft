@@ -214,12 +214,7 @@ public class CustomPersistentDataTypes {
 
                 effectContainer.set(DEFINITION, NAMESPACED_KEY, effect.getDefinition().getKey());
 
-                PersistentDataContainer attributes = context.newPersistentDataContainer();
-                for (SpellAttributeInstance<?> attribute : effect.getAttributeValues()) {
-                    attribute.writeTo(attributes);
-                }
-
-                effectContainer.set(EFFECT_ATTRIBUTES, PersistentDataType.TAG_CONTAINER, attributes);
+                effect.writeAttributes(container, EFFECT_ATTRIBUTES);
 
                 effectContainerList.add(effectContainer);
             }
