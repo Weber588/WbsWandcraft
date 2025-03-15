@@ -6,11 +6,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
 import wbs.wandcraft.util.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.WandInventoryType;
@@ -19,13 +20,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class SpellModifier implements WandEntry {
+public class SpellModifier implements WandEntry<SpellModifier> {
     public static final NamespacedKey SPELL_MODIFIER_KEY = WbsWandcraft.getKey("spell_modifier");
 
     public static SpellModifier fromItem(ItemStack itemStack) {
         PersistentDataContainerView container = itemStack.getPersistentDataContainer();
 
         return container.get(SpellModifier.SPELL_MODIFIER_KEY, CustomPersistentDataTypes.SPELL_MODIFIER);
+    }
+
+    @Override
+    public NamespacedKey getTypeKey() {
+        return SPELL_MODIFIER_KEY;
+    }
+
+    @Override
+    public PersistentDataType<?, SpellModifier> getThisType() {
+        return CustomPersistentDataTypes.SPELL_MODIFIER;
     }
 
     private final ModifierScope scope;
@@ -165,28 +176,36 @@ public class SpellModifier implements WandEntry {
     @Override
     public @NotNull List<Component> getLore() {
         List<Component> loreList = new LinkedList<>();
+        loreList.add(
+                Component.text("Scope: ").color(NamedTextColor.AQUA)
+                        .append(Component.text(scope.name()).color(NamedTextColor.GOLD))
+        );
         if (!modifiers.isEmpty()) {
-            loreList.add(Component.text("Attributes:").color(NamedTextColor.GRAY));
+            loreList.add(Component.text("Attributes:").color(NamedTextColor.AQUA));
 
             loreList.addAll(modifiers.stream()
                     .map(modifier ->
-                            (Component) Component.text("  - ")
+                            (Component) Component.text("  - ").color(NamedTextColor.GOLD)
                                     .append(modifier.toComponent())
                     )
                     .toList());
         }
 
         if (!effects.isEmpty()) {
-            loreList.add(Component.text("Effects:").color(NamedTextColor.GRAY));
+            loreList.add(Component.text("Effects:").color(NamedTextColor.AQUA));
 
             loreList.addAll(effects.stream()
                     .map(effect ->
-                            (Component) Component.text("  - ")
+                            (Component) Component.text("  - ").color(NamedTextColor.GOLD)
                                     .append(effect.toComponent())
                     )
                     .toList());
         }
 
         return loreList;
+    }
+
+    public void removeModifier(SpellAttributeModifier<?> modifier) {
+        modifiers.remove(modifier);
     }
 }

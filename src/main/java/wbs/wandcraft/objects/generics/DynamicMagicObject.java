@@ -74,6 +74,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
 
     @Override
     protected final boolean tick() {
+        debug("Ticking dynamic magic object");
         error += errorPerStep;
 
         // How many steps run every tick before considering error
@@ -97,7 +98,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
             cancel = move();
             if (cancel) return true;
 
-            cancel = step(step, stepsThisTick);
+            cancel = onStep(step, stepsThisTick);
             if (cancel) return true;
         }
         acceleration.multiply(0);
@@ -112,7 +113,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
      * @return Whether or not to cancel. True to prevent future steps,
      * and expire the magic object
      */
-    protected boolean step(int step, int stepsThisTick) {
+    protected boolean onStep(int step, int stepsThisTick) {
         return false;
     }
 
@@ -124,6 +125,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
      * Called stepsPerTick times per tick.
      */
     protected boolean move() {
+        debug("Dynamic object move()");
         boolean cancel = beforeMove();
 
         Vector velocityThisStep = perStep(velocity);

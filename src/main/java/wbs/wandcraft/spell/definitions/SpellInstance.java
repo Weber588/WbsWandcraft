@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.WandEntry;
@@ -20,7 +21,7 @@ import wbs.wandcraft.util.CustomPersistentDataTypes;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SpellInstance implements WandEntry, Attributable {
+public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public static final NamespacedKey SPELL_INSTANCE_KEY = WbsWandcraft.getKey("spell_instance");
 
     public static SpellInstance fromItem(ItemStack itemStack){
@@ -75,5 +76,15 @@ public class SpellInstance implements WandEntry, Attributable {
     @Override
     public @Nullable Component getItemName() {
         return definition.displayName();
+    }
+
+    @Override
+    public NamespacedKey getTypeKey() {
+        return SPELL_INSTANCE_KEY;
+    }
+
+    @Override
+    public PersistentDataType<?, SpellInstance> getThisType() {
+        return CustomPersistentDataTypes.SPELL_INSTANCE;
     }
 }

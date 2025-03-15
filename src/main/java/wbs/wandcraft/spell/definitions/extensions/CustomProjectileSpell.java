@@ -11,7 +11,7 @@ import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.event.SpellTriggeredEvent;
 
-public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSpell, CastableSpell, ParticleSpell {
+public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSpell, ParticleSpell {
     SpellTriggeredEvent<RayTraceResult> ON_HIT_TRIGGER = new SpellTriggeredEvent<>(WbsWandcraft.getKey("on_hit"), RayTraceResult.class);
 
     @Override
@@ -21,13 +21,13 @@ public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSp
 
         Double range = instance.getAttribute(RANGE);
         Double speed = instance.getAttribute(SPEED);
-        Particle particle = instance.getAttribute(PARTICLE);
+        Particle particle = instance.getAttribute(PARTICLE, getDefaultParticle());
 
         DynamicProjectileObject projectile = new DynamicProjectileObject(player.getEyeLocation(), player, instance);
         WbsParticleGroup tickEffects = new WbsParticleGroup();
 
         // TODO: Make this an attribute
-        double hitboxSize = 0.8;
+        double hitboxSize = 0.4;
         projectile.setHitBoxSize(hitboxSize);
         tickEffects.addEffect(new NormalParticleEffect().setXYZ(hitboxSize), particle);
 
@@ -35,12 +35,12 @@ public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSp
         projectile.setVelocity(WbsEntityUtil.getFacingVector(player, speed));
         projectile.setParticle(tickEffects);
 
+        configure(projectile, context);
+
         projectile.setOnHit(result -> {
             instance.getEffects(ON_HIT_TRIGGER).forEach(effect -> effect.run(instance, result));
             return true;
         });
-
-        configure(projectile, context);
 
         projectile.spawn();
     }

@@ -16,7 +16,7 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable {
         this.value = value;
     }
     public void value(@NotNull Object value) {
-        if (this.value.getClass().isInstance(value)) {
+        if (attribute.getTClass().isInstance(value)) {
             //noinspection unchecked
             this.value = (T) value;
         }

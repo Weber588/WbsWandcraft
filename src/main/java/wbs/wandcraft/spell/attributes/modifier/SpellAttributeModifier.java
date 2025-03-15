@@ -7,6 +7,7 @@ import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.CustomPersistentDataTypes;
 
@@ -17,12 +18,16 @@ public class SpellAttributeModifier<T> implements ComponentRepresentable {
 
     private final SpellAttribute<T> attribute;
     private final AttributeModifierType type;
-    private final T modifierValue;
+    private T modifierValue;
 
     public SpellAttributeModifier(SpellAttribute<T> attribute, AttributeModifierType type, T modifierValue) {
         this.attribute = attribute;
         this.type = type;
         this.modifierValue = modifierValue;
+    }
+
+    public SpellAttributeModifier(SpellAttributeInstance<T> attributeInstance, AttributeModifierType type) {
+        this(attributeInstance.attribute(), type, attributeInstance.value());
     }
 
     public T modify(T value) {
@@ -61,5 +66,17 @@ public class SpellAttributeModifier<T> implements ComponentRepresentable {
     @Override
     public Component toComponent() {
         return type.asComponent(attribute, modifierValue);
+    }
+
+    public T value() {
+        return modifierValue;
+    }
+
+    public void value(T value) {
+        this.modifierValue = value;
+    }
+
+    public void value(SpellAttributeModifier<T> modifierInstance) {
+        value(modifierInstance.value());
     }
 }

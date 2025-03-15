@@ -3,6 +3,8 @@ package wbs.wandcraft;
 import org.bukkit.NamespacedKey;
 import wbs.utils.util.commands.brigadier.WbsCommand;
 import wbs.utils.util.plugin.WbsPlugin;
+import wbs.wandcraft.commands.CommandAttributesModify;
+import wbs.wandcraft.commands.CommandBuildModifier;
 import wbs.wandcraft.commands.CommandBuildSpell;
 import wbs.wandcraft.commands.CommandBuildWand;
 import wbs.wandcraft.events.WandEvents;
@@ -26,8 +28,10 @@ public class WbsWandcraft extends WbsPlugin {
                 .addSubcommands(
                         WbsCommand.getStatic(this, "build").addSubcommands(
                                 new CommandBuildWand(this, "wand"),
-                                new CommandBuildSpell(this, "spell")
-                        )
+                                new CommandBuildSpell(this, "spell"),
+                                new CommandBuildModifier(this, "modifier")
+                        ),
+                        new CommandAttributesModify(this, "modify")
                 )
                 .addAliases("wbswandcraft", "wandc", "wwc")
                 .register();

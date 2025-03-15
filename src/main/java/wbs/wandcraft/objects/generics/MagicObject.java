@@ -56,6 +56,14 @@ public abstract class MagicObject {
 	@Nullable
 	protected WbsParticleGroup dispelEffects = null;
 
+	protected boolean debug = false;
+
+	protected void debug(String message) {
+		if (this.debug) {
+			WbsWandcraft.getInstance().getLogger().info("MagicObject DEBUG|" + Integer.toHexString(timerID) + "| " + message);
+		}
+	}
+
 	public void spawn() {
 		if (timerID != -1) {
 			throw new MagicObjectExistsException();
@@ -75,6 +83,7 @@ public abstract class MagicObject {
 			boolean cancel = false;
 			@Override
 	        public void run() {
+				debug("Tick started");
 				cancel = tick();
 
 				if (!cancel && effects != null) {
@@ -84,13 +93,23 @@ public abstract class MagicObject {
 				age++;
 
 				if (cancel || !active || age >= maxAge) {
+					if (cancel) {
+						debug("Cancelled");
+					}
+					if (!active) {
+						debug("Made inactive");
+					}
 					if (age >= maxAge) {
+						debug("Max age hit");
 						onMaxAgeHit();
 					}
+					debug("Removing");
 					remove();
 				}
 	        }
 	    }.runTaskTimer(WbsWandcraft.getInstance(), 0L, 1L).getTaskId();
+
+		debug("Spawned");
 	}
 
 	protected void onMaxAgeHit() {
@@ -260,5 +279,9 @@ public abstract class MagicObject {
 
 	public void setCollider(@Nullable Collider collider) {
 		this.collider = collider;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 }

@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsSoundGroup;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 
+import java.util.function.Predicate;
+
 public class DynamicProjectileObject extends DynamicMagicObject {
 
     protected double range = 100;
@@ -18,7 +20,7 @@ public class DynamicProjectileObject extends DynamicMagicObject {
     public DynamicProjectileObject(Location location, Player caster, SpellInstance castingSpell) {
         super(location, caster, castingSpell);
 
-        setEntityPredicate(caster::equals);
+        setEntityPredicate(Predicate.not(caster::equals));
         setOnHitBlock((result) -> true);
         setOnHitEntity((result) -> true);
     }
@@ -32,8 +34,9 @@ public class DynamicProjectileObject extends DynamicMagicObject {
     }
 
     @Override
-    protected boolean step(int step, int stepsThisTick) {
-        boolean cancel = super.step(step, stepsThisTick);
+    protected boolean onStep(int step, int stepsThisTick) {
+        debug("Projectile object onStep()");
+        boolean cancel = super.onStep(step, stepsThisTick);
 
         setStepsPerTick(getVelocity().length() * 5);
 

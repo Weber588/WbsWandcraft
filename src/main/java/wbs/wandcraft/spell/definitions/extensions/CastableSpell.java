@@ -5,7 +5,7 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.AbstractSpellDefinition;
 
 public interface CastableSpell extends AbstractSpellDefinition {
-    SpellAttribute<Integer> DELAY = new IntegerSpellAttribute("cast_delay", 0, 5);
+    SpellAttribute<Integer> DELAY = new IntegerSpellAttribute("cast_delay", 0, 1);
     SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("cooldown", 0, 0);
 
     void cast(CastContext context);

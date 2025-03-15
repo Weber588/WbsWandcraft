@@ -17,7 +17,10 @@ import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.util.CustomPersistentDataTypes;
 
-import java.util.LinkedList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.function.Function;
 
 public class SpellAttribute<T> implements Keyed {
     @NotNull
@@ -27,19 +30,45 @@ public class SpellAttribute<T> implements Keyed {
     @NotNull
     private final ArgumentType<T> argumentType;
     private final T defaultValue;
+    @NotNull
+    private final Function<String, T> parse;
+    @NotNull
+    private final Collection<T> suggestions = new HashSet<>();
 
-    public SpellAttribute(@NotNull NamespacedKey key, @NotNull PersistentDataType<?, T> type, @NotNull ArgumentType<T> argumentType, T defaultValue) {
+    public SpellAttribute(@NotNull NamespacedKey key, @NotNull PersistentDataType<?, T> type, @NotNull ArgumentType<T> argumentType, T defaultValue, @NotNull Function<String, T> parse) {
         this.key = key;
         this.type = type;
         this.argumentType = argumentType;
         this.defaultValue = defaultValue;
+        this.parse = parse;
+        this.suggestions.add(defaultValue);
 
         WandcraftRegistries.ATTRIBUTES.register(this);
-        new LinkedList<>();
     }
 
-    public SpellAttribute(@Subst("key") String nativeKey, PersistentDataType<?, T> type, ArgumentType<T> argumentType, T defaultValue) {
-        this(WbsWandcraft.getKey(nativeKey), type, argumentType, defaultValue);
+    public SpellAttribute(@Subst("key") String nativeKey, PersistentDataType<?, T> type, ArgumentType<T> argumentType, T defaultValue, @NotNull Function<String, T> parse) {
+        this(WbsWandcraft.getKey(nativeKey), type, argumentType, defaultValue, parse);
+    }
+
+    @SafeVarargs
+    public final SpellAttribute<T> addSuggestions(T... suggestions) {
+        return addSuggestions(Arrays.asList(suggestions));
+    }
+
+    public SpellAttribute<T> addSuggestions(Collection<T> suggestions) {
+        this.suggestions.addAll(suggestions);
+        return this;
+    }
+
+    @SafeVarargs
+    public final SpellAttribute<T> setSuggestions(T... suggestions) {
+        return setSuggestions(Arrays.asList(suggestions));
+    }
+
+    public SpellAttribute<T> setSuggestions(Collection<T> suggestions) {
+        this.suggestions.clear();
+        this.suggestions.addAll(suggestions);
+        return this;
     }
 
     public SpellAttributeInstance<T> getInstance() {
@@ -95,5 +124,22 @@ public class SpellAttribute<T> implements Keyed {
 
     public Component displayName() {
         return Component.text(WbsStrings.capitalizeAll(key.value().replaceAll("_", " ")));
+    }
+
+    public T parse(String stringValue) {
+        return parse.apply(stringValue);
+    }
+
+    public SpellAttributeInstance<T> getParsedInstance(String stringValue) {
+        return getInstance(parse(stringValue));
+    }
+
+    @NotNull
+    public Collection<T> getSuggestions() {
+        return suggestions;
+    }
+
+    public Class<T> getTClass() {
+        return type.getComplexType();
     }
 }

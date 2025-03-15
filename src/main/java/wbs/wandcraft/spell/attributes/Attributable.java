@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.Style;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
@@ -18,6 +19,14 @@ import java.util.Set;
 public interface Attributable extends ItemDecorator {
     Set<SpellAttributeInstance<?>> getAttributeValues();
 
+    default <T> void addAttribute(SpellAttribute<T> attribute, T value) {
+        addAttribute(attribute.getInstance(value));
+    }
+
+    default void addAttribute(SpellAttributeInstance<?> instance) {
+        getAttributeValues().add(instance);
+    }
+
     default <T> void setAttribute(SpellAttribute<T> attribute, T value) {
         for (SpellAttributeInstance<?> attributeValue : getAttributeValues()) {
             if (attributeValue.attribute().equals(attribute)) {
@@ -27,7 +36,6 @@ public interface Attributable extends ItemDecorator {
         }
     }
 
-    @NotNull
     default  <T> T getAttribute(SpellAttribute<T> attribute) {
         //noinspection unchecked
         SpellAttributeInstance<T> instance =
@@ -41,6 +49,16 @@ public interface Attributable extends ItemDecorator {
         }
 
         return instance.value();
+    }
+
+    @Contract("_, !null -> !null")
+    default <T> T getAttribute(SpellAttribute<T> attribute, T defaultValue) {
+        T attributeValue = getAttribute(attribute);
+        if (attributeValue == null) {
+            return defaultValue;
+        }
+
+        return attributeValue;
     }
 
     default  <T> void setAttribute(SpellAttributeInstance<T> instance) {
@@ -84,7 +102,7 @@ public interface Attributable extends ItemDecorator {
     default @NotNull List<Component> getLore() {
         return getAttributeValues().stream()
                 .map(instance ->
-                        (Component) Component.text("  - ").style(Style.style(NamedTextColor.GOLD))
+                        (Component) Component.text("  - ").style(Style.style(NamedTextColor.GOLD, Set.of()))
                                 .append(instance.toComponent())
                 )
                 .toList();

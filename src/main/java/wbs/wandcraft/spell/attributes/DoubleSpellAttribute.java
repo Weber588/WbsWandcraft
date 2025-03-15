@@ -7,18 +7,18 @@ import org.bukkit.persistence.PersistentDataType;
 @SuppressWarnings("unused")
 public class DoubleSpellAttribute extends SpellAttribute<Double> {
     public DoubleSpellAttribute(NamespacedKey key, double defaultValue) {
-        super(key, PersistentDataType.DOUBLE, DoubleArgumentType.doubleArg(), defaultValue);
+        super(key, PersistentDataType.DOUBLE, DoubleArgumentType.doubleArg(), defaultValue, Double::parseDouble);
     }
 
     public DoubleSpellAttribute(String nativeKey, double defaultValue) {
-        super(nativeKey, PersistentDataType.DOUBLE, DoubleArgumentType.doubleArg(), defaultValue);
+        super(nativeKey, PersistentDataType.DOUBLE, DoubleArgumentType.doubleArg(), defaultValue, Double::parseDouble);
     }
 
     public DoubleSpellAttribute(String nativeKey, double minValue, double defaultValue) {
-        super(nativeKey, PersistentDataType.DOUBLE, DoubleArgumentType.doubleArg(minValue), defaultValue);
+        super(nativeKey, PersistentDataType.DOUBLE, DoubleArgumentType.doubleArg(minValue), defaultValue, Double::parseDouble);
     }
 
     public DoubleSpellAttribute(String nativeKey, double minValue, double maxValue, double defaultValue) {
-        super(nativeKey, PersistentDataType.DOUBLE, DoubleArgumentType.doubleArg(minValue, maxValue), defaultValue);
+        super(nativeKey, PersistentDataType.DOUBLE, DoubleArgumentType.doubleArg(minValue, maxValue), defaultValue, Double::parseDouble);
     }
 }

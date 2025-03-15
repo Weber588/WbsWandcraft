@@ -4,7 +4,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
 
 import java.util.Objects;
 
@@ -26,9 +25,7 @@ public final class WandHolder implements InventoryHolder {
 
     public void save() {
         wand.updateItems(inventory);
-        item.editMeta(meta ->
-                meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.WAND, wand)
-        );
+        wand.toItem(item);
     }
 
     public Wand wand() {

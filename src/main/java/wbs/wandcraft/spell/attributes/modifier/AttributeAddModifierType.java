@@ -7,6 +7,8 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 public class AttributeAddModifierType implements AttributeModifierType {
+    public static final NamespacedKey KEY = WbsWandcraft.getKey("add");
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> T modify(T current, T value) {
@@ -28,6 +30,6 @@ public class AttributeAddModifierType implements AttributeModifierType {
 
     @Override
     public @NotNull NamespacedKey getKey() {
-        return WbsWandcraft.getKey("add");
+        return KEY;
     }
 }

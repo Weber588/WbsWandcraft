@@ -2,10 +2,11 @@ package wbs.wandcraft.spell.definitions;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.util.RayTraceResult;
 import wbs.utils.util.entities.selector.RadiusSelector;
-import wbs.utils.util.particles.NormalParticleEffect;
-import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -26,42 +27,47 @@ public class FireballSpell extends SpellDefinition implements CustomProjectileSp
 
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
-        projectile.setOnHit((result) -> explode(result.getHitPosition().toLocation(projectile.world), context));
-        projectile.setParticle(new WbsParticleGroup().addEffect(new NormalParticleEffect(), Particle.FLAME));
+        context.instance().registerEffect(ON_HIT_TRIGGER.getAnonymousInstance((instance, effect, result) -> {
+            explode(result, projectile.world, context);
+        }));
     }
 
-    private boolean explode(Location location, CastContext context) {
+    @Override
+    public Particle getDefaultParticle() {
+        return Particle.FLAME;
+    }
+
+    private void explode(RayTraceResult result, World world, CastContext context) {
+        Location location = result.getHitPosition().toLocation(world);
         SpellInstance instance = context.instance();
 
         double blastRadius = instance.getAttribute(BLAST_RADIUS);
         double damage = instance.getAttribute(DAMAGE);
         int duration = instance.getAttribute(DURATION);
 
+        Entity hitEntity = result.getHitEntity();
+        if (hitEntity != null) {
+            context.player().damage(damage, hitEntity);
+        }
+
         List<LivingEntity> selected = new RadiusSelector<>(LivingEntity.class)
                 .setRange(blastRadius)
                 .select(location);
 
+        location.getWorld().createExplosion(context.player(), location, (float) blastRadius, false, false, true);
+
         for (LivingEntity hit : selected) {
             double distanceSquared = hit.getLocation().distanceSquared(location);
-            double damageTaken;
             int durationApplied;
             if (distanceSquared > 1) {
-                damageTaken = damage / distanceSquared;
                 durationApplied = (int) (duration / distanceSquared);
             } else {
-                damageTaken = damage;
                 durationApplied = duration;
             }
 
             if (durationApplied > 0) {
                 hit.setFireTicks(Math.max(hit.getFireTicks(), durationApplied));
             }
-
-            if (damageTaken > 0) {
-                hit.damage(damageTaken, context.player());
-            }
         }
-
-        return true;
     }
 }

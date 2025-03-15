@@ -5,6 +5,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import wbs.utils.util.WbsEnums;
 import wbs.utils.util.commands.brigadier.argument.WbsEnumArgumentType;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -16,8 +17,10 @@ public interface EntityProjectileSpell extends AbstractProjectileSpell {
             "projectile_type",
             new CustomPersistentDataTypes.PersistentEnumType<>(EntityType.class),
             new WbsEnumArgumentType<>(EntityType.class),
-            EntityType.ARROW
-    );
+            EntityType.ARROW,
+            stringValue -> WbsEnums.getEnumFromString(EntityType.class, stringValue)
+    )
+            .addSuggestions(EntityType.values());
 
     default void setupEntityProjectile() {
         addAttribute(PROJECTILE_TYPE);

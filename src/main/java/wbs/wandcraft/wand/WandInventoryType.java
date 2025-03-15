@@ -14,30 +14,32 @@ import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public class WandInventoryType implements Keyed {
+    private static final Component INVENTORY_TITLE = Component.text("Wand");
+
     // Deferred initialisation so we can register statically
     public static final WbsRegistry<WandInventoryType> WAND_INVENTORY_TYPES = new WbsRegistry<>();
 
     public static final WandInventoryType LINE_5 = new WandInventoryType(
             "line_5",
-            wand -> Bukkit.createInventory(wand, InventoryType.HOPPER, Component.text("Inventory")),
+            wand -> Bukkit.createInventory(wand, InventoryType.HOPPER, INVENTORY_TITLE),
             1,
             5
     );
     public static final WandInventoryType LINE_9 = new WandInventoryType(
             "line_9",
-            wand -> Bukkit.createInventory(wand, 9, Component.text("Inventory")),
+            wand -> Bukkit.createInventory(wand, 9, INVENTORY_TITLE),
             1,
             9
     );
     public static final WandInventoryType PLANE_3x3 = new WandInventoryType(
             "plane_3_3",
-            wand -> Bukkit.createInventory(wand, InventoryType.DISPENSER, Component.text("Inventory")),
+            wand -> Bukkit.createInventory(wand, InventoryType.DISPENSER, INVENTORY_TITLE),
             3,
             3
     );
     public static final WandInventoryType PLANE_2x9 = new WandInventoryType(
             "plane_2_9",
-            wand -> Bukkit.createInventory(wand, 2 * 9, Component.text("Inventory")),
+            wand -> Bukkit.createInventory(wand, 2 * 9, INVENTORY_TITLE),
             2,
             9
     );

@@ -1,9 +1,11 @@
 package wbs.wandcraft.spell.event;
 
+import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
+import wbs.wandcraft.spell.definitions.SpellInstance;
 
 @NullMarked
 public class SpellTriggeredEvent<T> implements Keyed {
@@ -22,5 +24,11 @@ public class SpellTriggeredEvent<T> implements Keyed {
 
     public Class<T> getEventClass() {
         return eventClass;
+    }
+
+    public SpellEffectInstance<T> getAnonymousInstance(TriConsumer<SpellInstance, SpellEffectInstance<T>, T> consumer) {
+        SpellEffectDefinition<T> definition = SpellEffectDefinition.anonymous(this, consumer);
+
+        return new SpellEffectInstance<>(definition);
     }
 }

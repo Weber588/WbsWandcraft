@@ -1,7 +1,6 @@
 package wbs.wandcraft.commands;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
@@ -15,30 +14,17 @@ import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
-import wbs.wandcraft.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
 
 @SuppressWarnings("UnstableApiUsage")
 public class CommandBuildSpell extends WbsSubcommand {
     private static final KeyedSimpleArgument DEFINITION = new KeyedSimpleArgument(
             "definition",
             ArgumentTypes.namespacedKey(),
-            WbsWandcraft.getKey("invalid")
-    ).addKeyedSuggestions(WandcraftRegistries.SPELLS.values());
-    private static final WbsSimpleArgument<String> ATTRIBUTES_STRING = new WbsSimpleArgument<>(
-            "attributes",
-            StringArgumentType.greedyString(),
-            "",
-            String.class
-    ).setSuggestionProvider((context, builder) -> {
-        NamespacedKey definitionKey = DEFINITION.getValue(context);
-        // TODO: Suggest attributes (and parse in execute below)
-        return builder.buildFuture();
-    });
+            null
+    ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
     public CommandBuildSpell(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
@@ -51,25 +37,23 @@ public class CommandBuildSpell extends WbsSubcommand {
         SpellDefinition spell = WandcraftRegistries.SPELLS.get(definitionKey);
 
         if (spell == null) {
+            plugin.sendMessage("Invalid spell definition: " + definitionKey.asString() + ".", context.getSource().getSender());
             return Command.SINGLE_SUCCESS;
         }
 
-        ItemStack spellItem = ItemStack.of(Material.FLOW_BANNER_PATTERN);
+        ItemStack item = ItemStack.of(Material.FLOW_BANNER_PATTERN);
         SpellInstance spellInstance = new SpellInstance(spell);
 
-        // TODO: Add way to add attributes via command
-
-        spellItem.editMeta(meta -> {
+        item.editMeta(meta -> {
             for (ItemFlag value : ItemFlag.values()) {
                 meta.addItemFlags(value);
             }
-
-            meta.getPersistentDataContainer().set(SpellInstance.SPELL_INSTANCE_KEY, CustomPersistentDataTypes.SPELL_INSTANCE, spellInstance);
-            ItemDecorator.decorate(spellInstance, meta);
         });
 
+        spellInstance.toItem(item);
+
         if (context.getSource().getSender() instanceof Player player) {
-            player.getInventory().addItem(spellItem);
+            player.getInventory().addItem(item);
         }
 
         return Command.SINGLE_SUCCESS;

@@ -1,6 +1,10 @@
 package wbs.wandcraft;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.format.TextDecorationAndState;
+import net.kyori.adventure.util.TriState;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +17,14 @@ public interface ItemDecorator {
     // method.
     static void decorate(ItemDecorator decorator, ItemMeta meta) {
         meta.itemName(decorator.getItemName());
-        meta.lore(decorator.getLore());
+        TextDecorationAndState notItalic = TextDecoration.ITALIC.withState(TriState.FALSE);
+        meta.lore(
+                decorator.getLore().stream()
+                        .map(component ->
+                            component.applyFallbackStyle(Style.style(notItalic))
+                        )
+                        .toList()
+        );
     }
 
     @Nullable
