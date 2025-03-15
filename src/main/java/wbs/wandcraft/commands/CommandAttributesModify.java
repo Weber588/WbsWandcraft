@@ -166,7 +166,7 @@ public class CommandAttributesModify extends WbsSubcommand {
         } else if (instance != null) {
             attributable = instance;
         } else {
-            plugin.sendMessage("The held item is not a wand or spell item.", sender);
+            plugin.sendMessage("The held item does not support attributes.", sender);
             return;
         }
 
@@ -174,9 +174,11 @@ public class CommandAttributesModify extends WbsSubcommand {
 
         if (wand != null) {
             wand.toItem(item);
+            plugin.sendMessage("Updated wand!", sender);
         }
         if (instance != null) {
             instance.toItem(item);
+            plugin.sendMessage("Updated spell!", sender);
         }
     }
 
@@ -184,7 +186,7 @@ public class CommandAttributesModify extends WbsSubcommand {
         NamespacedKey modifierTypeKey = configuredArgumentMap.get(MODIFIER_TYPE);
         if (modifierTypeKey == null) {
             plugin.sendMessage("Modifying a spell modifier requires a modifier type.", sender);
-            return ;
+            return;
         }
 
         AttributeModifierType modifierType = WandcraftRegistries.MODIFIER_TYPES.get(modifierTypeKey);
@@ -204,6 +206,7 @@ public class CommandAttributesModify extends WbsSubcommand {
         spellModifier.addModifier(modifierInstance);
 
         spellModifier.toItem(item);
+        plugin.sendMessage("Updated spell modifier!", sender);
     }
 
     @Override

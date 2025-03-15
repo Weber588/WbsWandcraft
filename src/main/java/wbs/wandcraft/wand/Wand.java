@@ -31,17 +31,20 @@ public class Wand implements Attributable {
     public static final NamespacedKey WAND_KEY = WbsWandcraft.getKey("wand");
     private static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
 
-    public static final SpellAttribute<Long> WAND_COOLDOWN = new LongSpellAttribute("wand_cooldown", 0, 40);
-    public static final SpellAttribute<Integer> WAND_CAST_DELAY = new IntegerSpellAttribute("wand_cast_delay", 0, 10);
+    public static final SpellAttribute<Long> COOLDOWN = new LongSpellAttribute("wand_cooldown", 0, 40);
+    public static final SpellAttribute<Integer> CAST_DELAY = new IntegerSpellAttribute("cast_delay", 0, 10);
+
+
+    public static final SpellAttribute<Double> ACCURACY = new DoubleSpellAttribute("accuracy", 0, 100, 10);
 
     @Nullable
     public static Wand getIfValid(ItemStack item) {
         return item.getPersistentDataContainer().get(WAND_KEY, CustomPersistentDataTypes.WAND);
     }
 
-    public static void updateLastUsed(int additionalCooldown, PersistentDataContainer container) {
+    public static void updateLastUsed(PersistentDataContainer container) {
         long currentTick = getTimestamp();
-        container.set(LAST_USED, PersistentDataType.LONG, currentTick - additionalCooldown);
+        container.set(LAST_USED, PersistentDataType.LONG, currentTick);
     }
 
     private static long getTimestamp() {
@@ -58,8 +61,8 @@ public class Wand implements Attributable {
 
     public Wand(WandInventoryType type) {
         this.type = type;
-        addAttribute(WAND_COOLDOWN.getInstance());
-        addAttribute(WAND_CAST_DELAY.getInstance());
+        addAttribute(COOLDOWN.getInstance());
+        addAttribute(CAST_DELAY.getInstance());
     }
 
     public Set<SpellAttributeInstance<?>> getAttributeValues() {
@@ -81,12 +84,12 @@ public class Wand implements Attributable {
                     spellList.add(spell);
                     additionalCooldown += spell.getAttribute(CastableSpell.COOLDOWN) * 1000 / 20;
                     additionalCooldown += spell.getAttribute(CastableSpell.DELAY) * 1000 / 20;
-                    additionalCooldown += getAttribute(WAND_CAST_DELAY) * 1000 / 20;
+                    additionalCooldown += getAttribute(CAST_DELAY) * 1000 / 20;
                 }
             }
 
             long lastUsed = getLastUsed(wandContainer);
-            long usableTick = lastUsed + getAttribute(WAND_COOLDOWN) * 1000 / 20 + additionalCooldown;
+            long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / 20 + additionalCooldown;
             long timestamp = getTimestamp();
             if (timestamp <= usableTick) {
                 Duration timeLeft = Duration.ofMillis(usableTick - timestamp);
@@ -97,7 +100,7 @@ public class Wand implements Attributable {
             }
 
             enqueueCast(player, spellList, item);
-            updateLastUsed(additionalCooldown, wandContainer);
+            updateLastUsed(wandContainer);
             // TODO: player.setCooldown(item, additionalCooldown);
         });
     }
@@ -120,7 +123,7 @@ public class Wand implements Attributable {
             public void run() {
                 enqueueCast(player, instances, item);
             }
-        }.runTaskLater(WbsWandcraft.getInstance(), toCast.getAttribute(CastableSpell.DELAY) + getAttribute(WAND_CAST_DELAY));
+        }.runTaskLater(WbsWandcraft.getInstance(), toCast.getAttribute(CastableSpell.DELAY) + getAttribute(CAST_DELAY));
     }
 
     public @NotNull WandHolder getInventory(ItemStack item) {

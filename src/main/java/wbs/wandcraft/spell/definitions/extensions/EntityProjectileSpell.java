@@ -1,52 +1,29 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import wbs.utils.util.WbsEnums;
-import wbs.utils.util.commands.brigadier.argument.WbsEnumArgumentType;
-import wbs.utils.util.entities.WbsEntityUtil;
-import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.utils.util.WbsMath;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
 
-public interface EntityProjectileSpell extends AbstractProjectileSpell {
-    SpellAttribute<EntityType> PROJECTILE_TYPE = new SpellAttribute<>(
-            "projectile_type",
-            new CustomPersistentDataTypes.PersistentEnumType<>(EntityType.class),
-            new WbsEnumArgumentType<>(EntityType.class),
-            EntityType.ARROW,
-            stringValue -> WbsEnums.getEnumFromString(EntityType.class, stringValue)
-    )
-            .addSuggestions(EntityType.values());
-
-    default void setupEntityProjectile() {
-        addAttribute(PROJECTILE_TYPE);
-    }
+public interface EntityProjectileSpell<T extends Projectile> extends AbstractProjectileSpell {
+    Class<T> getProjectileClass();
 
     @Override
     default void cast(CastContext context) {
-        Player player = context.player();
         SpellInstance instance = context.instance();
 
         Double speed = instance.getAttribute(SPEED);
-        EntityType type = instance.getAttribute(PROJECTILE_TYPE);
 
-        context.player().getWorld().spawnEntity(
+        context.player().getWorld().spawn(
                 context.player().getEyeLocation(),
-                type,
+                getProjectileClass(),
                 CreatureSpawnEvent.SpawnReason.SPELL,
                 projectile -> {
+                    projectile.setVelocity(WbsMath.scaleVector(getDirection(context), speed));
                     configure(projectile, context);
-                    projectile.setVelocity(WbsEntityUtil.getFacingVector(player, speed));
-                    if (projectile instanceof Fireball fireball) {
-                        fireball.setDirection(projectile.getVelocity());
-                    }
                 }
         );
     }
 
-    void configure(Entity projectile, CastContext context);
+    void configure(T t, CastContext context);
 }

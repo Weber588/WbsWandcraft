@@ -3,16 +3,28 @@ package wbs.wandcraft.spell.definitions.extensions;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
-import wbs.utils.util.entities.WbsEntityUtil;
+import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
+import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
+import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
+import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.event.SpellTriggeredEvent;
 
 public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSpell, ParticleSpell {
     SpellTriggeredEvent<RayTraceResult> ON_HIT_TRIGGER = new SpellTriggeredEvent<>(WbsWandcraft.getKey("on_hit"), RayTraceResult.class);
+    SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0, 0);
+    SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0, 4);
+    SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size", 0.01, 0.3);
+
+    default void setupCustomProjectile() {
+        addAttribute(BOUNCES);
+        addAttribute(GRAVITY);
+        addAttribute(SIZE);
+    }
 
     @Override
     default void cast(CastContext context) {
@@ -21,19 +33,26 @@ public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSp
 
         Double range = instance.getAttribute(RANGE);
         Double speed = instance.getAttribute(SPEED);
+        Double gravity = instance.getAttribute(GRAVITY);
         Particle particle = instance.getAttribute(PARTICLE, getDefaultParticle());
+        double hitboxSize = instance.getAttribute(SIZE);
+        int bounces = instance.getAttribute(BOUNCES);
 
         DynamicProjectileObject projectile = new DynamicProjectileObject(player.getEyeLocation(), player, instance);
         WbsParticleGroup tickEffects = new WbsParticleGroup();
 
-        // TODO: Make this an attribute
-        double hitboxSize = 0.4;
         projectile.setHitBoxSize(hitboxSize);
-        tickEffects.addEffect(new NormalParticleEffect().setXYZ(hitboxSize), particle);
+        tickEffects.addEffect(new NormalParticleEffect().setXYZ(hitboxSize).setAmount(3), particle);
 
         projectile.setRange(range);
-        projectile.setVelocity(WbsEntityUtil.getFacingVector(player, speed));
+        projectile.setVelocity(WbsMath.scaleVector(getDirection(context), speed));
         projectile.setParticle(tickEffects);
+
+        projectile.setGravityInSeconds(gravity);
+        if (bounces > 0) {
+            projectile.setDoBounces(true);
+            projectile.setMaxBounces(bounces);
+        }
 
         configure(projectile, context);
 

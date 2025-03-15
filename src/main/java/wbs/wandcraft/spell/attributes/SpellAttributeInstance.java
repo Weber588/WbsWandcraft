@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 
-public final class SpellAttributeInstance<T> implements ComponentRepresentable {
+public final class SpellAttributeInstance<T> implements ComponentRepresentable, Comparable<SpellAttributeInstance<?>> {
     private final SpellAttribute<T> attribute;
     private T value;
 
@@ -59,5 +59,10 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable {
                 .append(Component.text(": "))
                 // Use implicit toString for value(), as it may be null
                 .append(Component.text(value() + "").color(NamedTextColor.AQUA));
+    }
+
+    @Override
+    public int compareTo(@NotNull SpellAttributeInstance<?> other) {
+        return other.attribute().compareTo(attribute);
     }
 }

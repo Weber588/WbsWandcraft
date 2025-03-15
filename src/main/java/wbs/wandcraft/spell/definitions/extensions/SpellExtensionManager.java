@@ -13,11 +13,12 @@ public class SpellExtensionManager {
     static {
         registerSpellExtension(CastableSpell.class, CastableSpell::setupCastable);
         registerSpellExtension(RangedSpell.class, RangedSpell::setupRanged);
-        registerSpellExtension(AbstractProjectileSpell.class, AbstractProjectileSpell::setupProjectile);
+        registerSpellExtension(DirectionalSpell.class, DirectionalSpell::setupDirectional);
         registerSpellExtension(DamageSpell.class, DamageSpell::setUpDamage);
         registerSpellExtension(DurationalSpell.class, DurationalSpell::setUpDurational);
-        registerSpellExtension(EntityProjectileSpell.class, EntityProjectileSpell::setupEntityProjectile);
         registerSpellExtension(ParticleSpell.class, ParticleSpell::setupParticles);
+        registerSpellExtension(SpeedSpell.class, SpeedSpell::setupSpeed);
+        registerSpellExtension(CustomProjectileSpell.class, CustomProjectileSpell::setupCustomProjectile);
     }
 
     public static <T extends AbstractSpellDefinition> void registerSpellExtension(Class<T> clazz, Consumer<T> setupMethod) {

@@ -101,6 +101,7 @@ public interface Attributable extends ItemDecorator {
     @Override
     default @NotNull List<Component> getLore() {
         return getAttributeValues().stream()
+                .sorted()
                 .map(instance ->
                         (Component) Component.text("  - ").style(Style.style(NamedTextColor.GOLD, Set.of()))
                                 .append(instance.toComponent())

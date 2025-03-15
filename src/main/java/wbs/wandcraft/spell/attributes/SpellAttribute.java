@@ -20,9 +20,10 @@ import wbs.wandcraft.util.CustomPersistentDataTypes;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.function.Function;
 
-public class SpellAttribute<T> implements Keyed {
+public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     @NotNull
     private final NamespacedKey key;
     @NotNull
@@ -141,5 +142,21 @@ public class SpellAttribute<T> implements Keyed {
 
     public Class<T> getTClass() {
         return type.getComplexType();
+    }
+
+    public int compareTo(@NotNull SpellAttribute<?> other) {
+        return other.getKey().compareTo(getKey());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SpellAttribute<?> that)) return false;
+        return Objects.equals(key, that.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(key);
     }
 }
