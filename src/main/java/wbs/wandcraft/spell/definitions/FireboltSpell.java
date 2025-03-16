@@ -15,11 +15,13 @@ import wbs.wandcraft.spell.definitions.extensions.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
 import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
+import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 import java.util.List;
 
 public class FireboltSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell, DurationalSpell {
-    public static SpellAttribute<Double> BLAST_RADIUS = new DoubleSpellAttribute("blast_radius", 0,5.0);
+    public static SpellAttribute<Double> BLAST_RADIUS = new DoubleSpellAttribute("blast_radius", 0,5.0)
+            .setFormatter(radius -> radius + " blocks");
 
     public FireboltSpell() {
         super("firebolt");
@@ -28,9 +30,9 @@ public class FireboltSpell extends SpellDefinition implements CustomProjectileSp
 
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
-        context.instance().registerEffect(ON_HIT_TRIGGER.getAnonymousInstance((instance, effect, result) -> {
-            explode(result, projectile.world, context);
-        }));
+        SpellTriggeredEvents.ON_HIT_TRIGGER.registerAnonymous(context.instance(), (result) ->
+                explode(result, projectile.world, context)
+        );
     }
 
     @Override
@@ -47,7 +49,7 @@ public class FireboltSpell extends SpellDefinition implements CustomProjectileSp
         int duration = instance.getAttribute(DURATION);
 
         Entity hitEntity = result.getHitEntity();
-        if (hitEntity != null) {
+        if (hitEntity != null && damage > 0) {
             context.player().damage(damage, hitEntity);
         }
 

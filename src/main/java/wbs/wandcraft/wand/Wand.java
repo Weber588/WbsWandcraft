@@ -31,8 +31,10 @@ public class Wand implements Attributable {
     public static final NamespacedKey WAND_KEY = WbsWandcraft.getKey("wand");
     private static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
 
-    public static final SpellAttribute<Long> COOLDOWN = new LongSpellAttribute("wand_cooldown", 0, 40);
-    public static final SpellAttribute<Integer> CAST_DELAY = new IntegerSpellAttribute("cast_delay", 0, 10);
+    public static final SpellAttribute<Long> COOLDOWN = new LongSpellAttribute("wand_cooldown", 0, 40)
+            .setFormatter(cooldown -> cooldown / 20.0 + " seconds");
+    public static final SpellAttribute<Integer> CAST_DELAY = new IntegerSpellAttribute("cast_delay", 0, 10)
+            .setFormatter(delay -> delay / 20.0 + " seconds");
 
 
     public static final SpellAttribute<Double> ACCURACY = new DoubleSpellAttribute("accuracy", 0, 100, 10);
@@ -61,8 +63,8 @@ public class Wand implements Attributable {
 
     public Wand(WandInventoryType type) {
         this.type = type;
-        addAttribute(COOLDOWN.getInstance());
-        addAttribute(CAST_DELAY.getInstance());
+        addAttribute(COOLDOWN.defaultInstance());
+        addAttribute(CAST_DELAY.defaultInstance());
     }
 
     public Set<SpellAttributeInstance<?>> getAttributeValues() {

@@ -1,6 +1,10 @@
 package wbs.wandcraft.spell.definitions;
 
+import org.bukkit.Particle;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import wbs.utils.util.entities.WbsEntityUtil;
+import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.extensions.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
@@ -8,10 +12,28 @@ import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
 public class LeapSpell extends SpellDefinition implements CastableSpell, SpeedSpell {
     public LeapSpell() {
         super("leap");
+        addAttribute(COOLDOWN, 5);
     }
 
     @Override
     public void cast(CastContext context) {
-        WbsEntityUtil.push(context.player(), context.instance().getAttribute(SPEED));
+        Player player = context.player();
+        player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation(), 160, 0, 0, 0, 0.5);
+        WbsEntityUtil.push(player, context.instance().getAttribute(SPEED));
+
+        new BukkitRunnable() {
+            int escape = 0;
+            @Override
+            public void run() {
+                player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation().add(0, 1, 0), 10, 0.4, 1, 0.4, 0);
+
+                escape++;
+
+                //noinspection deprecation
+                if (escape > 1000 || !player.isOnline() || player.isFlying() || (player.isOnGround() && escape >= 5)) {
+                    cancel();
+                }
+            }
+        }.runTaskTimer(WbsWandcraft.getInstance(), 2L, 2L);
     }
 }

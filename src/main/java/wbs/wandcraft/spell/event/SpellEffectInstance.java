@@ -30,7 +30,9 @@ public class SpellEffectInstance<T> implements Attributable, ComponentRepresenta
         Component asComponent = definition.toComponent();
 
         for (SpellAttributeInstance<?> instance : attributeValues) {
-            asComponent = asComponent.append(Component.text("\n    ")).append(instance.toComponent());
+            if (instance.shouldShow()) {
+                asComponent = asComponent.append(Component.text("\n    ")).append(instance.toComponent());
+            }
         }
 
         return asComponent;

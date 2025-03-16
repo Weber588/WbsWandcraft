@@ -24,7 +24,8 @@ public interface Attributable extends ItemDecorator {
     }
 
     default void addAttribute(SpellAttributeInstance<?> instance) {
-        getAttributeValues().add(instance);
+        getAttributeValues().removeIf(existing -> existing.attribute().equals(instance.attribute()));
+        getAttributeValues().add(instance.clone());
     }
 
     default <T> void setAttribute(SpellAttribute<T> attribute, T value) {
@@ -102,10 +103,12 @@ public interface Attributable extends ItemDecorator {
     default @NotNull List<Component> getLore() {
         return getAttributeValues().stream()
                 .sorted()
+                .filter(SpellAttributeInstance::shouldShow)
                 .map(instance ->
                         (Component) Component.text("  - ").style(Style.style(NamedTextColor.GOLD, Set.of()))
                                 .append(instance.toComponent())
                 )
                 .toList();
     }
+
 }

@@ -25,6 +25,9 @@ public class WandcraftRegistries {
             new FireboltSpell(),
             new FireballSpell(),
             new LeapSpell(),
-            new BlinkSpell()
+            new BlinkSpell(),
+            new PrismaticRaySpell(),
+            new EldritchBlastSpell(),
+            new WarpSpell()
     );
 }

@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.Attributable;
-import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -37,9 +36,7 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public SpellInstance(SpellDefinition definition) {
         this.definition = definition;
 
-        for (SpellAttribute<?> attribute : definition.getAttributes()) {
-            attributeValues.add(attribute.getInstance());
-        }
+        attributeValues.addAll(definition.getAttributeValues());
     }
 
     public Set<SpellAttributeInstance<?>> getAttributeValues() {

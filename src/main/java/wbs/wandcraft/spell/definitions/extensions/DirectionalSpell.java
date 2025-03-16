@@ -8,7 +8,8 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.AbstractSpellDefinition;
 
 public interface DirectionalSpell extends AbstractSpellDefinition {
-    SpellAttribute<Double> ACCURACY = new DoubleSpellAttribute("accuracy", 0, 100, 50);
+    SpellAttribute<Double> ACCURACY = new DoubleSpellAttribute("accuracy", 0, 100, 75)
+            .setFormatter(accuracy -> accuracy + "%");
 
     default double getMaxAngle() {
         return 45;

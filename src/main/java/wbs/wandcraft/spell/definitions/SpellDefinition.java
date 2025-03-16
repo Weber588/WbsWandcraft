@@ -4,20 +4,20 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
-import wbs.wandcraft.spell.event.SpellTriggeredEvent;
+import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.SpellExtensionManager;
+import wbs.wandcraft.spell.event.SpellTriggeredEvent;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public abstract class SpellDefinition implements AbstractSpellDefinition {
-    protected final Map<Key, SpellAttribute<?>> attributes = new HashMap<>();
+public abstract class SpellDefinition implements AbstractSpellDefinition, Attributable {
     protected final Map<Key, SpellTriggeredEvent<?>> events = new HashMap<>();
+
+    protected final Set<SpellAttributeInstance<?>> defaultAttributes = new HashSet<>();
 
     private final NamespacedKey key;
 
@@ -30,23 +30,11 @@ public abstract class SpellDefinition implements AbstractSpellDefinition {
     }
 
     public void addAttribute(SpellAttribute<?> attribute) {
-        attributes.put(attribute.key(), attribute);
-    }
-
-    @Nullable
-    public <T> SpellAttribute<T> getAttribute(Key key, Class<T> clazz) {
-        SpellAttribute<?> attribute = attributes.get(key);
-
-        if (clazz.isInstance(attribute.defaultValue())) {
-            //noinspection unchecked
-            return (SpellAttribute<T>) attribute;
-        }
-
-        return null;
+        defaultAttributes.add(attribute.defaultInstance());
     }
 
     public Collection<SpellAttribute<?>> getAttributes() {
-        return attributes.values();
+        return new LinkedList<>(defaultAttributes.stream().map(SpellAttributeInstance::attribute).toList());
     }
 
     @Override
@@ -57,5 +45,20 @@ public abstract class SpellDefinition implements AbstractSpellDefinition {
     @Override
     public Component displayName() {
         return Component.text(WbsStrings.capitalizeAll(key.value().replaceAll("_", " ")));
+    }
+
+    public <T> T getDefault(SpellAttribute<T> attribute) {
+        for (SpellAttributeInstance<?> instance : defaultAttributes) {
+            if (instance.attribute().equals(attribute)) {
+                //noinspection unchecked
+                return (T) instance.value();
+            }
+        }
+        return attribute.defaultValue();
+    }
+
+    @Override
+    public Set<SpellAttributeInstance<?>> getAttributeValues() {
+        return defaultAttributes;
     }
 }

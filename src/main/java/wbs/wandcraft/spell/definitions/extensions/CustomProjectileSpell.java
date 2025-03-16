@@ -2,22 +2,22 @@ package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import org.bukkit.util.RayTraceResult;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
-import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.event.SpellTriggeredEvent;
+import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSpell, ParticleSpell {
-    SpellTriggeredEvent<RayTraceResult> ON_HIT_TRIGGER = new SpellTriggeredEvent<>(WbsWandcraft.getKey("on_hit"), RayTraceResult.class);
-    SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0, 0);
-    SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0, 4);
+    SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0, 0)
+            .setShowAttribute(value -> value > 0);
+    SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0, 3)
+            .setShowAttribute(value -> value > 0)
+            .setFormatter(value -> value + " blocks/second²");
     SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size", 0.01, 0.3);
 
     default void setupCustomProjectile() {
@@ -57,7 +57,7 @@ public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSp
         configure(projectile, context);
 
         projectile.setOnHit(result -> {
-            instance.getEffects(ON_HIT_TRIGGER).forEach(effect -> effect.run(instance, result));
+            instance.getEffects(SpellTriggeredEvents.ON_HIT_TRIGGER).forEach(effect -> effect.run(instance, result));
             return true;
         });
 

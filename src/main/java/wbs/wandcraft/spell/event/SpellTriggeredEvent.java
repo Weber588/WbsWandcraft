@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 
+import java.util.function.Consumer;
+
 @NullMarked
 public class SpellTriggeredEvent<T> implements Keyed {
     private final NamespacedKey key;
@@ -30,5 +32,13 @@ public class SpellTriggeredEvent<T> implements Keyed {
         SpellEffectDefinition<T> definition = SpellEffectDefinition.anonymous(this, consumer);
 
         return new SpellEffectInstance<>(definition);
+    }
+
+    public void registerAnonymous(SpellInstance instance, Consumer<T> eventConsumer) {
+        instance.registerEffect(
+                getAnonymousInstance((ignoredInstance, effect, result) ->
+                        eventConsumer.accept(result)
+                )
+        );
     }
 }

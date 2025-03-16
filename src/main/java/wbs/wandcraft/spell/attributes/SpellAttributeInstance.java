@@ -55,14 +55,23 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
 
     @Override
     public Component toComponent() {
-        return attribute().displayName().color(NamedTextColor.GOLD)
+        return attribute.displayName().color(NamedTextColor.GOLD)
                 .append(Component.text(": "))
                 // Use implicit toString for value(), as it may be null
-                .append(Component.text(value() + "").color(NamedTextColor.AQUA));
+                .append(Component.text(attribute.formatValue(value)).color(NamedTextColor.AQUA));
     }
 
     @Override
     public int compareTo(@NotNull SpellAttributeInstance<?> other) {
         return other.attribute().compareTo(attribute);
+    }
+
+    public boolean shouldShow() {
+        return attribute.shouldShow(value);
+    }
+
+    @Override
+    protected SpellAttributeInstance<T> clone() {
+        return new SpellAttributeInstance<>(attribute, value);
     }
 }

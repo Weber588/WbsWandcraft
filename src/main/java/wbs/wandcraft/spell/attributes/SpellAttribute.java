@@ -1,6 +1,5 @@
 package wbs.wandcraft.spell.attributes;
 
-import com.mojang.brigadier.arguments.ArgumentType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -8,7 +7,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
-import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WandcraftRegistries;
@@ -28,18 +26,17 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     private final NamespacedKey key;
     @NotNull
     private final PersistentDataType<?, T> type;
-    @NotNull
-    private final ArgumentType<T> argumentType;
     private final T defaultValue;
     @NotNull
     private final Function<String, T> parse;
     @NotNull
     private final Collection<T> suggestions = new HashSet<>();
+    private Function<T, Boolean> shouldShow = value -> true;
+    private Function<T, String> formatter = Objects::toString;
 
-    public SpellAttribute(@NotNull NamespacedKey key, @NotNull PersistentDataType<?, T> type, @NotNull ArgumentType<T> argumentType, T defaultValue, @NotNull Function<String, T> parse) {
+    public SpellAttribute(@NotNull NamespacedKey key, @NotNull PersistentDataType<?, T> type, T defaultValue, @NotNull Function<String, T> parse) {
         this.key = key;
         this.type = type;
-        this.argumentType = argumentType;
         this.defaultValue = defaultValue;
         this.parse = parse;
         this.suggestions.add(defaultValue);
@@ -47,8 +44,8 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         WandcraftRegistries.ATTRIBUTES.register(this);
     }
 
-    public SpellAttribute(@Subst("key") String nativeKey, PersistentDataType<?, T> type, ArgumentType<T> argumentType, T defaultValue, @NotNull Function<String, T> parse) {
-        this(WbsWandcraft.getKey(nativeKey), type, argumentType, defaultValue, parse);
+    public SpellAttribute(@Subst("key") String nativeKey, PersistentDataType<?, T> type, T defaultValue, @NotNull Function<String, T> parse) {
+        this(WbsWandcraft.getKey(nativeKey), type, defaultValue, parse);
     }
 
     @SafeVarargs
@@ -72,10 +69,6 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         return this;
     }
 
-    public SpellAttributeInstance<T> getInstance() {
-        return getInstance(defaultValue);
-    }
-
     public SpellAttributeInstance<T> getInstance(@NotNull T value) {
         return new SpellAttributeInstance<>(this, value);
     }
@@ -96,12 +89,29 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         return type;
     }
 
-    public @NotNull ArgumentType<T> getArgumentType() {
-        return argumentType;
-    }
-
     public T defaultValue() {
         return defaultValue;
+    }
+
+    public SpellAttribute<T> setShowAttribute(Function<T, Boolean> shouldShow) {
+        this.shouldShow = shouldShow;
+        return this;
+    }
+
+    public boolean shouldShow(T value) {
+        return shouldShow.apply(value);
+    }
+
+    public SpellAttribute<T> setFormatter(Function<T, String> formatter) {
+        this.formatter = formatter;
+        return this;
+    }
+
+    public String formatValue(T value) {
+        if (value == null) {
+            return "N/A";
+        }
+        return formatter.apply(value);
     }
 
     public SpellAttributeModifier<T> createModifier(PersistentDataContainer container) {
@@ -111,16 +121,6 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         T value = WbsPersistentDataType.getOrDefault(container, SpellAttributeModifier.MODIFIER_VALUE, type(), defaultValue);
 
         return new SpellAttributeModifier<>(this, type, value);
-    }
-
-    public WbsSimpleArgument<T> getArg() {
-        //noinspection unchecked
-        return new WbsSimpleArgument<>(
-                getKey().asString(),
-                getArgumentType(),
-                defaultValue(),
-                (Class<T>) defaultValue().getClass()
-        ).setTooltip(getKey().value());
     }
 
     public Component displayName() {
@@ -158,5 +158,9 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     @Override
     public int hashCode() {
         return Objects.hashCode(key);
+    }
+
+    public SpellAttributeInstance<T> defaultInstance() {
+        return getInstance(defaultValue);
     }
 }
