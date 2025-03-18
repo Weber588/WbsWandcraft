@@ -11,6 +11,7 @@ import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
 import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
 
+// TODO: Add directional spell to allow inaccuracy
 public class BlinkSpell extends SpellDefinition implements CastableSpell, RangedSpell, SpeedSpell {
     public BlinkSpell() {
         super("blink");

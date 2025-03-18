@@ -45,7 +45,13 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
 
     public void cast(Player player) {
         if (definition instanceof CastableSpell castable) {
-            castable.cast(new CastContext(player, this));
+            castable.cast(new CastContext(player, this, player.getEyeLocation(), null));
+        }
+    }
+
+    public void cast(CastContext context) {
+        if (definition instanceof CastableSpell castable) {
+            castable.cast(context);
         }
     }
 

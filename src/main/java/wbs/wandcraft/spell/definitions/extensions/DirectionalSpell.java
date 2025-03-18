@@ -2,7 +2,6 @@ package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.util.Vector;
 import wbs.utils.util.WbsMath;
-import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.AbstractSpellDefinition;
@@ -16,7 +15,7 @@ public interface DirectionalSpell extends AbstractSpellDefinition {
     }
 
     default Vector getDirection(CastContext context) {
-        Vector direction = WbsEntityUtil.getFacingVector(context.player());
+        Vector direction = context.source().getDirection();
         if (direction.lengthSquared() == 0) {
             return direction;
         }
