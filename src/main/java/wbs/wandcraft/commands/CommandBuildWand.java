@@ -4,6 +4,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import net.kyori.adventure.key.Key;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -16,6 +18,8 @@ import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.WandInventoryType;
+
+import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
 public class CommandBuildWand extends WbsSubcommand {
@@ -33,6 +37,17 @@ public class CommandBuildWand extends WbsSubcommand {
     @Override
     protected int onSimpleArgumentCallback(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
         NamespacedKey inventoryTypeKey = configuredArgumentMap.get(INVENTORY_TYPE);
+
+        if (inventoryTypeKey == null) {
+            plugin.sendMessage("Choose an inventory type: "
+                            + WandcraftRegistries.WAND_INVENTORY_TYPES.stream()
+                            .map(Keyed::key)
+                            .map(Key::asString)
+                            .collect(Collectors.joining(", ")),
+                    context.getSource().getSender());
+            return Command.SINGLE_SUCCESS;
+        }
+
         WandInventoryType inventoryType = WandcraftRegistries.WAND_INVENTORY_TYPES.get(inventoryTypeKey);
 
         if (inventoryType == null) {

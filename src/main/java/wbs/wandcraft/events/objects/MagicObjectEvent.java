@@ -7,7 +7,7 @@ public abstract class MagicObjectEvent extends SpellEvent {
     protected final MagicObject magicObject;
 
     public MagicObjectEvent(MagicObject magicObject) {
-        super(magicObject.caster, magicObject.castingSpell);
+        super(magicObject.caster, magicObject.castContext);
         this.magicObject = magicObject;
     }
 

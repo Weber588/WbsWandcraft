@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastContext;
 
 import java.util.function.Consumer;
 
@@ -28,17 +29,21 @@ public class SpellTriggeredEvent<T> implements Keyed {
         return eventClass;
     }
 
-    public SpellEffectInstance<T> getAnonymousInstance(TriConsumer<SpellInstance, SpellEffectInstance<T>, T> consumer) {
-        SpellEffectDefinition<T> definition = SpellEffectDefinition.anonymous(this, consumer);
+    public SpellEffectInstance<T> getAnonymousInstance(TriConsumer<CastContext, SpellEffectInstance<T>, T> consumer) {
+        SpellEffectDefinition<T> definition = SpellEffectDefinition.anonymous(getEventClass(), consumer);
 
         return new SpellEffectInstance<>(definition);
     }
 
     public void registerAnonymous(SpellInstance instance, Consumer<T> eventConsumer) {
         instance.registerEffect(
-                getAnonymousInstance((ignoredInstance, effect, result) ->
+                getAnonymousInstance((context, effect, result) ->
                         eventConsumer.accept(result)
                 )
         );
+    }
+
+    public SpellEffectDefinition.SupportedEvent<T, T> getSupportedEvent() {
+        return new SpellEffectDefinition.SupportedEvent<>(getEventClass(), a -> a);
     }
 }

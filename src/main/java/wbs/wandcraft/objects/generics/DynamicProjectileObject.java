@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsSoundGroup;
-import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastContext;
 
 import java.util.function.Predicate;
 
@@ -17,8 +17,8 @@ public class DynamicProjectileObject extends DynamicMagicObject {
     @NotNull
     private Runnable maxDistanceReached = () -> {};
 
-    public DynamicProjectileObject(Location location, Player caster, SpellInstance castingSpell) {
-        super(location, caster, castingSpell);
+    public DynamicProjectileObject(Location location, Player caster, CastContext context) {
+        super(location, caster, context);
 
         setEntityPredicate(Predicate.not(caster::equals));
         setOnHitBlock((result) -> true);

@@ -17,8 +17,14 @@ import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
 import wbs.wandcraft.ItemDecorator;
+import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.attributes.*;
+import wbs.wandcraft.spell.attributes.Attributable;
+import wbs.wandcraft.spell.attributes.LongSpellAttribute;
+import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
+import wbs.wandcraft.spell.attributes.modifier.AttributeAddModifierType;
+import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.modifier.SpellModifier;
@@ -33,11 +39,6 @@ public class Wand implements Attributable {
 
     public static final SpellAttribute<Long> COOLDOWN = new LongSpellAttribute("wand_cooldown", 0, 40)
             .setFormatter(cooldown -> cooldown / 20.0 + " seconds");
-    public static final SpellAttribute<Integer> CAST_DELAY = new IntegerSpellAttribute("cast_delay", 0, 10)
-            .setFormatter(delay -> delay / 20.0 + " seconds");
-
-
-    public static final SpellAttribute<Double> ACCURACY = new DoubleSpellAttribute("accuracy", 0, 100, 10);
 
     @Nullable
     public static Wand getIfValid(ItemStack item) {
@@ -60,11 +61,18 @@ public class Wand implements Attributable {
     private final Table<Integer, Integer, ItemStack> items = HashBasedTable.create();
     private final WandInventoryType type;
     private final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
+    private final Set<SpellAttributeModifier<?>> attributeModifiers = new HashSet<>();
 
     public Wand(WandInventoryType type) {
         this.type = type;
         addAttribute(COOLDOWN.defaultInstance());
-        addAttribute(CAST_DELAY.defaultInstance());
+
+        // TODO: Move these defaults to config
+        SpellAttributeModifier<Integer> defaultDelayModifier = new SpellAttributeModifier<>(CastableSpell.DELAY,
+                WandcraftRegistries.MODIFIER_TYPES.get(AttributeAddModifierType.KEY),
+                10);
+
+        attributeModifiers.add(defaultDelayModifier);
     }
 
     public Set<SpellAttributeInstance<?>> getAttributeValues() {
@@ -86,7 +94,6 @@ public class Wand implements Attributable {
                     spellList.add(spell);
                     additionalCooldown += spell.getAttribute(CastableSpell.COOLDOWN) * 1000 / 20;
                     additionalCooldown += spell.getAttribute(CastableSpell.DELAY) * 1000 / 20;
-                    additionalCooldown += getAttribute(CAST_DELAY) * 1000 / 20;
                 }
             }
 
@@ -103,7 +110,7 @@ public class Wand implements Attributable {
 
             enqueueCast(player, spellList, item);
             updateLastUsed(wandContainer);
-            // TODO: player.setCooldown(item, additionalCooldown);
+            player.setCooldown(item, additionalCooldown * 20 / 1000);
         });
     }
 
@@ -125,7 +132,7 @@ public class Wand implements Attributable {
             public void run() {
                 enqueueCast(player, instances, item);
             }
-        }.runTaskLater(WbsWandcraft.getInstance(), toCast.getAttribute(CastableSpell.DELAY) + getAttribute(CAST_DELAY));
+        }.runTaskLater(WbsWandcraft.getInstance(), toCast.getAttribute(CastableSpell.DELAY));
     }
 
     public @NotNull WandHolder getInventory(ItemStack item) {
@@ -181,12 +188,18 @@ public class Wand implements Attributable {
     public Table<Integer, Integer, SpellInstance> getModifiedSpellTable() {
         Table<Integer, Integer, SpellInstance> spellTable = getRawSpellTable();
 
+        // Apply wand modifiers first
+        spellTable.rowMap().forEach((column, columnMap) -> {
+            columnMap.values().forEach(instance -> attributeModifiers.forEach(modifier -> modifier.modify(instance)));
+        });
+
         Table<Integer, Integer, SpellModifier> modifierTable = getModifierTable();
         for (int row = 0; row < type.getRows(); row++) {
             Map<Integer, SpellModifier> rowMap = modifierTable.row(row);
 
             int finalRow = row;
             rowMap.forEach((column, modifier) -> modifier.modify(spellTable, finalRow, column, type));
+
         }
 
         return spellTable;
@@ -228,6 +241,18 @@ public class Wand implements Attributable {
         lore.add(Component.text("Attributes:").color(NamedTextColor.AQUA));
         lore.addAll(Attributable.super.getLore());
 
+        if (!attributeModifiers.isEmpty()) {
+            lore.add(Component.text("Modifiers:").color(NamedTextColor.AQUA));
+
+            // TODO: Unify this code with code from SpellModifier
+            lore.addAll(attributeModifiers.stream()
+                    .map(modifier ->
+                            (Component) Component.text("  - ").color(NamedTextColor.GOLD)
+                                    .append(modifier.toComponent())
+                    )
+                    .toList());
+        }
+
         Table<Integer, Integer, SpellInstance> rawSpellTable = getRawSpellTable();
         if (rawSpellTable.isEmpty()) {
             lore.add(Component.text("Spells:").color(NamedTextColor.AQUA).append(Component.text(" None").color(NamedTextColor.GOLD)));
@@ -252,5 +277,11 @@ public class Wand implements Attributable {
             meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.WAND, this);
             ItemDecorator.decorate(this, meta);
         });
+    }
+
+    public void setModifier(SpellAttributeModifier<?> updatedModifier) {
+        attributeModifiers.removeIf(modifier -> modifier.attribute().equals(updatedModifier.attribute()));
+
+        attributeModifiers.add(updatedModifier);
     }
 }

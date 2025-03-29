@@ -25,7 +25,7 @@ public class AttributeAddModifierType implements AttributeModifierType {
 
     @Override
     public <T> Component asComponent(SpellAttribute<T> attribute, T modifierValue) {
-        return attribute.displayName().append(Component.text(" +" + modifierValue.toString()));
+        return attribute.displayName().append(Component.text(" +" + attribute.formatValue(modifierValue)));
     }
 
     @Override

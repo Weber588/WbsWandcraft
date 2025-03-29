@@ -10,15 +10,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.exceptions.MagicObjectExistsException;
+import wbs.wandcraft.spell.definitions.extensions.CastContext;
 
 import java.util.function.Predicate;
 
 public abstract class MissileObject extends KinematicMagicObject {
 
-	public MissileObject(Location location, Player caster, SpellInstance castingSpell) {
-		super(location, caster, castingSpell);
+	public MissileObject(Location location, Player caster, CastContext context) {
+		super(location, caster, context);
 
 		predicate = caster::equals;
 	}

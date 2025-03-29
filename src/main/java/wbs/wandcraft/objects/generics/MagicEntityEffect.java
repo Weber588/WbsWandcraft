@@ -13,6 +13,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
 import wbs.wandcraft.objects.colliders.Collision;
+import wbs.wandcraft.spell.definitions.extensions.CastContext;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -42,7 +43,7 @@ public class MagicEntityEffect extends KinematicMagicObject {
     public static Collection<MagicEntityEffect> getEffects(UUID uuid, Class<? extends SpellInstance> clazz) {
         return entityEffects.get(uuid).stream()
                 .filter(effect ->
-                        clazz.isAssignableFrom(effect.getSpell().getClass()))
+                        clazz.isAssignableFrom(effect.getContext().getClass()))
                 .collect(Collectors.toList());
     }
 
@@ -55,7 +56,7 @@ public class MagicEntityEffect extends KinematicMagicObject {
     public static MagicEntityEffect getEffectBySpell(UUID uuid, Class<? extends SpellInstance> clazz) {
         return entityEffects.get(uuid).stream()
                 .filter(check ->
-                        clazz.isAssignableFrom(check.getSpell().getClass()))
+                        clazz.isAssignableFrom(check.getContext().getClass()))
                 .findAny()
                 .orElse(null);
     }
@@ -70,14 +71,14 @@ public class MagicEntityEffect extends KinematicMagicObject {
         MagicEntityEffect effect = getEffectBySpell(uuid, clazz);
 
         if (effect != null) {
-            return clazz.cast(effect.getSpell());
+            return clazz.cast(effect.getContext());
         }
 
         return null;
     }
 
-    public MagicEntityEffect(Entity entity, Player caster, SpellInstance castingSpell) {
-        super(entity.getLocation(), caster, castingSpell);
+    public MagicEntityEffect(Entity entity, Player caster, CastContext context) {
+        super(entity.getLocation(), caster, context);
         this.entity = entity;
         entityEffects.put(entity.getUniqueId(), this);
     }

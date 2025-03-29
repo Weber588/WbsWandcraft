@@ -11,12 +11,13 @@ import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.events.objects.MagicObjectSpawnEvent;
 import wbs.wandcraft.exceptions.MagicObjectExistsException;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.PersistenceLevel;
 import wbs.wandcraft.objects.colliders.Collider;
+import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 import java.util.Objects;
 
@@ -24,12 +25,12 @@ public abstract class MagicObject {
 	public Location spawnLocation; // The spawn location; should never change. To move, use DynamicMagicObject
 	public Player caster;
 	@NotNull
-	public SpellInstance castingSpell;
+	public CastContext castContext;
 	
-	public MagicObject(Location location, Player caster, @NotNull SpellInstance castingSpell) {
+	public MagicObject(Location location, Player caster, @NotNull CastContext castContext) {
 		this.spawnLocation = location;
 		this.caster = caster;
-		this.castingSpell = castingSpell;
+		this.castContext = castContext;
 		world = Objects.requireNonNull(location.getWorld());
 
 		MagicObjectManager.registerMagicObject(this);
@@ -88,6 +89,10 @@ public abstract class MagicObject {
 
 				if (!cancel && effects != null) {
 					effects.play(getLocation());
+				}
+
+				if (!cancel) {
+					castContext.runEffects(SpellTriggeredEvents.OBJECT_TICK_TRIGGER, getLocation());
 				}
 
 				age++;
@@ -244,8 +249,8 @@ public abstract class MagicObject {
 	}
 
 	@NotNull
-	public SpellInstance getSpell() {
-		return castingSpell;
+	public CastContext getContext() {
+		return castContext;
 	}
 
 	public Player getCaster() {

@@ -5,17 +5,25 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.attributes.Attributable;
+import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastContext;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @NullMarked
-public abstract class SpellEffectDefinition<T> implements Keyed, ComponentRepresentable {
-    public static <T> SpellEffectDefinition<T> anonymous(SpellTriggeredEvent<T> trigger, TriConsumer<SpellInstance, SpellEffectInstance<T>, T> consumer) {
-        return new SpellEffectDefinition<>(trigger, WbsWandcraft.getKey("anonymous")) {
+public abstract class SpellEffectDefinition<T> implements Keyed, ComponentRepresentable, Attributable {
+    public static <T> SpellEffectDefinition<T> anonymous(Class<T> eventClass, TriConsumer<CastContext, SpellEffectInstance<T>, T> consumer) {
+        return new SpellEffectDefinition<>(eventClass, WbsWandcraft.getKey("anonymous")) {
             @Override
-            public void run(SpellInstance instance, SpellEffectInstance<T> effectInstance, T event) {
-                consumer.accept(instance, effectInstance, event);
+            public void run(CastContext context, SpellEffectInstance<T> effectInstance, T event) {
+                consumer.accept(context, effectInstance, event);
             }
 
             @Override
@@ -25,21 +33,75 @@ public abstract class SpellEffectDefinition<T> implements Keyed, ComponentRepres
         };
     }
 
-    private final SpellTriggeredEvent<T> trigger;
+    private final Class<T> eventClass;
+
     private final NamespacedKey key;
+    private final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
+    protected final Set<SupportedEvent<T, ?>> supportedEvents = new HashSet<>();
 
-    public SpellEffectDefinition(SpellTriggeredEvent<T> trigger, NamespacedKey key) {
-        this.trigger = trigger;
+    public SpellEffectDefinition(Class<T> eventClass, NamespacedKey key) {
+        this.eventClass = eventClass;
         this.key = key;
+
+        supportedEvents.add(new SupportedEvent<>(eventClass, a -> a));
     }
 
-    public SpellTriggeredEvent<T> getTrigger() {
-        return trigger;
+    SpellEffectDefinition(Class<T> eventClass, String keyString) {
+        this(eventClass, WbsWandcraft.getKey(keyString));
     }
 
-    public abstract void run(SpellInstance instance, SpellEffectInstance<T> effectInstance, T event);
+    public Class<T> getEventClass() {
+        return eventClass;
+    }
+
+    @Nullable
+    public <O> Function<O, T> getSupportFor(SpellTriggeredEvent<O> event) {
+        //noinspection unchecked
+        return (Function<O, T>) supportedEvents.stream()
+                .filter(support -> support.eventClass.equals(event.getEventClass()))
+                .findFirst()
+                .map(SupportedEvent::function)
+                .orElse(null);
+    }
+
+    public void run(CastContext context, SpellEffectInstance<T> effectInstance, Supplier<T> event) {
+        run(context, effectInstance, event.get());
+    }
+    public abstract void run(CastContext context, SpellEffectInstance<T> effectInstance, T event);
 
     public NamespacedKey getKey() {
         return key;
+    }
+
+    @Override
+    public Set<SpellAttributeInstance<?>> getAttributeValues() {
+        return attributeValues;
+    }
+
+    public static final class SupportedEvent<T, O> {
+        private final Class<O> eventClass;
+        private final Function<O, T> function;
+
+        public SupportedEvent(Class<O> eventClass, Function<O, T> function) {
+            this.eventClass = eventClass;
+            this.function = function;
+        }
+
+        public Class<O> eventClass() {
+            return eventClass;
+        }
+
+        public T toEventClass(O other) {
+            return function.apply(other);
+        }
+
+
+        public T transform(O other) {
+            return function.apply(other);
+        }
+
+        public Function<O, T> function() {
+            return function;
+        }
     }
 }

@@ -3,6 +3,7 @@ package wbs.wandcraft.spell.attributes.modifier;
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
@@ -17,16 +18,16 @@ public class SpellAttributeModifier<T> implements ComponentRepresentable {
     public static final NamespacedKey MODIFIER_VALUE = WbsWandcraft.getKey("modifier_value");
 
     private final SpellAttribute<T> attribute;
-    private final AttributeModifierType type;
+    private final @NotNull AttributeModifierType type;
     private T modifierValue;
 
-    public SpellAttributeModifier(SpellAttribute<T> attribute, AttributeModifierType type, T modifierValue) {
+    public SpellAttributeModifier(SpellAttribute<T> attribute, @NotNull AttributeModifierType type, T modifierValue) {
         this.attribute = attribute;
         this.type = type;
         this.modifierValue = modifierValue;
     }
 
-    public SpellAttributeModifier(SpellAttributeInstance<T> attributeInstance, AttributeModifierType type) {
+    public SpellAttributeModifier(SpellAttributeInstance<T> attributeInstance, @NotNull AttributeModifierType type) {
         this(attributeInstance.attribute(), type, attributeInstance.value());
     }
 

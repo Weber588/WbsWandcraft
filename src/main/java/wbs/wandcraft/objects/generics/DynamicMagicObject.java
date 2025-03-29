@@ -11,11 +11,11 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsMath;
-import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.events.objects.DynamicObjectBounceEvent;
 import wbs.wandcraft.events.objects.DynamicObjectPhysicsEvent;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
 import wbs.wandcraft.objects.colliders.Collider;
+import wbs.wandcraft.spell.definitions.extensions.CastContext;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -63,8 +63,8 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     private Function<RayTraceResult, Boolean> onHitBlock = (result) -> false;
     private Function<RayTraceResult, Boolean> onHitEntity = (result) -> false;
 
-    public DynamicMagicObject(Location location, Player caster, SpellInstance castingSpell) {
-        super(location, caster, castingSpell);
+    public DynamicMagicObject(Location location, Player caster, CastContext context) {
+        super(location, caster, context);
     }
 
     @Override

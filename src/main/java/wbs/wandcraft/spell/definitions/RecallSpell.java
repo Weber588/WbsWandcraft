@@ -94,7 +94,7 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
 
         int duration = instance.getAttribute(DURATION);
 
-        RecallPoint newPoint = new RecallPoint(spawnLoc, player, instance, duration);
+        RecallPoint newPoint = new RecallPoint(spawnLoc, player, context, duration);
         newPoint.spawn();
 
         if (duration > 0) {
@@ -109,8 +109,8 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
         private final NormalParticleEffect effect;
         private final RingParticleEffect ringEffect;
 
-        public RecallPoint(Location location, Player player, SpellInstance castingSpell, int duration) {
-            super(location, player, castingSpell);
+        public RecallPoint(Location location, Player player, CastContext castContext, int duration) {
+            super(location, player, castContext);
             this.duration = duration;
 
             effect = new NormalParticleEffect().setXYZ(0.05);
@@ -123,14 +123,14 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
 
         @Override
         protected void onRemove() {
-            ((RecallSpell) castingSpell.getDefinition()).recall(caster, this);
+            ((RecallSpell) castContext.instance().getDefinition()).recall(caster, this);
         }
 
         @Override
         protected boolean tick() {
             age++;
             if (duration > 0 && age > duration) {
-                ((RecallSpell) castingSpell.getDefinition()).recall(caster, this);
+                ((RecallSpell) castContext.instance().getDefinition()).recall(caster, this);
                 return true;
             }
             effect.play(Particle.WITCH, getLocation());

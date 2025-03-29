@@ -2,18 +2,18 @@ package wbs.wandcraft.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastContext;
 
 public abstract class SpellEvent extends Event {
 	private final Player caster;
-	private final SpellInstance spell;
+	private final CastContext spell;
 
-	protected SpellEvent(Player caster, SpellInstance spell) {
+	protected SpellEvent(Player caster, CastContext spell) {
 		this.caster = caster;
 		this.spell = spell;
 	}
 	
-	public SpellInstance getSpell() {
+	public CastContext getSpell() {
 		return spell;
 	}
 

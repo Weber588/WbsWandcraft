@@ -1,6 +1,8 @@
 package wbs.wandcraft.spell.definitions;
 
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
+import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.utils.util.providers.NumProvider;
@@ -19,6 +21,8 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
         addAttribute(SIZE, 0.0);
         addAttribute(GRAVITY, 0.0);
         addAttribute(ACCURACY, 100.0);
+        addAttribute(RANGE, 50.0);
+        addAttribute(SPEED, 2.0);
     }
 
     @Override
@@ -34,13 +38,19 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
 
         effect.setRadius(0.5);
         effect.setAmount(3);
-        CycleGenerator cycleGenerator = new CycleGenerator(0, 360, 90, 0);
+        CycleGenerator cycleGenerator = new CycleGenerator(0, 360, instance.getAttribute(SPEED) * 30, 0);
         effect.setRotation(new NumProvider(cycleGenerator));
         effect.setAbout(new VectorProvider(VectorGenerator.buildAnonymous(projectile::getVelocity)));
-        projectile.setParticle(new WbsParticleGroup().addEffect(effect, instance.getAttribute(PARTICLE, getDefaultParticle())));
+
+        Particle particle = instance.getAttribute(PARTICLE, getDefaultParticle());
+
+        projectile.setParticle(new WbsParticleGroup().addEffect(effect, particle));
+        projectile.setEndEffects(new WbsParticleGroup().addEffect(new NormalParticleEffect().setXYZ(0).setSpeed(0.18).setAmount(50), particle));
+
+        Player player = context.player();
 
         SpellTriggeredEvents.ON_HIT_TRIGGER.registerAnonymous(instance, (result) -> {
-            context.player().teleport(result.getHitPosition().toLocation(projectile.world));
+            player.teleport(result.getHitPosition().toLocation(projectile.world).setDirection(projectile.getVelocity()));
         });
     }
 

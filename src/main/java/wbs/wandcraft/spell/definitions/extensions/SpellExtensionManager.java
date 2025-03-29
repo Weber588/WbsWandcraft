@@ -19,6 +19,7 @@ public class SpellExtensionManager {
         registerSpellExtension(ParticleSpell.class, ParticleSpell::setupParticles);
         registerSpellExtension(SpeedSpell.class, SpeedSpell::setupSpeed);
         registerSpellExtension(CustomProjectileSpell.class, CustomProjectileSpell::setupCustomProjectile);
+        registerSpellExtension(RadiusedSpell.class, RadiusedSpell::setupRadiused);
     }
 
     public static <T extends AbstractSpellDefinition> void registerSpellExtension(Class<T> clazz, Consumer<T> setupMethod) {

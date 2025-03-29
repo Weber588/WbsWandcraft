@@ -63,13 +63,12 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
         triggeredEffects.add(spellEffect);
     }
 
-    public <T> Set<SpellEffectInstance<T>> getEffects(SpellTriggeredEvent<T> event) {
-        Set<SpellEffectInstance<T>> effects = new HashSet<>();
+    public <T> Set<SpellEffectInstance<?>> getEffects(SpellTriggeredEvent<T> event) {
+        Set<SpellEffectInstance<?>> effects = new HashSet<>();
 
         for (SpellEffectInstance<?> effect : triggeredEffects) {
-            if (effect.getDefinition().getTrigger().equals(event)) {
-                //noinspection unchecked
-                effects.add((SpellEffectInstance<T>) effect);
+            if (effect.getDefinition().getSupportFor(event) != null) {
+                effects.add(effect);
             }
         }
 

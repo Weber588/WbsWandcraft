@@ -18,7 +18,8 @@ public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSp
     SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0, 3)
             .setShowAttribute(value -> value > 0)
             .setFormatter(value -> value + " blocks/second²");
-    SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size", 0.01, 0.3);
+    SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size", 0.01, 0.3)
+            .setFormatter(value -> value + " blocks");
 
     default void setupCustomProjectile() {
         addAttribute(BOUNCES);
@@ -38,7 +39,7 @@ public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSp
         double hitboxSize = instance.getAttribute(SIZE);
         int bounces = instance.getAttribute(BOUNCES);
 
-        DynamicProjectileObject projectile = new DynamicProjectileObject(player.getEyeLocation(), player, instance);
+        DynamicProjectileObject projectile = new DynamicProjectileObject(player.getEyeLocation(), player, context);
         WbsParticleGroup tickEffects = new WbsParticleGroup();
 
         projectile.setHitBoxSize(hitboxSize);
@@ -57,7 +58,7 @@ public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSp
         configure(projectile, context);
 
         projectile.setOnHit(result -> {
-            instance.getEffects(SpellTriggeredEvents.ON_HIT_TRIGGER).forEach(effect -> effect.run(instance, result));
+            context.runEffects(SpellTriggeredEvents.ON_HIT_TRIGGER, result);
             return true;
         });
 

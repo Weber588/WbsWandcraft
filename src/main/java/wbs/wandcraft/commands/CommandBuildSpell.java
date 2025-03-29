@@ -4,6 +4,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import net.kyori.adventure.key.Key;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -17,6 +19,8 @@ import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+
+import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
 public class CommandBuildSpell extends WbsSubcommand {
@@ -34,6 +38,17 @@ public class CommandBuildSpell extends WbsSubcommand {
     @Override
     protected int onSimpleArgumentCallback(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
         NamespacedKey definitionKey = configuredArgumentMap.get(DEFINITION);
+
+        if (definitionKey == null) {
+            plugin.sendMessage("Choose a spell: "
+                            + WandcraftRegistries.SPELLS.stream()
+                            .map(Keyed::key)
+                            .map(Key::asString)
+                            .collect(Collectors.joining(", ")),
+                    context.getSource().getSender());
+            return Command.SINGLE_SUCCESS;
+        }
+
         SpellDefinition spell = WandcraftRegistries.SPELLS.get(definitionKey);
 
         if (spell == null) {

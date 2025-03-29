@@ -24,7 +24,7 @@ public class AttributeMultiplyModifierType implements AttributeModifierType {
 
     @Override
     public <T> Component asComponent(SpellAttribute<T> attribute, T modifierValue) {
-        return attribute.displayName().append(Component.text(" x" + modifierValue.toString()));
+        return attribute.displayName().append(Component.text(" x" + attribute.formatValue(modifierValue)));
     }
 
     @Override

@@ -15,7 +15,7 @@ public interface DirectionalSpell extends AbstractSpellDefinition {
     }
 
     default Vector getDirection(CastContext context) {
-        Vector direction = context.source().getDirection();
+        Vector direction = context.location().getDirection();
         if (direction.lengthSquared() == 0) {
             return direction;
         }

@@ -65,7 +65,7 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
                     player.damage(damage, target);
                 }
                 RayTraceResult result = new RayTraceResult(WbsEntityUtil.getMiddleLocation(target).toVector(), target);
-                instance.getEffects(SpellTriggeredEvents.ON_HIT_TRIGGER).forEach(effect -> effect.run(instance, result));
+                context.runEffects(SpellTriggeredEvents.ON_HIT_TRIGGER, result);
             }
             alreadyHit.addAll(hit);
             world.spawnParticle(display, currentPos, 2, spread, spread, spread, 0, null, true);

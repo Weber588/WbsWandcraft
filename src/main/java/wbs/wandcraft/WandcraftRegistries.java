@@ -7,6 +7,7 @@ import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.AttributeMultiplyModifierType;
 import wbs.wandcraft.spell.attributes.modifier.AttributeSetModifierType;
 import wbs.wandcraft.spell.definitions.*;
+import wbs.wandcraft.spell.event.ForcePullEffect;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
 import wbs.wandcraft.wand.WandInventoryType;
 
@@ -18,7 +19,7 @@ public class WandcraftRegistries {
             new AttributeAddModifierType()
     );
     public static final WbsRegistry<SpellEffectDefinition<?>> EFFECTS = new WbsRegistry<>(
-
+            new ForcePullEffect()
     );
     public static final WbsRegistry<WandInventoryType> WAND_INVENTORY_TYPES = WandInventoryType.WAND_INVENTORY_TYPES;
     public static final WbsRegistry<SpellDefinition> SPELLS = new WbsRegistry<>(
@@ -29,6 +30,7 @@ public class WandcraftRegistries {
             new PrismaticRaySpell(),
             new EldritchBlastSpell(),
             new WarpSpell(),
-            new RecallSpell()
+            new RecallSpell(),
+            new AntiMagicShellSpell()
     );
 }

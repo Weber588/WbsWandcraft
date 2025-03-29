@@ -4,17 +4,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
 import wbs.wandcraft.objects.colliders.Collider;
 import wbs.wandcraft.objects.colliders.Collision;
+import wbs.wandcraft.spell.definitions.extensions.CastContext;
 
 public abstract class KinematicMagicObject extends MagicObject {
 	
 	public Location location; // The location the object is currently at
 
-	public KinematicMagicObject(Location location, Player caster, SpellInstance castingSpell) {
-		super(location, caster, castingSpell);
+	public KinematicMagicObject(Location location, Player caster, CastContext context) {
+		super(location, caster, context);
 		this.location = location;
 	}
 	
