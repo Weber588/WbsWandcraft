@@ -4,12 +4,12 @@ import org.bukkit.Particle;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEnums;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
-import wbs.wandcraft.spell.definitions.AbstractSpellDefinition;
+import wbs.wandcraft.spell.definitions.ISpellDefinition;
 import wbs.wandcraft.util.CustomPersistentDataTypes;
 
 import java.util.Objects;
 
-public interface ParticleSpell extends AbstractSpellDefinition {
+public interface ParticleSpell extends ISpellDefinition {
     SpellAttribute<@NotNull Particle> PARTICLE = new SpellAttribute<>("particle_effect",
             new CustomPersistentDataTypes.PersistentEnumType<>(Particle.class),
             null,

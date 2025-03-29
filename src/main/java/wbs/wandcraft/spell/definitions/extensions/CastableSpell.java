@@ -2,9 +2,9 @@ package wbs.wandcraft.spell.definitions.extensions;
 
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
-import wbs.wandcraft.spell.definitions.AbstractSpellDefinition;
+import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
-public interface CastableSpell extends AbstractSpellDefinition {
+public interface CastableSpell extends ISpellDefinition {
     SpellAttribute<Integer> DELAY = new IntegerSpellAttribute("cast_delay", 0, 4)
             .setFormatter(delay -> delay / 20.0 + " seconds");
     SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("cooldown", 0, 5)

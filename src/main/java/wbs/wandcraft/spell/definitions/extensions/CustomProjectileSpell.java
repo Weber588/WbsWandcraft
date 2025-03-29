@@ -12,7 +12,7 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
-public interface CustomProjectileSpell extends AbstractProjectileSpell, RangedSpell, ParticleSpell {
+public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, ParticleSpell {
     SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0, 0)
             .setShowAttribute(value -> value > 0);
     SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0, 3)

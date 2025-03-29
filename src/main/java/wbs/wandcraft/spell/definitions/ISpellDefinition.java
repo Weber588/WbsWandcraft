@@ -6,7 +6,7 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 import java.util.Collection;
 
-public interface AbstractSpellDefinition extends Keyed {
+public interface ISpellDefinition extends Keyed {
     void addAttribute(SpellAttribute<?> attribute);
 
     Collection<SpellAttribute<?>> getAttributes();

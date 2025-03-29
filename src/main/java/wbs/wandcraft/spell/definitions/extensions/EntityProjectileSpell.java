@@ -5,7 +5,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import wbs.utils.util.WbsMath;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 
-public interface EntityProjectileSpell<T extends Projectile> extends AbstractProjectileSpell {
+public interface EntityProjectileSpell<T extends Projectile> extends IProjectileSpell {
     Class<T> getProjectileClass();
 
     @Override

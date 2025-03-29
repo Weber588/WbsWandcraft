@@ -4,9 +4,9 @@ import org.bukkit.util.Vector;
 import wbs.utils.util.WbsMath;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
-import wbs.wandcraft.spell.definitions.AbstractSpellDefinition;
+import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
-public interface DirectionalSpell extends AbstractSpellDefinition {
+public interface DirectionalSpell extends ISpellDefinition {
     SpellAttribute<Double> ACCURACY = new DoubleSpellAttribute("accuracy", 0, 100, 75)
             .setFormatter(accuracy -> accuracy + "%");
 

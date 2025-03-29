@@ -1,7 +1,7 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.definitions.AbstractSpellDefinition;
+import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +22,7 @@ public class SpellExtensionManager {
         registerSpellExtension(RadiusedSpell.class, RadiusedSpell::setupRadiused);
     }
 
-    public static <T extends AbstractSpellDefinition> void registerSpellExtension(Class<T> clazz, Consumer<T> setupMethod) {
+    public static <T extends ISpellDefinition> void registerSpellExtension(Class<T> clazz, Consumer<T> setupMethod) {
         SETUP_EVENTS.add(new SpellExtensionRegistration<>(clazz, setupMethod));
     }
 
@@ -32,7 +32,7 @@ public class SpellExtensionManager {
         }
     }
 
-    private record SpellExtensionRegistration<T extends AbstractSpellDefinition>(Class<T> clazz, Consumer<T> setup) {
+    private record SpellExtensionRegistration<T extends ISpellDefinition>(Class<T> clazz, Consumer<T> setup) {
         public void trySetup(SpellDefinition definition) {
                 if (clazz.isInstance(definition)) {
                     T extension = clazz.cast(definition);
