@@ -59,6 +59,7 @@ public class CustomPersistentDataTypes {
         private static final NamespacedKey INVENTORY = WbsWandcraft.getKey("inventory");
         private static final NamespacedKey INVENTORY_TYPE = WbsWandcraft.getKey("type");
         private static final NamespacedKey WAND_ATTRIBUTES = WbsWandcraft.getKey("wand_attributes");
+        private static final NamespacedKey WAND_ATTRIBUTE_MODIFIERS = WbsWandcraft.getKey("wand_attribute_modifiers");
 
         @Override
         public @NotNull Class<PersistentDataContainer> getPrimitiveType() {
@@ -75,6 +76,13 @@ public class CustomPersistentDataTypes {
             PersistentDataContainer container = context.newPersistentDataContainer();
 
             wand.writeAttributes(container, WAND_ATTRIBUTES);
+
+            PersistentDataContainer modifiers = container.getAdapterContext().newPersistentDataContainer();
+            for (SpellAttributeModifier<?> modifier : wand.getAttributeModifiers()) {
+                modifier.writeTo(modifiers);
+            }
+
+            container.set(WAND_ATTRIBUTE_MODIFIERS, PersistentDataType.TAG_CONTAINER, modifiers);
 
             PersistentDataContainer itemsContainer = context.newPersistentDataContainer();
             wand.getItems().rowMap().forEach((row, columnMap) -> {

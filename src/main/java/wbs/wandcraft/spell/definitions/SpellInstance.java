@@ -43,10 +43,20 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
         return attributeValues;
     }
 
-    public void cast(Player player) {
+    @Nullable
+    public CastContext cast(Player player, Runnable callback) {
         if (definition instanceof CastableSpell castable) {
-            castable.cast(new CastContext(player, this, player.getEyeLocation(), null));
+            CastContext context = new CastContext(player, this, player.getEyeLocation(), null, callback);
+            castable.cast(context);
+
+            // If a spell has completeAfterCast = false, then it will handle the callback itself at a later time.
+            if (castable.completeAfterCast()) {
+                context.finish();
+            }
+            return context;
         }
+
+        return null;
     }
 
     public void cast(CastContext context) {

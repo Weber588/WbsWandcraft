@@ -31,6 +31,7 @@ public class WandcraftRegistries {
             new EldritchBlastSpell(),
             new WarpSpell(),
             new RecallSpell(),
-            new AntiMagicShellSpell()
+            new AntiMagicShellSpell(),
+            new ArcaneSurgeSpell()
     );
 }

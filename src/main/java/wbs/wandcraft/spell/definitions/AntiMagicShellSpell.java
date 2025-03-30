@@ -105,7 +105,8 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
                 WbsWandcraft.getInstance().buildMessage("Your ")
                         .append(instance.getDefinition().displayName())
                         .append(" ran out of energy!")
-                        .send(castContext.player());
+                        .build()
+                        .sendActionBar(castContext.player());
                 return true;
             }
 
@@ -123,7 +124,8 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
             WbsWandcraft.getInstance().buildMessage("Your ")
                     .append(castContext.instance().getDefinition().displayName())
                     .append(" fizzles away...")
-                    .send(castContext.player());
+                    .build()
+                    .sendActionBar(castContext.player());
         }
 
         private class AntiMagicShellCollider extends SphereCollider {

@@ -31,9 +31,9 @@ import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.Wand;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -67,12 +67,21 @@ public class CommandAttributesModify extends WbsSubcommand {
                     attributable = instance;
                 }
 
-                List<SpellAttribute<?>> attributes = new LinkedList<>();
+                Set<SpellAttribute<?>> attributes = new HashSet<>();
 
                 if (attributable != null) {
                     attributable.getAttributeValues().stream()
                             .map(SpellAttributeInstance::attribute)
                             .forEach(attributes::add);
+
+                    if (wand != null) {
+                        attributes.addAll(
+                                wand.getAttributeModifiers()
+                                        .stream()
+                                        .map(SpellAttributeModifier::attribute)
+                                        .toList()
+                        );
+                    }
                 } else {
                     attributes.addAll(WandcraftRegistries.ATTRIBUTES.values());
                 }
@@ -173,9 +182,13 @@ public class CommandAttributesModify extends WbsSubcommand {
         } else if (wand != null) {
             if (modifierType != null) {
                 wand.setModifier(new SpellAttributeModifier<>(attributeInstance, modifierType));
-            } else {
+            }
+
+            // Only set real attribute if the wand already contains it -- wands only do things with specific attributes, and all are always present.
+            if (wand.getAttributeValues().stream().map(value -> value.attribute().equals(attribute)).findAny().isPresent()) {
                 wand.setAttribute(attributeInstance);
             }
+
             wand.toItem(item);
             plugin.sendMessage("Updated wand!", sender);
         } else if (instance != null) {

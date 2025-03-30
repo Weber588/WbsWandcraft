@@ -16,4 +16,10 @@ public interface CastableSpell extends ISpellDefinition {
         addAttribute(DELAY);
         addAttribute(COOLDOWN);
     }
+
+    // Implementing classes may override this to return false, to indicate that the spell does not immediately complete.
+    // Classes that do this must invoke CastContext#finish upon completion to indicate the spell has finished casting.
+    default boolean completeAfterCast() {
+        return true;
+    }
 }

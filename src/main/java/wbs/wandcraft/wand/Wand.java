@@ -20,7 +20,7 @@ import wbs.wandcraft.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.Attributable;
-import wbs.wandcraft.spell.attributes.LongSpellAttribute;
+import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.AttributeAddModifierType;
@@ -37,7 +37,7 @@ public class Wand implements Attributable {
     public static final NamespacedKey WAND_KEY = WbsWandcraft.getKey("wand");
     private static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
 
-    public static final SpellAttribute<Long> COOLDOWN = new LongSpellAttribute("wand_cooldown", 0, 40)
+    public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 0, 40)
             .setFormatter(cooldown -> cooldown / 20.0 + " seconds");
 
     @Nullable
@@ -69,9 +69,8 @@ public class Wand implements Attributable {
 
         // TODO: Move these defaults to config
         SpellAttributeModifier<Integer> defaultDelayModifier = new SpellAttributeModifier<>(CastableSpell.DELAY,
-                WandcraftRegistries.MODIFIER_TYPES.get(AttributeAddModifierType.KEY),
+                Objects.requireNonNull(WandcraftRegistries.MODIFIER_TYPES.get(AttributeAddModifierType.KEY)),
                 10);
-
         attributeModifiers.add(defaultDelayModifier);
     }
 
@@ -110,7 +109,7 @@ public class Wand implements Attributable {
 
             enqueueCast(player, spellList, item);
             updateLastUsed(wandContainer);
-            player.setCooldown(item, additionalCooldown * 20 / 1000);
+            player.setCooldown(item, additionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
         });
     }
 
@@ -125,14 +124,12 @@ public class Wand implements Attributable {
             return;
         }
 
-        toCast.cast(player);
-
-        new BukkitRunnable() {
+        toCast.cast(player, () -> new BukkitRunnable() {
             @Override
             public void run() {
                 enqueueCast(player, instances, item);
             }
-        }.runTaskLater(WbsWandcraft.getInstance(), toCast.getAttribute(CastableSpell.DELAY));
+        }.runTaskLater(WbsWandcraft.getInstance(), Math.max(0, toCast.getAttribute(CastableSpell.DELAY))));
     }
 
     public @NotNull WandHolder getInventory(ItemStack item) {
@@ -283,5 +280,9 @@ public class Wand implements Attributable {
         attributeModifiers.removeIf(modifier -> modifier.attribute().equals(updatedModifier.attribute()));
 
         attributeModifiers.add(updatedModifier);
+    }
+
+    public Set<SpellAttributeModifier<?>> getAttributeModifiers() {
+        return new HashSet<>(attributeModifiers);
     }
 }
