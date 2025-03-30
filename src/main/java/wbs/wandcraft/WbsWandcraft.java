@@ -17,9 +17,19 @@ public class WbsWandcraft extends WbsPlugin {
         return instance;
     }
 
+    private WandcraftSettings settings;
+
+    @Override
+    public WandcraftSettings getSettings() {
+        return settings;
+    }
+
     @Override
     public void onEnable() {
         instance = this;
+
+        this.settings = new WandcraftSettings(this);
+        this.settings.reload();
 
         WbsCommand.getStatic(this, "wandcraft")
                 .addSubcommands(
