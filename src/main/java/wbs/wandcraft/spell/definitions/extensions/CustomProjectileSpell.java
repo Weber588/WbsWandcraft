@@ -1,6 +1,7 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.Particle;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.NormalParticleEffect;
@@ -59,6 +60,12 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
 
         projectile.setOnHit(result -> {
             context.runEffects(SpellTriggeredEvents.ON_HIT_TRIGGER, result);
+
+            if (this instanceof DamageSpell && result.getHitEntity() instanceof Damageable hitEntity) {
+                double damage = context.instance().getAttribute(DamageSpell.DAMAGE);
+
+                hitEntity.damage(damage, context.player());
+            }
             return true;
         });
 
