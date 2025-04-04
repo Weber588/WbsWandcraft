@@ -11,10 +11,14 @@ public interface DirectionalSpell extends ISpellDefinition {
             .setFormatter(accuracy -> accuracy + "%");
 
     default double getMaxAngle() {
-        return 45;
+        return 25;
     }
 
     default Vector getDirection(CastContext context) {
+        return getDirection(context, 1);
+    }
+
+    default Vector getDirection(CastContext context, double magnitude) {
         Vector direction = context.location().getDirection();
         if (direction.lengthSquared() == 0) {
             return direction;
@@ -27,7 +31,7 @@ public interface DirectionalSpell extends ISpellDefinition {
             return direction;
         }
 
-        return WbsMath.rotateRandomDirection(direction, offsetAngle);
+        return WbsMath.scaleVector(WbsMath.rotateRandomDirection(direction, offsetAngle), magnitude);
     }
 
     default void setupDirectional() {
