@@ -48,7 +48,7 @@ public class Wand implements Attributable {
             .setSpeed(0.01)
             .setAmount(20);
 
-    public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 0, 40)
+    public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 0, 10)
             .setFormatter(cooldown -> cooldown / 20.0 + " seconds");
 
     @Nullable

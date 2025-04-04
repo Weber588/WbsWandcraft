@@ -180,13 +180,11 @@ public class CommandAttributesModify extends WbsSubcommand {
         if (spellModifier != null) {
             updateModifier(item, sender, spellModifier, attributeInstance, modifierType);
         } else if (wand != null) {
-            if (modifierType != null) {
-                wand.setModifier(new SpellAttributeModifier<>(attributeInstance, modifierType));
-            }
-
             // Only set real attribute if the wand already contains it -- wands only do things with specific attributes, and all are always present.
             if (wand.getAttributeValues().stream().map(value -> value.attribute().equals(attribute)).findAny().isPresent()) {
                 wand.setAttribute(attributeInstance);
+            } else if (modifierType != null) { // Only add it as a modifier if it's not a wand-specific attribute
+                wand.setModifier(new SpellAttributeModifier<>(attributeInstance, modifierType));
             }
 
             wand.toItem(item);
