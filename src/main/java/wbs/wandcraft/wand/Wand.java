@@ -43,10 +43,10 @@ public class Wand implements Attributable {
     private static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
 
     private static final WbsParticleEffect FAIL_EFFECT = new NormalParticleEffect()
-            .setXYZ(1)
-            .setY(2)
-            .setSpeed(3)
-            .setAmount(30);
+            .setXYZ(0.35)
+            .setY(0.75)
+            .setSpeed(0.01)
+            .setAmount(20);
 
     public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 0, 40)
             .setFormatter(cooldown -> cooldown / 20.0 + " seconds");
@@ -89,7 +89,11 @@ public class Wand implements Attributable {
         return attributeValues;
     }
 
-    public void startCasting(Player player, ItemStack item) {
+    public void tryCasting(Player player, ItemStack item) {
+        if (player.getCooldown(item) > 0) {
+            return;
+        }
+
         PersistentDataContainerView wandContainer = item.getPersistentDataContainer();
 
         Table<Integer, Integer, SpellInstance> spellTable = getModifiedSpellTable();

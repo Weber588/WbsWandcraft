@@ -27,7 +27,12 @@ public class WandInventoryEvents implements Listener {
     @EventHandler(priority= EventPriority.MONITOR, ignoreCancelled = true)
     public void monitorInventoryClick(InventoryClickEvent event) {
         if (event.getInventory().getHolder() instanceof WandHolder holder) {
-            WbsWandcraft.getInstance().runSync(holder::save);
+            WbsWandcraft.getInstance().runSync(() -> {
+                // Save if still open -- if not, it's been done in the Close event
+                if (event.getWhoClicked().getOpenInventory().getTopInventory().getHolder() == holder) {
+                    holder.save();
+                }
+            });
         }
     }
 

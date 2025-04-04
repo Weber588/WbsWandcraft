@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.wand.Wand;
 
 @SuppressWarnings("unused")
@@ -28,19 +29,28 @@ public class WandEvents implements Listener {
             return;
         }
 
-        wand.startCasting(player, item);
+        // Crafting, not crafter or workbench -- represents the internal player inventory. Returned when nothing open.
+        InventoryType inventoryType = player.getOpenInventory().getType();
+        if (inventoryType != InventoryType.CRAFTING && inventoryType != InventoryType.CREATIVE) {
+            return;
+        }
+
+        wand.tryCasting(player, item);
     }
 
     @EventHandler
     public void onWandClick(PlayerInteractEvent event) {
+        WbsWandcraft plugin = WbsWandcraft.getInstance();
+
+        Player player = event.getPlayer();
         ItemStack item = event.getItem();
         if (item == null) {
             return;
         }
 
-        Player player = event.getPlayer();
-        // Crafting, not crafter or workbench -- represents the internal player inventory. Returned when not open.
-        if (player.getOpenInventory().getType() == InventoryType.CRAFTING) {
+        // Crafting, not crafter or workbench -- represents the internal player inventory. Returned when nothing open.
+        InventoryType inventoryType = player.getOpenInventory().getType();
+        if (inventoryType != InventoryType.CRAFTING && inventoryType != InventoryType.CREATIVE) {
             return;
         }
 
@@ -54,7 +64,7 @@ public class WandEvents implements Listener {
         } else {
             // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
             if (!item.hasData(DataComponentTypes.CONSUMABLE)) {
-                wand.startCasting(player, item);
+                wand.tryCasting(player, item);
             }
         }
     }
