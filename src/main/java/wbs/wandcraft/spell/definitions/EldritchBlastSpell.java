@@ -47,6 +47,7 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
 
         addAttribute(SPEED, 4.0);
         addAttribute(DAMAGE, 6.0);
+        addAttribute(RANGE, 50.0);
     }
 
     @Override

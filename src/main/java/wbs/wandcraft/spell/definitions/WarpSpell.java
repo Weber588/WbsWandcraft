@@ -27,7 +27,7 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
 
     @Override
     public double getMaxAngle() {
-        return 20;
+        return 15;
     }
 
     @Override
