@@ -9,7 +9,6 @@ import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
@@ -17,6 +16,7 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 
@@ -59,10 +59,10 @@ public class CommandBuildSpell extends WbsSubcommand {
         ItemStack item = ItemStack.of(Material.FLOW_BANNER_PATTERN);
         SpellInstance spellInstance = new SpellInstance(spell);
 
+        item.getDataTypes().forEach(item::unsetData);
+
         item.editMeta(meta -> {
-            for (ItemFlag value : ItemFlag.values()) {
-                meta.addItemFlags(value);
-            }
+            meta.setItemModel(WbsWandcraft.getInstance().getSettings().getItemModel("spell"));
         });
 
         spellInstance.toItem(item);

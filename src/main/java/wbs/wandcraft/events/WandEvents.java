@@ -1,15 +1,35 @@
 package wbs.wandcraft.events;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import wbs.wandcraft.wand.Wand;
 
 @SuppressWarnings("unused")
 public class WandEvents implements Listener {
+    @EventHandler
+    public void onConsumeWand(PlayerItemConsumeEvent event) {
+        ItemStack item = event.getItem();
+
+        Wand wand = Wand.getIfValid(item);
+        if (wand == null) {
+            return;
+        }
+
+        event.setCancelled(true);
+
+        Player player = event.getPlayer();
+        if (player.isSneaking()) {
+            return;
+        }
+
+        wand.startCasting(player, item);
+    }
 
     @EventHandler
     public void onWandClick(PlayerInteractEvent event) {
@@ -32,7 +52,10 @@ public class WandEvents implements Listener {
         if (event.getAction().isRightClick() && player.isSneaking()) {
             player.openInventory(wand.getInventory(item).getInventory());
         } else {
-            wand.startCasting(player, item);
+            // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
+            if (!item.hasData(DataComponentTypes.CONSUMABLE)) {
+                wand.startCasting(player, item);
+            }
         }
     }
 }

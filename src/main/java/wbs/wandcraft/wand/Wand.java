@@ -2,10 +2,12 @@ package wbs.wandcraft.wand;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -14,6 +16,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import wbs.utils.util.entities.WbsEntityUtil;
+import wbs.utils.util.particles.NormalParticleEffect;
+import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
 import wbs.wandcraft.ItemDecorator;
@@ -36,6 +41,12 @@ import java.util.*;
 public class Wand implements Attributable {
     public static final NamespacedKey WAND_KEY = WbsWandcraft.getKey("wand");
     private static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
+
+    private static final WbsParticleEffect FAIL_EFFECT = new NormalParticleEffect()
+            .setXYZ(1)
+            .setY(2)
+            .setSpeed(3)
+            .setAmount(30);
 
     public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 0, 40)
             .setFormatter(cooldown -> cooldown / 20.0 + " seconds");
@@ -79,38 +90,60 @@ public class Wand implements Attributable {
     }
 
     public void startCasting(Player player, ItemStack item) {
+        PersistentDataContainerView wandContainer = item.getPersistentDataContainer();
+
+        Table<Integer, Integer, SpellInstance> spellTable = getModifiedSpellTable();
+
+        int additionalCooldown = 0;
+
+        Queue<SpellInstance> spellList = new LinkedList<>();
+        // Iterate column-first, so inner loop iterates per row (natural enqueue order)
+        for (Map<Integer, SpellInstance> rowMap : spellTable.columnMap().values()) {
+            for (SpellInstance spell : rowMap.values()) {
+                spellList.add(spell);
+                additionalCooldown += spell.getAttribute(CastableSpell.COOLDOWN) * 1000 / 20;
+                additionalCooldown += spell.getAttribute(CastableSpell.DELAY) * 1000 / 20;
+            }
+        }
+
+        long lastUsed = getLastUsed(wandContainer);
+        long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / 20 + additionalCooldown;
+        long timestamp = getTimestamp();
+        if (timestamp <= usableTick) {
+            Duration timeLeft = Duration.ofMillis(usableTick - timestamp);
+            String timeLeftString = WbsStringify.toString(timeLeft, false);
+
+            WbsWandcraft.getInstance().sendActionBar("You can use that again in " + timeLeftString, player);
+            return;
+        }
+
+        if (spellList.isEmpty()) {
+            WbsWandcraft.getInstance().buildMessage("No spells added! ")
+                    .append(Component.keybind("key.sneak"))
+                    .append("+")
+                    .append(Component.keybind("key.use"))
+                    .append(" to open wand.")
+                    .build()
+                    .sendActionBar(player);
+
+            FAIL_EFFECT.play(Particle.SMOKE, WbsEntityUtil.getMiddleLocation(player));
+            return;
+        }
+
+        int finalAdditionalCooldown = additionalCooldown;
         item.editMeta(meta -> {
-            PersistentDataContainer wandContainer = meta.getPersistentDataContainer();
-
-            Table<Integer, Integer, SpellInstance> spellTable = getModifiedSpellTable();
-
-            int additionalCooldown = 0;
-
-            Queue<SpellInstance> spellList = new LinkedList<>();
-            // Iterate column-first, so inner loop iterates per row (natural enqueue order)
-            for (Map<Integer, SpellInstance> rowMap : spellTable.columnMap().values()) {
-                for (SpellInstance spell : rowMap.values()) {
-                    spellList.add(spell);
-                    additionalCooldown += spell.getAttribute(CastableSpell.COOLDOWN) * 1000 / 20;
-                    additionalCooldown += spell.getAttribute(CastableSpell.DELAY) * 1000 / 20;
-                }
-            }
-
-            long lastUsed = getLastUsed(wandContainer);
-            long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / 20 + additionalCooldown;
-            long timestamp = getTimestamp();
-            if (timestamp <= usableTick) {
-                Duration timeLeft = Duration.ofMillis(usableTick - timestamp);
-                String timeLeftString = WbsStringify.toString(timeLeft, false);
-
-                WbsWandcraft.getInstance().sendActionBar("You can use that again in " + timeLeftString, player);
-                return;
-            }
-
             enqueueCast(player, spellList, item);
-            updateLastUsed(wandContainer);
-            player.setCooldown(item, additionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
+            updateLastUsed(meta.getPersistentDataContainer());
+            player.setCooldown(item, finalAdditionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
         });
+
+        if (item.hasData(DataComponentTypes.MAX_DAMAGE)) {
+            ItemStack damaged = item.damage(1, player);
+            if (damaged.isEmpty()) {
+                // Item was destroyed
+                // TODO: Decide what should happen when a wand is broken; should it drop the spells inside?
+            }
+        }
     }
 
     private void enqueueCast(Player player, Queue<SpellInstance> instances, ItemStack item) {
@@ -229,6 +262,11 @@ public class Wand implements Attributable {
                 }
             }
         }
+    }
+
+    @Override
+    public @Nullable Component getItemName() {
+        return Component.text("Wand");
     }
 
     @Override

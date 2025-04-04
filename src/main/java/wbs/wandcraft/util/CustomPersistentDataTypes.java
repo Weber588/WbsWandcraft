@@ -77,12 +77,13 @@ public class CustomPersistentDataTypes {
 
             wand.writeAttributes(container, WAND_ATTRIBUTES);
 
-            PersistentDataContainer modifiers = container.getAdapterContext().newPersistentDataContainer();
-            for (SpellAttributeModifier<?> modifier : wand.getAttributeModifiers()) {
-                modifier.writeTo(modifiers);
+            List<PersistentDataContainer> modifierContainerList = new LinkedList<>();
+            for (SpellAttributeModifier<?> attributeModifier : wand.getAttributeModifiers()) {
+                PersistentDataContainer modifierContainer = context.newPersistentDataContainer();
+                attributeModifier.writeTo(modifierContainer);
+                modifierContainerList.add(modifierContainer);
             }
-
-            container.set(WAND_ATTRIBUTE_MODIFIERS, PersistentDataType.TAG_CONTAINER, modifiers);
+            container.set(WAND_ATTRIBUTE_MODIFIERS, PersistentDataType.LIST.dataContainers(), modifierContainerList);
 
             PersistentDataContainer itemsContainer = context.newPersistentDataContainer();
             wand.getItems().rowMap().forEach((row, columnMap) -> {
@@ -117,6 +118,15 @@ public class CustomPersistentDataTypes {
             Wand wand = new Wand(type);
 
             wand.readAttributes(container, WAND_ATTRIBUTES);
+
+            List<PersistentDataContainer> modifierContainerList = container.get(WAND_ATTRIBUTE_MODIFIERS, PersistentDataType.LIST.dataContainers());
+            if (modifierContainerList != null) {
+                for (PersistentDataContainer modifierContainer : modifierContainerList) {
+                    SpellAttributeModifier<?> attributeModifier = SpellAttributeModifier.fromContainer(modifierContainer);
+
+                    wand.setModifier(attributeModifier);
+                }
+            }
 
             PersistentDataContainer itemsContainer = container.get(INVENTORY, PersistentDataType.TAG_CONTAINER);
             if (itemsContainer != null) {
@@ -258,6 +268,10 @@ public class CustomPersistentDataTypes {
             for (PersistentDataContainer effectContainer : effectContainerList) {
                 NamespacedKey definitionKey = effectContainer.get(DEFINITION, NAMESPACED_KEY);
                 SpellEffectDefinition<?> definition = WandcraftRegistries.EFFECTS.get(definitionKey);
+
+                if (definition == null) {
+                    throw new IllegalStateException("Effect definition not found for key " + definitionKey);
+                }
 
                 SpellEffectInstance<?> effectInstance = new SpellEffectInstance<>(definition);
 

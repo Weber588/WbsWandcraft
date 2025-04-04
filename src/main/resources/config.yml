@@ -12,3 +12,8 @@ error-colour: 'c'
 
 # Error highlights
 error-highlight: '7'
+
+item-models:
+  wand: minecraft:breeze_rod
+  spell: minecraft:flow_banner_pattern
+  modifier: minecraft:globe_banner_pattern
