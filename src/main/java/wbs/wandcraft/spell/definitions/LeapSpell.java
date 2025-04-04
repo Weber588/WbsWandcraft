@@ -12,12 +12,9 @@ import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
 public class LeapSpell extends SpellDefinition implements CastableSpell, DirectionalSpell, SpeedSpell {
     public LeapSpell() {
         super("leap");
-        addAttribute(COOLDOWN, 5);
-    }
 
-    @Override
-    public double getMaxAngle() {
-        return 5;
+        addAttribute(COOLDOWN, 5);
+        addAttribute(IMPRECISION, 5d);
     }
 
     @Override

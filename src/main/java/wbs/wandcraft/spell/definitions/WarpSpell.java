@@ -20,14 +20,9 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
 
         addAttribute(SIZE, 0.0);
         addAttribute(GRAVITY, 0.0);
-        addAttribute(ACCURACY, 100.0);
+        addAttribute(IMPRECISION, 10d);
         addAttribute(RANGE, 50.0);
         addAttribute(SPEED, 2.0);
-    }
-
-    @Override
-    public double getMaxAngle() {
-        return 15;
     }
 
     @Override

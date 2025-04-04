@@ -7,12 +7,8 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
 public interface DirectionalSpell extends ISpellDefinition {
-    SpellAttribute<Double> ACCURACY = new DoubleSpellAttribute("accuracy", 0, 100, 75)
-            .setFormatter(accuracy -> accuracy + "%");
-
-    default double getMaxAngle() {
-        return 25;
-    }
+    SpellAttribute<Double> IMPRECISION = new DoubleSpellAttribute("imprecision", 0, 180, 15)
+            .setFormatter(accuracy -> accuracy + " degrees");
 
     default Vector getDirection(CastContext context) {
         return getDirection(context, 1);
@@ -24,8 +20,8 @@ public interface DirectionalSpell extends ISpellDefinition {
             return direction;
         }
 
-        double accuracy = context.instance().getAttribute(ACCURACY) / 100;
-        double offsetAngle = Math.random() * (1 - accuracy) * getMaxAngle();
+        double imprecision = context.instance().getAttribute(IMPRECISION);
+        double offsetAngle = Math.random() * imprecision;
 
         if (offsetAngle <= 0) {
             return direction;
@@ -35,6 +31,6 @@ public interface DirectionalSpell extends ISpellDefinition {
     }
 
     default void setupDirectional() {
-        addAttribute(ACCURACY);
+        addAttribute(IMPRECISION);
     }
 }

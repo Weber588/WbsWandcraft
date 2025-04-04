@@ -16,6 +16,7 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
         super("blink");
         addAttribute(RANGE, 10.0);
         addAttribute(COOLDOWN, 15);
+        addAttribute(IMPRECISION, 5d);
     }
 
     @Override

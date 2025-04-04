@@ -4,16 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Moved to 1.21.4 data components &#10;Added consumable animation support&#10;Added configurable item model defaults">
+    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Moved from accuracy to imprecision attribute for directions, for clarity and consistency between spells.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftSettings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildModifier.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildWand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/CustomPersistentDataTypes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/CustomPersistentDataTypes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/BlinkSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/BlinkSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/LeapSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/LeapSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PrismaticRaySpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PrismaticRaySpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WarpSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WarpSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DirectionalSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DirectionalSpell.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -224,7 +222,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743759618028</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Moved to 1.21.4 data components &#10;Added consumable animation support&#10;Added configurable item model defaults">
+      <option name="closed" value="true" />
+      <created>1743760203616</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1743760203616</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -259,6 +265,7 @@
     <MESSAGE value="Made Leap directional to allow accuracy" />
     <MESSAGE value="Various attribute default tweaks" />
     <MESSAGE value="Moved to 1.21.4 data components &#10;Added consumable animation support&#10;Added configurable item model defaults" />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved to 1.21.4 data components &#10;Added consumable animation support&#10;Added configurable item model defaults" />
+    <MESSAGE value="Moved from accuracy to imprecision attribute for directions, for clarity and consistency between spells." />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved from accuracy to imprecision attribute for directions, for clarity and consistency between spells." />
   </component>
 </project>
