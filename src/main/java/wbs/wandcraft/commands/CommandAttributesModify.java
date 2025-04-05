@@ -181,14 +181,15 @@ public class CommandAttributesModify extends WbsSubcommand {
             updateModifier(item, sender, spellModifier, attributeInstance, modifierType);
         } else if (wand != null) {
             // Only set real attribute if the wand already contains it -- wands only do things with specific attributes, and all are always present.
-            if (wand.getAttributeValues().stream().map(value -> value.attribute().equals(attribute)).findAny().isPresent()) {
+            if (wand.getAttributeValues().stream().anyMatch(value -> value.attribute().equals(attribute))) {
                 wand.setAttribute(attributeInstance);
+                plugin.sendMessage("Updated wand attribute!", sender);
             } else if (modifierType != null) { // Only add it as a modifier if it's not a wand-specific attribute
                 wand.setModifier(new SpellAttributeModifier<>(attributeInstance, modifierType));
+                plugin.sendMessage("Updated wand modifier!", sender);
             }
 
             wand.toItem(item);
-            plugin.sendMessage("Updated wand!", sender);
         } else if (instance != null) {
             instance.setAttribute(attributeInstance);
 
@@ -222,7 +223,7 @@ public class CommandAttributesModify extends WbsSubcommand {
     }
 
     @Override
-    protected int executeNoArgs(CommandContext<CommandSourceStack> commandContext) {
-        return 0;
+    protected int executeNoArgs(CommandContext<CommandSourceStack> context) {
+        return sendSimpleArgumentUsage(context);
     }
 }

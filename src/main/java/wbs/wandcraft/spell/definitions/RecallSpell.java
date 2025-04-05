@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
@@ -138,5 +139,12 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
             ringEffect.buildAndPlay(Particle.FALLING_DUST, getLocation().add(0, 1, 0));
             return false;
         }
+    }
+
+    @Override
+    public Component description() {
+        return Component.text(
+                "Leave behind a magic checkpoint, that you return to when you cast it again!"
+        );
     }
 }

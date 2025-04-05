@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -31,11 +32,20 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
 
                 escape++;
 
+                player.setFallDistance(0);
+
                 //noinspection deprecation
                 if (escape > 1000 || !player.isOnline() || player.isFlying() || (player.isOnGround() && escape >= 5)) {
                     cancel();
                 }
             }
         }.runTaskTimer(WbsWandcraft.getInstance(), 2L, 2L);
+    }
+
+    @Override
+    public Component description() {
+        return Component.text(
+                "The caster is thrown in the direction they're facing, and takes no fall damage."
+        );
     }
 }

@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import wbs.utils.util.particles.NormalParticleEffect;
@@ -22,7 +23,7 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
         addAttribute(GRAVITY, 0.0);
         addAttribute(IMPRECISION, 10d);
         addAttribute(RANGE, 50.0);
-        addAttribute(SPEED, 2.0);
+        addAttribute(SPEED, 40.0);
     }
 
     @Override
@@ -52,5 +53,12 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
     @Override
     public Particle getDefaultParticle() {
         return Particle.END_ROD;
+    }
+
+    @Override
+    public Component description() {
+        return Component.text(
+                "Teleport to a point you're looking at within range."
+        );
     }
 }

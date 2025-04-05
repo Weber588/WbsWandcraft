@@ -1,8 +1,8 @@
 # This will appear before many messages from the plugin.
-message-prefix: '&0[&5WWC&0]'
+message-prefix: '&8[&5WC&8]'
 
 # Use a minecraft colour code here to pick the message colour
-message-colour: 'e'
+message-colour: '9'
 
 # The highlight colour (to complement the above colour)
 highlight-colour: 'b'

@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -99,5 +100,13 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
     @Override
     public Particle getDefaultParticle() {
         return Particle.DUST;
+    }
+
+    @Override
+    public Component description() {
+        return Component.text(
+                "The caster moves forward for a set distance, dealing damage to nearby creatures. " +
+                        "The caster is immune to all damage while moving."
+        );
     }
 }

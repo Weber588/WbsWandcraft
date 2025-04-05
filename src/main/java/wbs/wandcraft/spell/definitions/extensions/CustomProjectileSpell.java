@@ -14,12 +14,12 @@ import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, ParticleSpell {
-    SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0, 0)
+    SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0)
             .setShowAttribute(value -> value > 0);
-    SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0, 3)
+    SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 3)
             .setShowAttribute(value -> value > 0)
             .setFormatter(value -> value + " blocks/second²");
-    SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size", 0.01, 0.3)
+    SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size",0.3)
             .setFormatter(value -> value + " blocks");
 
     default void setupCustomProjectile() {

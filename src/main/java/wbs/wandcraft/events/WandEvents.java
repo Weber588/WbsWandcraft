@@ -61,6 +61,7 @@ public class WandEvents implements Listener {
 
         if (event.getAction().isRightClick() && player.isSneaking()) {
             player.openInventory(wand.getInventory(item).getInventory());
+            player.clearActiveItem();
         } else {
             // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
             if (!item.hasData(DataComponentTypes.CONSUMABLE)) {

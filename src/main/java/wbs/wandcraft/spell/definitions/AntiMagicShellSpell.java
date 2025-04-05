@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
@@ -8,7 +9,6 @@ import org.bukkit.event.Listener;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.particles.SphereParticleEffect;
-import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.colliders.Collision;
@@ -27,8 +27,8 @@ import java.util.Objects;
 
 public class AntiMagicShellSpell extends SpellDefinition implements CastableSpell, RadiusedSpell, DurationalSpell, ParticleSpell {
     private static final SpellAttribute<Boolean> FOLLOWS_PLAYER = new BooleanSpellAttribute("follow_player", false);
-    private static final SpellAttribute<Boolean> IS_REFLECTIVE = new BooleanSpellAttribute("is_reflective", false);
-    private static final SpellAttribute<Integer> MAXIMUM_HITS = new IntegerSpellAttribute("maximum_hits", 3)
+    private static final SpellAttribute<Boolean> IS_REFLECTIVE = new BooleanSpellAttribute("is_reflective", true);
+    private static final SpellAttribute<Integer> MAXIMUM_HITS = new IntegerSpellAttribute("maximum_hits", 6)
             .setShowAttribute(value -> value > 0);
 
     public AntiMagicShellSpell() {
@@ -37,6 +37,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
         addAttribute(FOLLOWS_PLAYER);
         addAttribute(IS_REFLECTIVE);
         addAttribute(MAXIMUM_HITS);
+        addAttribute(DURATION, 600);
     }
 
     @Override
@@ -102,11 +103,6 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
             }
 
             if (hits == 0) {
-                WbsWandcraft.getInstance().buildMessage("Your ")
-                        .append(instance.getDefinition().displayName())
-                        .append(" ran out of energy!")
-                        .build()
-                        .sendActionBar(castContext.player());
                 return true;
             }
 
@@ -117,23 +113,12 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
             return false;
         }
 
-        @Override
-        protected void onMaxAgeHit() {
-            super.onMaxAgeHit();
-
-            WbsWandcraft.getInstance().buildMessage("Your ")
-                    .append(castContext.instance().getDefinition().displayName())
-                    .append(" fizzles away...")
-                    .build()
-                    .sendActionBar(castContext.player());
-        }
-
         private class AntiMagicShellCollider extends SphereCollider {
             public AntiMagicShellCollider(AntiMagicShellObject parent, double radius) {
                 super(parent, radius);
 
                 setCollideOnLeave(true);
-                setBouncy(true);
+                setCancelOnCollision(true);
             }
 
             @Override
@@ -158,5 +143,12 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
                 hits--;
             }
         }
+    }
+
+    @Override
+    public Component description() {
+        return Component.text(
+                "Form a shield around you that prevents any magic objects from entering or leaving"
+        );
     }
 }

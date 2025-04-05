@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -68,5 +69,12 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
             alreadyHit.addAll(hit);
             world.spawnParticle(display, currentPos, 2, spread, spread, spread, 0, null, true);
         }
+    }
+
+    @Override
+    public Component description() {
+        return Component.text(
+                "A beam of energy is instantly sent out in the direct you're facing dealing damage to ALL creatures in its path."
+        );
     }
 }

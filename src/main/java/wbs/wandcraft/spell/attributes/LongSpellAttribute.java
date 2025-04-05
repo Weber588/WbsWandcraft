@@ -12,12 +12,4 @@ public class LongSpellAttribute extends SpellAttribute<Long> {
     public LongSpellAttribute(String nativeKey, long defaultValue) {
         super(nativeKey, PersistentDataType.LONG, defaultValue, Long::parseLong);
     }
-
-    public LongSpellAttribute(String nativeKey, long minValue, long defaultValue) {
-        super(nativeKey, PersistentDataType.LONG, defaultValue, Long::parseLong);
-    }
-
-    public LongSpellAttribute(String nativeKey, long minValue, long maxValue, long defaultValue) {
-        super(nativeKey, PersistentDataType.LONG, defaultValue, Long::parseLong);
-    }
 }

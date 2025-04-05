@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
@@ -45,7 +46,7 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
     public EldritchBlastSpell() {
         super("eldritch_blast");
 
-        addAttribute(SPEED, 4.0);
+        addAttribute(SPEED, 80d);
         addAttribute(DAMAGE, 6.0);
         addAttribute(RANGE, 50.0);
     }
@@ -70,5 +71,12 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
     @Override
     public Particle getDefaultParticle() {
         return Particle.WITCH;
+    }
+
+    @Override
+    public Component description() {
+        return Component.text(
+                "The most simple projectile spell that fires a blast of energy in the direction the caster is facing, dealing damage to anything hit."
+        );
     }
 }

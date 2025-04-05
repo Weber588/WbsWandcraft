@@ -5,34 +5,31 @@ import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Keyed;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
-import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleArgument;
+import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.definitions.SpellInstance;
 
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandBuildSpell extends WbsSubcommand {
-    private static final KeyedSimpleArgument DEFINITION = new KeyedSimpleArgument(
+public class CommandInfo extends WbsSubcommand {
+    private static final WbsSimpleArgument.KeyedSimpleArgument DEFINITION = new WbsSimpleArgument.KeyedSimpleArgument(
             "definition",
             ArgumentTypes.namespacedKey(),
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
-    public CommandBuildSpell(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
-        addSimpleArgument(DEFINITION);
+        
+        this.addSimpleArgument(DEFINITION);
     }
 
     @Override
@@ -56,26 +53,27 @@ public class CommandBuildSpell extends WbsSubcommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        ItemStack item = ItemStack.of(Material.FLOW_BANNER_PATTERN);
-        SpellInstance spellInstance = new SpellInstance(spell);
+        WbsMessageBuilder builder = plugin.buildMessage("=======================")
+                .append("\nSpell: ")
+                .append(spell.displayName().color(NamedTextColor.GOLD))
+                .append("\nAttributes: ");
 
-        item.getDataTypes().forEach(item::unsetData);
-
-        item.editMeta(meta -> {
-            meta.setItemModel(WbsWandcraft.getInstance().getSettings().getItemModel("spell"));
+        spell.getLore().forEach(text -> {
+            builder.append("\n")
+                    .append(text);
         });
 
-        spellInstance.toItem(item);
-
-        if (context.getSource().getSender() instanceof Player player) {
-            player.getInventory().addItem(item);
-        }
+        builder.append("\nDescription: ")
+                .append(spell.description().color(NamedTextColor.GOLD))
+                .append("\n=======================")
+                .send(context.getSource().getSender());
 
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
     protected int executeNoArgs(CommandContext<CommandSourceStack> context) {
-        return sendSimpleArgumentUsage(context);
+        plugin.sendMessage("Usage: &h/" + context.getInput() + " <spell>", context.getSource().getSender());
+        return Command.SINGLE_SUCCESS;
     }
 }

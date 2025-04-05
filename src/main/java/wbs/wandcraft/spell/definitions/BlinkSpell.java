@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -46,5 +47,12 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
         } else {
             WbsWandcraft.getInstance().sendActionBar("Whiffed!", player);
         }
+    }
+
+    @Override
+    public Component description() {
+        return Component.text(
+                "The caster is teleported a short distance in the direction they're facing."
+        );
     }
 }

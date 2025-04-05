@@ -113,7 +113,7 @@ public class CommandBuildWand extends WbsSubcommand {
     }
 
     @Override
-    protected int executeNoArgs(CommandContext<CommandSourceStack> commandContext) {
-        return 0;
+    protected int executeNoArgs(CommandContext<CommandSourceStack> context) {
+        return sendSimpleArgumentUsage(context);
     }
 }

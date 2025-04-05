@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Fireball;
 import wbs.wandcraft.spell.definitions.extensions.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.EntityProjectileSpell;
@@ -17,5 +18,10 @@ public class FireballSpell extends SpellDefinition implements EntityProjectileSp
     @Override
     public void configure(Fireball fireball, CastContext context) {
 
+    }
+
+    @Override
+    public Component description() {
+        return Component.text("Shoots a fireball!");
     }
 }

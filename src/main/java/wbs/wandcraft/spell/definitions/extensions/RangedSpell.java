@@ -5,7 +5,7 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
 public interface RangedSpell extends ISpellDefinition {
-    SpellAttribute<Double> RANGE = new DoubleSpellAttribute("range", 0.001, 20)
+    SpellAttribute<Double> RANGE = new DoubleSpellAttribute("range", 20)
             .addSuggestions(10.0, 20.0, 50.0, 100.0)
             .setFormatter(range -> range + " blocks");
 

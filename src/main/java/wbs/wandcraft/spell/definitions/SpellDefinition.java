@@ -61,4 +61,6 @@ public abstract class SpellDefinition implements ISpellDefinition, Attributable 
     public Set<SpellAttributeInstance<?>> getAttributeValues() {
         return defaultAttributes;
     }
+
+    public abstract Component description();
 }

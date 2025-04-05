@@ -33,6 +33,7 @@ public class WbsWandcraft extends WbsPlugin {
 
         WbsCommand.getStatic(this, "wandcraft")
                 .addSubcommands(
+                        new CommandInfo(this, "info"),
                         WbsCommand.getStatic(this, "build").addSubcommands(
                                 new CommandBuildWand(this, "wand"),
                                 new CommandBuildSpell(this, "spell"),

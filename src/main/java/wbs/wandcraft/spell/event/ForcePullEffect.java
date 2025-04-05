@@ -18,8 +18,8 @@ import java.util.Objects;
 
 @NullMarked
 public class ForcePullEffect extends SpellEffectDefinition<Location> {
-    private static final SpellAttribute<Double> RANGE = new DoubleSpellAttribute("range", 0, 5);
-    private static final SpellAttribute<Double> SPEED = new DoubleSpellAttribute("speed", 0.05, 1);
+    private static final SpellAttribute<Double> RANGE = new DoubleSpellAttribute("range",  5);
+    private static final SpellAttribute<Double> SPEED = new DoubleSpellAttribute("speed", 1);
 
     public ForcePullEffect() {
         super(Location.class, "force_pull");

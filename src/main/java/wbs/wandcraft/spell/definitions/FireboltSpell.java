@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -20,7 +21,7 @@ import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 import java.util.List;
 
 public class FireboltSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell, DurationalSpell {
-    public static SpellAttribute<Double> BLAST_RADIUS = new DoubleSpellAttribute("blast_radius", 0,5.0)
+    public static SpellAttribute<Double> BLAST_RADIUS = new DoubleSpellAttribute("blast_radius", 5.0)
             .setFormatter(radius -> radius + " blocks");
 
     public FireboltSpell() {
@@ -78,5 +79,12 @@ public class FireboltSpell extends SpellDefinition implements CustomProjectileSp
                 context.player().damage(damageApplied, hit);
             }
         }
+    }
+
+    @Override
+    public Component description() {
+        return Component.text(
+                "The caster shoots a beam of flames, damaging the first creatures it hits, and leaving them on fire."
+        );
     }
 }
