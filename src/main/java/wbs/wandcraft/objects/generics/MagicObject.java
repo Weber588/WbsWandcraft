@@ -114,7 +114,7 @@ public abstract class MagicObject {
 	        }
 	    }.runTaskTimer(WbsWandcraft.getInstance(), 0L, 1L).getTaskId();
 
-		debug("Spawned");
+		debug("Spawned: \n" + this);
 	}
 
 	protected void onMaxAgeHit() {
@@ -288,5 +288,25 @@ public abstract class MagicObject {
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
+	}
+
+	@Override
+	public String toString() {
+		return "spawnLocation=" + spawnLocation +
+				", caster=" + caster +
+				", castContext=" + castContext +
+				", world=" + world +
+				", active=" + active +
+				", isPersistent=" + isPersistent +
+				", persistenceLevel=" + persistenceLevel +
+				", age=" + age +
+				", maxAge=" + maxAge +
+				", timerID=" + timerID +
+				", collider=" + collider +
+				", effects=" + effects +
+				", endEffects=" + endEffects +
+				", dispelEffects=" + dispelEffects +
+				", debug=" + debug
+				;
 	}
 }

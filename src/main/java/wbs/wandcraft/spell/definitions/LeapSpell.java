@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.extensions.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -47,5 +48,10 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
         return Component.text(
                 "The caster is thrown in the direction they're facing, and takes no fall damage."
         );
+    }
+
+    @Override
+    public @NotNull String getTexture() {
+        return "spell_" + key().value();
     }
 }

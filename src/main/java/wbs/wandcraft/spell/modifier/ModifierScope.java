@@ -1,6 +1,11 @@
 package wbs.wandcraft.spell.modifier;
 
-public enum ModifierScope {
+import org.bukkit.NamespacedKey;
+import org.jetbrains.annotations.NotNull;
+import wbs.wandcraft.TextureProvider;
+import wbs.wandcraft.WbsWandcraft;
+
+public enum ModifierScope implements TextureProvider {
     NEXT,
     PREVIOUS,
     LEFT,
@@ -9,4 +14,24 @@ public enum ModifierScope {
     BELOW,
     GLOBAL,
     WAND,
+    ;
+
+    private final String texture;
+
+    ModifierScope() {
+        texture = "modifier_default";
+    }
+    ModifierScope(String texture) {
+        this.texture = texture;
+    }
+
+    @Override
+    public @NotNull String getTexture() {
+        return texture;
+    }
+
+    @Override
+    public @NotNull NamespacedKey getKey() {
+        return WbsWandcraft.getKey("scope_" + name().toLowerCase());
+    }
 }

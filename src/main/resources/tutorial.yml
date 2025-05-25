@@ -1,0 +1,19 @@
+basic:
+  summary: 'Basic information about Wands, Spells, and Modifiers.'
+  tutorial:
+    # Pages
+    '1':
+    - 'Welcome to WbsWandcraft! This wand-building plugin is based around three main items: <click:run_command:''/wwc tutorial Wands''><aqua>Wands</aqua></click>, <aqua>Spells</aqua>, and <aqua>Modifiers</aqua>.'
+    - '<aqua>Wands</aqua> are items that have an inventory, which can be accessed by right clicking while sneaking. They can only contain Spell and Modifier items.'
+    - '<aqua>Spells</aqua> are items that store a magical effect, which can be cast by a Wand. You can see what a spell does by using <aqua>/wwc info <spell></aqua>.'
+    - 'Spells have no functionality on their own, they must be added to a Wand to be cast.'
+    - 'When you right click a Wand, it runs through the items inside left-to-right, then top-to-bottom, casting the Spells it comes across.'
+    - 'If the Wand contains any <aqua>Modifiers</aqua>, they will affect details about the spells being cast, often modifying its <click:run_command:''/wwc tutorial Attributes''><aqua>Attributes</aqua></click>'
+    - 'For more tutorial information, use <aqua>/wwc tutorial <topic></aqua>. Topics:'
+    - '<aqua>Attribute</aqua>: '
+
+attributes:
+  summary: 'Information about attributes.'
+  tutorial:
+    '1':
+    - 'Not configured.'

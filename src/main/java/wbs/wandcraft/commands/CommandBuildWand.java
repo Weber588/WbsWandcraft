@@ -99,8 +99,13 @@ public class CommandBuildWand extends WbsSubcommand {
             );
         }
 
+        NamespacedKey itemModel = WbsWandcraft.getInstance().getSettings().getItemModel("wand");
         item.editMeta(meta -> {
-            meta.setItemModel(WbsWandcraft.getInstance().getSettings().getItemModel("wand"));
+            if (itemModel != null) {
+                meta.setItemModel(itemModel);
+            } else {
+                meta.setItemModel(item.getType().getKey());
+            }
         });
 
         wand.toItem(item);

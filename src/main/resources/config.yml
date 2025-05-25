@@ -14,6 +14,64 @@ error-colour: 'c'
 error-highlight: '7'
 
 item-models:
-  wand: minecraft:breeze_rod
-  spell: minecraft:flow_banner_pattern
-  modifier: minecraft:globe_banner_pattern
+  # Are you using the embedded resource pack? This will not update old models until they're updated in game!
+  use-resource-pack: false
+  # If you're not using the resource pack, set the vanilla models below
+  vanilla-models:
+    wand: minecraft:breeze_rod
+    spell_default: minecraft:flow_banner_pattern
+    modifier_default: minecraft:globe_banner_pattern
+    #modifier_left: minecraft:globe_banner_pattern
+    #modifier_right: minecraft:globe_banner_pattern
+    #modifier_above: minecraft:globe_banner_pattern
+    #modifier_below: minecraft:globe_banner_pattern
+    #modifier_wand: minecraft:globe_banner_pattern
+    #modifier_global: minecraft:globe_banner_pattern
+
+artificing-table:
+  # Supports minimessage formatting
+  name: 'Artificing Table'
+  block: minecraft:deepslate_tile_wall
+  item-model: minecraft:reinforced_deepslate
+  block-displays:
+    # These names are arbitrary -- they have to be unique, but can be anything you like.
+    base_slab:
+      block: minecraft:polished_blackstone_slab
+      scale:
+        y: 0.75
+    top_underside:
+      block: minecraft:deepslate_tile_slab
+      offset:
+        y: 0.65
+      scale:
+        x: 0.91
+        y: 0.37
+        z: 0.91
+    ridge_1:
+      block: minecraft:polished_blackstone_pressure_plate
+      # Offset is added to the location at the bottom center of the placed block
+      offset:
+        y: 0.9
+      # How much to stretch or contract the rendered block
+      scale:
+        x: 1.16
+        y: 1.225
+        z: 1.16
+    ridge_2:
+      block: minecraft:polished_blackstone_pressure_plate
+      offset:
+        y: 0.83
+      scale:
+        x: 1.3
+        y: 1.25
+        z: 1.3
+    cap:
+      block: minecraft:reinforced_deepslate
+      offset:
+        y: 0.66 # Slightly more than height to avoid Z fighting
+      scale:
+        x: 0.9
+        y: 0.35
+        z: 0.9
+  item-displays:
+    top-item:

@@ -41,10 +41,13 @@ public class DynamicProjectileObject extends DynamicMagicObject {
         setStepsPerTick(getVelocity().length() * 5);
 
         if (getAge() * getStepsPerTick() > 5 && effects != null) {
+            debug("Projectile object playing effects");
             effects.buildAndPlay(location);
         }
 
-        if (getLocation().distanceSquared(getSpawnLocation()) > range * range) {
+        double distanceFromSpawn = getLocation().distanceSquared(getSpawnLocation());
+        if (distanceFromSpawn > range * range) {
+            debug("Projectile object left range in onStep -- cancelling (" + distanceFromSpawn + " > " + range * range);
             cancel = true;
             maxDistanceReached.run();
         }
@@ -64,5 +67,14 @@ public class DynamicProjectileObject extends DynamicMagicObject {
     public DynamicProjectileObject setMaxDistanceReached(@NotNull Runnable maxDistanceReached) {
         this.maxDistanceReached = maxDistanceReached;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ", range=" + range +
+                ", hitSound=" + hitSound +
+                ", maxDistanceReached=" + maxDistanceReached
+                ;
     }
 }

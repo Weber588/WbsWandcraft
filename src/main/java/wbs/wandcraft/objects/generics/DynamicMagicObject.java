@@ -3,7 +3,6 @@ package wbs.wandcraft.objects.generics;
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -96,10 +95,16 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
             applyPhysics(accelerationPerStep);
 
             cancel = move();
-            if (cancel) return true;
+            if (cancel) {
+                debug("Cancelled in move()");
+                return true;
+            }
 
             cancel = onStep(step, stepsThisTick);
-            if (cancel) return true;
+            if (cancel) {
+                debug("Cancelled in onStep");
+                return true;
+            }
         }
         acceleration.multiply(0);
 
@@ -159,11 +164,10 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
             } else {
                 Location hitLocation = result.getHitPosition().toLocation(world);
                 if (result.getHitBlock() != null) {
-                    Block hitBlock = Objects.requireNonNull(result.getHitBlock());
                     BlockFace face = Objects.requireNonNull(result.getHitBlockFace());
 
                     if (doBounces) {
-
+                        debug("DynamicMagicObject hit block. Trying bounce... Result = (" + result + ")");
                         if (currentBounces < maxBounces) {
                             currentBounces++;
 
@@ -174,6 +178,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
                             if (event.isCancelled()) {
                                 newLocation = getLocation().add(velocityThisStep);
                                 cancel |= onHitBlock.apply(result);
+                                debug("DynamicObjectBounceEvent cancelled. Cancelled = " + cancel);
                             } else {
                                 velocity = WbsMath.reflectVector(velocity, face.getDirection());
                                 velocityThisStep = WbsMath.reflectVector(velocityThisStep, face.getDirection());
@@ -194,6 +199,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
                     } else {
                         newLocation = getLocation().add(velocityThisStep);
                         cancel |= onHitBlock.apply(result);
+                        debug("DynamicMagicObject hit block. Result = (" + result + "). Cancel = " + cancel);
                     }
                 } else {
                     newLocation = getLocation().add(velocityThisStep);
@@ -201,6 +207,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
 
                 if (result.getHitEntity() != null) {
                     cancel |= onHitEntity.apply(result);
+                    debug("DynamicMagicObject hit entity. Result = (" + result + "). Cancel = " + cancel);
                 }
             }
         } else {
@@ -228,6 +235,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
 
         cancel |= afterMove(currentLocation, finalNewLocation);
 
+        debug("Dynamic object move() finished -- cancel = " + cancel);
         return cancel;
     }
 
@@ -461,5 +469,28 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
 
     public int stepsTaken() {
         return stepsTaken;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ", velocity=" + velocity +
+                ", acceleration=" + acceleration +
+                ", gravity=" + gravity +
+                ", doCollisions=" + doCollisions +
+                ", fluidCollisionMode=" + fluidCollisionMode +
+                ", doBounces=" + doBounces +
+                ", maxBounces=" + maxBounces +
+                ", currentBounces=" + currentBounces +
+                ", hitEntities=" + hitEntities +
+                ", entityPredicate=" + entityPredicate +
+                ", hitBoxSize=" + hitBoxSize +
+                ", stepsTaken=" + stepsTaken +
+                ", stepsPerTick=" + stepsPerTick +
+                ", error=" + error +
+                ", errorPerStep=" + errorPerStep +
+                ", onHitBlock=" + onHitBlock +
+                ", onHitEntity=" + onHitEntity
+                ;
     }
 }

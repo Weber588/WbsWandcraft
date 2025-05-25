@@ -233,7 +233,6 @@ public class Wand implements Attributable {
 
             int finalRow = row;
             rowMap.forEach((column, modifier) -> modifier.modify(spellTable, finalRow, column, type));
-
         }
 
         return spellTable;
@@ -255,8 +254,8 @@ public class Wand implements Attributable {
     }
 
     public void updateItems(Inventory inventory) {
-        for (int row = 0; row < type.getRows(); row++) {
-            for (int column = 0; column < type.getColumns(); column++) {
+        for (int column = 0; column < type.getColumns(); column++) {
+            for (int row = 0; row < type.getRows(); row++) {
                 int slot = row * type.getColumns() + column;
                 ItemStack item = inventory.getItem(slot);
                 if (item != null) {

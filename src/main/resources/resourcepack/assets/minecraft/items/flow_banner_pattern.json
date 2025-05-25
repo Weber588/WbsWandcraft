@@ -1,0 +1,32 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:custom_model_data",
+    "cases": [
+      {
+        "when": "wbswandcraft:spell",
+        "model": {
+          "type": "minecraft:select",
+          "property": "minecraft:custom_model_data",
+          "cases": [
+            {
+              "when": "wbswandcraft:fireball",
+              "model": {
+                "type": "minecraft:model",
+                "model": "wbswandcraft:item/spell_fireball"
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "wbswandcraft:item/blank_scroll"
+          }
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/flow_banner_pattern"
+    }
+  }
+}

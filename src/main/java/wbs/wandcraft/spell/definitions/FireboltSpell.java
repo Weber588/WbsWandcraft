@@ -27,6 +27,7 @@ public class FireboltSpell extends SpellDefinition implements CustomProjectileSp
     public FireboltSpell() {
         super("firebolt");
         addAttribute(BLAST_RADIUS);
+        addAttribute(SPEED, 4d);
     }
 
     @Override

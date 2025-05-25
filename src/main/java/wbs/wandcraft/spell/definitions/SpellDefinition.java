@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.string.WbsStrings;
+import wbs.wandcraft.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -14,7 +15,7 @@ import wbs.wandcraft.spell.event.SpellTriggeredEvent;
 
 import java.util.*;
 
-public abstract class SpellDefinition implements ISpellDefinition, Attributable {
+public abstract class SpellDefinition implements ISpellDefinition, Attributable, TextureProvider {
     protected final Map<Key, SpellTriggeredEvent<?>> events = new HashMap<>();
 
     protected final Set<SpellAttributeInstance<?>> defaultAttributes = new HashSet<>();
@@ -63,4 +64,10 @@ public abstract class SpellDefinition implements ISpellDefinition, Attributable 
     }
 
     public abstract Component description();
+
+    @Override
+    @NotNull
+    public String getTexture() {
+        return "spell_default";
+    }
 }

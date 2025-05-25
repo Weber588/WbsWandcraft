@@ -4,6 +4,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
@@ -16,6 +18,7 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
@@ -29,6 +32,7 @@ public class CommandBuildSpell extends WbsSubcommand {
             ArgumentTypes.namespacedKey(),
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
+    public static final Material BASE_MATERIAL = Material.FLOW_BANNER_PATTERN;
 
     public CommandBuildSpell(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
@@ -56,14 +60,40 @@ public class CommandBuildSpell extends WbsSubcommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        ItemStack item = ItemStack.of(Material.FLOW_BANNER_PATTERN);
+        ItemStack item = ItemStack.of(BASE_MATERIAL);
         SpellInstance spellInstance = new SpellInstance(spell);
 
         item.getDataTypes().forEach(item::unsetData);
 
-        item.editMeta(meta -> {
-            meta.setItemModel(WbsWandcraft.getInstance().getSettings().getItemModel("spell"));
-        });
+        WandcraftSettings settings = WbsWandcraft.getInstance().getSettings();
+        if (settings.useResourcePack()) {
+            CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
+
+            CustomModelData.Builder cloneBuilder = CustomModelData.customModelData();
+            if (data != null) {
+                cloneBuilder.addColors(data.colors());
+                cloneBuilder.addFlags(data.flags());
+                cloneBuilder.addFloats(data.floats());
+                cloneBuilder.addStrings(data.strings());
+            }
+
+            cloneBuilder.addString(spell.key().asString());
+            item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
+
+            item.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL.getKey());
+            item.editMeta(meta -> {
+                meta.setItemModel(BASE_MATERIAL.getKey());
+            });
+        } else {
+            item.editMeta(meta -> {
+                meta.setItemModel(
+                    settings.getItemModel(
+                            "spell_" + spell.getKey().asString(),
+                            "spell_default"
+                    )
+                );
+            });
+        }
 
         spellInstance.toItem(item);
 

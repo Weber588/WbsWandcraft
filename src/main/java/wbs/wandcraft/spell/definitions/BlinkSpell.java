@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.extensions.*;
@@ -18,6 +19,7 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
         addAttribute(RANGE, 10.0);
         addAttribute(COOLDOWN, 15);
         addAttribute(IMPRECISION, 5d);
+        addAttribute(SPEED, 1d);
     }
 
     @Override
@@ -45,7 +47,7 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
             // getCastSound().play(loc);
             WbsEntityUtil.push(player, context.instance().getAttribute(SPEED));
         } else {
-            WbsWandcraft.getInstance().sendActionBar("Whiffed!", player);
+            WbsWandcraft.getInstance().sendActionBar("No safe space found!", player);
         }
     }
 
@@ -54,5 +56,10 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
         return Component.text(
                 "The caster is teleported a short distance in the direction they're facing."
         );
+    }
+
+    @Override
+    public @NotNull String getTexture() {
+        return "spell_" + key().value();
     }
 }
