@@ -151,7 +151,7 @@ public class Wand implements Attributable {
     }
 
     private void enqueueCast(Player player, Queue<SpellInstance> instances, ItemStack item) {
-        if (!player.getInventory().getItemInMainHand().equals(item)) {
+        if (!player.getInventory().getItemInMainHand().equals(item) || player.isDead() || !player.isOnline()) {
             return;
         }
 

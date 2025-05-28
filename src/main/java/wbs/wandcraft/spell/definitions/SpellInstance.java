@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.cost.CostUtils;
 import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
@@ -48,6 +49,11 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
         if (definition instanceof CastableSpell castable) {
             CastContext context = new CastContext(player, this, player.getEyeLocation(), null, callback);
             castable.cast(context);
+            Integer cost = getAttribute(CastableSpell.COST);
+
+            if (cost != null && cost > 0) {
+                CostUtils.takeCost(player, cost);
+            }
 
             // If a spell has completeAfterCast = false, then it will handle the callback itself at a later time.
             if (castable.completeAfterCast()) {

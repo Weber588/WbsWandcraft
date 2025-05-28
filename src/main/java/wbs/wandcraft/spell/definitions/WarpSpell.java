@@ -3,7 +3,6 @@ package wbs.wandcraft.spell.definitions;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
@@ -61,10 +60,5 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
         return Component.text(
                 "Teleport to a point you're looking at within range."
         );
-    }
-
-    @Override
-    public @NotNull String getTexture() {
-        return "spell_" + key().value();
     }
 }

@@ -66,8 +66,7 @@ public abstract class SpellDefinition implements ISpellDefinition, Attributable,
     public abstract Component description();
 
     @Override
-    @NotNull
-    public String getTexture() {
-        return "spell_default";
+    public @NotNull final String getTexture() {
+        return "spell_" + key().value();
     }
 }

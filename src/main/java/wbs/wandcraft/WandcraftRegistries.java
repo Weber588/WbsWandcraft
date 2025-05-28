@@ -23,7 +23,6 @@ public class WandcraftRegistries {
     );
     public static final WbsRegistry<WandInventoryType> WAND_INVENTORY_TYPES = WandInventoryType.WAND_INVENTORY_TYPES;
     public static final WbsRegistry<SpellDefinition> SPELLS = new WbsRegistry<>(
-            new FireboltSpell(),
             new FireballSpell(),
             new LeapSpell(),
             new BlinkSpell(),
@@ -32,6 +31,8 @@ public class WandcraftRegistries {
             new WarpSpell(),
             new RecallSpell(),
             new AntiMagicShellSpell(),
-            new ArcaneSurgeSpell()
+            new ArcaneSurgeSpell(),
+            new ConflagrationSpell(),
+            new VortexSpell()
     );
 }

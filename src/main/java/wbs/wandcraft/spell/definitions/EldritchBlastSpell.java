@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
-import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
@@ -79,10 +78,5 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
         return Component.text(
                 "The most simple projectile spell that fires a blast of energy in the direction the caster is facing, dealing damage to anything hit."
         );
-    }
-
-    @Override
-    public @NotNull String getTexture() {
-        return "spell_" + key().value();
     }
 }

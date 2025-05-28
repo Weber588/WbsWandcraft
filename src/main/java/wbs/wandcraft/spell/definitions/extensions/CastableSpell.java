@@ -6,15 +6,20 @@ import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
 public interface CastableSpell extends ISpellDefinition {
     SpellAttribute<Integer> DELAY = new IntegerSpellAttribute("cast_delay", 4)
+            .setShowAttribute(cost -> cost > 0)
             .setFormatter(delay -> delay / 20.0 + " seconds");
     SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("cooldown", 5)
+            .setShowAttribute(cost -> cost > 0)
             .setFormatter(cooldown -> cooldown / 20.0 + " seconds");
+    SpellAttribute<Integer> COST = new IntegerSpellAttribute("cost", 100)
+            .setShowAttribute(cost -> cost > 0);
 
     void cast(CastContext context);
 
     default void setupCastable() {
         addAttribute(DELAY);
         addAttribute(COOLDOWN);
+        addAttribute(COST);
     }
 
     // Implementing classes may override this to return false, to indicate that the spell does not immediately complete.

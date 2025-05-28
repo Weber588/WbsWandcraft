@@ -2,7 +2,6 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Fireball;
-import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.spell.definitions.extensions.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.EntityProjectileSpell;
 
@@ -24,10 +23,5 @@ public class FireballSpell extends SpellDefinition implements EntityProjectileSp
     @Override
     public Component description() {
         return Component.text("Shoots a fireball!");
-    }
-
-    @Override
-    public @NotNull String getTexture() {
-        return "spell_" + key().value();
     }
 }
