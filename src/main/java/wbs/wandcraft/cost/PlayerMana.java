@@ -20,7 +20,7 @@ import java.util.UUID;
 public class PlayerMana {
     private static final Map<UUID, ManaContext> CURRENT_MANA_BARS = new HashMap<>();
 
-    public static final int DEFAULT_MAX_MANA = 6000;
+    public static final int DEFAULT_MAX_MANA = 1000;
     public static final int DEFAULT_MANA_REGENERATION = 20; // In mana/tick
     public static final int DEFAULT_MANA_REGEN_COOLOFF = 20; // In ticks
 
@@ -179,3 +179,6 @@ public class PlayerMana {
         }
     }
 }
+
+
+

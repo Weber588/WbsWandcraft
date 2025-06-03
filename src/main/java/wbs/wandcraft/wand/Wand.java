@@ -235,6 +235,8 @@ public class Wand implements Attributable {
             rowMap.forEach((column, modifier) -> modifier.modify(spellTable, finalRow, column, type));
         }
 
+
+
         return spellTable;
     }
 

@@ -18,6 +18,10 @@
         <repository>
             <id>paper-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>interval:10080</updatePolicy> <!-- 1 week in minutes -->
+            </snapshots>
         </repository>
     </repositories>
 

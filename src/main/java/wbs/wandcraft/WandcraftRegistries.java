@@ -1,6 +1,7 @@
 package wbs.wandcraft;
 
 import wbs.utils.util.WbsRegistry;
+import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeAddModifierType;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
@@ -33,6 +34,10 @@ public class WandcraftRegistries {
             new AntiMagicShellSpell(),
             new ArcaneSurgeSpell(),
             new ConflagrationSpell(),
-            new VortexSpell()
+            new VortexSpell(),
+            new CrowsCallSpell()
+    );
+    public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
+            StatusEffect.GLIDING
     );
 }

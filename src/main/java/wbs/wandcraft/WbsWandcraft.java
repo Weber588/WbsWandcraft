@@ -9,10 +9,9 @@ import wbs.utils.util.commands.brigadier.WbsReloadSubcommand;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.commands.*;
-import wbs.wandcraft.events.ArtificingBlockEvents;
-import wbs.wandcraft.events.ArtificingItemEvents;
-import wbs.wandcraft.events.WandEvents;
-import wbs.wandcraft.events.WandInventoryEvents;
+import wbs.wandcraft.events.*;
+import wbs.wandcraft.spell.definitions.SpellDefinition;
+import wbs.wandcraft.effects.StatusEffect;
 
 @SuppressWarnings("UnstableApiUsage")
 public class WbsWandcraft extends WbsPlugin {
@@ -73,5 +72,12 @@ public class WbsWandcraft extends WbsPlugin {
         registerListener(new WandEvents());
         registerListener(new ArtificingBlockEvents());
         registerListener(new ArtificingItemEvents());
+        registerListener(new StatusEffectEvents());
+
+        // Run next tick, when the plugin is fully enabled
+        runSync(() -> {
+            WandcraftRegistries.SPELLS.stream().forEach(SpellDefinition::registerEvents);
+            WandcraftRegistries.STATUS_EFFECTS.stream().forEach(StatusEffect::registerEvents);
+        });
     }
 }

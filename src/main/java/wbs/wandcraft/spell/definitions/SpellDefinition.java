@@ -69,4 +69,8 @@ public abstract class SpellDefinition implements ISpellDefinition, Attributable,
     public @NotNull final String getTexture() {
         return "spell_" + key().value();
     }
+
+    public void registerEvents() {
+
+    }
 }
