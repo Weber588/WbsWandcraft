@@ -1,18 +1,14 @@
 package wbs.wandcraft.commands;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.Consumable;
-import io.papermc.paper.datacomponent.item.UseCooldown;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Keyed;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,11 +18,10 @@ import wbs.utils.util.commands.brigadier.argument.WbsEnumArgumentType;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.wand.Wand;
+import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.WandInventoryType;
+import wbs.wandcraft.wand.WandTexture;
 
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -48,12 +43,25 @@ public class CommandBuildWand extends WbsSubcommand {
             1f,
             Float.class
     ).addSuggestions(0f, 0.25f, 0.5f, 0.75f, 1f);
+    private static final WbsSimpleArgument.KeyedSimpleArgument WAND_TEXTURE = new WbsSimpleArgument.KeyedSimpleArgument(
+            "wand_texture",
+            ArgumentTypes.namespacedKey(),
+            WandTexture.GEM.getKey()
+    ).addKeyedSuggestions(WandcraftRegistries.WAND_TEXTURES.values());
+    private static final WbsSimpleArgument<Double> WAND_HUE = new WbsSimpleArgument<>(
+            "wand_hue",
+            DoubleArgumentType.doubleArg(-1f, 1f),
+            -1d,
+            Double.class
+    ).addSuggestions(0d, 0.25d, 0.5d, 0.75d, 1d);
 
     public CommandBuildWand(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
         addSimpleArgument(INVENTORY_TYPE);
         addSimpleArgument(ANIMATION_TYPE);
         addSimpleArgument(ANIMATION_DURATION);
+        addSimpleArgument(WAND_TEXTURE);
+        addSimpleArgument(WAND_HUE);
     }
 
     @Override
@@ -77,41 +85,21 @@ public class CommandBuildWand extends WbsSubcommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        ItemStack item = ItemStack.of(Material.STICK);
-        Wand wand = new Wand(inventoryType);
+        WandTexture wandTexture = WandcraftRegistries.WAND_TEXTURES.get(configuredArgumentMap.get(WAND_TEXTURE));
+        Double hue = configuredArgumentMap.get(WAND_HUE);
+        ItemUseAnimation animation = configuredArgumentMap.get(ANIMATION_TYPE);
+        Float animationSeconds = configuredArgumentMap.get(ANIMATION_DURATION);
 
-        item.getDataTypes().forEach(item::unsetData);
-        item.setData(DataComponentTypes.ITEM_NAME, Component.text("Wand"));
-        item.setData(DataComponentTypes.USE_COOLDOWN, UseCooldown.useCooldown(0.0001f)
-                .cooldownGroup(WbsWandcraft.getKey(UUID.randomUUID().toString()))
+        ItemStack wandItem = ItemUtils.buildWand(
+                inventoryType,
+                wandTexture,
+                hue,
+                animation,
+                animationSeconds
         );
 
-        ItemUseAnimation animation = configuredArgumentMap.get(ANIMATION_TYPE);
-
-        if (animation != null) {
-            float animationSeconds = configuredArgumentMap.get(ANIMATION_DURATION);
-
-            item.setData(DataComponentTypes.CONSUMABLE, Consumable.consumable()
-                    .animation(animation)
-                    .hasConsumeParticles(false)
-                    .consumeSeconds(animationSeconds)
-                    .sound(Key.key("invalid:invalid"))
-            );
-        }
-
-        NamespacedKey itemModel = WbsWandcraft.getInstance().getSettings().getItemModel("wand");
-        item.editMeta(meta -> {
-            if (itemModel != null) {
-                meta.setItemModel(itemModel);
-            } else {
-                meta.setItemModel(item.getType().getKey());
-            }
-        });
-
-        wand.toItem(item);
-
         if (context.getSource().getSender() instanceof Player player) {
-            player.getInventory().addItem(item);
+            player.getInventory().addItem(wandItem);
         }
 
         return Command.SINGLE_SUCCESS;

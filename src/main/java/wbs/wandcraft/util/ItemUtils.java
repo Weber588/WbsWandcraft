@@ -1,0 +1,224 @@
+package wbs.wandcraft.util;
+
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.CustomModelData;
+import io.papermc.paper.datacomponent.item.UseCooldown;
+import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.WbsColours;
+import wbs.wandcraft.WandcraftSettings;
+import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
+import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
+import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
+import wbs.wandcraft.spell.definitions.SpellDefinition;
+import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.modifier.ModifierScope;
+import wbs.wandcraft.spell.modifier.SpellModifier;
+import wbs.wandcraft.wand.Wand;
+import wbs.wandcraft.wand.WandInventoryType;
+import wbs.wandcraft.wand.WandTexture;
+
+import java.util.UUID;
+
+@SuppressWarnings("UnstableApiUsage")
+public class ItemUtils {
+    public static final Material BASE_MATERIAL_WAND = Material.STICK;
+    public static final Material BASE_MATERIAL_SPELL = Material.FLOW_BANNER_PATTERN;
+    public static final Material BASE_MATERIAL_MODIFIER = Material.GLOBE_BANNER_PATTERN;
+
+    public static @NotNull ItemStack buildWand(WandInventoryType inventoryType, WandTexture wandTexture, Double hue, ItemUseAnimation animation, float animationSeconds) {
+        ItemStack item = ItemStack.of(BASE_MATERIAL_WAND);
+        Wand wand = new Wand(inventoryType);
+
+        item.getDataTypes().forEach(item::unsetData);
+        item.setData(DataComponentTypes.ITEM_NAME, Component.text("Wand"));
+        item.setData(DataComponentTypes.USE_COOLDOWN, UseCooldown.useCooldown(0.0001f)
+                .cooldownGroup(WbsWandcraft.getKey(UUID.randomUUID().toString()))
+        );
+
+        if (wandTexture != null) {
+            if (hue == null || hue < 0) {
+                hue = Math.random();
+            }
+
+            item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
+                    .addString(wandTexture.getKey().asString())
+                    .addColor(WbsColours.fromHSB(hue, 1, 1))
+            );
+
+            item.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_WAND.getKey());
+        }
+
+        if (animation != null) {
+            item.setData(DataComponentTypes.CONSUMABLE, Consumable.consumable()
+                    .animation(animation)
+                    .hasConsumeParticles(false)
+                    .consumeSeconds(animationSeconds)
+                    .sound(Key.key("entity.illusioner.cast_spell"))
+            );
+        }
+        
+        NamespacedKey itemModel = WbsWandcraft.getInstance().getSettings().getItemModel("wand");
+        
+        if (itemModel == null) {
+            itemModel = item.getType().getKey();
+        }
+
+        NamespacedKey finalItemModel = itemModel;
+        item.editMeta(meta -> meta.setItemModel(finalItemModel));
+
+        wand.toItem(item);
+
+        return item;
+    }
+    
+    public static @NotNull ItemStack buildSpell(SpellDefinition spell) {
+        ItemStack item = ItemStack.of(BASE_MATERIAL_SPELL);
+        SpellInstance spellInstance = new SpellInstance(spell);
+
+        item.getDataTypes().forEach(item::unsetData);
+
+        WandcraftSettings settings = WbsWandcraft.getInstance().getSettings();
+        
+        NamespacedKey itemModelKey;
+        if (settings.useResourcePack()) {
+            CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
+
+            CustomModelData.Builder cloneBuilder = CustomModelData.customModelData();
+            if (data != null) {
+                cloneBuilder.addColors(data.colors());
+                cloneBuilder.addFlags(data.flags());
+                cloneBuilder.addFloats(data.floats());
+                cloneBuilder.addStrings(data.strings());
+            }
+
+            cloneBuilder.addString(spell.key().asString());
+            item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
+
+            itemModelKey = BASE_MATERIAL_SPELL.getKey();
+        } else {
+            itemModelKey = settings.getItemModel(
+                    WbsWandcraft.getKey("spell_default"),
+                    "spell_" + spell.getKey().asString(),
+                    "spell_default"
+            );
+        }
+        
+        item.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);
+
+        spellInstance.toItem(item);
+        return item;
+    }
+
+    public static ItemStack buildSpell(SpellInstance instance) {
+        ItemStack item = buildSpell(instance.getDefinition());
+
+        instance.toItem(item);
+
+        return item;
+    }
+    
+    public static @NotNull ItemStack buildModifier(ModifierScope scope) {
+        ItemStack item = ItemStack.of(BASE_MATERIAL_MODIFIER);
+        SpellModifier modifier = new SpellModifier(scope);
+
+        item.getDataTypes().forEach(item::unsetData);
+        WandcraftSettings settings = WbsWandcraft.getInstance().getSettings();
+        
+        NamespacedKey itemModelKey;
+        if (settings.useResourcePack()) {
+            CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
+
+            CustomModelData.Builder cloneBuilder = CustomModelData.customModelData();
+            if (data != null) {
+                cloneBuilder.addColors(data.colors());
+                cloneBuilder.addFlags(data.flags());
+                cloneBuilder.addFloats(data.floats());
+                cloneBuilder.addStrings(data.strings());
+            }
+
+            cloneBuilder.addString(scope.key().asString());
+            item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
+
+            itemModelKey = BASE_MATERIAL_MODIFIER.getKey();
+        } else {
+            itemModelKey = settings.getItemModel(
+                    WbsWandcraft.getKey("modifier_default"),
+                    "modifier_" + modifier.getKey().asString(),
+                    "modifier_default"
+            );
+        }
+        
+        item.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);
+
+        modifier.toItem(item);
+        return item;
+    }
+    
+    public static AttributeModificationResult modifyItem(ItemStack item, SpellAttributeInstance<?> attributeInstance, @NotNull AttributeModifierType modifierType) {
+        SpellModifier spellModifier = SpellModifier.fromItem(item);
+        Wand wand = Wand.getIfValid(item);
+        SpellInstance instance = SpellInstance.fromItem(item);
+
+        if (spellModifier != null) {
+            modifyModifier(item, attributeInstance, modifierType, spellModifier);
+            return AttributeModificationResult.MODIFIED_MODIFIER;
+        } else if (wand != null) {
+            // Only set real attribute if the wand already contains it -- wands only do things with specific attributes, and all are always present.
+            return modifyWand(item, attributeInstance, modifierType, attributeInstance.attribute(), wand);
+        } else if (instance != null) {
+            modifySpellInstance(item, attributeInstance, instance);
+            return AttributeModificationResult.MODIFIED_SPELL;
+        } else {
+            return AttributeModificationResult.INVALID_ITEM;
+        }
+    }
+
+    public static void modifySpellInstance(ItemStack item, SpellAttributeInstance<?> attributeInstance, SpellInstance instance) {
+        instance.setAttribute(attributeInstance);
+
+        instance.toItem(item);
+    }
+
+    public static @NotNull AttributeModificationResult modifyWand(ItemStack item, SpellAttributeInstance<?> attributeInstance, @NotNull AttributeModifierType modifierType, SpellAttribute<?> attribute, Wand wand) {
+        if (wand.getAttributeValues().stream().anyMatch(value -> value.attribute().equals(attribute))) {
+            wand.setAttribute(attributeInstance);
+            wand.toItem(item);
+            return AttributeModificationResult.MODIFIED_WAND_ATTRIBUTE;
+        } else {
+            wand.setModifier(new SpellAttributeModifier<>(attributeInstance, modifierType));
+            wand.toItem(item);
+            return AttributeModificationResult.MODIFIED_WAND_MODIFIER;
+        }
+    }
+
+    public static void modifyModifier(ItemStack item, SpellAttributeInstance<?> attributeInstance, @NotNull AttributeModifierType modifierType, SpellModifier spellModifier) {
+        SpellAttributeModifier<?> modifierInstance = new SpellAttributeModifier<>(attributeInstance, modifierType);
+
+        spellModifier.getModifiers().forEach(modifier -> {
+            if (modifier.attribute().equals(modifierInstance.attribute())) {
+                // Safe to remove in loop -- getModifiers returns copy
+                spellModifier.removeModifier(modifier);
+            }
+        });
+        spellModifier.addModifier(modifierInstance);
+
+        spellModifier.toItem(item);
+    }
+
+    public enum AttributeModificationResult {
+        MODIFIED_MODIFIER,
+        MODIFIED_WAND_MODIFIER,
+        MODIFIED_WAND_ATTRIBUTE,
+        MODIFIED_SPELL,
+        INVALID_ITEM
+    }
+}

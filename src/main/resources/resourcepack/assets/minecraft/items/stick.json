@@ -1,0 +1,58 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "cases": [
+      {
+        "when": "wbswandcraft:wand",
+        "model": {
+          "type": "minecraft:select",
+          "property": "minecraft:custom_model_data",
+          "index": 1,
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "minecraft:item/wand_gem",
+            "tints": [
+              {
+                "type": "minecraft:custom_model_data",
+                "index": 0,
+                "default": 32768
+              }
+            ]
+          },
+          "cases": [
+            {
+              "when": "wbswandcraft:gem",
+              "type": "minecraft:model",
+              "model": "wbswandcraft:item/wand_gem",
+              "tints": [
+                {
+                  "type": "minecraft:custom_model_data",
+                  "index": 0,
+                  "default": 32768
+                }
+              ]
+            },
+            {
+              "when": "wbswandcraft:trident",
+              "type": "minecraft:model",
+              "model": "wbswandcraft:item/wand_trident",
+              "tints": [
+                {
+                  "type": "minecraft:custom_model_data",
+                  "index": 0,
+                  "default": 32768
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/stick"
+    }
+  }
+}

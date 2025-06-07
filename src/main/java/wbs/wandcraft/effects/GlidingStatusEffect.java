@@ -4,12 +4,10 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsEventUtils;
@@ -19,7 +17,7 @@ import wbs.wandcraft.WbsWandcraft;
 public class GlidingStatusEffect implements StatusEffect {
     @Override
     public Component display() {
-        return Component.text("Gliding").color(NamedTextColor.GOLD);
+        return Component.text("Gliding").color(NamedTextColor.YELLOW);
     }
 
     @Override
@@ -28,15 +26,14 @@ public class GlidingStatusEffect implements StatusEffect {
     }
 
     @Override
-    public boolean tick(Player player, int timeLeft) {
-        player.setGliding(true);
+    public boolean tick(LivingEntity entity, int timeLeft) {
+        entity.setGliding(true);
         return false;
     }
 
     @Override
-    public boolean isValid(Player player) {
-        //noinspection deprecation
-        return !player.isOnGround() && player.getLocation().add(0, -Double.MIN_VALUE, 0).getBlock().isPassable();
+    public boolean isValid(LivingEntity entity) {
+        return !entity.isOnGround() && entity.getLocation().add(0, -Double.MIN_VALUE, 0).getBlock().isPassable();
     }
 
     @Override
@@ -55,21 +52,18 @@ public class GlidingStatusEffect implements StatusEffect {
             return;
         }
 
-        Entity entity = event.getEntity();
+        if (!(event.getEntity() instanceof LivingEntity entity)) {
+            return;
+        }
 
         if (entity.isOnGround()) {
             return;
         }
 
-        PersistentDataContainer container = entity.getPersistentDataContainer();
-        Integer timeLeft = container.get(getKey(), PersistentDataType.INTEGER);
+        StatusEffectInstance instance = StatusEffectManager.getInstance(entity, this);
 
-        if (timeLeft != null) {
-            if (timeLeft <= 0) {
-                container.remove(getKey());
-            } else {
-                event.setCancelled(true);
-            }
+        if (instance != null) {
+            event.setCancelled(true);
         }
     }
 

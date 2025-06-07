@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.commands.brigadier.KeyedSuggestionProvider;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.WbsSuggestionProvider;
@@ -29,6 +28,7 @@ import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
+import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
 
 import java.util.HashSet;
@@ -173,53 +173,28 @@ public class CommandAttributesModify extends WbsSubcommand {
             modifierType = WandcraftRegistries.MODIFIER_TYPES.get(modifierTypeKey);
         }
 
-        SpellModifier spellModifier = SpellModifier.fromItem(item);
-        Wand wand = Wand.getIfValid(item);
-        SpellInstance instance = SpellInstance.fromItem(item);
-
-        if (spellModifier != null) {
-            updateModifier(item, sender, spellModifier, attributeInstance, modifierType);
-        } else if (wand != null) {
-            // Only set real attribute if the wand already contains it -- wands only do things with specific attributes, and all are always present.
-            if (wand.getAttributeValues().stream().anyMatch(value -> value.attribute().equals(attribute))) {
-                wand.setAttribute(attributeInstance);
-                plugin.sendMessage("Updated wand attribute!", sender);
-            } else if (modifierType != null) { // Only add it as a modifier if it's not a wand-specific attribute
-                wand.setModifier(new SpellAttributeModifier<>(attributeInstance, modifierType));
-                plugin.sendMessage("Updated wand modifier!", sender);
-            }
-
-            wand.toItem(item);
-        } else if (instance != null) {
-            instance.setAttribute(attributeInstance);
-
-            instance.toItem(item);
-            plugin.sendMessage("Updated spell!", sender);
-        } else {
-            plugin.sendMessage("The held item does not support attributes.", sender);
+        if (modifierType == null) {
+            modifierType = AttributeModifierType.ADD;
         }
+
+        ItemUtils.AttributeModificationResult result = ItemUtils.modifyItem(
+                item,
+                attributeInstance,
+                modifierType
+        );
+
+        String message = switch (result) {
+            case MODIFIED_MODIFIER -> "Updated spell modifier!";
+            case MODIFIED_WAND_MODIFIER -> "Updated wand modifier!";
+            case MODIFIED_WAND_ATTRIBUTE -> "Updated wand attribute!";
+            case MODIFIED_SPELL -> "Updated spell!";
+            case INVALID_ITEM -> "The held item does not support attributes.";
+            default -> "Unexpected modification result -- please report this: " + result.name();
+        };
+
+        plugin.sendMessage(message, sender);
 
         return Command.SINGLE_SUCCESS;
-    }
-
-    private void updateModifier(ItemStack item, CommandSender sender, SpellModifier spellModifier, SpellAttributeInstance<?> attributeInstance, @Nullable AttributeModifierType type) {
-        if (type == null) {
-            plugin.sendMessage("Modifying a spell modifier requires a modifier type.", sender);
-            return;
-        }
-
-        SpellAttributeModifier<?> modifierInstance = new SpellAttributeModifier<>(attributeInstance, type);
-
-        spellModifier.getModifiers().forEach(modifier -> {
-            if (modifier.attribute().equals(modifierInstance.attribute())) {
-                // Safe to remove in loop -- getModifiers returns copy
-                spellModifier.removeModifier(modifier);
-            }
-        });
-        spellModifier.addModifier(modifierInstance);
-
-        spellModifier.toItem(item);
-        plugin.sendMessage("Updated spell modifier!", sender);
     }
 
     @Override

@@ -38,6 +38,7 @@ import wbs.wandcraft.util.CustomPersistentDataTypes;
 import java.time.Duration;
 import java.util.*;
 
+@SuppressWarnings("UnstableApiUsage")
 public class Wand implements Attributable {
     public static final NamespacedKey WAND_KEY = WbsWandcraft.getKey("wand");
     private static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
@@ -70,11 +71,12 @@ public class Wand implements Attributable {
     }
 
     private final Table<Integer, Integer, ItemStack> items = HashBasedTable.create();
+    @NotNull
     private final WandInventoryType type;
     private final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
     private final Set<SpellAttributeModifier<?>> attributeModifiers = new HashSet<>();
 
-    public Wand(WandInventoryType type) {
+    public Wand(@NotNull WandInventoryType type) {
         this.type = type;
         addAttribute(COOLDOWN.defaultInstance());
 
@@ -89,7 +91,7 @@ public class Wand implements Attributable {
         return attributeValues;
     }
 
-    public void tryCasting(Player player, ItemStack item) {
+    public void tryCasting(@NotNull Player player, ItemStack item) {
         if (player.getCooldown(item) > 0) {
             return;
         }
@@ -150,7 +152,7 @@ public class Wand implements Attributable {
         }
     }
 
-    private void enqueueCast(Player player, Queue<SpellInstance> instances, ItemStack item) {
+    private void enqueueCast(@NotNull Player player, Queue<SpellInstance> instances, ItemStack item) {
         if (!player.getInventory().getItemInMainHand().equals(item) || player.isDead() || !player.isOnline()) {
             return;
         }

@@ -60,6 +60,7 @@ public class WbsWandcraft extends WbsPlugin {
                         ),
                         WbsReloadSubcommand.getStatic(this, settings),
                         WbsErrorsSubcommand.getStatic(this, settings),
+                        new CommandGenerateWand(this, "generate"),
                         WbsSubcommand.simpleSubcommand(this, "tutorial", context -> {
                             CommandSender sender = context.getSource().getSender();
                             sendMessage("Not implemented.", sender);

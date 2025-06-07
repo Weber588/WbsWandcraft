@@ -8,38 +8,35 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
-import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.util.ItemUtils;
+import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.generator.WandGenerator;
 
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
-public class CommandBuildSpell extends WbsSubcommand {
-    private static final KeyedSimpleArgument DEFINITION = new KeyedSimpleArgument(
-            "definition",
+public class CommandGenerateWand extends WbsSubcommand  {
+    private static final WbsSimpleArgument.KeyedSimpleArgument WAND_GENERATOR = new WbsSimpleArgument.KeyedSimpleArgument(
+            "wand_generator",
             ArgumentTypes.namespacedKey(),
-            null
-    ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
+            WbsWandcraft.getKey("test")
+    ).addKeyedSuggestions(WandcraftRegistries.WAND_GENERATORS.values());
 
-    public CommandBuildSpell(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandGenerateWand(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
-        addSimpleArgument(DEFINITION);
+        addSimpleArgument(WAND_GENERATOR);
     }
 
     @Override
     protected int onSimpleArgumentCallback(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
-        NamespacedKey definitionKey = configuredArgumentMap.get(DEFINITION);
+        NamespacedKey generatorKey = configuredArgumentMap.get(WAND_GENERATOR);
 
-        if (definitionKey == null) {
-            plugin.sendMessage("Choose a spell: "
-                            + WandcraftRegistries.SPELLS.stream()
+        if (generatorKey == null) {
+            plugin.sendMessage("Choose a wand generator: "
+                            + WandcraftRegistries.WAND_GENERATORS.stream()
                             .map(Keyed::key)
                             .map(Key::asString)
                             .collect(Collectors.joining(", ")),
@@ -47,24 +44,22 @@ public class CommandBuildSpell extends WbsSubcommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        SpellDefinition spell = WandcraftRegistries.SPELLS.get(definitionKey);
+        WandGenerator generator = WandcraftRegistries.WAND_GENERATORS.get(generatorKey);
 
-        if (spell == null) {
-            plugin.sendMessage("Invalid spell definition: " + definitionKey.asString() + ".", context.getSource().getSender());
+        if (generator == null) {
+            plugin.sendMessage("Invalid generator key: " + generatorKey.asString() + ".", context.getSource().getSender());
             return Command.SINGLE_SUCCESS;
         }
 
-        ItemStack item = ItemUtils.buildSpell(spell);
-
         if (context.getSource().getSender() instanceof Player player) {
-            player.getInventory().addItem(item);
+            player.getInventory().addItem(generator.get());
         }
 
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
-    protected int executeNoArgs(CommandContext<CommandSourceStack> context) {
-        return sendSimpleArgumentUsage(context);
+    protected int executeNoArgs(CommandContext<CommandSourceStack> commandContext) {
+        return 0;
     }
 }
