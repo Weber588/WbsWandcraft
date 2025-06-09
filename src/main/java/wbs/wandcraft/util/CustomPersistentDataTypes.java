@@ -60,6 +60,7 @@ public class CustomPersistentDataTypes {
         private static final NamespacedKey INVENTORY_TYPE = WbsWandcraft.getKey("type");
         private static final NamespacedKey WAND_ATTRIBUTES = WbsWandcraft.getKey("wand_attributes");
         private static final NamespacedKey WAND_ATTRIBUTE_MODIFIERS = WbsWandcraft.getKey("wand_attribute_modifiers");
+        private static final NamespacedKey UUID = WbsWandcraft.getKey("wand_uuid");
 
         @Override
         public @NotNull Class<PersistentDataContainer> getPrimitiveType() {
@@ -84,6 +85,7 @@ public class CustomPersistentDataTypes {
                 modifierContainerList.add(modifierContainer);
             }
             container.set(WAND_ATTRIBUTE_MODIFIERS, PersistentDataType.LIST.dataContainers(), modifierContainerList);
+            container.set(UUID, PersistentDataType.STRING, wand.getUUID());
 
             PersistentDataContainer itemsContainer = context.newPersistentDataContainer();
             wand.getItems().rowMap().forEach((row, columnMap) -> {
@@ -115,7 +117,9 @@ public class CustomPersistentDataTypes {
                 throw new IllegalStateException("Wand inventory type missing for key " + typeKey.asString());
             }
 
-            Wand wand = new Wand(type);
+            String uuid = container.get(UUID, PersistentDataType.STRING);
+
+            Wand wand = new Wand(type, Objects.requireNonNull(uuid));
 
             wand.readAttributes(container, WAND_ATTRIBUTES);
 

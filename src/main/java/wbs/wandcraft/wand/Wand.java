@@ -22,13 +22,11 @@ import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
 import wbs.wandcraft.ItemDecorator;
-import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
-import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -41,6 +39,7 @@ import java.util.*;
 @SuppressWarnings("UnstableApiUsage")
 public class Wand implements Attributable {
     public static final NamespacedKey WAND_KEY = WbsWandcraft.getKey("wand");
+    public static final NamespacedKey WAND_UUID = WbsWandcraft.getKey("wand_uuid");
     private static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
 
     private static final WbsParticleEffect FAIL_EFFECT = new NormalParticleEffect()
@@ -51,6 +50,7 @@ public class Wand implements Attributable {
 
     public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 10)
             .setTicksToSecondsFormatter();
+    private @NotNull String uuid;
 
     @Nullable
     public static Wand getIfValid(ItemStack item) {
@@ -76,17 +76,10 @@ public class Wand implements Attributable {
     private final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
     private final Set<SpellAttributeModifier<?, ?>> attributeModifiers = new HashSet<>();
 
-    public Wand(@NotNull WandInventoryType type) {
+    public Wand(@NotNull WandInventoryType type, @NotNull String uuid) {
         this.type = type;
+        this.uuid = uuid;
         addAttribute(COOLDOWN.defaultInstance());
-
-        // TODO: Move these defaults to config
-        SpellAttributeModifier<Integer, Double> defaultDelayModifier = CastableSpell.DELAY.createModifier(
-                AttributeModifierType.ADD,
-                RegisteredPersistentDataType.DOUBLE,
-                10d
-        );
-        attributeModifiers.add(defaultDelayModifier);
     }
 
     public Set<SpellAttributeInstance<?>> getAttributeValues() {
@@ -140,7 +133,7 @@ public class Wand implements Attributable {
 
         int finalAdditionalCooldown = additionalCooldown;
         item.editMeta(meta -> {
-            enqueueCast(player, spellList, item);
+            enqueueCast(player, spellList);
             updateLastUsed(meta.getPersistentDataContainer());
             player.setCooldown(item, finalAdditionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
         });
@@ -154,8 +147,9 @@ public class Wand implements Attributable {
         }
     }
 
-    private void enqueueCast(@NotNull Player player, Queue<SpellInstance> instances, ItemStack item) {
-        if (!player.getInventory().getItemInMainHand().equals(item) || player.isDead() || !player.isOnline()) {
+    private void enqueueCast(@NotNull Player player, Queue<SpellInstance> instances) {
+        Wand check = Wand.getIfValid(player.getInventory().getItemInMainHand());
+        if (check == null || !check.getUUID().equals(uuid) || player.isDead() || !player.isOnline()) {
             return;
         }
 
@@ -168,7 +162,7 @@ public class Wand implements Attributable {
         toCast.cast(player, () -> new BukkitRunnable() {
             @Override
             public void run() {
-                enqueueCast(player, instances, item);
+                enqueueCast(player, instances);
             }
         }.runTaskLater(WbsWandcraft.getInstance(), Math.max(0, toCast.getAttribute(CastableSpell.DELAY))));
     }
@@ -319,6 +313,7 @@ public class Wand implements Attributable {
     public void toItem(ItemStack item) {
         item.editMeta(meta -> {
             meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.WAND, this);
+            meta.getPersistentDataContainer().set(Wand.WAND_UUID, PersistentDataType.STRING, uuid);
             ItemDecorator.decorate(this, meta);
         });
     }
@@ -331,5 +326,9 @@ public class Wand implements Attributable {
 
     public Set<SpellAttributeModifier<?, ?>> getAttributeModifiers() {
         return new HashSet<>(attributeModifiers);
+    }
+
+    public @NotNull String getUUID() {
+        return uuid;
     }
 }

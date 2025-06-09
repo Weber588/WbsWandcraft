@@ -36,7 +36,7 @@ public class ItemUtils {
 
     public static @NotNull ItemStack buildWand(WandInventoryType inventoryType, WandTexture wandTexture, Double hue, ItemUseAnimation animation, float animationSeconds) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_WAND);
-        Wand wand = new Wand(inventoryType);
+        Wand wand = new Wand(inventoryType, UUID.randomUUID().toString());
 
         item.getDataTypes().forEach(item::unsetData);
         item.setData(DataComponentTypes.ITEM_NAME, Component.text("Wand"));

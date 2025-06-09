@@ -54,7 +54,7 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
     public <O> void modify(SpellAttributeModifier<O, ?> modifier) {
         if (modifier.attribute().equals(attribute)) {
             //noinspection unchecked
-            value(modifier.modify((O) value()));
+            value(modifier.modify((O) value));
         }
     }
 

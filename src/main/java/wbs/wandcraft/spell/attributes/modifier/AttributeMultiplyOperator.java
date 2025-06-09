@@ -5,9 +5,13 @@ import org.bukkit.persistence.PersistentDataType;
 import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 
 public class AttributeMultiplyOperator<T extends Number, M extends Number> extends AttributeModificationOperator<T, M> {
+    // TODO: Make this configurable. Not sure about it, since divide symbol looks a lot like plus in game
+    private static final boolean DO_DIVISION_SYMBOL = false;
+
     public AttributeMultiplyOperator(AttributeModifierType definition, PersistentDataType<?, T> baseType, RegisteredPersistentDataType<M> modifierType) {
         super(definition, baseType, modifierType);
     }
@@ -24,6 +28,15 @@ public class AttributeMultiplyOperator<T extends Number, M extends Number> exten
 
     @Override
     public Component asComponent(SpellAttribute<T> attribute, M modifierValue) {
-        return attribute.displayName().append(Component.text(" x" + modifierValue));
+        DecimalFormat format = new DecimalFormat("0.#");
+
+        if (DO_DIVISION_SYMBOL) {
+            double inverse = 1 / modifierValue.doubleValue();
+            if (inverse % 1 == 0) {
+                return attribute.displayName().append(Component.text(" ÷" + format.format(inverse)));
+            }
+        }
+
+        return attribute.displayName().append(Component.text(" x" + format.format(modifierValue)));
     }
 }
