@@ -15,7 +15,7 @@ import wbs.wandcraft.spell.event.SpellTriggeredEvent;
 
 import java.util.*;
 
-public abstract class SpellDefinition implements ISpellDefinition, Attributable, TextureProvider {
+public abstract class SpellDefinition implements ISpellDefinition, TextureProvider {
     protected final Map<Key, SpellTriggeredEvent<?>> events = new HashMap<>();
 
     protected final Set<SpellAttributeInstance<?>> defaultAttributes = new HashSet<>();

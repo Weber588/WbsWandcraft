@@ -21,7 +21,8 @@ public class AttributeInstanceGenerator<T> {
         return new SpellAttributeInstance<>(attribute, WbsCollectionUtil.getRandom(values));
     }
 
-    public AttributeInstanceGenerator<T> setValues(T ... values) {
+    @SafeVarargs
+    public final AttributeInstanceGenerator<T> setValues(T... values) {
         return setValues(Arrays.asList(values));
     }
     public AttributeInstanceGenerator<T> setValues(List<T> values) {

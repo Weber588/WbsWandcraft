@@ -194,14 +194,14 @@ public class ItemUtils {
             wand.toItem(item);
             return AttributeModificationResult.MODIFIED_WAND_ATTRIBUTE;
         } else {
-            wand.setModifier(new SpellAttributeModifier<>(attributeInstance, modifierType));
+            wand.setModifier(attributeInstance.createModifier(modifierType));
             wand.toItem(item);
             return AttributeModificationResult.MODIFIED_WAND_MODIFIER;
         }
     }
 
-    public static void modifyModifier(ItemStack item, SpellAttributeInstance<?> attributeInstance, @NotNull AttributeModifierType modifierType, SpellModifier spellModifier) {
-        SpellAttributeModifier<?> modifierInstance = new SpellAttributeModifier<>(attributeInstance, modifierType);
+    public static <T> void modifyModifier(ItemStack item, SpellAttributeInstance<T> attributeInstance, @NotNull AttributeModifierType modifierType, SpellModifier spellModifier) {
+        SpellAttributeModifier<T, T> modifierInstance = attributeInstance.createModifier(modifierType);
 
         spellModifier.getModifiers().forEach(modifier -> {
             if (modifier.attribute().equals(modifierInstance.attribute())) {

@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
@@ -28,6 +27,9 @@ public class WandGenerator implements Keyed {
     private final int minAttributes;
     private final int maxAttributes;
     private final List<AttributeInstanceGenerator<?>> attributeGenerators = new LinkedList<>();
+    private final int minModifiers;
+    private final int maxModifiers;
+    private final List<AttributeModifierGenerator<?>> modifierGenerators = new LinkedList<>();
 
     private final int minSpells;
     private final int maxSpells;
@@ -35,11 +37,21 @@ public class WandGenerator implements Keyed {
     private final List<SpellInstanceGenerator> spellGenerators = new LinkedList<>();
     private final @NotNull NamespacedKey key;
 
-    public WandGenerator(@NotNull NamespacedKey key, int minAttributes, int maxAttributes, double hue, int minSpells, int maxSpells) {
+    public WandGenerator(@NotNull NamespacedKey key,
+                         int minAttributes,
+                         int maxAttributes,
+                         double hue,
+                         int minModifiers,
+                         int maxModifiers,
+                         int minSpells,
+                         int maxSpells
+    ) {
         this.key = key;
         this.hue = hue;
         this.minAttributes = minAttributes;
         this.maxAttributes = maxAttributes;
+        this.minModifiers = minModifiers;
+        this.maxModifiers = maxModifiers;
         this.minSpells = minSpells;
         this.maxSpells = maxSpells;
     }
@@ -54,18 +66,28 @@ public class WandGenerator implements Keyed {
 
         ItemStack wandItem = ItemUtils.buildWand(inventoryType, texture, hue, ItemUseAnimation.BLOCK, 1f / 4);
 
+        Wand wand = Objects.requireNonNull(Wand.getIfValid(wandItem));
+
         if (!attributeGenerators.isEmpty()) {
             int attributes = new Random().nextInt(minAttributes, maxAttributes + 1);
             for (int i = 0; i < attributes; i++) {
                 AttributeInstanceGenerator<?> attributeGenerator = WbsCollectionUtil.getRandom(attributeGenerators);
 
-                ItemUtils.modifyItem(wandItem, attributeGenerator.get(), AttributeModifierType.SET);
+                wand.addAttribute(attributeGenerator.get());
+            }
+        }
+
+        if (!modifierGenerators.isEmpty()) {
+            int modifiers = new Random().nextInt(minModifiers, maxModifiers + 1);
+            for (int i = 0; i < modifiers; i++) {
+                AttributeModifierGenerator<?> modifierGenerator = WbsCollectionUtil.getRandom(modifierGenerators);
+
+                wand.setModifier(modifierGenerator.get());
             }
         }
 
         if (!spellGenerators.isEmpty()) {
-            WandHolder wandHolder = Objects.requireNonNull(Wand.getIfValid(wandItem))
-                    .getInventory(wandItem);
+            WandHolder wandHolder = wand.getInventory(wandItem);
             Inventory inventory = wandHolder.getInventory();
 
             int spells = new Random().nextInt(minSpells, maxSpells + 1);
@@ -84,6 +106,8 @@ public class WandGenerator implements Keyed {
 
             wandHolder.save();
         }
+
+        wand.toItem(wandItem);
 
         return wandItem;
     }
@@ -130,6 +154,11 @@ public class WandGenerator implements Keyed {
 
     public WandGenerator addAttributeGenerator(AttributeInstanceGenerator<?> generator) {
         attributeGenerators.add(generator);
+        return this;
+    }
+
+    public WandGenerator addModifierGenerator(AttributeModifierGenerator<?> generator) {
+        modifierGenerators.add(generator);
         return this;
     }
 }

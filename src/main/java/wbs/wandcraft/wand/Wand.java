@@ -22,13 +22,13 @@ import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
 import wbs.wandcraft.ItemDecorator;
-import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
-import wbs.wandcraft.spell.attributes.modifier.AttributeAddModifierType;
+import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -50,7 +50,7 @@ public class Wand implements Attributable {
             .setAmount(20);
 
     public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 10)
-            .setFormatter(cooldown -> cooldown / 20.0 + " seconds");
+            .setTicksToSecondsFormatter();
 
     @Nullable
     public static Wand getIfValid(ItemStack item) {
@@ -74,16 +74,18 @@ public class Wand implements Attributable {
     @NotNull
     private final WandInventoryType type;
     private final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
-    private final Set<SpellAttributeModifier<?>> attributeModifiers = new HashSet<>();
+    private final Set<SpellAttributeModifier<?, ?>> attributeModifiers = new HashSet<>();
 
     public Wand(@NotNull WandInventoryType type) {
         this.type = type;
         addAttribute(COOLDOWN.defaultInstance());
 
         // TODO: Move these defaults to config
-        SpellAttributeModifier<Integer> defaultDelayModifier = new SpellAttributeModifier<>(CastableSpell.DELAY,
-                Objects.requireNonNull(WandcraftRegistries.MODIFIER_TYPES.get(AttributeAddModifierType.KEY)),
-                10);
+        SpellAttributeModifier<Integer, Double> defaultDelayModifier = CastableSpell.DELAY.createModifier(
+                AttributeModifierType.ADD,
+                RegisteredPersistentDataType.DOUBLE,
+                10d
+        );
         attributeModifiers.add(defaultDelayModifier);
     }
 
@@ -321,13 +323,13 @@ public class Wand implements Attributable {
         });
     }
 
-    public void setModifier(SpellAttributeModifier<?> updatedModifier) {
+    public void setModifier(SpellAttributeModifier<?, ?> updatedModifier) {
         attributeModifiers.removeIf(modifier -> modifier.attribute().equals(updatedModifier.attribute()));
 
         attributeModifiers.add(updatedModifier);
     }
 
-    public Set<SpellAttributeModifier<?>> getAttributeModifiers() {
+    public Set<SpellAttributeModifier<?, ?>> getAttributeModifiers() {
         return new HashSet<>(attributeModifiers);
     }
 }

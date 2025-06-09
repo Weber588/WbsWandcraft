@@ -66,7 +66,7 @@ public interface Attributable extends ItemDecorator {
         setAttribute(instance.attribute(), instance.value());
     }
 
-    default  <T> void applyModifier(SpellAttributeModifier<T> modifier) {
+    default  <T> void applyModifier(SpellAttributeModifier<T, ?> modifier) {
         for (SpellAttributeInstance<?> attributeInstance : getAttributeValues()) {
             if (attributeInstance.attribute().equals(modifier.attribute())) {
                 attributeInstance.modify(modifier);

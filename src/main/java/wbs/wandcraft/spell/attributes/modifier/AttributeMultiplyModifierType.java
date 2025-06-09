@@ -1,34 +1,31 @@
 package wbs.wandcraft.spell.attributes.modifier;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 public class AttributeMultiplyModifierType implements AttributeModifierType {
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T modify(T current, T value) {
-
-        switch (current) {
-            case Integer integer -> {
-                return (T) Integer.valueOf(integer * (Integer) value);
-            }
-            case Number number -> {
-                return (T) Double.valueOf(number.doubleValue() * ((Number) value).doubleValue());
-            }
-            default -> throw new IllegalArgumentException("Multiplication only supports numeric attributes.");
-        }
-    }
-
-    @Override
-    public <T> Component asComponent(SpellAttribute<T> attribute, T modifierValue) {
-        return attribute.displayName().append(Component.text(" x" + attribute.formatValue(modifierValue)));
-    }
-
     @Override
     public @NotNull NamespacedKey getKey() {
         return WbsWandcraft.getKey("multiply");
+    }
+
+    @Override
+    public <T, M> AttributeModificationOperator<T, M> buildModifierType(PersistentDataType<?, T> baseType, RegisteredPersistentDataType<M> modifierType) {
+        if (!Number.class.isAssignableFrom(baseType.getComplexType())) {
+            throw new IllegalArgumentException("Multiply only supports numeric types");
+        }
+        if (!Number.class.isAssignableFrom(modifierType.dataType().getComplexType())) {
+            throw new IllegalArgumentException("Multiply only supports numeric types");
+        }
+
+        //noinspection unchecked
+        return (AttributeModificationOperator<T, M>) new AttributeMultiplyOperator<>(
+                this,
+                (PersistentDataType<?, ? extends Number>) baseType,
+                (RegisteredPersistentDataType<? extends Number>) modifierType
+        );
     }
 }

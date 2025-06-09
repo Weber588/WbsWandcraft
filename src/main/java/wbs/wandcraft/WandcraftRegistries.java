@@ -3,6 +3,7 @@ package wbs.wandcraft;
 import wbs.utils.util.WbsRegistry;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.generator.AttributeInstanceGenerator;
+import wbs.wandcraft.generator.AttributeModifierGenerator;
 import wbs.wandcraft.generator.SpellInstanceGenerator;
 import wbs.wandcraft.generator.WandGenerator;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -16,6 +17,13 @@ import wbs.wandcraft.wand.WandInventoryType;
 import wbs.wandcraft.wand.WandTexture;
 
 public class WandcraftRegistries {
+    public static final WbsRegistry<RegisteredPersistentDataType<?>> DATA_TYPES = new WbsRegistry<>(
+            RegisteredPersistentDataType.INTEGER,
+            RegisteredPersistentDataType.BOOLEAN,
+            RegisteredPersistentDataType.DOUBLE,
+            RegisteredPersistentDataType.STRING,
+            RegisteredPersistentDataType.LONG
+    );
     public static final WbsRegistry<SpellAttribute<?>> ATTRIBUTES = new WbsRegistry<>();
     public static final WbsRegistry<AttributeModifierType> MODIFIER_TYPES = new WbsRegistry<>(
             AttributeModifierType.SET,
@@ -53,7 +61,17 @@ public class WandcraftRegistries {
             StatusEffect.STUNNED
     );
     public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>(
-            new WandGenerator(WbsWandcraft.getKey("test"), 1, 2, -1, 1, 3)
+            new WandGenerator(WbsWandcraft.getKey("test"), 1, 2, -1, 0, 1, 1, 3)
+                    .addAttributeGenerator(
+                            new AttributeInstanceGenerator<>(Wand.COOLDOWN)
+                                    .setValues(5, 10, 10, 15, 20)
+                    ).addModifierGenerator(
+                            new AttributeModifierGenerator<>(CastableSpell.COST, AttributeModifierType.MULTIPLY)
+                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5, 0.75, 0.9, 1.1)
+                    ).addModifierGenerator(
+                            new AttributeModifierGenerator<>(CastableSpell.DELAY, AttributeModifierType.MULTIPLY)
+                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5, 0.75, 0.9, 1.1)
+                    )
                     .addSpellGenerator(
                             new SpellInstanceGenerator()
                                     .addAttributeGenerator(
@@ -80,15 +98,6 @@ public class WandcraftRegistries {
                                             new AttributeInstanceGenerator<>(IProjectileSpell.IMPRECISION)
                                                     .setValues(5d, 10d, 10d, 15d, 20d)
                                     )
-                    ).addAttributeGenerator(
-                            new AttributeInstanceGenerator<>(Wand.COOLDOWN)
-                                    .setValues(1, 2, 3, 4)
-                    ).addAttributeGenerator(
-                            new AttributeInstanceGenerator<>(CastableSpell.COST)
-                                    .setValues(1, 2, 3, 4)
-                    ).addAttributeGenerator(
-                            new AttributeInstanceGenerator<>(CastableSpell.DELAY)
-                                    .setValues(1, 2, 3, 4)
                     )
     );
 }

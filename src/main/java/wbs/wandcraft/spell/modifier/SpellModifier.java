@@ -42,7 +42,7 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
 
     private final ModifierScope scope;
 
-    private final List<SpellAttributeModifier<?>> modifiers = new LinkedList<>();
+    private final List<SpellAttributeModifier<?, ?>> modifiers = new LinkedList<>();
     private final List<SpellEffectInstance<?>> effects = new LinkedList<>();
 
     public SpellModifier(ModifierScope scope) {
@@ -54,7 +54,7 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
         effects.forEach(instance::registerEffect);
     }
 
-    public List<SpellAttributeModifier<?>> getModifiers() {
+    public List<SpellAttributeModifier<?, ?>> getModifiers() {
         return new LinkedList<>(modifiers);
     }
 
@@ -62,7 +62,7 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
         return new LinkedList<>(effects);
     }
 
-    public SpellModifier addModifier(SpellAttributeModifier<?> modifier) {
+    public SpellModifier addModifier(SpellAttributeModifier<?, ?> modifier) {
         this.modifiers.add(modifier);
         return this;
     }
@@ -206,7 +206,7 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
         return loreList;
     }
 
-    public void removeModifier(SpellAttributeModifier<?> modifier) {
+    public void removeModifier(SpellAttributeModifier<?, ?> modifier) {
         modifiers.remove(modifier);
     }
 

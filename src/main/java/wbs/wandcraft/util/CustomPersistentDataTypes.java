@@ -78,7 +78,7 @@ public class CustomPersistentDataTypes {
             wand.writeAttributes(container, WAND_ATTRIBUTES);
 
             List<PersistentDataContainer> modifierContainerList = new LinkedList<>();
-            for (SpellAttributeModifier<?> attributeModifier : wand.getAttributeModifiers()) {
+            for (SpellAttributeModifier<?, ?> attributeModifier : wand.getAttributeModifiers()) {
                 PersistentDataContainer modifierContainer = context.newPersistentDataContainer();
                 attributeModifier.writeTo(modifierContainer);
                 modifierContainerList.add(modifierContainer);
@@ -122,7 +122,7 @@ public class CustomPersistentDataTypes {
             List<PersistentDataContainer> modifierContainerList = container.get(WAND_ATTRIBUTE_MODIFIERS, PersistentDataType.LIST.dataContainers());
             if (modifierContainerList != null) {
                 for (PersistentDataContainer modifierContainer : modifierContainerList) {
-                    SpellAttributeModifier<?> attributeModifier = SpellAttributeModifier.fromContainer(modifierContainer);
+                    SpellAttributeModifier<?, ?> attributeModifier = SpellAttributeModifier.fromContainer(modifierContainer);
 
                     wand.setModifier(attributeModifier);
                 }
@@ -219,7 +219,7 @@ public class CustomPersistentDataTypes {
             PersistentDataContainer container = context.newPersistentDataContainer();
 
             List<PersistentDataContainer> modifierContainerList = new LinkedList<>();
-            for (SpellAttributeModifier<?> attributeModifier : modifier.getModifiers()) {
+            for (SpellAttributeModifier<?, ?> attributeModifier : modifier.getModifiers()) {
                 PersistentDataContainer modifierContainer = context.newPersistentDataContainer();
                 attributeModifier.writeTo(modifierContainer);
                 modifierContainerList.add(modifierContainer);
@@ -255,7 +255,7 @@ public class CustomPersistentDataTypes {
             }
 
             for (PersistentDataContainer modifierContainer : modifierContainerList) {
-                SpellAttributeModifier<?> attributeModifier = SpellAttributeModifier.fromContainer(modifierContainer);
+                SpellAttributeModifier<?, ?> attributeModifier = SpellAttributeModifier.fromContainer(modifierContainer);
 
                 spellModifier.addModifier(attributeModifier);
             }
@@ -318,7 +318,7 @@ public class CustomPersistentDataTypes {
         }
 
         @Override
-        public @NotNull SpellAttributeModifier<?> fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
+        public @NotNull SpellAttributeModifier<?, ?> fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
             return SpellAttributeModifier.fromContainer(container);
         }
     }

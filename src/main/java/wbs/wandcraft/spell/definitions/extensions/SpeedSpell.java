@@ -6,7 +6,7 @@ import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
 public interface SpeedSpell extends ISpellDefinition {
     SpellAttribute<Double> SPEED = new DoubleSpellAttribute("speed", 1)
-            .setFormatter(speed -> speed * 20 + " blocks/second");
+            .setNumericFormatter(20, speed -> speed + " blocks/second");
 
     default void setupSpeed() {
         addAttribute(SPEED);

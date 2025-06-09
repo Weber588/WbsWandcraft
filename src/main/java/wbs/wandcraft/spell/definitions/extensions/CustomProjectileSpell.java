@@ -18,9 +18,9 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
             .setShowAttribute(value -> value > 0);
     SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 3)
             .setShowAttribute(value -> value > 0)
-            .setFormatter(value -> value + " blocks/second²");
+            .setNumericFormatter(value -> value + " blocks/second²");
     SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size",0.3)
-            .setFormatter(value -> value + " blocks");
+            .setNumericFormatter(value -> value + " blocks");
 
     default void setupCustomProjectile() {
         addAttribute(BOUNCES);

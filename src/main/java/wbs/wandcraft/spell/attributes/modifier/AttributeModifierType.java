@@ -1,15 +1,16 @@
 package wbs.wandcraft.spell.attributes.modifier;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Keyed;
-import wbs.wandcraft.spell.attributes.SpellAttribute;
+import org.bukkit.persistence.PersistentDataType;
+import wbs.wandcraft.RegisteredPersistentDataType;
 
 public interface AttributeModifierType extends Keyed {
     AttributeModifierType SET = new AttributeSetModifierType();
     AttributeModifierType MULTIPLY = new AttributeMultiplyModifierType();
     AttributeModifierType ADD = new AttributeAddModifierType();
 
-    <T> T modify(T current, T value);
-
-    <T> Component asComponent(SpellAttribute<T> attribute, T modifierValue);
+    <T, M> AttributeModificationOperator<T, M> buildModifierType(
+            PersistentDataType<?, T> baseType,
+            RegisteredPersistentDataType<M> modifierType
+    );
 }

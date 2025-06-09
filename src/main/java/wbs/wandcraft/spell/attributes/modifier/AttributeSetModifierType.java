@@ -1,24 +1,24 @@
 package wbs.wandcraft.spell.attributes.modifier;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 public class AttributeSetModifierType implements AttributeModifierType {
-    @Override
-    public <T> T modify(T current, T value) {
-        return value;
-    }
-
     @Override
     public @NotNull NamespacedKey getKey() {
         return WbsWandcraft.getKey("set");
     }
 
     @Override
-    public <T> Component asComponent(SpellAttribute<T> attribute, T modifierValue) {
-        return attribute.displayName().append(Component.text(" = " + attribute.formatValue(modifierValue)));
+    public <T, M> AttributeModificationOperator<T, M> buildModifierType(PersistentDataType<?, T> baseType, RegisteredPersistentDataType<M> modifierType) {
+        if (!baseType.getComplexType().isAssignableFrom(modifierType.dataType().getComplexType())) {
+            throw new IllegalArgumentException("Set only supports symmetric types");
+        }
+
+        //noinspection unchecked
+        return (AttributeModificationOperator<T, M>) new AttributeSetOperator<>(this, modifierType);
     }
 }

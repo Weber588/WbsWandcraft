@@ -23,7 +23,6 @@ import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
-import wbs.wandcraft.spell.attributes.modifier.AttributeAddModifierType;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
@@ -49,7 +48,7 @@ public class CommandAttributesModify extends WbsSubcommand {
     );
     private static final KeyedSimpleArgument MODIFIER_TYPE = new KeyedSimpleArgument("modifier_type",
             ArgumentTypes.namespacedKey(),
-            AttributeAddModifierType.KEY
+            AttributeModifierType.ADD.getKey()
     );
 
     static {
@@ -75,12 +74,10 @@ public class CommandAttributesModify extends WbsSubcommand {
                             .forEach(attributes::add);
 
                     if (wand != null) {
-                        attributes.addAll(
-                                wand.getAttributeModifiers()
-                                        .stream()
-                                        .map(SpellAttributeModifier::attribute)
-                                        .toList()
-                        );
+                        wand.getAttributeModifiers()
+                                .stream()
+                                .map(SpellAttributeModifier::attribute)
+                                        .forEach(attributes::add);
                     }
                 } else {
                     attributes.addAll(WandcraftRegistries.ATTRIBUTES.values());

@@ -52,11 +52,11 @@ public class VortexSpell extends SpellDefinition implements CastableSpell, Speed
                 Vector direction = WbsEntityUtil.getFacingVector(caster, speed);
                 effectClone.setAbout(direction);
                 effectClone.setRotation(i*2);
-                effectClone.play(instance.getAttribute(PARTICLE), WbsEntityUtil.getMiddleLocation(caster));
+                effectClone.play(instance.getAttribute(PARTICLE, getDefaultParticle()), WbsEntityUtil.getMiddleLocation(caster));
 
                 caster.setVelocity(direction);
 
-                selector.select(caster).forEach(entity -> {
+                selector.selectExcluding(caster).forEach(entity -> {
                     Vector pullVector = caster.getLocation().subtract(entity.getLocation()).toVector();
                     pullVector.normalize().multiply(speed);
 
