@@ -8,20 +8,20 @@ import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
 import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
 
 // TODO: Implement targeting system for these spells that can target one or more entities
-public class StunSpell extends SpellDefinition implements CastableSpell, RadiusedSpell {
-
-    public static final int DEFAULT_DURATION = 20;
-
+public class StunSpell extends SpellDefinition implements CastableSpell, RadiusedSpell, DurationalSpell {
     public StunSpell() {
         super("stun");
+
+        addAttribute(DURATION, 20);
     }
 
     @Override
     public Component description() {
-        return Component.text("Temporarily stuns all living entities in a radius, cancelling eating, drinking, and adding a short cooldown to held items.");
+        return Component.text("Temporarily stuns all mobs in a radius, cancelling eating, drinking, and adding a short cooldown to held items.");
     }
 
     @Override
@@ -32,6 +32,13 @@ public class StunSpell extends SpellDefinition implements CastableSpell, Radiuse
         RadiusSelector<LivingEntity> selector = new RadiusSelector<>(LivingEntity.class)
                 .setRange(instance.getAttribute(RADIUS));
 
-        selector.select(player).forEach(target -> StatusEffectInstance.applyEffect(target, StatusEffect.STUNNED, DEFAULT_DURATION, true));
+        selector.selectExcluding(player).forEach(
+                target -> StatusEffectInstance.applyEffect(
+                        target,
+                        StatusEffect.STUNNED,
+                        instance.getAttribute(DURATION),
+                        true
+                )
+        );
     }
 }

@@ -14,7 +14,7 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 
 public class VortexSpell extends SpellDefinition implements CastableSpell, SpeedSpell, DurationalSpell, ParticleSpell, RadiusedSpell {
     private final RingParticleEffect effect = (RingParticleEffect) new RingParticleEffect()
-            .setRadius(1)
+            .setRadius(2)
             .setAmount(3);
 
     public VortexSpell() {

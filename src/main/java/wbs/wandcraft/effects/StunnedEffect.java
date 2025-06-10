@@ -27,7 +27,7 @@ public class StunnedEffect implements StatusEffect {
 
         if (entity instanceof Player player) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            if (!item.isEmpty()) {
+            if (!item.isEmpty() && player.getCooldown(item) == 0) {
                 player.setCooldown(item, timeLeft);
             }
         } else if (entity instanceof Mob mob) {

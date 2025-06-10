@@ -40,7 +40,7 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
 
         Collection<LivingEntity> hit = new RadiusSelector<>(LivingEntity.class)
                 .setRange(instance.getAttribute(RADIUS))
-                .select(caster);
+                .selectExcluding(caster);
 
         for (LivingEntity target : hit) {
             if (WbsRegionUtils.canDealDamage(caster.getPlayer(), target)) {

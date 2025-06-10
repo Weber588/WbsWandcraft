@@ -75,7 +75,10 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
                     context.finish();
                     cancel();
                 }
-                entities = new RadiusSelector<>(LivingEntity.class).setRange(hitbox).select(WbsEntityUtil.getMiddleLocation(player));
+                entities = new RadiusSelector<>(LivingEntity.class)
+                        .setRange(hitbox)
+                        .exclude(player)
+                        .select(WbsEntityUtil.getMiddleLocation(player));
                 for (LivingEntity e : entities) {
                     e.damage(damage, player);
                 }
