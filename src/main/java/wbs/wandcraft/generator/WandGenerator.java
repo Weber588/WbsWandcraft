@@ -3,12 +3,17 @@ package wbs.wandcraft.generator;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WandcraftSettings;
+import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
@@ -54,6 +59,100 @@ public class WandGenerator implements Keyed {
         this.maxModifiers = maxModifiers;
         this.minSpells = minSpells;
         this.maxSpells = maxSpells;
+    }
+
+    public WandGenerator(@NotNull ConfigurationSection section, WandcraftSettings settings, String directory) {
+        String name = section.getName();
+
+        key = WbsWandcraft.getKey(name);
+
+        hue = section.getDouble("hue", -1);
+
+        ConfigurationSection spellsSection = section.getConfigurationSection("spells");
+        if (spellsSection == null) {
+            minSpells = 0;
+            maxSpells = 0;
+        } else {
+            minSpells = spellsSection.getInt("min", 1);
+            maxSpells = spellsSection.getInt("max", 1);
+
+            ConfigurationSection generatorsSection = spellsSection.getConfigurationSection("generators");
+            String spellGenDirectory = directory + "/spells/generators";
+            if (generatorsSection == null) {
+                settings.logError("\"generators\" is a required section when adding spells.", spellGenDirectory);
+            } else {
+                for (String spellString : generatorsSection.getKeys(false)) {
+                    ConfigurationSection generatorSection = Objects.requireNonNull(generatorsSection.getConfigurationSection(spellString));
+
+                    spellGenerators.add(new SpellInstanceGenerator(
+                            generatorSection,
+                            settings,
+                            spellGenDirectory + "/" + spellString
+                    ));
+                }
+            }
+        }
+
+        ConfigurationSection attributesSection = section.getConfigurationSection("attributes");
+        if (attributesSection == null) {
+            minAttributes = 0;
+            maxAttributes = 0;
+        } else {
+            minAttributes = attributesSection.getInt("min", 1);
+            maxAttributes = attributesSection.getInt("max", 1);
+
+            ConfigurationSection generatorsSection = attributesSection.getConfigurationSection("generators");
+            String attrGenDirectory = directory + "/attributes/generators";
+            if (generatorsSection == null) {
+                settings.logError("\"generators\" is a required section when adding attributes.", attrGenDirectory);
+            } else {
+                for (String attributeString : generatorsSection.getKeys(false)) {
+                    NamespacedKey attributeKey = NamespacedKey.fromString(attributeString, WbsWandcraft.getInstance());
+
+                    SpellAttribute<?> attribute = WandcraftRegistries.ATTRIBUTES.get(attributeKey);
+                    if (attribute == null) {
+                        settings.logError("Invalid attribute key \"" + attributeString + "\".", attrGenDirectory + "/" + attributeString);
+                    } else {
+                        ConfigurationSection generatorSection = generatorsSection.getConfigurationSection(attributeString);
+
+                        attributeGenerators.add(new AttributeInstanceGenerator<>(
+                                attribute,
+                                Objects.requireNonNull(generatorSection),
+                                settings,
+                                attrGenDirectory + "/" + attributeString
+                        ));
+                    }
+                }
+            }
+        }
+
+        ConfigurationSection modifiersSection = section.getConfigurationSection("modifiers");
+        if (modifiersSection == null) {
+            minModifiers = 0;
+            maxModifiers = 0;
+        } else {
+            minModifiers = modifiersSection.getInt("min", 1);
+            maxModifiers = modifiersSection.getInt("max", 1);
+
+            ConfigurationSection generatorsSection = modifiersSection.getConfigurationSection("generators");
+            String modGenDirectory = directory + "/modifiers/generators";
+            if (generatorsSection == null) {
+                settings.logError("\"generators\" is a required section when adding modifiers.", modGenDirectory);
+            } else {
+                for (String attributeString : generatorsSection.getKeys(false)) {
+                    AttributeModifierGenerator<?> modifier = AttributeModifierGenerator.fromConfig(
+                            Objects.requireNonNull(generatorsSection.getConfigurationSection(attributeString)),
+                            settings,
+                            modGenDirectory + "/" + attributeString,
+                            AttributeModifierType.ADD
+                    );
+
+                    if (modifier != null) {
+                        modifierGenerators.add(modifier);
+                    }
+                }
+            }
+        }
     }
 
     public ItemStack get() {

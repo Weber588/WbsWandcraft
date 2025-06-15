@@ -12,7 +12,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsColours;
-import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
@@ -86,32 +85,21 @@ public class ItemUtils {
 
         item.getDataTypes().forEach(item::unsetData);
 
-        WandcraftSettings settings = WbsWandcraft.getInstance().getSettings();
-        
-        NamespacedKey itemModelKey;
-        if (settings.useResourcePack()) {
-            CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
+        CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
 
-            CustomModelData.Builder cloneBuilder = CustomModelData.customModelData();
-            if (data != null) {
-                cloneBuilder.addColors(data.colors());
-                cloneBuilder.addFlags(data.flags());
-                cloneBuilder.addFloats(data.floats());
-                cloneBuilder.addStrings(data.strings());
-            }
-
-            cloneBuilder.addString(spell.key().asString());
-            item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
-
-            itemModelKey = BASE_MATERIAL_SPELL.getKey();
-        } else {
-            itemModelKey = settings.getItemModel(
-                    WbsWandcraft.getKey("spell_default"),
-                    "spell_" + spell.getKey().asString(),
-                    "spell_default"
-            );
+        CustomModelData.Builder cloneBuilder = CustomModelData.customModelData();
+        if (data != null) {
+            cloneBuilder.addColors(data.colors());
+            cloneBuilder.addFlags(data.flags());
+            cloneBuilder.addFloats(data.floats());
+            cloneBuilder.addStrings(data.strings());
         }
-        
+
+        cloneBuilder.addString(spell.key().asString());
+        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
+
+        NamespacedKey itemModelKey = BASE_MATERIAL_SPELL.getKey();
+
         item.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);
 
         spellInstance.toItem(item);
@@ -131,31 +119,21 @@ public class ItemUtils {
         SpellModifier modifier = new SpellModifier(scope);
 
         item.getDataTypes().forEach(item::unsetData);
-        WandcraftSettings settings = WbsWandcraft.getInstance().getSettings();
-        
-        NamespacedKey itemModelKey;
-        if (settings.useResourcePack()) {
-            CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
 
-            CustomModelData.Builder cloneBuilder = CustomModelData.customModelData();
-            if (data != null) {
-                cloneBuilder.addColors(data.colors());
-                cloneBuilder.addFlags(data.flags());
-                cloneBuilder.addFloats(data.floats());
-                cloneBuilder.addStrings(data.strings());
-            }
+        CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
 
-            cloneBuilder.addString(scope.key().asString());
-            item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
-
-            itemModelKey = BASE_MATERIAL_MODIFIER.getKey();
-        } else {
-            itemModelKey = settings.getItemModel(
-                    WbsWandcraft.getKey("modifier_default"),
-                    "modifier_" + modifier.getKey().asString(),
-                    "modifier_default"
-            );
+        CustomModelData.Builder cloneBuilder = CustomModelData.customModelData();
+        if (data != null) {
+            cloneBuilder.addColors(data.colors());
+            cloneBuilder.addFlags(data.flags());
+            cloneBuilder.addFloats(data.floats());
+            cloneBuilder.addStrings(data.strings());
         }
+
+        cloneBuilder.addString(scope.key().asString());
+        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
+
+        NamespacedKey itemModelKey = BASE_MATERIAL_MODIFIER.getKey();
         
         item.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);
 

@@ -61,7 +61,7 @@ public class WandcraftRegistries {
             StatusEffect.STUNNED
     );
     public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>(
-            new WandGenerator(WbsWandcraft.getKey("test"), 1, 2, -1, 0, 1, 1, 3)
+            new WandGenerator(WbsWandcraft.getKey("example"), 1, 2, -1, 0, 1, 1, 3)
                     .addAttributeGenerator(
                             new AttributeInstanceGenerator<>(Wand.COOLDOWN)
                                     .setValues(5, 10, 10, 15, 20)
@@ -75,28 +75,24 @@ public class WandcraftRegistries {
                     .addSpellGenerator(
                             new SpellInstanceGenerator()
                                     .addAttributeGenerator(
-                                            new AttributeInstanceGenerator<>(CustomProjectileSpell.GRAVITY)
-                                                    .setValues(0.5d, 0.8d, 1.2d)
+                                            new AttributeModifierGenerator<>(CustomProjectileSpell.GRAVITY, AttributeModifierType.MULTIPLY)
+                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5d, 0.8d, 1.2d)
                                     )
                                     .addAttributeGenerator(
-                                            new AttributeInstanceGenerator<>(SpeedSpell.SPEED)
-                                                    .setValues(2d, 3d, 4d)
+                                            new AttributeModifierGenerator<>(SpeedSpell.SPEED, AttributeModifierType.MULTIPLY)
+                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 2d, 3d, 4d)
                                     )
                                     .addAttributeGenerator(
-                                            new AttributeInstanceGenerator<>(CustomProjectileSpell.BOUNCES)
-                                                    .setValues(0, 0, 0, 1, 5)
+                                            new AttributeModifierGenerator<>(CustomProjectileSpell.BOUNCES, AttributeModifierType.MULTIPLY)
+                                                    .setValues(RegisteredPersistentDataType.INTEGER, 0, 0, 0, 1, 5)
                                     )
                                     .addAttributeGenerator(
-                                            new AttributeInstanceGenerator<>(RangedSpell.RANGE)
-                                                    .setValues(25d, 50d, 50d, 75d, 100d)
+                                            new AttributeModifierGenerator<>(RangedSpell.RANGE, AttributeModifierType.MULTIPLY)
+                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 25d, 50d, 50d, 75d, 100d)
                                     )
                                     .addAttributeGenerator(
-                                            new AttributeInstanceGenerator<>(CustomProjectileSpell.GRAVITY)
-                                                    .setValues(4d, 6d, 10d)
-                                    )
-                                    .addAttributeGenerator(
-                                            new AttributeInstanceGenerator<>(IProjectileSpell.IMPRECISION)
-                                                    .setValues(5d, 10d, 10d, 15d, 20d)
+                                            new AttributeModifierGenerator<>(IProjectileSpell.IMPRECISION, AttributeModifierType.MULTIPLY)
+                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 5d, 10d, 10d, 15d, 20d)
                                     )
                     )
     );

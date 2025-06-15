@@ -31,7 +31,8 @@ item-models:
 artificing-table:
   # Supports minimessage formatting
   name: 'Artificing Table'
-  block: minecraft:deepslate_tile_wall
+  block: minecraft:barrier
+  item: minecraft:reinforced_deepslate
   item-model: minecraft:reinforced_deepslate
   block-displays:
     # These names are arbitrary -- they have to be unique, but can be anything you like.
@@ -39,6 +40,8 @@ artificing-table:
       block: minecraft:polished_blackstone_slab
       scale:
         y: 0.75
+    pillar:
+      block: minecraft:deepslate_tile_wall
     top_underside:
       block: minecraft:deepslate_tile_slab
       offset:

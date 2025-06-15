@@ -5,6 +5,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import wbs.utils.util.WbsEventUtils;
 import wbs.wandcraft.WbsWandcraft;
@@ -12,6 +13,8 @@ import wbs.wandcraft.wand.WandHolder;
 
 @SuppressWarnings("unused")
 public class WandInventoryEvents implements Listener {
+    // TODO: Prevent click and drag from allowing items to be put in inventory unexpectedly
+
     @EventHandler(priority= EventPriority.LOWEST, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getInventory().getHolder() instanceof WandHolder holder) {
@@ -40,6 +43,13 @@ public class WandInventoryEvents implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         if (event.getInventory().getHolder() instanceof WandHolder holder) {
             holder.save();
+        }
+    }
+
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent event) {
+        if (event.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof WandHolder holder) {
+            event.setCancelled(true);
         }
     }
 }

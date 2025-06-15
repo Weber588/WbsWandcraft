@@ -23,10 +23,7 @@ import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
 import wbs.wandcraft.ItemDecorator;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.attributes.Attributable;
-import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
-import wbs.wandcraft.spell.attributes.SpellAttribute;
-import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
+import wbs.wandcraft.spell.attributes.*;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -50,6 +47,8 @@ public class Wand implements Attributable {
 
     public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 10)
             .setTicksToSecondsFormatter();
+    public static final SpellAttribute<Boolean> SHUFFLE = new BooleanSpellAttribute("shuffle", false);
+
     private @NotNull String uuid;
 
     @Nullable
@@ -80,6 +79,7 @@ public class Wand implements Attributable {
         this.type = type;
         this.uuid = uuid;
         addAttribute(COOLDOWN.defaultInstance());
+        addAttribute(SHUFFLE.defaultInstance());
     }
 
     public Set<SpellAttributeInstance<?>> getAttributeValues() {
@@ -185,13 +185,38 @@ public class Wand implements Attributable {
 
     public Table<Integer, Integer, SpellInstance> getRawSpellTable() {
         HashBasedTable<Integer, Integer, SpellInstance> table = HashBasedTable.create();
-        for (int row = 0; row < type.getRows(); row++) {
-            for (int column = 0; column < type.getColumns(); column++) {
-                ItemStack item = items.get(row, column);
-                if (item != null) {
-                    SpellInstance instance = SpellInstance.fromItem(item);
+
+        Boolean shuffle = getAttribute(SHUFFLE);
+        if (shuffle != null && shuffle) {
+            LinkedList<SpellInstance> spellList = new LinkedList<>();
+            for (ItemStack item : items.values()) {
+                SpellInstance instance = SpellInstance.fromItem(item);
+                if (instance != null) {
+                    spellList.add(instance);
+                } else if (SpellModifier.fromItem(item) != null) {
+                    spellList.add(null);
+                }
+            }
+
+            Collections.shuffle(spellList);
+
+            for (int row = 0; row < type.getRows(); row++) {
+                for (int column = 0; column < type.getColumns(); column++) {
+                    SpellInstance instance = spellList.poll();
                     if (instance != null) {
                         table.put(row, column, instance);
+                    }
+                }
+            }
+        } else {
+            for (int row = 0; row < type.getRows(); row++) {
+                for (int column = 0; column < type.getColumns(); column++) {
+                    ItemStack item = items.get(row, column);
+                    if (item != null) {
+                        SpellInstance instance = SpellInstance.fromItem(item);
+                        if (instance != null) {
+                            table.put(row, column, instance);
+                        }
                     }
                 }
             }
@@ -202,13 +227,38 @@ public class Wand implements Attributable {
 
     public Table<Integer, Integer, SpellModifier> getModifierTable() {
         HashBasedTable<Integer, Integer, SpellModifier> table = HashBasedTable.create();
-        for (int row = 0; row < type.getRows(); row++) {
-            for (int column = 0; column < type.getColumns(); column++) {
-                ItemStack item = items.get(row, column);
-                if (item != null) {
-                    SpellModifier modifier = SpellModifier.fromItem(item);
+
+        Boolean shuffle = getAttribute(SHUFFLE);
+        if (shuffle != null && shuffle) {
+            LinkedList<SpellModifier> modifierList = new LinkedList<>();
+            for (ItemStack item : items.values()) {
+                SpellModifier modifier = SpellModifier.fromItem(item);
+                if (modifier != null) {
+                    modifierList.add(modifier);
+                } else if (SpellInstance.fromItem(item) != null) {
+                    modifierList.add(null);
+                }
+            }
+
+            Collections.shuffle(modifierList);
+
+            for (int row = 0; row < type.getRows(); row++) {
+                for (int column = 0; column < type.getColumns(); column++) {
+                    SpellModifier modifier = modifierList.poll();
                     if (modifier != null) {
                         table.put(row, column, modifier);
+                    }
+                }
+            }
+        } else {
+            for (int row = 0; row < type.getRows(); row++) {
+                for (int column = 0; column < type.getColumns(); column++) {
+                    ItemStack item = items.get(row, column);
+                    if (item != null) {
+                        SpellModifier modifier = SpellModifier.fromItem(item);
+                        if (modifier != null) {
+                            table.put(row, column, modifier);
+                        }
                     }
                 }
             }

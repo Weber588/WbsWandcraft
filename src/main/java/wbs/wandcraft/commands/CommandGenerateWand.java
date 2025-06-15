@@ -13,7 +13,6 @@ import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.generator.WandGenerator;
 
 import java.util.stream.Collectors;
@@ -22,7 +21,7 @@ public class CommandGenerateWand extends WbsSubcommand  {
     private static final WbsSimpleArgument.KeyedSimpleArgument WAND_GENERATOR = new WbsSimpleArgument.KeyedSimpleArgument(
             "wand_generator",
             ArgumentTypes.namespacedKey(),
-            WbsWandcraft.getKey("test")
+            WandcraftRegistries.WAND_GENERATORS.stream().findFirst().orElseThrow().getKey()
     ).addKeyedSuggestions(WandcraftRegistries.WAND_GENERATORS.values());
 
     public CommandGenerateWand(@NotNull WbsPlugin plugin, @NotNull String label) {

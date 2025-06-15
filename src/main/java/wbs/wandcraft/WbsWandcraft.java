@@ -3,6 +3,7 @@ package wbs.wandcraft;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import wbs.utils.util.commands.brigadier.WbsCommand;
 import wbs.utils.util.commands.brigadier.WbsErrorsSubcommand;
 import wbs.utils.util.commands.brigadier.WbsReloadSubcommand;
@@ -12,6 +13,7 @@ import wbs.wandcraft.commands.*;
 import wbs.wandcraft.events.*;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.effects.StatusEffect;
+import wbs.wandcraft.wand.Wand;
 
 @SuppressWarnings("UnstableApiUsage")
 public class WbsWandcraft extends WbsPlugin {
@@ -42,6 +44,7 @@ public class WbsWandcraft extends WbsPlugin {
     @Override
     public void onEnable() {
         WbsCommand.getStatic(this, "wandcraft")
+                .setPermission("wbswandcraft.command")
                 .addSubcommands(
                         new CommandInfo(this, "info"),
                         WbsCommand.getStatic(this, "build").addSubcommands(
@@ -56,7 +59,22 @@ public class WbsWandcraft extends WbsPlugin {
                         ),
                         WbsCommand.getStatic(this, "modify").addSubcommands(
                                 new CommandAttributesModify(this, "attribute"),
-                                new CommandEffectsModify(this, "effect")
+                                new CommandEffectsModify(this, "effect"),
+                                WbsSubcommand.simpleSubcommand(this, "wand", context -> {
+                                    CommandSender sender = context.getSource().getSender();
+                                    if (!(sender instanceof Player player)) {
+                                        sendMessage("This command is only usable by players.", sender);
+                                        return;
+                                    }
+                                    ItemStack item = player.getInventory().getItemInMainHand();
+                                    Wand wand = Wand.getIfValid(item);
+                                    if (wand == null) {
+                                        sendMessage("Hold a wand to modify it.", sender);
+                                        return;
+                                    }
+                                    player.openInventory(wand.getInventory(item).getInventory());
+                                    player.clearActiveItem();
+                                })
                         ),
                         WbsReloadSubcommand.getStatic(this, settings),
                         WbsErrorsSubcommand.getStatic(this, settings),
@@ -66,6 +84,7 @@ public class WbsWandcraft extends WbsPlugin {
                             sendMessage("Not implemented.", sender);
                         })
                 )
+                .inferSubPermissions()
                 .addAliases("wbswandcraft", "wandc", "wwc")
                 .register();
 

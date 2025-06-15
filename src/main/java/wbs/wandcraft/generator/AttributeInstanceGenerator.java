@@ -1,6 +1,8 @@
 package wbs.wandcraft.generator;
 
+import org.bukkit.configuration.ConfigurationSection;
 import wbs.utils.util.WbsCollectionUtil;
+import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 
@@ -15,6 +17,29 @@ public class AttributeInstanceGenerator<T> {
     public AttributeInstanceGenerator(SpellAttribute<T> attribute) {
         this.attribute = attribute;
         values.add(attribute.defaultValue());
+    }
+
+    public AttributeInstanceGenerator(SpellAttribute<T> attribute, ConfigurationSection generatorSection, WandcraftSettings settings, String directory) {
+        this(attribute);
+
+        List<?> values = generatorSection.getList("values");
+
+        if (values != null && !values.isEmpty()) {
+            Class<T> tClass = attribute.getTClass();
+            List<T> valuesToAdd = new LinkedList<>();
+
+            for (Object value : values) {
+                if (tClass.isInstance(value)) {
+                    valuesToAdd.add(tClass.cast(value));
+                } else {
+                    settings.logError("Value \"" + value + "\" is not valid for attribute of type " + tClass.getCanonicalName(), directory + "/values");
+                }
+            }
+
+            if (!valuesToAdd.isEmpty()) {
+                setValues(valuesToAdd);
+            }
+        }
     }
 
     public SpellAttributeInstance<T> get() {

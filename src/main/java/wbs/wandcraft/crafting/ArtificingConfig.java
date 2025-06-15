@@ -6,11 +6,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockType;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Interaction;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -29,11 +28,11 @@ import java.util.*;
 public class ArtificingConfig {
     public static final NamespacedKey TAG = WbsWandcraft.getKey("artificing_table");
 
-    private static NamespacedKey getBlockKey(Block block) {
+    public static NamespacedKey getBlockKey(Block block) {
         return WbsWandcraft.getKey(block.getX() + "_" + block.getY() + '_' + block.getZ());
     }
 
-    private static Location locationFromKey(NamespacedKey key) {
+    public static Location locationFromKey(NamespacedKey key) {
         String asString = key.value();
 
         String[] args = asString.split("_");
@@ -52,6 +51,32 @@ public class ArtificingConfig {
         }
 
         return true;
+    }
+
+    public static ArtificingTable getTable(Block block) {
+        PersistentDataContainer artificingContainer = block.getChunk().getPersistentDataContainer().get(TAG, PersistentDataType.TAG_CONTAINER);
+
+        if (artificingContainer == null || !artificingContainer.has(getBlockKey(block))) {
+            return null;
+        }
+
+        return new ArtificingTable(block);
+    }
+
+    @Nullable
+    public static ArtificingTable getTable(Interaction interaction) {
+        Set<NamespacedKey> keys = interaction.getPersistentDataContainer().getKeys();
+        for (NamespacedKey key : keys) {
+            try {
+                Location location = ArtificingConfig.locationFromKey(key);
+
+                if (ArtificingConfig.isInstance(interaction.getWorld().getBlockAt(location))) {
+                    return getTable(interaction.getWorld().getBlockAt(location));
+                }
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        return null;
     }
 
     public static List<ArtificingTable> getNearbyTables(Location location) {
@@ -93,10 +118,14 @@ public class ArtificingConfig {
         for (NamespacedKey key : keys) {
             Location loc = locationFromKey(key);
 
-            tables.add(new ArtificingTable(world.getBlockAt(loc)));
+            tables.add(getTable(world.getBlockAt(loc)));
         }
 
         return tables;
+    }
+
+    public static boolean isArtificingItem(Item item) {
+        return item.getPersistentDataContainer().has(ArtificingConfig.TAG);
     }
 
     @NotNull
@@ -105,6 +134,8 @@ public class ArtificingConfig {
     private final BlockData blockData;
     @NotNull
     private final ItemType itemType;
+    @NotNull
+    private final ItemType itemModel;
     @NotNull
     private final Set<ConfiguredBlockDisplay> blockDisplaySet = new HashSet<>();
 
@@ -134,7 +165,8 @@ public class ArtificingConfig {
 
         this.blockData = blockData;
 
-        itemType = WbsConfigReader.getRegistryEntry(section, "item-model", RegistryKey.ITEM, ItemType.REINFORCED_DEEPSLATE);
+        itemType = WbsConfigReader.getRegistryEntry(section, "item", RegistryKey.ITEM, ItemType.REINFORCED_DEEPSLATE);
+        itemModel = WbsConfigReader.getRegistryEntry(section, "item-model", RegistryKey.ITEM, itemType);
 
         ConfigurationSection blockDisplaysSection = section.getConfigurationSection("block-displays");
         if (blockDisplaysSection != null) {
@@ -173,6 +205,18 @@ public class ArtificingConfig {
         return display;
     }
 
+    public static void unregisterTable(ArtificingTable artificingTable) {
+        Block block = artificingTable.getBlock();
+        PersistentDataContainer chunkContainer = block.getChunk().getPersistentDataContainer();
+        PersistentDataContainer container = chunkContainer.get(TAG, PersistentDataType.TAG_CONTAINER);
+
+        NamespacedKey blockKey = getBlockKey(block);
+        if (container != null) {
+            container.remove(blockKey);
+            chunkContainer.set(TAG, PersistentDataType.TAG_CONTAINER, container);
+        }
+    }
+
     public void placeAt(Block block) {
         block.setBlockData(blockData);
 
@@ -188,39 +232,20 @@ public class ArtificingConfig {
 
         Location centerBottomBlock = block.getLocation().add(0.5, 0, 0.5);
         blockDisplaySet.forEach(display -> display.spawn(centerBottomBlock, blockKey));
-    }
 
-    public void handleBreak(Block block) {
-        PersistentDataContainer chunkContainer = block.getChunk().getPersistentDataContainer();
-        PersistentDataContainer container = chunkContainer.get(TAG, PersistentDataType.TAG_CONTAINER);
-
-        NamespacedKey blockKey = getBlockKey(block);
-        if (container != null) {
-            container.remove(blockKey);
-            chunkContainer.set(TAG, PersistentDataType.TAG_CONTAINER, container);
-        }
-
-        block.getWorld().getNearbyEntitiesByType(
-                BlockDisplay.class,
-                block.getLocation(),
-                32,
-                display -> display.getPersistentDataContainer().has(blockKey)
-        ).forEach(Entity::remove);
+        centerBottomBlock.getWorld().spawn(centerBottomBlock, Interaction.class, interaction -> {
+            interaction.getPersistentDataContainer().set(blockKey, PersistentDataType.STRING, "interaction");
+            // TODO: Make this configurable
+            interaction.setInteractionWidth(1.005f);
+        });
     }
 
     public ItemStack getItem() {
-        ItemStack itemStack;
-
-        BlockType blockType = Objects.requireNonNull(blockData.getMaterial().asBlockType());
-        if (blockType.hasItemType()) {
-            itemStack = blockType.getItemType().createItemStack();
-        } else {
-            itemStack = itemType.createItemStack();
-        }
+        ItemStack itemStack = itemType.createItemStack();
 
         itemStack.getDataTypes().forEach(itemStack::unsetData);
         itemStack.setData(DataComponentTypes.ITEM_NAME, name);
-        itemStack.setData(DataComponentTypes.ITEM_MODEL, itemType.getKey());
+        itemStack.setData(DataComponentTypes.ITEM_MODEL, itemModel.getKey());
 
         itemStack.editMeta(meta -> {
             meta.getPersistentDataContainer().set(TAG, PersistentDataType.BOOLEAN, true);
