@@ -79,7 +79,7 @@ public class ArtificingConfig {
         return null;
     }
 
-    public static List<ArtificingTable> getNearbyTables(Location location) {
+    public static List<ArtificingTable> getNearbyTables(Location location, double maxDistance) {
         Chunk chunk = location.getChunk();
         World world = chunk.getWorld();
 
@@ -100,6 +100,8 @@ public class ArtificingConfig {
         for (Chunk adjacent : adjacentChunks) {
             tablesInChunks.addAll(getTablesInChunk(adjacent));
         }
+
+        tablesInChunks.removeIf(table -> location.distanceSquared(table.getBlock().getLocation()) > maxDistance * maxDistance);
 
         return tablesInChunks;
     }

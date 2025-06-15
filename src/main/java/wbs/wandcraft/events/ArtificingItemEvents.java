@@ -22,9 +22,7 @@ public class ArtificingItemEvents implements Listener {
             return;
         }
 
-        // TODO: Check nearby blocks for tables, and then construct ArtificingTable on the closest if in range.
-
-        Optional<ArtificingTable> closest = ArtificingConfig.getNearbyTables(itemEntity.getLocation()).stream()
+        Optional<ArtificingTable> closest = ArtificingConfig.getNearbyTables(itemEntity.getLocation(), 3).stream()
                 .max(Comparator.comparingDouble(table ->
                         table.getBlock().getLocation().distanceSquared(itemEntity.getLocation())
                 ));
