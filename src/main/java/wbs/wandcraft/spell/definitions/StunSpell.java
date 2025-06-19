@@ -16,7 +16,7 @@ public class StunSpell extends SpellDefinition implements CastableSpell, Radiuse
     public StunSpell() {
         super("stun");
 
-        addAttribute(DURATION, 20);
+        setAttribute(DURATION, 20);
     }
 
     @Override

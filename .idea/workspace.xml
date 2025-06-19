@@ -4,10 +4,51 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Implemented config for wand generators">
+    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Fixed artificing table picking up items from far above/below">
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ArcaneSparkSpell.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/FireBreathSpell.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/BurnTimeSpell.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/ContinuousCastableSpell.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DistanceSpell.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftRegistries.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftRegistries.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraft.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraft.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/crafting/ArtificingConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/crafting/ArtificingConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/crafting/ArtificingTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/crafting/ArtificingTable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/ArtificingBlockEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/ArtificingBlockEvents.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/ArtificingItemEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/ArtificingItemEvents.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandInventoryEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandInventoryEvents.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/generator/WandGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/generator/WandGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/DynamicMagicObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/DynamicMagicObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/DynamicProjectileObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/DynamicProjectileObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/Attributable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/Attributable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/AntiMagicShellSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/AntiMagicShellSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/BlinkSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/BlinkSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ConflagrationSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ConflagrationSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/CrowsCallSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/CrowsCallSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/EldritchBlastSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/EldritchBlastSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/LeapSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/LeapSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PrismaticRaySpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PrismaticRaySpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/StunSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/StunSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/VortexSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/VortexSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WarpSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WarpSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/CustomProjectileSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/CustomProjectileSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DirectionalSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DirectionalSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/ParticleSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/ParticleSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/RangedSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/RangedSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/SpeedSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/SpeedSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/SpellExtensionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/SpellExtensionManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/ForcePullEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/ForcePullEffect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/SpellEffectInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/SpellEffectInstance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/ModifierScope.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/ModifierScope.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,10 +138,10 @@
       <recent name="wbs.wandcraft.spells" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="wbs.wandcraft.spell.definitions.extensions" />
       <recent name="wbs.wandcraft.generator" />
       <recent name="wbs.wandcraft.spell.attributes.modifier" />
       <recent name="wbs.wandcraft.commands" />
-      <recent name="wbs.wandcraft.spell.definitions.extensions" />
       <recent name="wbs.wandcraft.spell.attributes" />
     </key>
   </component>
@@ -305,7 +346,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749958693443</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Fixed artificing table picking up items from far above/below">
+      <option name="closed" value="true" />
+      <created>1749973466301</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1749973466301</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -324,7 +373,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Initial commit" />
     <MESSAGE value="Inventory management &amp; testing commands" />
     <MESSAGE value="Bug fixes &amp; projectile spell prep" />
     <MESSAGE value="Attribute improvements &amp; modifier implementation" />
@@ -349,6 +397,7 @@
     <MESSAGE value="Separated resource pack functionality from settings" />
     <MESSAGE value="Fix many spells targeting caster" />
     <MESSAGE value="Implemented config for wand generators" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented config for wand generators" />
+    <MESSAGE value="Fixed artificing table picking up items from far above/below" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed artificing table picking up items from far above/below" />
   </component>
 </project>

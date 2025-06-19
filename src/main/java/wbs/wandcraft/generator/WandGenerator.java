@@ -172,7 +172,7 @@ public class WandGenerator implements Keyed {
             for (int i = 0; i < attributes; i++) {
                 AttributeInstanceGenerator<?> attributeGenerator = WbsCollectionUtil.getRandom(attributeGenerators);
 
-                wand.addAttribute(attributeGenerator.get());
+                wand.setAttribute(attributeGenerator.get());
             }
         }
 

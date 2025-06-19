@@ -19,7 +19,14 @@ import wbs.wandcraft.wand.Wand;
 
 @SuppressWarnings("unused")
 public class WandEvents implements Listener {
-    @EventHandler
+    private static final boolean DEBUG = false;
+    private static void debug(String message) {
+        if (DEBUG) {
+            WbsWandcraft.getInstance().getLogger().info(message);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
     public void onConsumeWand(PlayerItemConsumeEvent event) {
         ItemStack item = event.getItem();
 
@@ -43,15 +50,19 @@ public class WandEvents implements Listener {
         wand.tryCasting(player, item);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onWandClick(PlayerInteractEvent event) {
-        WbsWandcraft plugin = WbsWandcraft.getInstance();
+        if (event.getHand() != EquipmentSlot.HAND) {
+            return;
+        }
 
-        Player player = event.getPlayer();
         ItemStack item = event.getItem();
+
         if (item == null) {
             return;
         }
+
+        Player player = event.getPlayer();
 
         // Crafting, not crafter or workbench -- represents the internal player inventory. Returned when nothing open.
         InventoryType inventoryType = player.getOpenInventory().getType();
@@ -66,22 +77,27 @@ public class WandEvents implements Listener {
 
         Block clicked = event.getClickedBlock();
         if (clicked != null && ArtificingConfig.isInstance(clicked)) {
-            player.openInventory(wand.getInventory(item).getInventory());
-            player.clearActiveItem();
+            player.swingMainHand();
+            wand.startEditing(player, item);
+            event.setCancelled(true);
         } else {
             // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
             if (!item.hasData(DataComponentTypes.CONSUMABLE)) {
+                player.swingMainHand();
                 wand.tryCasting(player, item);
+                event.setCancelled(true);
             }
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onWandClick(PlayerInteractEntityEvent event) {
-        WbsWandcraft plugin = WbsWandcraft.getInstance();
+        EquipmentSlot hand = event.getHand();
+        if (hand != EquipmentSlot.HAND) {
+            return;
+        }
 
         Player player = event.getPlayer();
-        EquipmentSlot hand = event.getHand();
         ItemStack item = player.getInventory().getItem(hand);
 
         // Crafting, not crafter or workbench -- represents the internal player inventory. Returned when nothing open.
@@ -97,8 +113,9 @@ public class WandEvents implements Listener {
 
         Entity clicked = event.getRightClicked();
         if (clicked instanceof Interaction interaction && ArtificingConfig.getTable(interaction) != null) {
-            player.openInventory(wand.getInventory(item).getInventory());
-            player.clearActiveItem();
+            player.swingMainHand();
+            wand.startEditing(player, item);
+            event.setCancelled(true);
         }
     }
 }

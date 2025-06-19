@@ -54,7 +54,9 @@ public class WandcraftRegistries {
             new ConflagrationSpell(),
             new VortexSpell(),
             new CrowsCallSpell(),
-            new StunSpell()
+            new StunSpell(),
+            new FireBreathSpell(),
+            new ArcaneSparkSpell()
     );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
             StatusEffect.GLIDING,
@@ -80,19 +82,19 @@ public class WandcraftRegistries {
                                     )
                                     .addAttributeGenerator(
                                             new AttributeModifierGenerator<>(SpeedSpell.SPEED, AttributeModifierType.MULTIPLY)
-                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 2d, 3d, 4d)
+                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5d, 0.8d, 1.2d, 2d)
                                     )
                                     .addAttributeGenerator(
-                                            new AttributeModifierGenerator<>(CustomProjectileSpell.BOUNCES, AttributeModifierType.MULTIPLY)
+                                            new AttributeModifierGenerator<>(CustomProjectileSpell.BOUNCES, AttributeModifierType.ADD)
                                                     .setValues(RegisteredPersistentDataType.INTEGER, 0, 0, 0, 1, 5)
                                     )
                                     .addAttributeGenerator(
                                             new AttributeModifierGenerator<>(RangedSpell.RANGE, AttributeModifierType.MULTIPLY)
-                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 25d, 50d, 50d, 75d, 100d)
+                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5d, 0.8d, 1.2d, 2d)
                                     )
                                     .addAttributeGenerator(
                                             new AttributeModifierGenerator<>(IProjectileSpell.IMPRECISION, AttributeModifierType.MULTIPLY)
-                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 5d, 10d, 10d, 15d, 20d)
+                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5d, 0.8d, 1.2d, 2d)
                                     )
                     )
     );

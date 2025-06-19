@@ -19,25 +19,16 @@ import java.util.Set;
 public interface Attributable extends ItemDecorator {
     Set<SpellAttributeInstance<?>> getAttributeValues();
 
-    default <T> void addAttribute(SpellAttribute<T> attribute, T value) {
-        addAttribute(attribute.getInstance(value));
+    default <T> void setAttribute(SpellAttribute<T> attribute, T value) {
+        setAttribute(attribute.getInstance(value));
     }
 
-    default void addAttribute(SpellAttributeInstance<?> instance) {
+    default void setAttribute(SpellAttributeInstance<?> instance) {
         getAttributeValues().removeIf(existing -> existing.attribute().equals(instance.attribute()));
         getAttributeValues().add(instance.clone());
     }
 
-    default <T> void setAttribute(SpellAttribute<T> attribute, T value) {
-        for (SpellAttributeInstance<?> attributeValue : getAttributeValues()) {
-            if (attributeValue.attribute().equals(attribute)) {
-                attributeValue.value(value);
-                return;
-            }
-        }
-    }
-
-    default  <T> T getAttribute(SpellAttribute<T> attribute) {
+    default <T> T getAttribute(SpellAttribute<T> attribute) {
         //noinspection unchecked
         SpellAttributeInstance<T> instance =
                 (SpellAttributeInstance<T>) getAttributeValues().stream()
@@ -60,10 +51,6 @@ public interface Attributable extends ItemDecorator {
         }
 
         return attributeValue;
-    }
-
-    default  <T> void setAttribute(SpellAttributeInstance<T> instance) {
-        setAttribute(instance.attribute(), instance.value());
     }
 
     default  <T> void applyModifier(SpellAttributeModifier<T, ?> modifier) {

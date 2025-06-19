@@ -20,7 +20,7 @@ public class SpellEffectInstance<T> implements Attributable, ComponentRepresenta
     public SpellEffectInstance(SpellEffectDefinition<T> definition) {
         this.definition = definition;
 
-        definition.getAttributeValues().forEach(this::addAttribute);
+        definition.getAttributeValues().forEach(this::setAttribute);
     }
 
     public SpellEffectDefinition<T> getDefinition() {

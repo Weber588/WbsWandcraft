@@ -25,6 +25,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     // Distance per tick
     @NotNull
     private Vector velocity = new Vector();
+    private double drag = 0;
     // Acceleration per tick
     @NotNull
     private Vector acceleration = new Vector();
@@ -87,7 +88,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
         }
 
         boolean cancel;
-        Vector accelerationPerStep = perStep(acceleration.clone());
+        Vector accelerationPerStep = perStep(acceleration);
         for (int step = 0; step < stepsThisTick; step++) {
             if (isExpired()) return true;
             stepsTaken++;
@@ -273,7 +274,21 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
         accelerationThisStep = event.getAccelerationThisStep();
 
         velocity.add(accelerationThisStep);
-        velocity.add(perStep(gravity));
+        if (gravity.lengthSquared() != 0) {
+            velocity.add(perStep(gravity));
+        }
+
+        // Don't bother calculating drag if going slower than 1 step per tick -- not noticeable and makes the math annoying lol
+        if (drag != 0 && stepsPerTick >= 1) {
+            double decelerationMagnitude = Math.min(velocity.length(), drag) / stepsPerTick;
+            if (decelerationMagnitude > velocity.length()) {
+                remove(true);
+                throw new IllegalStateException("Math error -- please report this! velocity.length() " + velocity.length() + "; drag " + drag + "; stepsPerTick " + stepsPerTick + "; decelerationMagnitude " + decelerationMagnitude);
+            }
+            velocity.add(WbsMath.scaleVector(velocity, -decelerationMagnitude));
+
+            // TODO: Consider min velocity?
+        }
     }
 
     /**
@@ -338,6 +353,11 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     }
     public DynamicMagicObject setVelocityInSeconds(Vector velocityInSeconds) {
         velocity = velocityInSeconds.clone().multiply(0.05);
+        return this;
+    }
+
+    public DynamicMagicObject setDrag(double drag) {
+        this.drag = drag;
         return this;
     }
 

@@ -4,6 +4,8 @@ api-version: 1.21
 main: wbs.wandcraft.WbsWandcraft
 description: Craftable/configurable wands
 loadbefore:
-  - RoaseResourcepack
+  - RoseResourcepack
+softdepend:
+  - ResourcePackManager
 depend:
   - WbsUtils

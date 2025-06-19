@@ -19,11 +19,11 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
     public WarpSpell() {
         super("warp");
 
-        addAttribute(SIZE, 0.0);
-        addAttribute(GRAVITY, 0.0);
-        addAttribute(IMPRECISION, 10d);
-        addAttribute(RANGE, 50.0);
-        addAttribute(SPEED, 2d);
+        setAttribute(SIZE, 0.0);
+        setAttribute(GRAVITY, 0.0);
+        setAttribute(IMPRECISION, 10d);
+        setAttribute(RANGE, 50.0);
+        setAttribute(SPEED, 2d);
     }
 
     @Override

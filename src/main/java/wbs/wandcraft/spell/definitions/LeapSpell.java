@@ -14,8 +14,8 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
     public LeapSpell() {
         super("leap");
 
-        addAttribute(COOLDOWN, 5);
-        addAttribute(IMPRECISION, 5d);
+        setAttribute(COOLDOWN, 5);
+        setAttribute(IMPRECISION, 5d);
     }
 
     @Override

@@ -47,9 +47,10 @@ public class Wand implements Attributable {
 
     public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 10)
             .setTicksToSecondsFormatter();
-    public static final SpellAttribute<Boolean> SHUFFLE = new BooleanSpellAttribute("shuffle", false);
+    public static final SpellAttribute<Boolean> SHUFFLE = new BooleanSpellAttribute("shuffle", false)
+            .setShowAttribute(shuffle -> shuffle);
 
-    private @NotNull String uuid;
+    private final @NotNull String uuid;
 
     @Nullable
     public static Wand getIfValid(ItemStack item) {
@@ -78,8 +79,8 @@ public class Wand implements Attributable {
     public Wand(@NotNull WandInventoryType type, @NotNull String uuid) {
         this.type = type;
         this.uuid = uuid;
-        addAttribute(COOLDOWN.defaultInstance());
-        addAttribute(SHUFFLE.defaultInstance());
+        setAttribute(COOLDOWN.defaultInstance());
+        setAttribute(SHUFFLE.defaultInstance());
     }
 
     public Set<SpellAttributeInstance<?>> getAttributeValues() {
@@ -380,5 +381,10 @@ public class Wand implements Attributable {
 
     public @NotNull String getUUID() {
         return uuid;
+    }
+
+    public void startEditing(Player player, ItemStack item) {
+        player.openInventory(getInventory(item).getInventory());
+        player.clearActiveItem();
     }
 }

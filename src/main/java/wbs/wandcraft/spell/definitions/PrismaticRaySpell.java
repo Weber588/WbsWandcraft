@@ -25,7 +25,7 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
 
     public PrismaticRaySpell() {
         super("prismatic_ray");
-        addAttribute(IMPRECISION, 0d);
+        setAttribute(IMPRECISION, 0d);
     }
 
     @Override

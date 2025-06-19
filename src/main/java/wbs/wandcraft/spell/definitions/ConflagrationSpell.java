@@ -12,17 +12,17 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
 
-public class ConflagrationSpell extends SpellDefinition implements CastableSpell, DamageSpell, SpeedSpell, DurationalSpell, RadiusedSpell {
+public class ConflagrationSpell extends SpellDefinition implements CastableSpell, DamageSpell, SpeedSpell, BurnTimeSpell, RadiusedSpell {
     private final DiscParticleEffect popEffect = new DiscParticleEffect();
     private final DiscParticleEffect fireEffect = new DiscParticleEffect();
 
     public ConflagrationSpell() {
         super("conflagration");
 
-        addAttribute(DAMAGE, 2d);
-        addAttribute(SPEED, 0.25);
-        addAttribute(DURATION, 60);
-        addAttribute(RADIUS, 4d);
+        setAttribute(DAMAGE, 2d);
+        setAttribute(SPEED, 0.25);
+        setAttribute(BURN_TIME, 60);
+        setAttribute(RADIUS, 4d);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
         for (LivingEntity target : hit) {
             if (WbsRegionUtils.canDealDamage(caster.getPlayer(), target)) {
                 WbsEntityUtil.damage(target, instance.getAttribute(DAMAGE), caster.getPlayer());
-                target.setFireTicks((int) (instance.getAttribute(DURATION) * (1 + (Math.random() * 0.4 - 0.2))));
+                target.setFireTicks((int) (instance.getAttribute(BURN_TIME) * (1 + (Math.random() * 0.4 - 0.2))));
                 target.setVelocity(
                         target.getEyeLocation() // Give a slight upwards force by using eye height
                                 .subtract(caster.getLocation())

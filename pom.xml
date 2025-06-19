@@ -23,6 +23,11 @@
                 <updatePolicy>interval:10080</updatePolicy> <!-- 1 week in minutes -->
             </snapshots>
         </repository>
+        <repository>
+            <id>magmaguy-repo</id>
+            <name>MagmaGuy's Repository</name>
+            <url>https://repo.magmaguy.com/releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -31,6 +36,12 @@
             <artifactId>paper-api</artifactId>
             <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.magmaguy</groupId>
+            <artifactId>ResourcePackManager</artifactId>
+            <version>1.3.0</version>
         </dependency>
 
         <dependency>

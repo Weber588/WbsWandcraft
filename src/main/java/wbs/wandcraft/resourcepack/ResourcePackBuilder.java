@@ -95,7 +95,13 @@ public class ResourcePackBuilder {
                 }
             });
 
-            resourcesToLoad.forEach(path -> plugin.saveResource(path, true));
+            resourcesToLoad.forEach(path -> {
+                if (plugin.getResource(path) != null) {
+                    plugin.saveResource(path, true);
+                } else {
+                    plugin.getLogger().severe("The resource at path \"" + path + "\" was not found! The vanilla texture will be used.");
+                }
+            });
 
             try {
                 WbsFileUtil.zipFolder(

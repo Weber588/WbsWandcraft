@@ -101,7 +101,7 @@ public class ArtificingConfig {
             tablesInChunks.addAll(getTablesInChunk(adjacent));
         }
 
-        tablesInChunks.removeIf(table -> location.distanceSquared(table.getBlock().getLocation()) > maxDistance * maxDistance);
+        tablesInChunks.removeIf(table -> location.distanceSquared(table.getBlock().getLocation().add(0.5, .5, 0.5)) > maxDistance * maxDistance);
 
         return tablesInChunks;
     }
@@ -238,7 +238,9 @@ public class ArtificingConfig {
         centerBottomBlock.getWorld().spawn(centerBottomBlock, Interaction.class, interaction -> {
             interaction.getPersistentDataContainer().set(blockKey, PersistentDataType.STRING, "interaction");
             // TODO: Make this configurable
-            interaction.setInteractionWidth(1.005f);
+            float size = 1.00005f;
+            interaction.setInteractionWidth(size);
+            interaction.setInteractionHeight(size);
         });
     }
 

@@ -56,6 +56,8 @@ public class CommandInfo extends WbsSubcommand {
         WbsMessageBuilder builder = plugin.buildMessage("=======================")
                 .append("\nSpell: ")
                 .append(spell.displayName().color(NamedTextColor.GOLD))
+                .append("\nDescription: ")
+                .append(spell.description().color(NamedTextColor.GOLD))
                 .append("\nAttributes: ");
 
         spell.getLore().forEach(text -> {
@@ -63,8 +65,7 @@ public class CommandInfo extends WbsSubcommand {
                     .append(text);
         });
 
-        builder.append("\nDescription: ")
-                .append(spell.description().color(NamedTextColor.GOLD))
+        builder
                 .append("\n=======================")
                 .send(context.getSource().getSender());
 

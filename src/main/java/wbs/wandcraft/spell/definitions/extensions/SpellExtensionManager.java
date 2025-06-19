@@ -20,6 +20,8 @@ public class SpellExtensionManager {
         registerSpellExtension(SpeedSpell.class, SpeedSpell::setupSpeed);
         registerSpellExtension(CustomProjectileSpell.class, CustomProjectileSpell::setupCustomProjectile);
         registerSpellExtension(RadiusedSpell.class, RadiusedSpell::setupRadiused);
+        registerSpellExtension(BurnTimeSpell.class, BurnTimeSpell::setupBurnTime);
+        registerSpellExtension(DistanceSpell.class, DistanceSpell::setupDistance);
     }
 
     public static <T extends ISpellDefinition> void registerSpellExtension(Class<T> clazz, Consumer<T> setupMethod) {

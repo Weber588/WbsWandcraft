@@ -18,7 +18,7 @@ public interface ParticleSpell extends ISpellDefinition {
             .setShowAttribute(Objects::nonNull);
 
     default void setupParticles() {
-        addAttribute(PARTICLE, getDefaultParticle());
+        setAttribute(PARTICLE, getDefaultParticle());
     }
 
     Particle getDefaultParticle();

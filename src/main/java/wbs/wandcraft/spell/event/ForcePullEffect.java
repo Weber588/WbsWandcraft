@@ -24,8 +24,8 @@ public class ForcePullEffect extends SpellEffectDefinition<Location> {
     public ForcePullEffect() {
         super(Location.class, "force_pull");
 
-        addAttribute(RANGE.defaultInstance());
-        addAttribute(SPEED.defaultInstance());
+        setAttribute(RANGE.defaultInstance());
+        setAttribute(SPEED.defaultInstance());
 
         supportedEvents.add(new SupportedEvent<>(RayTraceResult.class, result -> {
             World world = null;

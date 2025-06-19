@@ -213,6 +213,11 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
     @Override
     @NotNull
     public String getTexture() {
+        return getTextureFallback();
+    }
+
+    @NotNull
+    private String getTextureFallback() {
         // TODO: Move this to a default modifier texture
         return "blank_scroll";
     }

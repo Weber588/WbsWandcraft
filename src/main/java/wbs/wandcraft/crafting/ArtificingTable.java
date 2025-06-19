@@ -11,6 +11,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -29,11 +30,21 @@ public class ArtificingTable {
     public static final double ITEM_DISTANCE = 1.5;
     private static final NamespacedKey SPAWN_TIME = WbsWandcraft.getKey("spawn_time");
 
-    private static final Team COLOUR_TEAM = Bukkit.getScoreboardManager()
-            .getMainScoreboard()
-            .registerNewTeam("test");
+    private static final Team COLOUR_TEAM;
 
     static {
+        String teamName = ArtificingConfig.TAG.asString().replaceAll(":", "_");
+        Scoreboard mainScoreboard = Bukkit.getScoreboardManager()
+                .getMainScoreboard();
+        Team team = mainScoreboard
+                .getTeam(teamName);
+
+        if (team == null) {
+            team = mainScoreboard.registerNewTeam(teamName);
+        }
+
+        COLOUR_TEAM = team;
+
         // TODO: Make this colour configurable
         COLOUR_TEAM.color(NamedTextColor.AQUA);
     }
@@ -59,15 +70,22 @@ public class ArtificingTable {
     }
 
     public List<Item> getItems() {
-        Collection<Item> nearbyOnTable = block.getWorld().getNearbyEntitiesByType(
-                Item.class,
-                block.getLocation(),
-                3,
-                ArtificingConfig::isArtificingItem
-        );
+        NamespacedKey blockKey = ArtificingConfig.getBlockKey(block);
 
         // Sort by age, oldest first -- that's the order they were added. First item is at the centre.
-        return nearbyOnTable.stream()
+        return block.getWorld().getNearbyEntities(
+                BoundingBox.of(block).expand(32),
+                        entity -> Objects.equals(
+                                entity.getPersistentDataContainer().get(ArtificingConfig.TAG, WbsPersistentDataType.NAMESPACED_KEY),
+                                blockKey
+                        )
+                ).stream()
+                .map(entity -> {
+                    if (entity instanceof Item item) {
+                        return item;
+                    }
+                    return null;
+                }).filter(Objects::nonNull)
                 .sorted(Comparator.comparing(item -> Objects.requireNonNull(
                         item.getPersistentDataContainer().get(SPAWN_TIME, PersistentDataType.LONG))
                 ))
@@ -79,7 +97,7 @@ public class ArtificingTable {
     }
 
     public int getRemainingSlots() {
-        return MAX_ITEMS - occupiedOuterSlots();
+        return MAX_ITEMS - occupiedOuterSlots() - 1;
     }
 
     public boolean canAcceptItems() {
@@ -107,7 +125,7 @@ public class ArtificingTable {
             int remainingSlots = getRemainingSlots();
             for (int i = 0; i < remainingSlots && i < amount; i++) {
                 // Recurse, always with stack size == 1 to avoid looping
-                spawningItem.getWorld().dropItem(centralItemLocation, stack.asOne());
+                spawningItem.getWorld().dropItem(centralItemLocation, stack.asOne(), this::acceptItem);
             }
 
             int remainingInStack = amount - remainingSlots;
@@ -184,34 +202,34 @@ public class ArtificingTable {
 
         NamespacedKey blockKey = ArtificingConfig.getBlockKey(block);
 
+        getItems().forEach(ArtificingTable::dropFromTable);
+
         block.getWorld().getNearbyEntities(
                 BoundingBox.of(block).expand(32),
                 entity -> entity.getPersistentDataContainer().has(blockKey)
         ).forEach(Entity::remove);
 
-        block.getWorld().getNearbyEntities(
-                        BoundingBox.of(block).expand(32),
-                        entity -> Objects.equals(
-                                entity.getPersistentDataContainer().get(ArtificingConfig.TAG, WbsPersistentDataType.NAMESPACED_KEY),
-                                blockKey
-                        )
-                ).stream()
-                .map(entity -> {
-                    if (entity instanceof Item item) {
-                        return item;
-                    }
-                    return null;
-                }).filter(Objects::nonNull)
-                .forEach(item -> {
-                    ItemStack stack = item.getItemStack();
-                    item.getWorld().dropItem(item.getLocation(), stack);
-                    item.remove();
-                });
-
         block.setBlockData(Material.AIR.createBlockData());
+    }
+
+    private static void dropFromTable(Item item) {
+        ItemStack stack = item.getItemStack();
+        item.getWorld().dropItem(item.getLocation(), stack);
+        item.remove();
     }
 
     public Block getBlock() {
         return block;
+    }
+
+    public void dropLatestItem() {
+        List<Item> items = getItems();
+        if (items.isEmpty()) {
+            return;
+        }
+
+        Item last = items.getLast();
+        dropFromTable(last);
+        // TODO: Add method for recalculating circle positions
     }
 }

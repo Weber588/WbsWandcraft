@@ -37,7 +37,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
         addAttribute(FOLLOWS_PLAYER);
         addAttribute(IS_REFLECTIVE);
         addAttribute(MAXIMUM_HITS);
-        addAttribute(DURATION, 600);
+        setAttribute(DURATION, 600);
     }
 
     @Override

@@ -19,7 +19,7 @@ public enum ModifierScope implements TextureProvider {
     private final String texture;
 
     ModifierScope() {
-        texture = "modifier_default";
+        texture = getTextureFallback();
     }
     ModifierScope(String texture) {
         this.texture = texture;
@@ -28,6 +28,11 @@ public enum ModifierScope implements TextureProvider {
     @Override
     public @NotNull String getTexture() {
         return texture;
+    }
+
+    @NotNull
+    private String getTextureFallback() {
+        return "modifier_default";
     }
 
     @Override

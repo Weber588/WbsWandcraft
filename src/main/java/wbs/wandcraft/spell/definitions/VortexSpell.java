@@ -20,9 +20,9 @@ public class VortexSpell extends SpellDefinition implements CastableSpell, Speed
     public VortexSpell() {
         super("vortex");
 
-        addAttribute(SPEED, 0.5d);
-        addAttribute(DURATION, 40);
-        addAttribute(RADIUS, 3d);
+        setAttribute(SPEED, 0.5d);
+        setAttribute(DURATION, 40);
+        setAttribute(RADIUS, 3d);
     }
 
     @Override

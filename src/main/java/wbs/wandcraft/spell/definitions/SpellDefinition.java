@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.SpellExtensionManager;

@@ -24,8 +24,8 @@ public class CrowsCallSpell extends SpellDefinition implements CastableSpell, Du
     public CrowsCallSpell() {
         super("crows_call");
 
-        addAttribute(SPEED, 2d);
-        addAttribute(DURATION, 30 * 20);
+        setAttribute(SPEED, 2d);
+        setAttribute(DURATION, 30 * 20);
     }
 
     @Override
