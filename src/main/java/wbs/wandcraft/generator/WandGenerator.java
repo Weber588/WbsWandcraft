@@ -68,6 +68,28 @@ public class WandGenerator implements Keyed {
 
         hue = section.getDouble("hue", -1);
 
+        List<WandInventoryType> types = new LinkedList<>();
+        List<String> inventoryTypeStrings = section.getStringList("inventory_types");
+        for (String inventoryTypeString : inventoryTypeStrings) {
+            NamespacedKey invTypeKey = NamespacedKey.fromString(inventoryTypeString, WbsWandcraft.getInstance());
+            WandInventoryType type = WandcraftRegistries.WAND_INVENTORY_TYPES.get(invTypeKey);
+            if (type != null) {
+                types.add(type);
+            }
+        }
+        setTypes(types);
+
+        List<WandTexture> textures = new LinkedList<>();
+        List<String> textureStrings = section.getStringList("textures");
+        for (String textureString : textureStrings) {
+            NamespacedKey textureKey = NamespacedKey.fromString(textureString, WbsWandcraft.getInstance());
+            WandTexture texture = WandcraftRegistries.WAND_TEXTURES.get(textureKey);
+            if (texture != null) {
+                textures.add(texture);
+            }
+        }
+        setTextures(textures);
+
         ConfigurationSection spellsSection = section.getConfigurationSection("spells");
         if (spellsSection == null) {
             minSpells = 0;
