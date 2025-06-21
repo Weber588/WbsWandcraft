@@ -1,8 +1,5 @@
 package wbs.wandcraft.effects;
 
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,16 +12,6 @@ import wbs.wandcraft.WbsWandcraft;
 
 @NullMarked
 public class GlidingStatusEffect implements StatusEffect {
-    @Override
-    public Component display() {
-        return Component.text("Gliding").color(NamedTextColor.YELLOW);
-    }
-
-    @Override
-    public BossBar.Color barColour() {
-        return BossBar.Color.YELLOW;
-    }
-
     @Override
     public boolean tick(LivingEntity entity, int timeLeft) {
         entity.setGliding(true);

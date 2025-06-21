@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.cost.CostUtils;
 
 public interface ContinuousCastableSpell extends CastableSpell, DurationalSpell {
     default void cast(CastContext context) {
@@ -20,13 +21,14 @@ public interface ContinuousCastableSpell extends CastableSpell, DurationalSpell 
         new BukkitRunnable() {
             @Override
             public void run() {
-                Player player = Bukkit.getPlayer(context.player().getUniqueId());
+                Player player = context.getOnlinePlayer();
                 if (endTick <= Bukkit.getCurrentTick() || player == null || startedSneaking && !player.isSneaking() || !player.isOnline() || player.isDead()) {
                     cancel();
                     return;
                 }
 
                 tick(context, Bukkit.getCurrentTick() - startTick, endTick - Bukkit.getCurrentTick());
+                CostUtils.takeCost(player, context.instance().getAttribute(COST));
             }
 
             @Override
@@ -42,7 +44,7 @@ public interface ContinuousCastableSpell extends CastableSpell, DurationalSpell 
         return false;
     }
 
-    void onStartCasting(CastContext context);
+    default void onStartCasting(CastContext context) {}
     void tick(CastContext context, int tick, int ticksLeft);
-    void onStopCasting(CastContext context);
+    default void onStopCasting(CastContext context) {}
 }

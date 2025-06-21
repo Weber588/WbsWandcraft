@@ -1,6 +1,8 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
@@ -46,6 +48,13 @@ public final class CastContext {
 
     public Player player() {
         return player;
+    }
+    public OfflinePlayer getOfflinePlayer() {
+        return Bukkit.getOfflinePlayer(player.getUniqueId());
+    }
+    @Nullable
+    public Player getOnlinePlayer() {
+        return Bukkit.getPlayer(player.getUniqueId());
     }
 
     public SpellInstance instance() {

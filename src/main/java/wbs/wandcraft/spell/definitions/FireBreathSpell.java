@@ -1,7 +1,10 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.*;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -12,7 +15,6 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 public class FireBreathSpell extends SpellDefinition implements ContinuousCastableSpell, DamageSpell, DirectionalSpell, RangedSpell, BurnTimeSpell, ParticleSpell {
     private static final RingParticleEffect FIRE_EFFECT = (RingParticleEffect) new RingParticleEffect()
@@ -25,6 +27,7 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
 
         setAttribute(DURATION, 100);
         setAttribute(RANGE, 5d);
+        setAttribute(COST, 3);
     }
 
     @Override
@@ -40,7 +43,10 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
     @Override
     public void tick(CastContext context, int tick, int ticksLeft) {
         SpellInstance instance = context.instance();
-        Player player = Objects.requireNonNull(Bukkit.getPlayer(context.player().getUniqueId()));
+        Player player = context.getOnlinePlayer();
+        if (player == null || !player.isOnline()) {
+            return;
+        }
 
         Vector direction = getDirection(context, player, 0.2);
         double range = instance.getAttribute(RANGE);
@@ -56,6 +62,8 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
 
         List<Entity> hitEntities = new LinkedList<>();
 
+        double raySize = 0.3;
+
         RayTraceResult result;
         do {
             result = location.getWorld().rayTrace(
@@ -64,7 +72,7 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
                     range,
                     FluidCollisionMode.NEVER,
                     true,
-                    0,
+                    raySize,
                     entity -> !entity.equals(player) && !hitEntities.contains(entity)
             );
 
@@ -85,11 +93,6 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
                 damageable.damage(damage, player);
             }
         }
-    }
-
-    @Override
-    public void onStopCasting(CastContext context) {
-
     }
 
     @Override

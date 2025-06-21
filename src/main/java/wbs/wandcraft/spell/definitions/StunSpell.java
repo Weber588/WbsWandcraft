@@ -1,18 +1,12 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import wbs.utils.util.entities.selector.RadiusSelector;
+import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.effects.StatusEffect;
-import wbs.wandcraft.effects.StatusEffectInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
-import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
+import wbs.wandcraft.spell.definitions.extensions.StatusEffectAOESpell;
 
 // TODO: Implement targeting system for these spells that can target one or more entities
-public class StunSpell extends SpellDefinition implements CastableSpell, RadiusedSpell, DurationalSpell {
+public class StunSpell extends SpellDefinition implements StatusEffectAOESpell {
     public StunSpell() {
         super("stun");
 
@@ -25,20 +19,7 @@ public class StunSpell extends SpellDefinition implements CastableSpell, Radiuse
     }
 
     @Override
-    public void cast(CastContext context) {
-        Player player = context.player();
-        SpellInstance instance = context.instance();
-
-        RadiusSelector<LivingEntity> selector = new RadiusSelector<>(LivingEntity.class)
-                .setRange(instance.getAttribute(RADIUS));
-
-        selector.selectExcluding(player).forEach(
-                target -> StatusEffectInstance.applyEffect(
-                        target,
-                        StatusEffect.STUNNED,
-                        instance.getAttribute(DURATION),
-                        true
-                )
-        );
+    public @NotNull StatusEffect getStatusEffect() {
+        return StatusEffect.STUNNED;
     }
 }

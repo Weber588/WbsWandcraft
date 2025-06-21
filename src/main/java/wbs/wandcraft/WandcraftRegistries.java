@@ -56,11 +56,17 @@ public class WandcraftRegistries {
             new CrowsCallSpell(),
             new StunSpell(),
             new FireBreathSpell(),
-            new ArcaneSparkSpell()
+            new ArcaneSparkSpell(),
+            new PlanarBindingSpell(),
+            new DiscoverItemSpell(),
+            new DeathWalkSpell(),
+            new ChainLightningSpell()
     );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
             StatusEffect.GLIDING,
-            StatusEffect.STUNNED
+            StatusEffect.STUNNED,
+            StatusEffect.PLANAR_BINDING,
+            StatusEffect.DEATH_WALK
     );
     public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>(
             new WandGenerator(WbsWandcraft.getKey("example"), 1, 2, -1, 0, 1, 1, 3)
