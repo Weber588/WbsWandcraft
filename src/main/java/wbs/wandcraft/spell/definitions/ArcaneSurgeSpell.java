@@ -85,7 +85,7 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
                         .select(WbsEntityUtil.getMiddleLocation(player));
 
                 DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                        .withCausingEntity(context.player())
+                        .withDirectEntity(context.player())
                         .build();
 
                 for (LivingEntity e : entities) {

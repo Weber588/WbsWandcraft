@@ -10,6 +10,7 @@ import wbs.utils.util.WbsEnums;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.effects.StatusEffectInstance;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
@@ -25,33 +26,60 @@ import wbs.wandcraft.wand.WandInventoryType;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class CustomPersistentDataTypes {
-    public static final PersistentKeyType NAMESPACED_KEY = new PersistentKeyType();
     public static final PersistentSpellModifierType SPELL_MODIFIER = new PersistentSpellModifierType();
     public static final PersistentSpellInstanceType SPELL_INSTANCE = new PersistentSpellInstanceType();
     public static final PersistentAttributeModifierType SPELL_ATTRIBUTE_MODIFIER = new PersistentAttributeModifierType();
     public static final PersistentWandType WAND = new PersistentWandType();
+    public static final PersistentStatusEffectType STATUS_EFFECT = new PersistentStatusEffectType();
 
-    public static class PersistentKeyType implements PersistentDataType<String, NamespacedKey> {
+    public static class PersistentStatusEffectType implements PersistentDataType<PersistentDataContainer, StatusEffectInstance> {
+        private static final NamespacedKey EFFECT_TYPE = WbsWandcraft.getKey("type");
+        private static final NamespacedKey INITIAL_TIME = WbsWandcraft.getKey("initial_time");
+        private static final NamespacedKey TIME_LEFT = WbsWandcraft.getKey("time_left");
+        private static final NamespacedKey SHOW_BOSS_BAR = WbsWandcraft.getKey("show_boss_bar");
+        private static final NamespacedKey CAUSE = WbsWandcraft.getKey("cause");
+
         @Override
-        public @NotNull Class<String> getPrimitiveType() {
-            return String.class;
+        public @NotNull Class<PersistentDataContainer> getPrimitiveType() {
+            return PersistentDataContainer.class;
         }
 
         @Override
-        public @NotNull Class<NamespacedKey> getComplexType() {
-            return NamespacedKey.class;
+        public @NotNull Class<StatusEffectInstance> getComplexType() {
+            return StatusEffectInstance.class;
         }
 
         @Override
-        public @NotNull String toPrimitive(@NotNull NamespacedKey namespacedKey, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
-            return namespacedKey.asString();
+        public @NotNull PersistentDataContainer toPrimitive(@NotNull StatusEffectInstance instance, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
+            PersistentDataContainer container = persistentDataAdapterContext.newPersistentDataContainer();
+
+            container.set(EFFECT_TYPE, WbsPersistentDataType.NAMESPACED_KEY, instance.getEffect().getKey());
+            container.set(INITIAL_TIME, PersistentDataType.INTEGER, instance.getInitialTime());
+            container.set(TIME_LEFT, PersistentDataType.INTEGER, instance.getTimeLeft());
+            container.set(SHOW_BOSS_BAR, PersistentDataType.BOOLEAN, instance.showBossBar());
+            UUID cause = instance.getCause();
+            if (cause != null) {
+                container.set(CAUSE, WbsPersistentDataType.UUID, cause);
+            }
+
+            return container;
         }
 
         @Override
-        public @NotNull NamespacedKey fromPrimitive(@NotNull String s, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
-            return Objects.requireNonNull(NamespacedKey.fromString(s));
+        public @NotNull StatusEffectInstance fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
+            NamespacedKey typeKey = container.get(EFFECT_TYPE, WbsPersistentDataType.NAMESPACED_KEY);
+            int initialTime = container.get(INITIAL_TIME, PersistentDataType.INTEGER);
+            int timeLeft = container.get(TIME_LEFT, PersistentDataType.INTEGER);
+            boolean showBossBar = container.get(SHOW_BOSS_BAR, PersistentDataType.BOOLEAN);
+            UUID cause = container.get(CAUSE, WbsPersistentDataType.UUID);
+
+            StatusEffectInstance instance = new StatusEffectInstance(WandcraftRegistries.STATUS_EFFECTS.get(typeKey), initialTime, showBossBar, cause);
+            instance.setTimeLeft(timeLeft);
+
+            return instance;
         }
     }
 
@@ -99,14 +127,14 @@ public class CustomPersistentDataTypes {
             });
 
             container.set(INVENTORY, PersistentDataType.TAG_CONTAINER, itemsContainer);
-            container.set(INVENTORY_TYPE, NAMESPACED_KEY, wand.getInventoryType().getKey());
+            container.set(INVENTORY_TYPE, WbsPersistentDataType.NAMESPACED_KEY, wand.getInventoryType().getKey());
 
             return container;
         }
 
         @Override
         public @NotNull Wand fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
-            NamespacedKey typeKey = container.get(INVENTORY_TYPE, NAMESPACED_KEY);
+            NamespacedKey typeKey = container.get(INVENTORY_TYPE, WbsPersistentDataType.NAMESPACED_KEY);
             if (typeKey == null) {
                 throw new IllegalStateException("inventory type (typeKey) missing!");
             }
@@ -177,14 +205,14 @@ public class CustomPersistentDataTypes {
             PersistentDataContainer container = context.newPersistentDataContainer();
 
             spellInstance.writeAttributes(container, ATTRIBUTES);
-            container.set(DEFINITION, NAMESPACED_KEY, spellInstance.getDefinition().getKey());
+            container.set(DEFINITION, WbsPersistentDataType.NAMESPACED_KEY, spellInstance.getDefinition().getKey());
 
             return container;
         }
 
         @Override
         public @NotNull SpellInstance fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
-            NamespacedKey definitionKey = container.get(DEFINITION, NAMESPACED_KEY);
+            NamespacedKey definitionKey = container.get(DEFINITION, WbsPersistentDataType.NAMESPACED_KEY);
             if (definitionKey == null) {
                 throw new IllegalStateException("Spell definition key missing!");
             }
@@ -234,7 +262,7 @@ public class CustomPersistentDataTypes {
             for (SpellEffectInstance<?> effect : modifier.getEffects()) {
                 PersistentDataContainer effectContainer = context.newPersistentDataContainer();
 
-                effectContainer.set(DEFINITION, NAMESPACED_KEY, effect.getDefinition().getKey());
+                effectContainer.set(DEFINITION, WbsPersistentDataType.NAMESPACED_KEY, effect.getDefinition().getKey());
 
                 effect.writeAttributes(container, EFFECT_ATTRIBUTES);
 
@@ -270,7 +298,7 @@ public class CustomPersistentDataTypes {
             }
 
             for (PersistentDataContainer effectContainer : effectContainerList) {
-                NamespacedKey definitionKey = effectContainer.get(DEFINITION, NAMESPACED_KEY);
+                NamespacedKey definitionKey = effectContainer.get(DEFINITION, WbsPersistentDataType.NAMESPACED_KEY);
                 SpellEffectDefinition<?> definition = WandcraftRegistries.EFFECTS.get(definitionKey);
 
                 if (definition == null) {

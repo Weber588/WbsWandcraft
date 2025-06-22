@@ -1,6 +1,5 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.effects.StatusEffectInstance;
@@ -16,7 +15,8 @@ public interface StatusEffectSelfSpell extends CastableSpell, StatusEffectSpell 
                 player,
                 getStatusEffect(),
                 instance.getAttribute(DURATION),
-                true
+                true,
+                player
         );
     }
 }

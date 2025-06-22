@@ -1,6 +1,7 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
@@ -25,7 +26,7 @@ public class CrowsCallSpell extends SpellDefinition implements CastableSpell, Du
         super("crows_call");
 
         setAttribute(SPEED, 2d);
-        setAttribute(DURATION, 30 * 20);
+        setAttribute(DURATION, 30 * Ticks.TICKS_PER_SECOND);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class CrowsCallSpell extends SpellDefinition implements CastableSpell, Du
                 if (updatedPlayer != null && updatedPlayer.isOnline()) {
                     // If they're falling, or already gliding, create/update effect
                     if (updatedPlayer.getVelocity().getY() <= 0 || updatedPlayer.isGliding()) {
-                        StatusEffectInstance.applyEffect(updatedPlayer, StatusEffect.GLIDING, duration, true);
+                        StatusEffectInstance.applyEffect(updatedPlayer, StatusEffect.GLIDING, duration, true, updatedPlayer);
                         cancel();
                     }
                 }

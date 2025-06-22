@@ -90,7 +90,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
                 double damage = context.instance().getAttribute(DamageSpell.DAMAGE);
 
                 DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                        .withCausingEntity(context.player())
+                        .withDirectEntity(context.player())
                         .withDamageLocation(projectile.location)
                         .build();
 

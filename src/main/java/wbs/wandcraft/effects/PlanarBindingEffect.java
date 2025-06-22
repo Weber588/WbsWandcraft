@@ -16,7 +16,7 @@ public class PlanarBindingEffect implements StatusEffect {
     private static final RingParticleEffect EFFECT = new RingParticleEffect();
 
     @Override
-    public boolean tick(LivingEntity entity, int timeLeft) {
+    public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
         EFFECT.setRadius(entity.getWidth())
                 .play(Particle.REVERSE_PORTAL, WbsEntityUtil.getMiddleLocation(entity));
         return false;

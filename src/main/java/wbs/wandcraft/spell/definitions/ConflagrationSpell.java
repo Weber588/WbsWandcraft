@@ -45,7 +45,7 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
                 .selectExcluding(caster);
 
         DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                .withCausingEntity(context.player())
+                .withDirectEntity(context.player())
                 .build();
 
         for (LivingEntity target : hit) {

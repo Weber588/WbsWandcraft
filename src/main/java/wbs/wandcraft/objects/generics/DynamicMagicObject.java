@@ -1,5 +1,6 @@
 package wbs.wandcraft.objects.generics;
 
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -369,7 +370,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     }
 
     public DynamicMagicObject setSpeedInSeconds(double speedInSeconds) {
-        velocity = scaleVector(velocity, speedInSeconds / 20);
+        velocity = scaleVector(velocity, speedInSeconds / Ticks.TICKS_PER_SECOND);
         return this;
     }
 
@@ -403,7 +404,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     }
 
     public DynamicMagicObject setStepsPerSecond(double stepsPerSecond) {
-        this.stepsPerTick = stepsPerSecond / 20;
+        this.stepsPerTick = stepsPerSecond / Ticks.TICKS_PER_SECOND;
         return this;
     }
 
@@ -417,7 +418,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     }
 
     public DynamicMagicObject setGravityInSeconds(double gravityPerSecond) {
-        gravity.setY(-gravityPerSecond / 20);
+        gravity.setY(-gravityPerSecond / Ticks.TICKS_PER_SECOND);
         return this;
     }
 

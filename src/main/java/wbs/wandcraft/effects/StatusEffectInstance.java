@@ -4,18 +4,22 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.util.CustomPersistentDataTypes;
+
+import java.util.UUID;
 
 public class StatusEffectInstance {
     public static final NamespacedKey EFFECTS_KEY = WbsWandcraft.getKey("effects");
-    private final int taskId;
 
-    public static StatusEffectInstance applyEffect(LivingEntity entity, StatusEffect effect, int duration, boolean showBossBar) {
+    public static StatusEffectInstance applyEffect(LivingEntity entity, StatusEffect effect, int duration, boolean showBossBar, LivingEntity cause) {
         StatusEffectInstance existing = StatusEffectManager.getInstance(entity, effect);
 
         if (existing != null) {
@@ -24,26 +28,41 @@ public class StatusEffectInstance {
             return existing;
         }
 
-        StatusEffectInstance newInstance = new StatusEffectInstance(entity, effect, duration, showBossBar);
-        StatusEffectManager.trackInstance(entity, newInstance);
+        StatusEffectInstance newInstance = new StatusEffectInstance(effect, duration, showBossBar, cause.getUniqueId());
+
+        newInstance.start(entity);
 
         return newInstance;
     }
 
-    private final BossBar bar;
-
-    private int initialTime;
-    private final LivingEntity entity;
-
+    @Nullable
+    private final UUID cause;
+    private LivingEntity entity;
     private final StatusEffect effect;
+    private int initialTime;
     private int timeLeft;
+
+    private BossBar bar;
     private boolean showBossBar;
-    private StatusEffectInstance(LivingEntity entity, StatusEffect effect, int duration, boolean initialShowBossBar) {
-        this.entity = entity;
+
+    private int taskId = -1;
+
+    public StatusEffectInstance(StatusEffect effect, int duration, boolean initialShowBossBar, @Nullable UUID cause) {
         this.effect = effect;
         this.initialTime = duration;
         this.timeLeft = duration;
         this.showBossBar = initialShowBossBar;
+        this.cause = cause;
+    }
+
+    public int start(LivingEntity entity) {
+        if (taskId != -1) {
+            throw new IllegalStateException("Task is already running!");
+        }
+
+        StatusEffectManager.trackInstance(entity, this);
+
+        this.entity = entity;
 
         Component barName = effect.display();
         bar = BossBar.bossBar(
@@ -57,31 +76,27 @@ public class StatusEffectInstance {
             bar.addViewer(entity);
         }
 
-        taskId = startTimer(entity, effect);
-    }
-
-    private int startTimer(LivingEntity entity, StatusEffect effect) {
         PersistentDataContainer container = entity.getPersistentDataContainer();
         PersistentDataContainer effectsContainer = container.getOrDefault(
                 EFFECTS_KEY,
                 PersistentDataType.TAG_CONTAINER,
                 container.getAdapterContext().newPersistentDataContainer()
         );
-        effectsContainer.set(effect.getKey(), PersistentDataType.INTEGER, initialTime);
+        effectsContainer.set(effect.getKey(), CustomPersistentDataTypes.STATUS_EFFECT, this);
         container.set(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
-        effect.onApply(entity, initialTime);
+        effect.onApply(entity, this);
 
-        return new BukkitRunnable() {
+        taskId = new BukkitRunnable() {
             @Override
             public void run() {
-                Player updatedPlayer = Bukkit.getPlayer(entity.getUniqueId());
+                Entity updatedEntity = Bukkit.getEntity(entity.getUniqueId());
 
-                if (updatedPlayer == null) {
+                if (updatedEntity == null) {
                     StatusEffectInstance.this.cancel(false);
                     return;
                 }
 
-                if (!updatedPlayer.isOnline()) {
+                if (updatedEntity instanceof Player player && !player.isOnline()) {
                     StatusEffectInstance.this.cancel(false);
                     return;
                 }
@@ -93,16 +108,16 @@ public class StatusEffectInstance {
                         container.getAdapterContext().newPersistentDataContainer()
                 );;
 
-                if (updatedPlayer.isDead() || !effect.isValid(entity)) {
+                if (updatedEntity.isDead() || !effect.isValid(entity, StatusEffectInstance.this)) {
                     StatusEffectInstance.this.cancel(true);
                     return;
                 }
 
                 timeLeft--;
                 if (effectsContainer.has(effect.getKey()) && timeLeft > 0) {
-                    effectsContainer.set(effect.getKey(), PersistentDataType.INTEGER, timeLeft);
+                    effectsContainer.set(effect.getKey(), CustomPersistentDataTypes.STATUS_EFFECT, StatusEffectInstance.this);
 
-                    boolean cancel = effect.tick(entity, timeLeft);
+                    boolean cancel = effect.tick(entity, StatusEffectInstance.this);
                     if (cancel) {
                         StatusEffectInstance.this.cancel(true);
                     }
@@ -121,22 +136,24 @@ public class StatusEffectInstance {
                 container.set(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
             }
         }.runTaskTimer(WbsWandcraft.getInstance(), 0L, 1L).getTaskId();
+
+        return taskId;
     }
 
     public StatusEffect getEffect() {
         return effect;
     }
 
-    public void cancel(boolean removeFromPlayer) {
-        effect.onRemove(entity);
-        StatusEffectManager.stopTracking(entity, StatusEffectInstance.this);
+    public void cancel(boolean removeFromEntity) {
+        effect.onRemove(entity, this);
+        StatusEffectManager.stopTracking(entity, this);
         Bukkit.getScheduler().cancelTask(taskId);
 
         Player updatedPlayer = Bukkit.getPlayer(entity.getUniqueId());
         if (updatedPlayer != null) {
             bar.removeViewer(updatedPlayer);
 
-            if (removeFromPlayer) {
+            if (removeFromEntity) {
                 PersistentDataContainer container = updatedPlayer.getPersistentDataContainer();
 
                 PersistentDataContainer effectsContainer = container.get(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER);
@@ -149,7 +166,7 @@ public class StatusEffectInstance {
     }
 
     private void setRemainingTime(int duration) {
-        entity.getPersistentDataContainer().set(effect.getKey(), PersistentDataType.INTEGER, duration);
+        entity.getPersistentDataContainer().set(effect.getKey(), CustomPersistentDataTypes.STATUS_EFFECT, StatusEffectInstance.this);
 
         timeLeft = duration;
         if (initialTime > timeLeft) {
@@ -163,5 +180,28 @@ public class StatusEffectInstance {
 
     public int getTimeLeft() {
         return timeLeft;
+    }
+
+    public int getInitialTime() {
+        return initialTime;
+    }
+
+    public boolean showBossBar() {
+        return showBossBar;
+    }
+
+    public void setTimeLeft(int timeLeft) {
+        this.timeLeft = timeLeft;
+    }
+
+    public @Nullable UUID getCause() {
+        return cause;
+    }
+
+    public @Nullable Entity getCauseEntity() {
+        if (cause != null) {
+            return Bukkit.getEntity(cause);
+        }
+        return null;
     }
 }

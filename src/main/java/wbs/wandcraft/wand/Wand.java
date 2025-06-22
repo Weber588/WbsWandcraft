@@ -6,6 +6,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -116,7 +117,7 @@ public class Wand implements Attributable {
         }
 
         long lastUsed = getLastUsed(wandContainer);
-        long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / 20 + additionalCooldown;
+        long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / Ticks.TICKS_PER_SECOND + additionalCooldown;
         long timestamp = getTimestamp();
         if (timestamp <= usableTick) {
             Duration timeLeft = Duration.ofMillis(usableTick - timestamp);

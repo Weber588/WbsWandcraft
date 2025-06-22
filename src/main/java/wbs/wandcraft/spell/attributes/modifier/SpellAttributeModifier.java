@@ -4,13 +4,13 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
 
 public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
     public static final NamespacedKey ATTRIBUTE_KEY = WbsWandcraft.getKey("attribute");
@@ -45,22 +45,22 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
     }
 
     public void writeTo(PersistentDataContainer modifierContainer) {
-        modifierContainer.set(ATTRIBUTE_KEY, CustomPersistentDataTypes.NAMESPACED_KEY, attribute().getKey());
+        modifierContainer.set(ATTRIBUTE_KEY, WbsPersistentDataType.NAMESPACED_KEY, attribute().getKey());
 
-        modifierContainer.set(MODIFIER_TYPE, CustomPersistentDataTypes.NAMESPACED_KEY, modifierOperation.getModifierType().getKey());
+        modifierContainer.set(MODIFIER_TYPE, WbsPersistentDataType.NAMESPACED_KEY, modifierOperation.getModifierType().getKey());
         modifierContainer.set(MODIFIER_VALUE, modifierOperation.getModifierType().dataType(), modifierValue);
 
-        modifierContainer.set(MODIFIER_OPERATION, CustomPersistentDataTypes.NAMESPACED_KEY, modifierOperation.getDefinition().getKey());
+        modifierContainer.set(MODIFIER_OPERATION, WbsPersistentDataType.NAMESPACED_KEY, modifierOperation.getDefinition().getKey());
     }
 
     public static SpellAttributeModifier<?, ?> fromContainer(PersistentDataContainer container) {
-        NamespacedKey attributeKey = container.get(ATTRIBUTE_KEY, CustomPersistentDataTypes.NAMESPACED_KEY);
+        NamespacedKey attributeKey = container.get(ATTRIBUTE_KEY, WbsPersistentDataType.NAMESPACED_KEY);
         SpellAttribute<?> attribute = WandcraftRegistries.ATTRIBUTES.get(attributeKey);
         if (attribute == null) {
             throw new IllegalStateException("Attribute missing while generating attribute modifier.");
         }
 
-        NamespacedKey typeKey = container.get(SpellAttributeModifier.MODIFIER_TYPE, CustomPersistentDataTypes.NAMESPACED_KEY);
+        NamespacedKey typeKey = container.get(SpellAttributeModifier.MODIFIER_TYPE, WbsPersistentDataType.NAMESPACED_KEY);
         RegisteredPersistentDataType<?> modifierType = WandcraftRegistries.DATA_TYPES.get(typeKey);
         if (modifierType == null) {
             throw new IllegalStateException("Invalid or missing data type for modifier.");

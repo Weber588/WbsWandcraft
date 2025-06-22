@@ -60,7 +60,7 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
                 .setRotation(Math.random() * 360)
                 .setAbout(direction)
                 .setDirection(direction)
-                .setSpeed(range / 8)
+                .setSpeed(range / 5)
                 .buildAndPlay(instance.getAttribute(PARTICLE, getDefaultParticle()), location.clone().add(direction));
 
         List<Entity> hitEntities = new LinkedList<>();
@@ -91,7 +91,7 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
         int burnTime = instance.getAttribute(BURN_TIME);
 
         DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                .withCausingEntity(context.player())
+                .withDirectEntity(context.player())
                 .build();
 
         for (Entity hitEntity : hitEntities) {

@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -100,7 +101,7 @@ public class PlayerMana {
 
     private long getUsableSystemMillis() {
         // TODO: Make mana regen cooloff an attribute on the player?
-        return lastUsedMana + (DEFAULT_MANA_REGEN_COOLOFF * 1000 / 20);
+        return lastUsedMana + (DEFAULT_MANA_REGEN_COOLOFF * 1000 / Ticks.TICKS_PER_SECOND);
     }
 
     public int applyCost(Player player, int cost) {
@@ -132,7 +133,7 @@ public class PlayerMana {
     }
 
     private static class ManaContext {
-        public static final int DEFAULT_TIME_ON_SCREEN = 3 * 20;
+        public static final int DEFAULT_TIME_ON_SCREEN = 3 * Ticks.TICKS_PER_SECOND;
         private final BossBar manaBar;
         private int timeLeftOnScreen = DEFAULT_TIME_ON_SCREEN;
 

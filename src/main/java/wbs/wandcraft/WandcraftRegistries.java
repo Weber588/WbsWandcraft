@@ -60,13 +60,15 @@ public class WandcraftRegistries {
             new PlanarBindingSpell(),
             new DiscoverItemSpell(),
             new DeathWalkSpell(),
-            new ChainLightningSpell()
+            new ChainLightningSpell(),
+            new CharmSpell()
     );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
             StatusEffect.GLIDING,
             StatusEffect.STUNNED,
             StatusEffect.PLANAR_BINDING,
-            StatusEffect.DEATH_WALK
+            StatusEffect.DEATH_WALK,
+            StatusEffect.CHARMED
     );
     public static final WbsRegistry<SpellEffectDefinition<?>> EFFECTS = new WbsRegistry<>(
             new ForcePullEffect(),

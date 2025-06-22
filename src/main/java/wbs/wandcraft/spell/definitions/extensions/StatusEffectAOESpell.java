@@ -1,6 +1,5 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
-import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import wbs.utils.util.entities.selector.RadiusSelector;
@@ -14,8 +13,6 @@ public interface StatusEffectAOESpell extends CastableSpell, StatusEffectSpell, 
         Player player = context.player();
         SpellInstance instance = context.instance();
 
-        player.getWorld().spawnParticle(Particle.FLASH, context.location(), 0);
-
         new RadiusSelector<>(LivingEntity.class)
                 .setRange(instance.getAttribute(RADIUS))
                 .exclude(player)
@@ -24,7 +21,8 @@ public interface StatusEffectAOESpell extends CastableSpell, StatusEffectSpell, 
                         target,
                         getStatusEffect(),
                         instance.getAttribute(DURATION),
-                        true
+                        true,
+                        player
                 )
         );
     }

@@ -20,7 +20,7 @@ public class DeathWalkEffect implements StatusEffect {
             .setOptions(Material.GRAVEL.createBlockData());
 
     @Override
-    public boolean tick(LivingEntity entity, int timeLeft) {
+    public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
         EFFECT.setXYZ(entity.getWidth())
                 .setY(entity.getHeight())
                 .play(Particle.FALLING_DUST, WbsEntityUtil.getMiddleLocation(entity));

@@ -13,13 +13,13 @@ import wbs.wandcraft.WbsWandcraft;
 @NullMarked
 public class GlidingStatusEffect implements StatusEffect {
     @Override
-    public boolean tick(LivingEntity entity, int timeLeft) {
+    public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
         entity.setGliding(true);
         return false;
     }
 
     @Override
-    public boolean isValid(LivingEntity entity) {
+    public boolean isValid(LivingEntity entity, StatusEffectInstance instance) {
         return !entity.isOnGround() && entity.getLocation().add(0, -Double.MIN_VALUE, 0).getBlock().isPassable();
     }
 

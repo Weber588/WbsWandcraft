@@ -58,7 +58,7 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
         double damage = instance.getAttribute(DAMAGE);
 
         DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                .withCausingEntity(context.player())
+                .withDirectEntity(context.player())
                 .build();
 
         for (int i = 0; i <= distance / STEP_SIZE; i++) {

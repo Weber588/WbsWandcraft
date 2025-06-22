@@ -1,6 +1,7 @@
 package wbs.wandcraft.spell.attributes;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -15,7 +16,6 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModificationOperator;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -140,7 +140,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     }
 
     public SpellAttribute<T> setTicksToSecondsFormatter() {
-        return setNumericFormatter(1 / 20.0, value -> {
+        return setNumericFormatter(1d / Ticks.TICKS_PER_SECOND, value -> {
             if (value.equals("1")) {
                 return "1 second";
             }
@@ -173,7 +173,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     public <M> SpellAttributeModifier<T, M> createModifier(PersistentDataContainer container, RegisteredPersistentDataType<M> modifierType) {
         M value =  container.get(SpellAttributeModifier.MODIFIER_VALUE, modifierType.dataType());
 
-        NamespacedKey operationTypeKey = container.get(SpellAttributeModifier.MODIFIER_OPERATION, CustomPersistentDataTypes.NAMESPACED_KEY);
+        NamespacedKey operationTypeKey = container.get(SpellAttributeModifier.MODIFIER_OPERATION, WbsPersistentDataType.NAMESPACED_KEY);
         AttributeModifierType definition = WandcraftRegistries.MODIFIER_TYPES.get(operationTypeKey);
         if (definition == null) {
             throw new IllegalStateException("Invalid or missing data type for modifier.");

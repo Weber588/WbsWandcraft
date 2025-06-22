@@ -13,7 +13,7 @@ import wbs.wandcraft.WbsWandcraft;
 @NullMarked
 public class StunnedEffect implements StatusEffect {
     @Override
-    public boolean tick(LivingEntity entity, int timeLeft) {
+    public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
         ItemStack activeItem = entity.getActiveItem();
         if (!activeItem.isEmpty()) {
             entity.clearActiveItem();
@@ -22,7 +22,7 @@ public class StunnedEffect implements StatusEffect {
         if (entity instanceof Player player) {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (!item.isEmpty() && player.getCooldown(item) == 0) {
-                player.setCooldown(item, timeLeft);
+                player.setCooldown(item, instance.getTimeLeft());
             }
         } else if (entity instanceof Mob mob) {
             mob.setTarget(null);
@@ -31,7 +31,7 @@ public class StunnedEffect implements StatusEffect {
     }
 
     @Override
-    public void onApply(LivingEntity entity, int duration) {
+    public void onApply(LivingEntity entity, StatusEffectInstance instance) {
         entity.getWorld().spawnParticle(Particle.FLASH, entity.getEyeLocation(), 0);
     }
 

@@ -92,7 +92,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
             if (!hits.isEmpty()) {
                 hits.forEach(entity -> {
                     DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                            .withCausingEntity(context.player())
+                            .withDirectEntity(context.player())
                             .withDamageLocation(next.point)
                             .build();
 
