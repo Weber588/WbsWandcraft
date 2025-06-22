@@ -48,7 +48,7 @@ public class SpellEffectInstance<T> implements Attributable, ComponentRepresenta
         if (!attributeValues.isEmpty()) {
             asComponent = asComponent.appendNewline().append(Component.text("  Attributes::").color(NamedTextColor.AQUA));
             for (SpellAttributeInstance<?> instance : attributeValues) {
-                if (instance.shouldShow()) {
+                if (instance.shouldShow(this)) {
                     asComponent = asComponent.appendNewline().append(Component.text("    > ")).append(instance.toComponent());
                 }
             }

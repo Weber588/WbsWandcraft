@@ -19,6 +19,7 @@ import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
@@ -32,7 +33,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     private final Function<String, T> parse;
     @NotNull
     private final Collection<T> suggestions = new HashSet<>();
-    private Function<@NotNull T, @NotNull Boolean> shouldShow = value -> true;
+    private BiFunction<@NotNull T, Attributable, @NotNull Boolean> shouldShow = (value, attributable) -> true;
     private Function<@NotNull T, @NotNull String> formatter = Objects::toString;
     private final List<TypedFormatter<?>> typedFormatters = new LinkedList<>();
 
@@ -96,13 +97,16 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         return defaultValue;
     }
 
-    public SpellAttribute<T> setShowAttribute(Function<T, @NotNull Boolean> shouldShow) {
+    public SpellAttribute<T> setShowAttribute(Function<@NotNull T, @NotNull Boolean> shouldShow) {
+        return setShowAttribute((value, attributable) -> shouldShow.apply(value));
+    }
+    public SpellAttribute<T> setShowAttribute(BiFunction<@NotNull T, Attributable, @NotNull Boolean> shouldShow) {
         this.shouldShow = shouldShow;
         return this;
     }
 
-    public boolean shouldShow(T value) {
-        return shouldShow.apply(value);
+    public boolean shouldShow(T value, Attributable attributable) {
+        return shouldShow.apply(value, attributable);
     }
 
     public SpellAttribute<T> setFormatter(Function<T, String> formatter) {

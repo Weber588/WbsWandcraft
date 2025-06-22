@@ -8,20 +8,14 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectInstance;
-import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
 import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 public class CrowsCallSpell extends SpellDefinition implements CastableSpell, DurationalSpell, SpeedSpell {
-    private static final Map<UUID, Integer> CURRENT_TIMERS = new HashMap<>();
-
     public CrowsCallSpell() {
         super("crows_call");
 

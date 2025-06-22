@@ -15,8 +15,7 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 
 public class VortexSpell extends SpellDefinition implements CastableSpell, SpeedSpell, DurationalSpell, ParticleSpell, RadiusedSpell {
     private final RingParticleEffect effect = (RingParticleEffect) new RingParticleEffect()
-            .setRadius(2)
-            .setAmount(3);
+            .setRadius(2);
 
     public VortexSpell() {
         super("vortex");
@@ -52,7 +51,7 @@ public class VortexSpell extends SpellDefinition implements CastableSpell, Speed
                 Double speed = instance.getAttribute(SPEED);
                 Vector direction = WbsEntityUtil.getFacingVector(caster, speed);
                 effectClone.setAbout(direction);
-                effectClone.setRotation(i*2);
+                effectClone.setRotation((i + 10) * 2);
                 effectClone.play(instance.getAttribute(PARTICLE, getDefaultParticle()), WbsEntityUtil.getMiddleLocation(caster));
 
                 caster.setVelocity(direction);
@@ -69,6 +68,6 @@ public class VortexSpell extends SpellDefinition implements CastableSpell, Speed
 
     @Override
     public Particle getDefaultParticle() {
-        return Particle.SMALL_GUST;
+        return Particle.GUST;
     }
 }

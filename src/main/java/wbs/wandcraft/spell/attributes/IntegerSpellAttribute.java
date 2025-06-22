@@ -4,6 +4,7 @@ import org.bukkit.NamespacedKey;
 import wbs.wandcraft.RegisteredPersistentDataType;
 
 public class IntegerSpellAttribute extends SpellAttribute<Integer> {
+    @SuppressWarnings("unused")
     public IntegerSpellAttribute(NamespacedKey key, int defaultValue) {
         super(key, RegisteredPersistentDataType.INTEGER, defaultValue, Integer::parseInt);
     }

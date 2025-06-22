@@ -5,10 +5,10 @@ import wbs.wandcraft.RegisteredPersistentDataType;
 
 import java.text.DecimalFormat;
 
-@SuppressWarnings("unused")
 public class DoubleSpellAttribute extends SpellAttribute<Double> {
     private static final DecimalFormat FORMAT = new DecimalFormat("##.##");
 
+    @SuppressWarnings("unused")
     public DoubleSpellAttribute(NamespacedKey key, double defaultValue) {
         super(key, RegisteredPersistentDataType.DOUBLE, defaultValue, Double::parseDouble);
         setFormatter(FORMAT::format);

@@ -1,16 +1,19 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.effects.StatusEffect;
-import wbs.wandcraft.spell.definitions.extensions.StatusEffectAOESpell;
+import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
 
-// TODO: Implement targeting system for these spells that can target one or more entities
-public class StunSpell extends SpellDefinition implements StatusEffectAOESpell {
+public class StunSpell extends SpellDefinition implements StatusEffectSpell<LivingEntity> {
     public StunSpell() {
         super("stun");
 
         setAttribute(DURATION, 20);
+        setAttribute(TARGET, TargeterType.RADIUS);
+        setAttribute(TARGET_RANGE, 5d);
+        setAttribute(MAX_TARGETS, 10);
     }
 
     @Override
@@ -21,5 +24,10 @@ public class StunSpell extends SpellDefinition implements StatusEffectAOESpell {
     @Override
     public @NotNull StatusEffect getStatusEffect() {
         return StatusEffect.STUNNED;
+    }
+
+    @Override
+    public Class<LivingEntity> getEntityClass() {
+        return LivingEntity.class;
     }
 }

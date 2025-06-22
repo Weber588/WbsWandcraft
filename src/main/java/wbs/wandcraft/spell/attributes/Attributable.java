@@ -90,7 +90,7 @@ public interface Attributable extends ItemDecorator {
     default @NotNull List<Component> getLore() {
         return getAttributeValues().stream()
                 .sorted()
-                .filter(SpellAttributeInstance::shouldShow)
+                .filter(instance -> instance.shouldShow(this))
                 .map(instance ->
                         (Component) Component.text("  - ").style(Style.style(NamedTextColor.GOLD, Set.of()))
                                 .append(instance.toComponent())

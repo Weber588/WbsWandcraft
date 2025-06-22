@@ -25,6 +25,7 @@ public class WandcraftRegistries {
             RegisteredPersistentDataType.STRING,
             RegisteredPersistentDataType.LONG,
             RegisteredPersistentDataType.PARTICLE,
+            RegisteredPersistentDataType.TARGETER,
             RegisteredPersistentDataType.SPELL
     );
     public static final WbsRegistry<SpellAttribute<?>> ATTRIBUTES = new WbsRegistry<>();

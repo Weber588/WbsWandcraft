@@ -1,21 +1,24 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.Particle;
-import org.jetbrains.annotations.NotNull;
-import wbs.utils.util.WbsEnums;
 import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.spell.attributes.EnumSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
-import java.util.Objects;
-
 public interface ParticleSpell extends ISpellDefinition {
-    SpellAttribute<@NotNull Particle> PARTICLE = new SpellAttribute<>("particle_effect",
-            RegisteredPersistentDataType.PARTICLE,
+    SpellAttribute<Particle> PARTICLE = new EnumSpellAttribute<>("particle_effect",
             null,
-            stringValue -> WbsEnums.getEnumFromString(Particle.class, stringValue)
+            RegisteredPersistentDataType.PARTICLE,
+            Particle.class
     ).addSuggestions(Particle.values())
-            .setShowAttribute(Objects::nonNull);
+            .setShowAttribute((value, attributable) -> {
+                if (attributable instanceof ParticleSpell spell) {
+                    return value != spell.getDefaultParticle();
+                }
+
+                return true;
+            });
 
     default void setupParticles() {
         setAttribute(PARTICLE, getDefaultParticle());

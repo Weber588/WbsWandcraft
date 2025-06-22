@@ -70,8 +70,8 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
         return other.attribute().compareTo(attribute);
     }
 
-    public boolean shouldShow() {
-        return attribute.shouldShow(value);
+    public boolean shouldShow(Attributable attributable) {
+        return attribute.shouldShow(value, attributable);
     }
 
     @Override
