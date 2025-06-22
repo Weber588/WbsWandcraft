@@ -1,34 +1,34 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Color;
-import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
-import org.bukkit.Particle;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsCollectionUtil;
+import wbs.utils.util.WbsLocationUtil;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.LineParticleEffect;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
 import wbs.wandcraft.spell.definitions.extensions.DirectionalSpell;
+import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class ChainLightningSpell extends SpellDefinition implements ContinuousCastableSpell, DirectionalSpell, DamageSpell {
+public class ChainLightningSpell extends SpellDefinition implements ContinuousCastableSpell, DirectionalSpell, DamageSpell, RangedSpell {
     private static final LineParticleEffect EFFECT = (LineParticleEffect) new LineParticleEffect()
             .setScaleAmount(true)
             .setAmount(7);
-    public static final int MAX_ARCS = 50;
-    public static final double UNSUPPORTED_ARC_LENGTH = 5;
 
     private static final Set<Color> COLOURS = Set.of(
             Color.fromRGB(15, 240, 240),
@@ -40,6 +40,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
 
         setAttribute(MAX_DURATION, 100);
         setAttribute(COST_PER_TICK, 3);
+        setAttribute(RANGE, 5d);
 
         updateEffectColour();
     }
@@ -56,18 +57,27 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
             return;
         }
 
+        double damage = context.instance().getAttribute(DAMAGE);
+
+        if (player.isInWaterOrRainOrBubbleColumn()) {
+            player.damage(damage, DamageSource.builder(DamageType.INDIRECT_MAGIC).build());
+            return;
+        }
+
         double segmentLength = 1.2;
 
+        double unsupportedArcLength = context.instance().getAttribute(RANGE);
+
         LightningNode root = new LightningNode(player.getEyeLocation().add(getDirection(context, player, 0.5)));
-        Location target = player.getEyeLocation().add(getDirection(context, player, UNSUPPORTED_ARC_LENGTH));
+        Location target = player.getEyeLocation().add(getDirection(context, player, unsupportedArcLength));
 
         LightningNode closestKnown = root;
 
         List<LivingEntity> ignore = new LinkedList<>();
         ignore.add(player);
 
-        for (int i = 0; i < MAX_ARCS; i++) {
-            Location random = approximateTarget(target, closestKnown.point.distance(target));
+        for (int i = 0; i < unsupportedArcLength * 7; i++) {
+            Location random = approximateTarget(target, closestKnown.point.distance(target), unsupportedArcLength);
 
             closestKnown = root.getClosestNode(random);
 
@@ -81,7 +91,16 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
 
             if (!hits.isEmpty()) {
                 hits.forEach(entity -> {
-                    entity.damage(context.instance().getAttribute(DAMAGE), player);
+                    DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
+                            .withCausingEntity(context.player())
+                            .withDamageLocation(next.point)
+                            .build();
+
+                    if (entity.isInWaterOrRainOrBubbleColumn()) {
+                        entity.damage(damage * 2, source);
+                    } else {
+                        entity.damage(damage, source);
+                    }
                     Location entityHitPoint = entity.getLocation().add(
                             Math.random() * entity.getWidth() / 2,
                             Math.random() * entity.getHeight(),
@@ -95,13 +114,13 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
                 // ignore.addAll(hits);
 
                 // Hit something -- extend the target from that point somewhat randomly
-                target.add(getDirection(context, player, UNSUPPORTED_ARC_LENGTH));
+                target.add(getDirection(context, player, unsupportedArcLength));
             } else {
                 updateEffectColour();
                 EFFECT.play(Particle.DUST, closestKnown.point, next.point);
             }
 
-            if (next.point.distance(target) < segmentLength) {
+            if (next.point.distance(target) < segmentLength && target.getBlock().getType() != Material.LIGHTNING_ROD) {
                 return;
             }
 
@@ -152,7 +171,15 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
         return start.clone().add(WbsMath.scaleVector(startToTarget, Math.min(startToTarget.length(), distance))).add(WbsMath.randomVector(segmentLength / 3));
     }
 
-    private Location approximateTarget(Location end, double distance) {
+    private Location approximateTarget(Location end, double distance, double unsupportedArcLength) {
+        // Check for lightning rods nearby and force the lightning that way
+        Set<Block> nearbyBlocks = WbsLocationUtil.getNearbyBlocks(end, unsupportedArcLength);
+        for (Block nearbyBlock : nearbyBlocks) {
+            if (nearbyBlock.getType() == Material.LIGHTNING_ROD) {
+                return nearbyBlock.getLocation().add(0.5, 0.75, 0.5);
+            }
+        }
+
         return end.clone().add(WbsMath.randomVector(Math.random() * 4 / distance));
     }
 }
