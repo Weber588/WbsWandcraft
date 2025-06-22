@@ -6,7 +6,7 @@ import wbs.utils.util.WbsKeyed;
 import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 
 import java.util.HashSet;
 import java.util.Set;

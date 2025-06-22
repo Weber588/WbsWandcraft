@@ -30,7 +30,6 @@ public class ArtificingBlockEvents implements Listener {
         }
 
         WbsWandcraft.getInstance().getSettings().getArtificingConfig().placeAt(event.getBlock());
-        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

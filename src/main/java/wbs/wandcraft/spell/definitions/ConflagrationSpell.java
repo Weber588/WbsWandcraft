@@ -8,6 +8,7 @@ import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.DiscParticleEffect;
 import wbs.utils.util.pluginhooks.WbsRegionUtils;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
@@ -35,8 +36,8 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
         Player caster = context.player();
         SpellInstance instance = context.instance();
 
-        fireEffect.play(Particle.FLAME, caster.getLocation().add(0, 0.1, 0));
-        popEffect.play(Particle.LAVA, caster.getLocation());
+        fireEffect.play(Particle.FLAME, context.location().add(0, 0.1, 0));
+        popEffect.play(Particle.LAVA, context.location());
 
         Collection<LivingEntity> hit = new RadiusSelector<>(LivingEntity.class)
                 .setRange(instance.getAttribute(RADIUS))
@@ -48,7 +49,7 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
                 target.setFireTicks((int) (instance.getAttribute(BURN_TIME) * (1 + (Math.random() * 0.4 - 0.2))));
                 target.setVelocity(
                         target.getEyeLocation() // Give a slight upwards force by using eye height
-                                .subtract(caster.getLocation())
+                                .subtract(context.location())
                                 .toVector()
                                 .normalize()
                                 .multiply(instance.getAttribute(SPEED))

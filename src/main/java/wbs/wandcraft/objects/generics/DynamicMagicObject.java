@@ -14,7 +14,7 @@ import wbs.wandcraft.events.objects.DynamicObjectBounceEvent;
 import wbs.wandcraft.events.objects.DynamicObjectPhysicsEvent;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
 import wbs.wandcraft.objects.colliders.Collider;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 
 import java.util.Objects;
 import java.util.function.Function;

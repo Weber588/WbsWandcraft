@@ -16,7 +16,7 @@ import wbs.wandcraft.exceptions.MagicObjectExistsException;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.PersistenceLevel;
 import wbs.wandcraft.objects.colliders.Collider;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 import java.util.Objects;

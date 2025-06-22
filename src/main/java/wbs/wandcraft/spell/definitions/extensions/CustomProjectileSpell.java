@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
@@ -55,7 +56,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
         double hitboxSize = instance.getAttribute(SIZE);
         int bounces = instance.getAttribute(BOUNCES);
 
-        DynamicProjectileObject projectile = new DynamicProjectileObject(player.getEyeLocation(), player, context);
+        DynamicProjectileObject projectile = new DynamicProjectileObject(context.location(), player, context);
         WbsParticleGroup tickEffects = new WbsParticleGroup();
 
         projectile.setHitBoxSize(hitboxSize);

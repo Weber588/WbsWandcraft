@@ -13,7 +13,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.entities.WbsEntityUtil;
@@ -23,6 +22,8 @@ import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
 import wbs.wandcraft.ItemDecorator;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastingManager;
+import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.spell.attributes.*;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
@@ -92,6 +93,12 @@ public class Wand implements Attributable {
             return;
         }
 
+        WbsWandcraft plugin = WbsWandcraft.getInstance();
+        if (CastingManager.isCasting(player)) {
+            plugin.sendActionBar("Already casting!", player);
+            return;
+        }
+
         PersistentDataContainerView wandContainer = item.getPersistentDataContainer();
 
         Table<Integer, Integer, SpellInstance> spellTable = getModifiedSpellTable();
@@ -115,26 +122,22 @@ public class Wand implements Attributable {
             Duration timeLeft = Duration.ofMillis(usableTick - timestamp);
             String timeLeftString = WbsStringify.toString(timeLeft, false);
 
-            WbsWandcraft.getInstance().sendActionBar("You can use that again in " + timeLeftString, player);
+            plugin.sendActionBar("You can use that again in " + timeLeftString, player);
             return;
         }
 
         if (spellList.isEmpty()) {
-            WbsWandcraft.getInstance().buildMessage("No spells added! ")
-                    .append(Component.keybind("key.sneak"))
-                    .append("+")
-                    .append(Component.keybind("key.use"))
-                    .append(" to open wand.")
-                    .build()
-                    .sendActionBar(player);
+            plugin.sendActionBar("&wThis wand is empty...", player);
 
             FAIL_EFFECT.play(Particle.SMOKE, WbsEntityUtil.getMiddleLocation(player));
             return;
         }
 
+        CastingQueue queue = new CastingQueue(spellList, this);
+
         int finalAdditionalCooldown = additionalCooldown;
+        queue.startCasting(player);
         item.editMeta(meta -> {
-            enqueueCast(player, spellList);
             updateLastUsed(meta.getPersistentDataContainer());
             player.setCooldown(item, finalAdditionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
         });
@@ -148,25 +151,6 @@ public class Wand implements Attributable {
         }
     }
 
-    private void enqueueCast(@NotNull Player player, Queue<SpellInstance> instances) {
-        Wand check = Wand.getIfValid(player.getInventory().getItemInMainHand());
-        if (check == null || !check.getUUID().equals(uuid) || player.isDead() || !player.isOnline()) {
-            return;
-        }
-
-        SpellInstance toCast = instances.poll();
-
-        if (toCast == null) {
-            return;
-        }
-
-        toCast.cast(player, () -> new BukkitRunnable() {
-            @Override
-            public void run() {
-                enqueueCast(player, instances);
-            }
-        }.runTaskLater(WbsWandcraft.getInstance(), Math.max(0, toCast.getAttribute(CastableSpell.DELAY))));
-    }
 
     public @NotNull WandHolder getInventory(ItemStack item) {
         return new WandHolder(this, item);

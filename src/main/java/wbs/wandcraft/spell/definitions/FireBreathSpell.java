@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import wbs.utils.util.particles.RingParticleEffect;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.LinkedList;
@@ -25,9 +26,9 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
     public FireBreathSpell() {
         super("fire_breath");
 
-        setAttribute(DURATION, 100);
+        setAttribute(MAX_DURATION, 100);
         setAttribute(RANGE, 5d);
-        setAttribute(COST, 3);
+        setAttribute(COST_PER_TICK, 5);
     }
 
     @Override

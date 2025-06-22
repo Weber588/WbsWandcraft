@@ -10,7 +10,7 @@ import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,7 +58,7 @@ public abstract class SpellEffectDefinition<T> implements Keyed, ComponentRepres
     public <O> Function<O, T> getSupportFor(SpellTriggeredEvent<O> event) {
         //noinspection unchecked
         return (Function<O, T>) supportedEvents.stream()
-                .filter(support -> support.eventClass.equals(event.getEventClass()))
+                .filter(support -> support.eventClass().equals(event.getEventClass()))
                 .findFirst()
                 .map(SupportedEvent::function)
                 .orElse(null);
@@ -76,32 +76,5 @@ public abstract class SpellEffectDefinition<T> implements Keyed, ComponentRepres
     @Override
     public Set<SpellAttributeInstance<?>> getAttributeValues() {
         return attributeValues;
-    }
-
-    public static final class SupportedEvent<T, O> {
-        private final Class<O> eventClass;
-        private final Function<O, T> function;
-
-        public SupportedEvent(Class<O> eventClass, Function<O, T> function) {
-            this.eventClass = eventClass;
-            this.function = function;
-        }
-
-        public Class<O> eventClass() {
-            return eventClass;
-        }
-
-        public T toEventClass(O other) {
-            return function.apply(other);
-        }
-
-
-        public T transform(O other) {
-            return function.apply(other);
-        }
-
-        public Function<O, T> function() {
-            return function;
-        }
     }
 }

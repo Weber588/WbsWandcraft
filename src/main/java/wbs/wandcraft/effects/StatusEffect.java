@@ -24,7 +24,9 @@ public interface StatusEffect extends Keyed {
     default BossBar.Overlay barStyle() {
         return BossBar.Overlay.PROGRESS;
     }
+    default void onApply(LivingEntity entity, int duration) {}
     boolean tick(LivingEntity entity, int timeLeft);
+    default void onRemove(LivingEntity entity) {}
     default boolean isValid(LivingEntity entity) {
         return true;
     }

@@ -10,6 +10,7 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.*;
 import wbs.wandcraft.spell.definitions.extensions.*;
+import wbs.wandcraft.spell.event.CastSpellEffect;
 import wbs.wandcraft.spell.event.ForcePullEffect;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
 import wbs.wandcraft.wand.Wand;
@@ -22,16 +23,15 @@ public class WandcraftRegistries {
             RegisteredPersistentDataType.BOOLEAN,
             RegisteredPersistentDataType.DOUBLE,
             RegisteredPersistentDataType.STRING,
-            RegisteredPersistentDataType.LONG
+            RegisteredPersistentDataType.LONG,
+            RegisteredPersistentDataType.PARTICLE,
+            RegisteredPersistentDataType.SPELL
     );
     public static final WbsRegistry<SpellAttribute<?>> ATTRIBUTES = new WbsRegistry<>();
     public static final WbsRegistry<AttributeModifierType> MODIFIER_TYPES = new WbsRegistry<>(
             AttributeModifierType.SET,
             AttributeModifierType.ADD,
             AttributeModifierType.MULTIPLY
-    );
-    public static final WbsRegistry<SpellEffectDefinition<?>> EFFECTS = new WbsRegistry<>(
-            new ForcePullEffect()
     );
     public static final WbsRegistry<WandTexture> WAND_TEXTURES = new WbsRegistry<>(
             WandTexture.GEM,
@@ -67,6 +67,10 @@ public class WandcraftRegistries {
             StatusEffect.STUNNED,
             StatusEffect.PLANAR_BINDING,
             StatusEffect.DEATH_WALK
+    );
+    public static final WbsRegistry<SpellEffectDefinition<?>> EFFECTS = new WbsRegistry<>(
+            new ForcePullEffect(),
+            new CastSpellEffect()
     );
     public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>(
             new WandGenerator(WbsWandcraft.getKey("example"), 1, 2, -1, 0, 1, 1, 3)

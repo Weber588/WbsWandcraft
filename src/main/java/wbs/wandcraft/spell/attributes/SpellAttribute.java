@@ -43,6 +43,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         this.parse = parse;
         this.suggestions.add(defaultValue);
 
+        setFormatter(formatter);
         WandcraftRegistries.ATTRIBUTES.register(this);
     }
 

@@ -3,14 +3,12 @@ package wbs.wandcraft.spell.definitions;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Particle;
-import org.bukkit.entity.Entity;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
-import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 public class EldritchBlastSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell {
     private static final WbsParticleGroup EFFECT = new WbsParticleGroup();
@@ -55,17 +53,6 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
     public void configure(DynamicProjectileObject projectile, CastContext context) {
         projectile.setParticle(EFFECT);
         projectile.setEndEffects(END_EFFECT);
-
-        SpellInstance instance = context.instance();
-
-        SpellTriggeredEvents.ON_HIT_TRIGGER.registerAnonymous(instance, (result) -> {
-            Entity hitEntity = result.getHitEntity();
-            double damage = instance.getAttribute(DAMAGE);
-
-            if (hitEntity != null && damage > 0) {
-                context.player().damage(damage, hitEntity);
-            }
-        });
     }
 
     @Override

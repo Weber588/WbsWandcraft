@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.*;
 
-// TODO: Add directional spell to allow inaccuracy
 public class BlinkSpell extends SpellDefinition implements CastableSpell, RangedSpell, SpeedSpell, DirectionalSpell {
     public BlinkSpell() {
         super("blink");

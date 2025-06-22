@@ -23,23 +23,20 @@ import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
+import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
+import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.event.SpellEffectDefinition;
-import wbs.wandcraft.spell.event.SpellEffectInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
+import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandEffectsModify extends WbsSubcommand {
-    private static final KeyedSimpleArgument EFFECT_KEY = new KeyedSimpleArgument("effect_key",
-            ArgumentTypes.namespacedKey(),
-            null
-    );
+public class CommandModifyAttributes extends WbsSubcommand {
     private static final KeyedSimpleArgument ATTRIBUTE_KEY = new KeyedSimpleArgument("attribute_key",
             ArgumentTypes.namespacedKey(),
             null
@@ -49,16 +46,12 @@ public class CommandEffectsModify extends WbsSubcommand {
             "",
             String.class
     );
+    private static final KeyedSimpleArgument MODIFIER_TYPE = new KeyedSimpleArgument("modifier_type",
+            ArgumentTypes.namespacedKey(),
+            AttributeModifierType.ADD.getKey()
+    );
 
     static {
-        EFFECT_KEY.setSuggestionProvider((context, builder) ->
-                KeyedSuggestionProvider.getStaticKeyed(
-                        WandcraftRegistries.EFFECTS.stream()
-                                .map(Keyed::key)
-                                .toList()
-                        ).getSuggestions(context, builder)
-        );
-
         ATTRIBUTE_KEY.setSuggestionProvider((context, builder) -> {
             CommandSender sender = context.getSource().getSender();
             if (sender instanceof Player player) {
@@ -73,12 +66,19 @@ public class CommandEffectsModify extends WbsSubcommand {
                     attributable = instance;
                 }
 
-                List<SpellAttribute<?>> attributes = new LinkedList<>();
+                Set<SpellAttribute<?>> attributes = new HashSet<>();
 
                 if (attributable != null) {
                     attributable.getAttributeValues().stream()
                             .map(SpellAttributeInstance::attribute)
                             .forEach(attributes::add);
+
+                    if (wand != null) {
+                        wand.getAttributeModifiers()
+                                .stream()
+                                .map(SpellAttributeModifier::attribute)
+                                        .forEach(attributes::add);
+                    }
                 } else {
                     attributes.addAll(WandcraftRegistries.ATTRIBUTES.values());
                 }
@@ -105,13 +105,25 @@ public class CommandEffectsModify extends WbsSubcommand {
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().create("Attribute not found: " + attributeKey.asString());
             }
         });
+
+        MODIFIER_TYPE.setSuggestionProvider((context, builder) -> {
+            if (context.getSource().getSender() instanceof Player player) {
+                ItemStack held = player.getInventory().getItemInMainHand();
+
+                if (SpellModifier.fromItem(held) != null || Wand.getIfValid(held) != null) {
+                    return KeyedSuggestionProvider.getStaticKeyed(WandcraftRegistries.MODIFIER_TYPES.values()).getSuggestions(context, builder);
+                }
+            }
+
+            return builder.buildFuture();
+        });
     }
 
-    public CommandEffectsModify(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandModifyAttributes(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
-        addSimpleArgument(EFFECT_KEY);
         addSimpleArgument(ATTRIBUTE_KEY);
         addSimpleArgument(ATTRIBUTE_VALUE);
+        addSimpleArgument(MODIFIER_TYPE);
     }
 
     @Override
@@ -120,25 +132,6 @@ public class CommandEffectsModify extends WbsSubcommand {
 
         if (!(sender instanceof Player player)) {
             plugin.sendMessage("This command is only usable by players.", sender);
-            return Command.SINGLE_SUCCESS;
-        }
-
-        NamespacedKey effectKey = configuredArgumentMap.get(EFFECT_KEY);
-
-        if (effectKey == null) {
-            plugin.sendMessage("Choose an effect: "
-                            + WandcraftRegistries.EFFECTS.stream()
-                            .map(Keyed::key)
-                            .map(Key::asString)
-                            .collect(Collectors.joining(", ")),
-                    context.getSource().getSender());
-            return Command.SINGLE_SUCCESS;
-        }
-
-        SpellEffectDefinition<?> effectDefinition = WandcraftRegistries.EFFECTS.get(effectKey);
-
-        if (effectDefinition == null) {
-            plugin.sendMessage("Invalid effect type: " + effectKey.asString() + ".", sender);
             return Command.SINGLE_SUCCESS;
         }
 
@@ -171,18 +164,32 @@ public class CommandEffectsModify extends WbsSubcommand {
         String stringValue = configuredArgumentMap.get(ATTRIBUTE_VALUE);
         SpellAttributeInstance<?> attributeInstance = attribute.getParsedInstance(stringValue);
 
-        SpellModifier spellModifier = SpellModifier.fromItem(item);
-        if (spellModifier == null) {
-            plugin.sendMessage("The held item does not support spell effects.", sender);
-        } else {
-            SpellEffectInstance<?> effectInstance = new SpellEffectInstance<>(effectDefinition);
-            effectInstance.setAttribute(attributeInstance);
-
-            spellModifier.addEffect(effectInstance);
-
-            spellModifier.toItem(item);
-            plugin.sendMessage("Updated spell modifier!", sender);
+        AttributeModifierType modifierType = null;
+        NamespacedKey modifierTypeKey = configuredArgumentMap.get(MODIFIER_TYPE);
+        if (modifierTypeKey != null) {
+            modifierType = WandcraftRegistries.MODIFIER_TYPES.get(modifierTypeKey);
         }
+
+        if (modifierType == null) {
+            modifierType = AttributeModifierType.ADD;
+        }
+
+        ItemUtils.AttributeModificationResult result = ItemUtils.modifyItem(
+                item,
+                attributeInstance,
+                modifierType
+        );
+
+        String message = switch (result) {
+            case MODIFIED_MODIFIER -> "Updated spell modifier!";
+            case MODIFIED_WAND_MODIFIER -> "Updated wand modifier!";
+            case MODIFIED_WAND_ATTRIBUTE -> "Updated wand attribute!";
+            case MODIFIED_SPELL -> "Updated spell!";
+            case INVALID_ITEM -> "The held item does not support attributes.";
+            default -> "Unexpected modification result -- please report this: " + result.name();
+        };
+
+        plugin.sendMessage(message, sender);
 
         return Command.SINGLE_SUCCESS;
     }

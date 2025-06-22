@@ -13,7 +13,7 @@ import wbs.utils.util.string.WbsStringify;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.generics.MagicObject;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
 

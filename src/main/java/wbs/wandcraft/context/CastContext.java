@@ -1,4 +1,4 @@
-package wbs.wandcraft.spell.definitions.extensions;
+package wbs.wandcraft.context;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -77,6 +77,7 @@ public final class CastContext {
             this.hasFinished = true;
             this.finishCallback.run();
         }
+        CastingManager.stopCasting(player);
     }
 
     public void fail() {

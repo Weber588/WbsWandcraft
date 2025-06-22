@@ -10,6 +10,7 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.entities.selector.RadiusSelector;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.*;
 import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 

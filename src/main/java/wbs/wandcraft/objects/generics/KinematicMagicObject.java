@@ -7,7 +7,7 @@ import org.bukkit.util.Vector;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
 import wbs.wandcraft.objects.colliders.Collider;
 import wbs.wandcraft.objects.colliders.Collision;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 
 public abstract class KinematicMagicObject extends MagicObject {
 	

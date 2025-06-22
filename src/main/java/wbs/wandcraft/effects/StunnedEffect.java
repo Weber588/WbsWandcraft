@@ -1,6 +1,7 @@
 package wbs.wandcraft.effects;
 
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -27,6 +28,11 @@ public class StunnedEffect implements StatusEffect {
             mob.setTarget(null);
         }
         return false;
+    }
+
+    @Override
+    public void onApply(LivingEntity entity, int duration) {
+        entity.getWorld().spawnParticle(Particle.FLASH, entity.getEyeLocation(), 0);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class DeathWalkSpell extends SpellDefinition implements StatusEffectSelfS
 
     @Override
     public Component description() {
-        return Component.text(".");
+        return Component.text("Prevents undead from targeting you for the duration of the effect");
     }
 
     @Override

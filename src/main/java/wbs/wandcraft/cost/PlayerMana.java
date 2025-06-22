@@ -79,6 +79,9 @@ public class PlayerMana {
 
     public PlayerMana setMaxMana(int maxMana) {
         this.maxMana = maxMana;
+        if (this.mana > maxMana) {
+            this.mana = maxMana;
+        }
         return this;
     }
 
@@ -111,6 +114,14 @@ public class PlayerMana {
 
         lastUsedMana = System.currentTimeMillis();
 
+        showManaBar(player);
+
+        saveTo(player);
+
+        return remainder;
+    }
+
+    public void showManaBar(Player player) {
         ManaContext manaBar = CURRENT_MANA_BARS.get(player.getUniqueId());
 
         if (manaBar == null) {
@@ -118,10 +129,6 @@ public class PlayerMana {
         }
 
         manaBar.resetTimeLeftOnScreen();
-
-        saveTo(player);
-
-        return remainder;
     }
 
     private static class ManaContext {

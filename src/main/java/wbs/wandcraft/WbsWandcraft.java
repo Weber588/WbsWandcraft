@@ -93,8 +93,9 @@ public class WbsWandcraft extends WbsPlugin {
                                 })
                         ),
                         WbsCommand.getStatic(this, "modify").addSubcommands(
-                                new CommandAttributesModify(this, "attribute"),
-                                new CommandEffectsModify(this, "effect"),
+                                new CommandModifyAttributes(this, "attribute"),
+                                new CommandModifyEffects(this, "effect"),
+                                new CommandModifyPlayer(this, "player"),
                                 WbsSubcommand.simpleSubcommand(this, "wand", context -> {
                                     CommandSender sender = context.getSource().getSender();
                                     if (!(sender instanceof Player player)) {
@@ -108,7 +109,6 @@ public class WbsWandcraft extends WbsPlugin {
                                         return;
                                     }
                                     player.openInventory(wand.getInventory(item).getInventory());
-                                    player.clearActiveItem();
                                 })
                         ),
                         WbsReloadSubcommand.getStatic(this, settings),
@@ -128,6 +128,7 @@ public class WbsWandcraft extends WbsPlugin {
         registerListener(new ArtificingBlockEvents());
         registerListener(new ArtificingItemEvents());
         registerListener(new StatusEffectEvents());
+
         // Run next tick, when the plugin is fully enabled
         runSync(() -> {
             WandcraftRegistries.SPELLS.stream().forEach(SpellDefinition::registerEvents);

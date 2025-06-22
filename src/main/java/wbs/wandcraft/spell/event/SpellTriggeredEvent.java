@@ -6,7 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 
 import java.util.function.Consumer;
 
@@ -43,7 +43,7 @@ public class SpellTriggeredEvent<T> implements Keyed {
         );
     }
 
-    public SpellEffectDefinition.SupportedEvent<T, T> getSupportedEvent() {
-        return new SpellEffectDefinition.SupportedEvent<>(getEventClass(), a -> a);
+    public SupportedEvent<T, T> getSupportedEvent() {
+        return new SupportedEvent<>(getEventClass(), a -> a);
     }
 }

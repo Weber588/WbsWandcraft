@@ -3,6 +3,7 @@ package wbs.wandcraft.spell.definitions.extensions;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import wbs.utils.util.WbsMath;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 
 public interface EntityProjectileSpell<T extends Projectile> extends IProjectileSpell {

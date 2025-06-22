@@ -15,7 +15,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Transformation;
 import wbs.utils.util.WbsLocationUtil;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
 
@@ -81,7 +81,7 @@ public class DiscoverItemSpell extends SpellDefinition implements CastableSpell,
 
         // Collect inventories into a set so we count distinctly for showing message later
         Set<Inventory> inventories = new HashSet<>();
-        for (Block block : WbsLocationUtil.getNearbyBlocksSphere(player.getEyeLocation(), radius)) {
+        for (Block block : WbsLocationUtil.getNearbyBlocksSphere(context.location(), radius)) {
             if (block.getState() instanceof Container container) {
                 Inventory containerInventory = container.getInventory();
                 if (containerInventory.containsAtLeast(offHandItem, 1)) {
@@ -93,7 +93,7 @@ public class DiscoverItemSpell extends SpellDefinition implements CastableSpell,
 
         Set<BlockDisplay> displays = new HashSet<>();
         containingBlocks.forEach(block -> {
-            player.getWorld().spawn(block.getLocation(), BlockDisplay.class, display -> {
+            context.location().getWorld().spawn(block.getLocation(), BlockDisplay.class, display -> {
                 // Most blocks can be set to themselves, but some (like chests) break when trying -- don't show tile
                 // entities, unless we know they work and are in the whitelist
                 if (block.getState() instanceof TileState && !WHITELISTED_TILE_ENTITY_DISPLAYS.contains(block.getType())) {

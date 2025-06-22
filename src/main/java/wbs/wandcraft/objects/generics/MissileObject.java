@@ -11,7 +11,7 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.exceptions.MagicObjectExistsException;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 
 import java.util.function.Predicate;
 

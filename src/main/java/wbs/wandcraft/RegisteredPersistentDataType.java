@@ -6,6 +6,7 @@ import org.bukkit.Particle;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
+import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.CustomPersistentDataTypes;
 
 @NullMarked
@@ -22,6 +23,8 @@ public record RegisteredPersistentDataType<T>(NamespacedKey key, PersistentDataT
             = new RegisteredPersistentDataType<>("long", PersistentDataType.LONG);
     public static final RegisteredPersistentDataType<Particle> PARTICLE
             = new RegisteredPersistentDataType<>("particle", new CustomPersistentDataTypes.PersistentEnumType<>(Particle.class));
+    public static final RegisteredPersistentDataType<SpellInstance> SPELL
+            = new RegisteredPersistentDataType<>("spell_instance", CustomPersistentDataTypes.SPELL_INSTANCE);
 
     public RegisteredPersistentDataType(String nativeKey, PersistentDataType<?, T> dataType) {
         this(WbsWandcraft.getKey(nativeKey), dataType);

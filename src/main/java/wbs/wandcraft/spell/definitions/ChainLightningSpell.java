@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.LineParticleEffect;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
 import wbs.wandcraft.spell.definitions.extensions.DirectionalSpell;
@@ -38,8 +38,8 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
     public ChainLightningSpell() {
         super("chain_lightning");
 
-        setAttribute(DURATION, 100);
-        setAttribute(COST, 3);
+        setAttribute(MAX_DURATION, 100);
+        setAttribute(COST_PER_TICK, 3);
 
         updateEffectColour();
     }

@@ -2,7 +2,7 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Fireball;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.EntityProjectileSpell;
 
 public class FireballSpell extends SpellDefinition implements EntityProjectileSpell<Fireball> {

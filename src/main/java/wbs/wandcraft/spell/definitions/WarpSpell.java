@@ -11,7 +11,7 @@ import wbs.utils.util.providers.VectorProvider;
 import wbs.utils.util.providers.generator.num.CycleGenerator;
 import wbs.utils.util.providers.generator.vector.VectorGenerator;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 

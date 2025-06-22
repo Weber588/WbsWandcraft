@@ -69,6 +69,7 @@ public class StatusEffectInstance {
         );
         effectsContainer.set(effect.getKey(), PersistentDataType.INTEGER, initialTime);
         container.set(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
+        effect.onApply(entity, initialTime);
 
         return new BukkitRunnable() {
             @Override
@@ -127,6 +128,7 @@ public class StatusEffectInstance {
     }
 
     public void cancel(boolean removeFromPlayer) {
+        effect.onRemove(entity);
         StatusEffectManager.stopTracking(entity, StatusEffectInstance.this);
         Bukkit.getScheduler().cancelTask(taskId);
 

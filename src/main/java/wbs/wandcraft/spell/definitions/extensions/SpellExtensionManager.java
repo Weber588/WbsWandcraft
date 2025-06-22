@@ -22,6 +22,7 @@ public class SpellExtensionManager {
         registerSpellExtension(RadiusedSpell.class, RadiusedSpell::setupRadiused);
         registerSpellExtension(BurnTimeSpell.class, BurnTimeSpell::setupBurnTime);
         registerSpellExtension(DistanceSpell.class, DistanceSpell::setupDistance);
+        registerSpellExtension(ContinuousCastableSpell.class, ContinuousCastableSpell::setupContinuousCast);
     }
 
     public static <T extends ISpellDefinition> void registerSpellExtension(Class<T> clazz, Consumer<T> setupMethod) {

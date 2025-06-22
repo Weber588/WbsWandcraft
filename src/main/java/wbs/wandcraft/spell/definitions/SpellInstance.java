@@ -12,7 +12,7 @@ import wbs.wandcraft.cost.CostUtils;
 import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastContext;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
 import wbs.wandcraft.spell.event.SpellTriggeredEvent;
@@ -104,5 +104,10 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     @Override
     public PersistentDataType<?, SpellInstance> getThisType() {
         return CustomPersistentDataTypes.SPELL_INSTANCE;
+    }
+
+    @Override
+    public String toString() {
+        return definition.getKey().asString();
     }
 }

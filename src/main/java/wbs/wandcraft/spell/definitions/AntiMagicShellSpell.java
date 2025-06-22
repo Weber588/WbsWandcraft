@@ -7,8 +7,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import wbs.utils.util.WbsMath;
-import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.particles.SphereParticleEffect;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.colliders.Collision;
@@ -44,7 +44,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
     public void cast(CastContext context) {
         Player player = context.player();
 
-        AntiMagicShellObject shellObject = new AntiMagicShellObject(WbsEntityUtil.getMiddleLocation(player), player, context);
+        AntiMagicShellObject shellObject = new AntiMagicShellObject(context.location(), player, context);
 
         shellObject.spawn();
     }

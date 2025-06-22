@@ -16,10 +16,12 @@ import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
 
+// TODO: Make this a continuous cast spell
 public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, DurationalSpell, DamageSpell, SpeedSpell, ParticleSpell {
     private final Particle.DustOptions data = new Particle.DustOptions(Color.fromRGB(200, 140, 200), 0.6F);
     private final Particle.DustOptions dataCore = new Particle.DustOptions(Color.fromRGB(120, 0, 144), 1F);
