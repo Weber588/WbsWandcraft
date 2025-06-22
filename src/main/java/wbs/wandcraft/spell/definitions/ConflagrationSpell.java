@@ -2,9 +2,10 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.DiscParticleEffect;
 import wbs.utils.util.pluginhooks.WbsRegionUtils;
@@ -43,9 +44,13 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
                 .setRange(instance.getAttribute(RADIUS))
                 .selectExcluding(caster);
 
+        DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
+                .withCausingEntity(context.player())
+                .build();
+
         for (LivingEntity target : hit) {
             if (WbsRegionUtils.canDealDamage(caster.getPlayer(), target)) {
-                WbsEntityUtil.damage(target, instance.getAttribute(DAMAGE), caster.getPlayer());
+                target.damage(instance.getAttribute(DAMAGE), source);
                 target.setFireTicks((int) (instance.getAttribute(BURN_TIME) * (1 + (Math.random() * 0.4 - 0.2))));
                 target.setVelocity(
                         target.getEyeLocation() // Give a slight upwards force by using eye height

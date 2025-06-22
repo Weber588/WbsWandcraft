@@ -4,6 +4,8 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
@@ -11,12 +13,14 @@ import org.bukkit.util.Vector;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.definitions.extensions.*;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
+import wbs.wandcraft.spell.definitions.extensions.DirectionalSpell;
+import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
 import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 public class PrismaticRaySpell extends SpellDefinition implements CastableSpell, RangedSpell, DamageSpell, DirectionalSpell {
@@ -34,26 +38,28 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
         Player player = context.player();
         SpellInstance instance = context.instance();
 
-        Location eyeLoc = player.getEyeLocation();
-
         double range = instance.getAttribute(RANGE);
         Location endLoc = WbsEntityUtil.getTargetPos(player, range);
         if (endLoc == null) {
-            endLoc = eyeLoc.clone().add(getDirection(context, range));
+            endLoc = context.location().add(getDirection(context, range));
         }
 
-        World world = Objects.requireNonNull(eyeLoc.getWorld());
+        World world = context.world();
 
-        double distance = endLoc.distance(eyeLoc);
+        double distance = endLoc.distance(context.location());
 
         Vector direction = getDirection(context, STEP_SIZE);
-        Location currentPos = eyeLoc.clone();
+        Location currentPos = context.location();
 
         Set<LivingEntity> alreadyHit = new HashSet<>();
 
         Particle display = Particle.INSTANT_EFFECT;
         double spread = 0.2;
         double damage = instance.getAttribute(DAMAGE);
+
+        DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
+                .withCausingEntity(context.player())
+                .build();
 
         for (int i = 0; i <= distance / STEP_SIZE; i++) {
             currentPos.add(direction);
@@ -62,7 +68,7 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
             hit.remove(player.getPlayer());
             for (LivingEntity target : hit) {
                 if (damage > 0) {
-                    target.damage(damage, player);
+                    target.damage(damage, source);
                 }
                 RayTraceResult result = new RayTraceResult(WbsEntityUtil.getMiddleLocation(target).toVector(), target);
                 context.runEffects(SpellTriggeredEvents.ON_HIT_TRIGGER, result);

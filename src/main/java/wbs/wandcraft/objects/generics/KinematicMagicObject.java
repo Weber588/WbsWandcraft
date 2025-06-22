@@ -11,7 +11,7 @@ import wbs.wandcraft.context.CastContext;
 
 public abstract class KinematicMagicObject extends MagicObject {
 	
-	public Location location; // The location the object is currently at
+	public Location location;
 
 	public KinematicMagicObject(Location location, Player caster, CastContext context) {
 		super(location, caster, context);

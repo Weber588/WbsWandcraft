@@ -16,10 +16,11 @@ public interface EntityProjectileSpell<T extends Projectile> extends IProjectile
         Double speed = instance.getAttribute(SPEED);
 
         context.player().getWorld().spawn(
-                context.player().getEyeLocation(),
+                context.location(),
                 getProjectileClass(),
                 CreatureSpawnEvent.SpawnReason.SPELL,
                 projectile -> {
+                    projectile.setShooter(context.player());
                     projectile.setVelocity(WbsMath.scaleVector(getDirection(context), speed));
                     configure(projectile, context);
                 }

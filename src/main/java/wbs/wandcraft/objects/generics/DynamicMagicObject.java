@@ -215,6 +215,8 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
             newLocation = getLocation().add(velocityThisStep);
         }
 
+        newLocation.setDirection(velocityThisStep);
+
         MagicObjectMoveEvent event = new MagicObjectMoveEvent(this, newLocation);
 
         for (MagicObject object : Collider.getObjectsWithColliders()) {

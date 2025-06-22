@@ -1,6 +1,8 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.Particle;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -87,7 +89,12 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
             if (this instanceof DamageSpell && result.getHitEntity() instanceof Damageable hitEntity) {
                 double damage = context.instance().getAttribute(DamageSpell.DAMAGE);
 
-                hitEntity.damage(damage, context.player());
+                DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
+                        .withCausingEntity(context.player())
+                        .withDamageLocation(projectile.location)
+                        .build();
+
+                hitEntity.damage(damage, source);
             }
             return true;
         });

@@ -5,6 +5,8 @@ import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -88,10 +90,14 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
         double damage = instance.getAttribute(DAMAGE);
         int burnTime = instance.getAttribute(BURN_TIME);
 
+        DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
+                .withCausingEntity(context.player())
+                .build();
+
         for (Entity hitEntity : hitEntities) {
             hitEntity.setFireTicks(burnTime);
             if (hitEntity instanceof Damageable damageable) {
-                damageable.damage(damage, player);
+                damageable.damage(damage, source);
             }
         }
     }

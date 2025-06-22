@@ -5,6 +5,8 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -81,8 +83,13 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
                         .setRange(hitbox)
                         .exclude(player)
                         .select(WbsEntityUtil.getMiddleLocation(player));
+
+                DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
+                        .withCausingEntity(context.player())
+                        .build();
+
                 for (LivingEntity e : entities) {
-                    e.damage(damage, player);
+                    e.damage(damage, source);
                 }
 
                 sound.play(playerLoc);

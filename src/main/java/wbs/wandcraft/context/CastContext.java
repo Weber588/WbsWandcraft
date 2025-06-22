@@ -3,6 +3,7 @@ package wbs.wandcraft.context;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
@@ -62,7 +63,11 @@ public final class CastContext {
     }
 
     public Location location() {
-        return location;
+        return location.clone();
+    }
+
+    public World world() {
+        return Objects.requireNonNull(location.getWorld());
     }
 
     public @Nullable CastContext parent() {
