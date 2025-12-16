@@ -173,7 +173,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
 
     private Location approximateTarget(Location end, double distance, double unsupportedArcLength) {
         // Check for lightning rods nearby and force the lightning that way
-        Set<Block> nearbyBlocks = WbsLocationUtil.getNearbyBlocks(end, unsupportedArcLength);
+        Set<Block> nearbyBlocks = WbsLocationUtil.getNearbyBlocks(end, unsupportedArcLength * 1.5);
         for (Block nearbyBlock : nearbyBlocks) {
             if (nearbyBlock.getType() == Material.LIGHTNING_ROD) {
                 return nearbyBlock.getLocation().add(0.5, 0.75, 0.5);

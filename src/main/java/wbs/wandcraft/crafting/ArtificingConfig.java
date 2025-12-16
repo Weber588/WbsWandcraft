@@ -37,7 +37,7 @@ public class ArtificingConfig {
 
         String[] args = asString.split("_");
         if (args.length != 3) {
-            throw new IllegalStateException("Invalid block key: " + key.asString());
+            throw new IllegalArgumentException("Invalid block key: " + key.asString());
         }
 
         return new Location(null, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));

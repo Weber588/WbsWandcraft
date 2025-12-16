@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.TargetedSpell;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
+import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 
 @NullMarked
 public record RegisteredPersistentDataType<T>(NamespacedKey key, PersistentDataType<?, T> dataType) implements Keyed {

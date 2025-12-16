@@ -12,7 +12,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
+import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 
 import java.util.UUID;
 

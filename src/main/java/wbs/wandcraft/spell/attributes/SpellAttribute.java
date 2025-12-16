@@ -26,6 +26,8 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     @NotNull
     private final NamespacedKey key;
     @NotNull
+    private Component displayName;
+    @NotNull
     private final RegisteredPersistentDataType<T> type;
     @Nullable
     private final T defaultValue;
@@ -39,6 +41,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
 
     public SpellAttribute(@NotNull NamespacedKey key, @NotNull RegisteredPersistentDataType<T> type, @Nullable T defaultValue, @NotNull Function<String, T> parse) {
         this.key = key;
+        this.displayName = Component.text(WbsStrings.capitalizeAll(key.value().replaceAll("_", " ")));
         this.type = type;
         this.defaultValue = defaultValue;
         this.parse = parse;
@@ -198,8 +201,14 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         return new SpellAttributeModifier<>(this, operator, value);
     }
 
+    @NotNull
     public Component displayName() {
-        return Component.text(WbsStrings.capitalizeAll(key.value().replaceAll("_", " ")));
+        return displayName;
+    }
+
+    public SpellAttribute<T> displayName(@NotNull Component displayName) {
+        this.displayName = displayName;
+        return this;
     }
 
     public T parse(String stringValue) {

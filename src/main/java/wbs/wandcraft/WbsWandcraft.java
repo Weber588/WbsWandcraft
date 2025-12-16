@@ -1,8 +1,5 @@
 package wbs.wandcraft;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,11 +14,6 @@ import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.events.*;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.wand.Wand;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
 @SuppressWarnings("UnstableApiUsage")
 public class WbsWandcraft extends WbsPlugin {
@@ -47,33 +39,6 @@ public class WbsWandcraft extends WbsPlugin {
 
         this.settings = new WandcraftSettings(this);
         this.settings.reload();
-
-        if (Bukkit.getPluginManager().getPlugin("ResourcePackManager") != null) {
-            getComponentLogger().info(Component.text("ResourcePackManager detected! Injecting resource pack.").color(NamedTextColor.GREEN));
-            getComponentLogger().info(Component.text("Note: This will load last unless you add \"WbsWandcraft\" to the priority list in ResourcePackManager/config.yml").color(NamedTextColor.GREEN));
-
-            try {
-                Files.copy(getDataPath().resolve(
-                                "wbswandcraft_resource_pack.zip"),
-                        Path.of("plugins/ResourcePackManager/mixer/wbswandcraft_resource_pack"),
-                        StandardCopyOption.REPLACE_EXISTING
-                );
-            } catch (IOException e) {
-                getLogger().severe("Failed to copy resource pack to ResourcePackManager/mixer!");
-            }
-            /*
-            ResourcePackManagerAPI.registerResourcePack(
-                    getName(),
-                    "WbsWandcraft/wbswandcraft_resource_pack.zip",
-                    false,
-                    false,
-                    true,
-                    true,
-                    "wbswandcraft:wandcraft reload"
-            );
-             */
-        }
-
     }
 
     @Override
@@ -108,7 +73,7 @@ public class WbsWandcraft extends WbsPlugin {
                                         sendMessage("Hold a wand to modify it.", sender);
                                         return;
                                     }
-                                    player.openInventory(wand.getInventory(item).getInventory());
+                                    wand.startEditing(player, item);
                                 })
                         ),
                         WbsReloadSubcommand.getStatic(this, settings),

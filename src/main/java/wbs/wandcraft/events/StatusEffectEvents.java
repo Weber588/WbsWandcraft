@@ -14,7 +14,7 @@ import org.bukkit.persistence.PersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.effects.StatusEffectInstance;
 import wbs.wandcraft.effects.StatusEffectManager;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
+import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 
 public class StatusEffectEvents implements Listener {
 

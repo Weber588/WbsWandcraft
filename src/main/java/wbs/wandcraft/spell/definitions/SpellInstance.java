@@ -16,7 +16,7 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
 import wbs.wandcraft.spell.event.SpellTriggeredEvent;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
+import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +24,11 @@ import java.util.Set;
 public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public static final NamespacedKey SPELL_INSTANCE_KEY = WbsWandcraft.getKey("spell_instance");
 
+    @Nullable
     public static SpellInstance fromItem(ItemStack itemStack){
+        if (itemStack == null) {
+            return null;
+        }
         PersistentDataContainerView container = itemStack.getPersistentDataContainer();
 
         return container.get(SpellInstance.SPELL_INSTANCE_KEY, CustomPersistentDataTypes.SPELL_INSTANCE);

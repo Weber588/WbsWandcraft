@@ -1,7 +1,6 @@
-package wbs.wandcraft.util;
+package wbs.wandcraft.util.persistent;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -20,8 +19,6 @@ import wbs.wandcraft.spell.event.SpellEffectDefinition;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
 import wbs.wandcraft.spell.modifier.ModifierScope;
 import wbs.wandcraft.spell.modifier.SpellModifier;
-import wbs.wandcraft.wand.Wand;
-import wbs.wandcraft.wand.WandInventoryType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +29,9 @@ public class CustomPersistentDataTypes {
     public static final PersistentSpellModifierType SPELL_MODIFIER = new PersistentSpellModifierType();
     public static final PersistentSpellInstanceType SPELL_INSTANCE = new PersistentSpellInstanceType();
     public static final PersistentAttributeModifierType SPELL_ATTRIBUTE_MODIFIER = new PersistentAttributeModifierType();
-    public static final PersistentWandType WAND = new PersistentWandType();
+
+    public static final PersistentWizardryWandType WIZARDRY_WAND_TYPE = new PersistentWizardryWandType();
+
     public static final PersistentStatusEffectType STATUS_EFFECT = new PersistentStatusEffectType();
 
     public static class PersistentStatusEffectType implements PersistentDataType<PersistentDataContainer, StatusEffectInstance> {
@@ -80,109 +79,6 @@ public class CustomPersistentDataTypes {
             instance.setTimeLeft(timeLeft);
 
             return instance;
-        }
-    }
-
-    public static class PersistentWandType implements PersistentDataType<PersistentDataContainer, Wand> {
-        private static final NamespacedKey INVENTORY = WbsWandcraft.getKey("inventory");
-        private static final NamespacedKey INVENTORY_TYPE = WbsWandcraft.getKey("type");
-        private static final NamespacedKey WAND_ATTRIBUTES = WbsWandcraft.getKey("wand_attributes");
-        private static final NamespacedKey WAND_ATTRIBUTE_MODIFIERS = WbsWandcraft.getKey("wand_attribute_modifiers");
-        private static final NamespacedKey UUID = WbsWandcraft.getKey("wand_uuid");
-
-        @Override
-        public @NotNull Class<PersistentDataContainer> getPrimitiveType() {
-            return PersistentDataContainer.class;
-        }
-
-        @Override
-        public @NotNull Class<Wand> getComplexType() {
-            return Wand.class;
-        }
-
-        @Override
-        public @NotNull PersistentDataContainer toPrimitive(@NotNull Wand wand, @NotNull PersistentDataAdapterContext context) {
-            PersistentDataContainer container = context.newPersistentDataContainer();
-
-            wand.writeAttributes(container, WAND_ATTRIBUTES);
-
-            List<PersistentDataContainer> modifierContainerList = new LinkedList<>();
-            for (SpellAttributeModifier<?, ?> attributeModifier : wand.getAttributeModifiers()) {
-                PersistentDataContainer modifierContainer = context.newPersistentDataContainer();
-                attributeModifier.writeTo(modifierContainer);
-                modifierContainerList.add(modifierContainer);
-            }
-            container.set(WAND_ATTRIBUTE_MODIFIERS, PersistentDataType.LIST.dataContainers(), modifierContainerList);
-            container.set(UUID, PersistentDataType.STRING, wand.getUUID());
-
-            PersistentDataContainer itemsContainer = context.newPersistentDataContainer();
-            wand.getItems().rowMap().forEach((row, columnMap) -> {
-                PersistentDataContainer columnContainer = context.newPersistentDataContainer();
-
-                columnMap.forEach((column, item) -> {
-                    columnContainer.set(WbsWandcraft.getKey(column.toString()), WbsPersistentDataType.ITEM_AS_BYTES, item);
-                });
-
-                itemsContainer.set(WbsWandcraft.getKey(row.toString()), PersistentDataType.TAG_CONTAINER, columnContainer);
-            });
-
-            container.set(INVENTORY, PersistentDataType.TAG_CONTAINER, itemsContainer);
-            container.set(INVENTORY_TYPE, WbsPersistentDataType.NAMESPACED_KEY, wand.getInventoryType().getKey());
-
-            return container;
-        }
-
-        @Override
-        public @NotNull Wand fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
-            NamespacedKey typeKey = container.get(INVENTORY_TYPE, WbsPersistentDataType.NAMESPACED_KEY);
-            if (typeKey == null) {
-                throw new IllegalStateException("inventory type (typeKey) missing!");
-            }
-
-            WandInventoryType type = WandcraftRegistries.WAND_INVENTORY_TYPES.get(typeKey);
-
-            if (type == null) {
-                throw new IllegalStateException("Wand inventory type missing for key " + typeKey.asString());
-            }
-
-            String uuid = container.get(UUID, PersistentDataType.STRING);
-
-            Wand wand = new Wand(type, Objects.requireNonNull(uuid));
-
-            wand.readAttributes(container, WAND_ATTRIBUTES);
-
-            List<PersistentDataContainer> modifierContainerList = container.get(WAND_ATTRIBUTE_MODIFIERS, PersistentDataType.LIST.dataContainers());
-            if (modifierContainerList != null) {
-                for (PersistentDataContainer modifierContainer : modifierContainerList) {
-                    SpellAttributeModifier<?, ?> attributeModifier = SpellAttributeModifier.fromContainer(modifierContainer);
-
-                    wand.setModifier(attributeModifier);
-                }
-            }
-
-            PersistentDataContainer itemsContainer = container.get(INVENTORY, PersistentDataType.TAG_CONTAINER);
-            if (itemsContainer != null) {
-                for (NamespacedKey rowKey : itemsContainer.getKeys()) {
-                    PersistentDataContainer rowContainer = itemsContainer.get(rowKey, PersistentDataType.TAG_CONTAINER);
-
-                    if (rowContainer != null) {
-                        for (NamespacedKey columnKey : rowContainer.getKeys()) {
-                            ItemStack item = rowContainer.get(columnKey, WbsPersistentDataType.ITEM_AS_BYTES);
-
-                            if (item != null) {
-                                Integer row = Integer.valueOf(rowKey.value());
-                                Integer column = Integer.valueOf(columnKey.value());
-
-                                wand.getItems().put(row, column, item);
-                            }
-                        }
-                    }
-                }
-
-                container.set(INVENTORY, PersistentDataType.TAG_CONTAINER, itemsContainer);
-            }
-
-            return wand;
         }
     }
 

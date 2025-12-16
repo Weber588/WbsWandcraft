@@ -13,7 +13,7 @@ import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.generator.WandGenerator;
+import wbs.wandcraft.generation.WandGenerator;
 
 import java.util.stream.Collectors;
 

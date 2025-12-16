@@ -14,8 +14,8 @@ import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
-import wbs.wandcraft.wand.WandInventoryType;
+import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
+import wbs.wandcraft.wand.types.WizardryWand;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -76,14 +76,14 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
         return scope;
     }
 
-    public void modify(Table<Integer, Integer, SpellInstance> spellTable, int row, int column, WandInventoryType type) {
+    public void modify(Table<Integer, Integer, SpellInstance> spellTable, int row, int column) {
         switch (getScope()) {
             case NEXT -> {
                 int targetRow = row;
                 int targetColumn = column + 1;
 
-                if (targetColumn >= type.getColumns()) {
-                    if (type.getRows() <= targetRow) {
+                if (targetColumn >= WizardryWand.FULL_INV_COLUMNS) {
+                    if (WizardryWand.FULL_INV_ROWS <= targetRow) {
                         return;
                     }
 
@@ -106,7 +106,7 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
                     }
 
                     targetRow--;
-                    targetColumn = type.getColumns();
+                    targetColumn = WizardryWand.FULL_INV_COLUMNS;
                 }
 
                 SpellInstance instance = spellTable.get(targetRow, targetColumn);
@@ -129,7 +129,7 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
             case RIGHT -> {
                 int targetColumn = column + 1;
 
-                if (targetColumn >= type.getColumns()) {
+                if (targetColumn >= WizardryWand.FULL_INV_COLUMNS) {
                     return;
                 }
 
@@ -153,7 +153,7 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
             case BELOW -> {
                 int targetRow = row + 1;
 
-                if (targetRow >= type.getRows()) {
+                if (targetRow >= WizardryWand.FULL_INV_ROWS) {
                     return;
                 }
 

@@ -29,6 +29,7 @@ import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
+import wbs.wandcraft.wand.types.WizardryWand;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -110,7 +111,7 @@ public class CommandModifyAttributes extends WbsSubcommand {
             if (context.getSource().getSender() instanceof Player player) {
                 ItemStack held = player.getInventory().getItemInMainHand();
 
-                if (SpellModifier.fromItem(held) != null || Wand.getIfValid(held) != null) {
+                if (SpellModifier.fromItem(held) != null || WizardryWand.getIfValid(held) != null) {
                     return KeyedSuggestionProvider.getStaticKeyed(WandcraftRegistries.MODIFIER_TYPES.values()).getSuggestions(context, builder);
                 }
             }

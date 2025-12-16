@@ -2,10 +2,7 @@ package wbs.wandcraft;
 
 import wbs.utils.util.WbsRegistry;
 import wbs.wandcraft.effects.StatusEffect;
-import wbs.wandcraft.generator.AttributeInstanceGenerator;
-import wbs.wandcraft.generator.AttributeModifierGenerator;
-import wbs.wandcraft.generator.SpellInstanceGenerator;
-import wbs.wandcraft.generator.WandGenerator;
+import wbs.wandcraft.generation.*;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.*;
@@ -13,9 +10,9 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 import wbs.wandcraft.spell.event.CastSpellEffect;
 import wbs.wandcraft.spell.event.ForcePullEffect;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
-import wbs.wandcraft.wand.Wand;
-import wbs.wandcraft.wand.WandInventoryType;
 import wbs.wandcraft.wand.WandTexture;
+import wbs.wandcraft.wand.types.WandType;
+import wbs.wandcraft.wand.types.WizardryWand;
 
 public class WandcraftRegistries {
     public static final WbsRegistry<RegisteredPersistentDataType<?>> DATA_TYPES = new WbsRegistry<>(
@@ -34,14 +31,20 @@ public class WandcraftRegistries {
             AttributeModifierType.ADD,
             AttributeModifierType.MULTIPLY
     );
+
+    public static final WbsRegistry<WandType<?>> WAND_TYPES = new WbsRegistry<>(
+        WandType.WIZARDRY,
+        WandType.SORCERY
+    );
+
     public static final WbsRegistry<WandTexture> WAND_TEXTURES = new WbsRegistry<>(
-            WandTexture.GEM,
-            WandTexture.SCEPTRE,
+            WandTexture.MAGE,
+            WandTexture.WIZARDRY,
+            WandTexture.SORCERY,
             WandTexture.TRIDENT,
             WandTexture.FIRE,
-            WandTexture.GEM_OVERGROWN
+            WandTexture.OVERGROWN
     );
-    public static final WbsRegistry<WandInventoryType> WAND_INVENTORY_TYPES = WandInventoryType.WAND_INVENTORY_TYPES;
     public static final WbsRegistry<SpellDefinition> SPELLS = new WbsRegistry<>(
             new FireballSpell(),
             new LeapSpell(),
@@ -62,7 +65,8 @@ public class WandcraftRegistries {
             new DiscoverItemSpell(),
             new DeathWalkSpell(),
             new ChainLightningSpell(),
-            new CharmSpell()
+            new CharmSpell(),
+            new DisplaceSpell()
     );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
             StatusEffect.GLIDING,
@@ -78,7 +82,7 @@ public class WandcraftRegistries {
     public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>(
             new WandGenerator(WbsWandcraft.getKey("example"), 1, 2, -1, 0, 1, 1, 3)
                     .addAttributeGenerator(
-                            new AttributeInstanceGenerator<>(Wand.COOLDOWN)
+                            new AttributeInstanceGenerator<>(WizardryWand.COOLDOWN)
                                     .setValues(5, 10, 10, 15, 20)
                     ).addModifierGenerator(
                             new AttributeModifierGenerator<>(CastableSpell.COST, AttributeModifierType.MULTIPLY)
@@ -111,4 +115,6 @@ public class WandcraftRegistries {
                                     )
                     )
     );
+
+    public static final WbsRegistry<ConfiguredTrade> CONFIGURED_TRADES = new WbsRegistry<>();
 }

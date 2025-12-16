@@ -1,6 +1,9 @@
 package wbs.wandcraft.resourcepack;
 
 import com.google.gson.Gson;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,14 +18,57 @@ import wbs.wandcraft.util.ItemUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.*;
 
 public class ResourcePackBuilder {
     public static void loadResourcePack(WandcraftSettings settings, YamlConfiguration config) {
+        createResourcePack(settings, config);
+        writeToExternalPlugins();
+    }
+
+    private static void writeToExternalPlugins() {
         WbsWandcraft plugin = WbsWandcraft.getInstance();
+
+        String name = plugin.getName();
+        String namespace = name.toLowerCase();
+
+        if (Bukkit.getPluginManager().getPlugin("ResourcePackManager") != null) {
+            plugin.getComponentLogger().info(Component.text("ResourcePackManager detected! Injecting resource pack.").color(NamedTextColor.GREEN));
+            plugin.getComponentLogger().info(Component.text("Note: This will load last unless you add \"" + name + "\" to the priority list in ResourcePackManager/config.yml").color(NamedTextColor.GREEN));
+
+            try {
+                Files.copy(plugin.getDataPath().resolve(
+                                namespace + "_resource_pack.zip"),
+                        Path.of("plugins/ResourcePackManager/mixer/" + namespace + "_resource_pack.zip"),
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            } catch (IOException e) {
+                plugin.getLogger().severe("Failed to copy resource pack to ResourcePackManager/mixer!");
+            }
+            /*
+            ResourcePackManagerAPI.registerResourcePack(
+                    getName(),
+                    "WbsWandcraft/wbswandcraft_resource_pack.zip",
+                    false,
+                    false,
+                    true,
+                    true,
+                    "wbswandcraft:wandcraft reload"
+            );
+             */
+        }
+    }
+
+    private static void createResourcePack(WandcraftSettings settings, YamlConfiguration config) {
+        WbsWandcraft plugin = WbsWandcraft.getInstance();
+
+        String name = plugin.getName();
+        String namespace = name.toLowerCase();
 
         ConfigurationSection modelsSection = config.getConfigurationSection("item-models");
         if (modelsSection != null) {
@@ -33,7 +79,6 @@ public class ResourcePackBuilder {
                 }
             }
 
-            String namespace = plugin.getName().toLowerCase();
             Set<String> resourcesToLoad = new HashSet<>();
 
             resourcesToLoad.add("resourcepack/pack.mcmeta");

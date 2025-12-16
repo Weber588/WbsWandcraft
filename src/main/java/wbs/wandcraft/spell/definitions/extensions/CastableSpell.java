@@ -7,10 +7,10 @@ import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
 public interface CastableSpell extends ISpellDefinition {
     SpellAttribute<Integer> DELAY = new IntegerSpellAttribute("cast_delay", 4)
-            .setShowAttribute(cost -> cost > 0)
+            .setShowAttribute(delay -> delay > 0)
             .setTicksToSecondsFormatter();
     SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("cooldown", 5)
-            .setShowAttribute(cost -> cost > 0)
+            .setShowAttribute(cooldown -> cooldown > 0)
             .setTicksToSecondsFormatter();
     SpellAttribute<Integer> COST = new IntegerSpellAttribute("cost", 100)
             .setShowAttribute(cost -> cost > 0);

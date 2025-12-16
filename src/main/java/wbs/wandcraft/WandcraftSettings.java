@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.plugin.WbsSettings;
 import wbs.wandcraft.crafting.ArtificingConfig;
-import wbs.wandcraft.generator.WandGenerator;
+import wbs.wandcraft.generation.WandGenerator;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 
 import java.util.HashMap;

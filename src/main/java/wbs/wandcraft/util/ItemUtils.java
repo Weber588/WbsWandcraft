@@ -22,8 +22,8 @@ import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.ModifierScope;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.Wand;
-import wbs.wandcraft.wand.WandInventoryType;
 import wbs.wandcraft.wand.WandTexture;
+import wbs.wandcraft.wand.types.WandType;
 
 import java.util.UUID;
 
@@ -33,9 +33,10 @@ public class ItemUtils {
     public static final Material BASE_MATERIAL_SPELL = Material.FLOW_BANNER_PATTERN;
     public static final Material BASE_MATERIAL_MODIFIER = Material.GLOBE_BANNER_PATTERN;
 
-    public static @NotNull ItemStack buildWand(WandInventoryType inventoryType, WandTexture wandTexture, Double hue, ItemUseAnimation animation, float animationSeconds) {
+    public static @NotNull ItemStack buildWand(WandType<?> type, WandTexture wandTexture, Double hue, ItemUseAnimation animation, float animationSeconds) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_WAND);
-        Wand wand = new Wand(inventoryType, UUID.randomUUID().toString());
+
+        Wand wand = type.newWand();
 
         item.getDataTypes().forEach(item::unsetData);
         item.setData(DataComponentTypes.ITEM_NAME, Component.text("Wand"));
@@ -56,7 +57,7 @@ public class ItemUtils {
             item.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_WAND.getKey());
         }
 
-        if (animation != null) {
+        if (animation != null && animationSeconds >= 0.05) {
             item.setData(DataComponentTypes.CONSUMABLE, Consumable.consumable()
                     .animation(animation)
                     .hasConsumeParticles(false)

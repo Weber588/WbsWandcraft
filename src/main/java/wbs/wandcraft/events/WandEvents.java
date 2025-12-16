@@ -1,6 +1,7 @@
 package wbs.wandcraft.events;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
@@ -82,7 +83,8 @@ public class WandEvents implements Listener {
             event.setCancelled(true);
         } else {
             // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
-            if (!item.hasData(DataComponentTypes.CONSUMABLE)) {
+            Consumable consumable = item.getData(DataComponentTypes.CONSUMABLE);
+            if (consumable == null || consumable.consumeSeconds() < 0.05f) {
                 player.swingMainHand();
                 wand.tryCasting(player, item);
                 event.setCancelled(true);

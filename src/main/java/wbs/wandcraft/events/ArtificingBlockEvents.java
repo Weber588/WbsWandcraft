@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.crafting.ArtificingTable;
-import wbs.wandcraft.wand.Wand;
+import wbs.wandcraft.wand.types.WizardryWand;
 
 import java.util.List;
 import java.util.Objects;
@@ -93,7 +93,7 @@ public class ArtificingBlockEvents implements Listener {
             event.setCancelled(true);
         } else if (table.canAcceptItems()) {
             ItemStack heldItem = player.getInventory().getItem(hand);
-            if (Wand.getIfValid(heldItem) != null) {
+            if (WizardryWand.getIfValid(heldItem) != null) {
                 return;
             }
 

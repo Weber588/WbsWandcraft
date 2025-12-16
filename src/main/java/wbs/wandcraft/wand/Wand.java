@@ -1,7 +1,5 @@
 package wbs.wandcraft.wand;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
@@ -22,41 +20,49 @@ import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
 import wbs.wandcraft.ItemDecorator;
+import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
-import wbs.wandcraft.spell.attributes.*;
+import wbs.wandcraft.spell.attributes.Attributable;
+import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
+import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.modifier.SpellModifier;
-import wbs.wandcraft.util.CustomPersistentDataTypes;
+import wbs.wandcraft.wand.types.WandType;
 
 import java.time.Duration;
 import java.util.*;
 
-@SuppressWarnings("UnstableApiUsage")
-public class Wand implements Attributable {
-    public static final NamespacedKey WAND_KEY = WbsWandcraft.getKey("wand");
-    public static final NamespacedKey WAND_UUID = WbsWandcraft.getKey("wand_uuid");
-    private static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
+import static wbs.wandcraft.util.persistent.AbstractPersistentWandType.WAND_TYPE;
 
-    private static final WbsParticleEffect FAIL_EFFECT = new NormalParticleEffect()
+public abstract class Wand implements Attributable {
+    public static final NamespacedKey WAND_KEY = WbsWandcraft.getKey("wand");
+    public static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
+
+    public static final WbsParticleEffect FAIL_EFFECT = new NormalParticleEffect()
             .setXYZ(0.35)
             .setY(0.75)
             .setSpeed(0.01)
             .setAmount(20);
 
     public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 10)
-            .setTicksToSecondsFormatter();
-    public static final SpellAttribute<Boolean> SHUFFLE = new BooleanSpellAttribute("shuffle", false)
-            .setShowAttribute(shuffle -> shuffle);
-
-    private final @NotNull String uuid;
+            .setTicksToSecondsFormatter()
+            .displayName(Component.text("Recharge Time"));
 
     @Nullable
     public static Wand getIfValid(ItemStack item) {
-        return item.getPersistentDataContainer().get(WAND_KEY, CustomPersistentDataTypes.WAND);
+        PersistentDataContainerView container = item.getPersistentDataContainer();
+        NamespacedKey key = container.get(WAND_TYPE, WbsPersistentDataType.NAMESPACED_KEY);
+
+        WandType<?> wandType = WandcraftRegistries.WAND_TYPES.get(key);
+
+        if (wandType == null) {
+            return null;
+        }
+
+        return wandType.getWand(container);
     }
 
     public static void updateLastUsed(PersistentDataContainer container) {
@@ -64,7 +70,7 @@ public class Wand implements Attributable {
         container.set(LAST_USED, PersistentDataType.LONG, currentTick);
     }
 
-    private static long getTimestamp() {
+    protected static long getTimestamp() {
         return System.currentTimeMillis();
     }
 
@@ -72,25 +78,17 @@ public class Wand implements Attributable {
         return WbsPersistentDataType.getOrDefault(container, LAST_USED, PersistentDataType.LONG, 0L);
     }
 
-    private final Table<Integer, Integer, ItemStack> items = HashBasedTable.create();
-    @NotNull
-    private final WandInventoryType type;
-    private final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
-    private final Set<SpellAttributeModifier<?, ?>> attributeModifiers = new HashSet<>();
+    private final @NotNull String uuid;
+    protected final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
+    protected final Set<SpellAttributeModifier<?, ?>> attributeModifiers = new HashSet<>();
 
-    public Wand(@NotNull WandInventoryType type, @NotNull String uuid) {
-        this.type = type;
+    protected Wand(@NotNull String uuid) {
         this.uuid = uuid;
         setAttribute(COOLDOWN.defaultInstance());
-        setAttribute(SHUFFLE.defaultInstance());
     }
 
-    public Set<SpellAttributeInstance<?>> getAttributeValues() {
-        return attributeValues;
-    }
-
-    public void tryCasting(@NotNull Player player, ItemStack item) {
-        if (player.getCooldown(item) > 0) {
+    public void tryCasting(@NotNull Player player, ItemStack wandItem) {
+        if (player.getCooldown(wandItem) > 0) {
             return;
         }
 
@@ -100,21 +98,9 @@ public class Wand implements Attributable {
             return;
         }
 
-        PersistentDataContainerView wandContainer = item.getPersistentDataContainer();
+        PersistentDataContainerView wandContainer = wandItem.getPersistentDataContainer();
 
-        Table<Integer, Integer, SpellInstance> spellTable = getModifiedSpellTable();
-
-        int additionalCooldown = 0;
-
-        Queue<SpellInstance> spellList = new LinkedList<>();
-        // Iterate column-first, so inner loop iterates per row (natural enqueue order)
-        for (Map<Integer, SpellInstance> rowMap : spellTable.columnMap().values()) {
-            for (SpellInstance spell : rowMap.values()) {
-                spellList.add(spell);
-                additionalCooldown += spell.getAttribute(CastableSpell.COOLDOWN) * 1000 / 20;
-                additionalCooldown += spell.getAttribute(CastableSpell.DELAY) * 1000 / 20;
-            }
-        }
+        int additionalCooldown = getAdditionalCooldown(player, wandItem);
 
         long lastUsed = getLastUsed(wandContainer);
         long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / Ticks.TICKS_PER_SECOND + additionalCooldown;
@@ -127,185 +113,50 @@ public class Wand implements Attributable {
             return;
         }
 
+        Queue<SpellInstance> spellList = getSpellQueue(player, wandItem);
+
         if (spellList.isEmpty()) {
             plugin.sendActionBar("&wThis wand is empty...", player);
-
             FAIL_EFFECT.play(Particle.SMOKE, WbsEntityUtil.getMiddleLocation(player));
             return;
         }
 
         CastingQueue queue = new CastingQueue(spellList, this);
 
-        int finalAdditionalCooldown = additionalCooldown;
         queue.startCasting(player);
-        item.editMeta(meta -> {
+
+        wandItem.editMeta(meta -> {
             updateLastUsed(meta.getPersistentDataContainer());
-            player.setCooldown(item, finalAdditionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
+            player.setCooldown(wandItem, additionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
         });
 
-        if (item.hasData(DataComponentTypes.MAX_DAMAGE)) {
-            ItemStack damaged = item.damage(1, player);
+        Integer maxDamage = wandItem.getData(DataComponentTypes.MAX_DAMAGE);
+        if (maxDamage != null && maxDamage > 0) {
+            ItemStack preDamageItem = wandItem.clone();
+            ItemStack damaged = wandItem.damage(1, player);
             if (damaged.isEmpty()) {
                 // Item was destroyed
-                // TODO: Decide what should happen when a wand is broken; should it drop the spells inside?
+                handleWandBreak(player, preDamageItem);
             }
         }
     }
 
-
-    public @NotNull WandHolder getInventory(ItemStack item) {
-        return new WandHolder(this, item);
+    protected void handleWandBreak(@NotNull Player player, ItemStack preDamageItem) {
+        // TODO: Drop all spells
     }
 
-    public @NotNull Inventory getInventory(WandHolder holder) {
-        Inventory inventory = type.newInventory(holder);
-
-        items.rowMap().forEach((row, map) -> {
-            map.forEach((column, item) -> {
-                inventory.setItem(row * type.getColumns() + column, item);
-            });
-        });
-
-        return inventory;
+    protected int getAdditionalCooldown(@NotNull Player player, ItemStack wandItem) {
+        return 0;
     }
 
-    public Table<Integer, Integer, SpellInstance> getRawSpellTable() {
-        HashBasedTable<Integer, Integer, SpellInstance> table = HashBasedTable.create();
+    protected abstract @NotNull Queue<SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem);
 
-        Boolean shuffle = getAttribute(SHUFFLE);
-        if (shuffle != null && shuffle) {
-            LinkedList<SpellInstance> spellList = new LinkedList<>();
-            for (ItemStack item : items.values()) {
-                SpellInstance instance = SpellInstance.fromItem(item);
-                if (instance != null) {
-                    spellList.add(instance);
-                } else if (SpellModifier.fromItem(item) != null) {
-                    spellList.add(null);
-                }
-            }
 
-            Collections.shuffle(spellList);
-
-            for (int row = 0; row < type.getRows(); row++) {
-                for (int column = 0; column < type.getColumns(); column++) {
-                    SpellInstance instance = spellList.poll();
-                    if (instance != null) {
-                        table.put(row, column, instance);
-                    }
-                }
-            }
-        } else {
-            for (int row = 0; row < type.getRows(); row++) {
-                for (int column = 0; column < type.getColumns(); column++) {
-                    ItemStack item = items.get(row, column);
-                    if (item != null) {
-                        SpellInstance instance = SpellInstance.fromItem(item);
-                        if (instance != null) {
-                            table.put(row, column, instance);
-                        }
-                    }
-                }
-            }
-        }
-
-        return table;
+    public Set<SpellAttributeInstance<?>> getAttributeValues() {
+        return attributeValues;
     }
-
-    public Table<Integer, Integer, SpellModifier> getModifierTable() {
-        HashBasedTable<Integer, Integer, SpellModifier> table = HashBasedTable.create();
-
-        Boolean shuffle = getAttribute(SHUFFLE);
-        if (shuffle != null && shuffle) {
-            LinkedList<SpellModifier> modifierList = new LinkedList<>();
-            for (ItemStack item : items.values()) {
-                SpellModifier modifier = SpellModifier.fromItem(item);
-                if (modifier != null) {
-                    modifierList.add(modifier);
-                } else if (SpellInstance.fromItem(item) != null) {
-                    modifierList.add(null);
-                }
-            }
-
-            Collections.shuffle(modifierList);
-
-            for (int row = 0; row < type.getRows(); row++) {
-                for (int column = 0; column < type.getColumns(); column++) {
-                    SpellModifier modifier = modifierList.poll();
-                    if (modifier != null) {
-                        table.put(row, column, modifier);
-                    }
-                }
-            }
-        } else {
-            for (int row = 0; row < type.getRows(); row++) {
-                for (int column = 0; column < type.getColumns(); column++) {
-                    ItemStack item = items.get(row, column);
-                    if (item != null) {
-                        SpellModifier modifier = SpellModifier.fromItem(item);
-                        if (modifier != null) {
-                            table.put(row, column, modifier);
-                        }
-                    }
-                }
-            }
-        }
-
-        return table;
-    }
-
-    public Table<Integer, Integer, SpellInstance> getModifiedSpellTable() {
-        Table<Integer, Integer, SpellInstance> spellTable = getRawSpellTable();
-
-        // Apply wand modifiers first
-        spellTable.rowMap().forEach((column, columnMap) -> {
-            columnMap.values().forEach(instance -> attributeModifiers.forEach(modifier -> modifier.modify(instance)));
-        });
-
-        Table<Integer, Integer, SpellModifier> modifierTable = getModifierTable();
-        for (int row = 0; row < type.getRows(); row++) {
-            Map<Integer, SpellModifier> rowMap = modifierTable.row(row);
-
-            int finalRow = row;
-            rowMap.forEach((column, modifier) -> modifier.modify(spellTable, finalRow, column, type));
-        }
-
-
-
-        return spellTable;
-    }
-
-    public WandInventoryType getInventoryType() {
-        return type;
-    }
-
-    public boolean canContain(ItemStack addedItem) {
-        SpellInstance instance = SpellInstance.fromItem(addedItem);
-        SpellModifier spellModifier = SpellModifier.fromItem(addedItem);
-
-        return instance != null || spellModifier != null;
-    }
-
-    public Table<Integer, Integer, ItemStack> getItems() {
-        return items;
-    }
-
-    public void updateItems(Inventory inventory) {
-        for (int column = 0; column < type.getColumns(); column++) {
-            for (int row = 0; row < type.getRows(); row++) {
-                int slot = row * type.getColumns() + column;
-                ItemStack item = inventory.getItem(slot);
-                if (item != null) {
-                    items.put(row, column, item);
-                } else {
-                    items.remove(row, column);
-                }
-            }
-        }
-    }
-
-    @Override
-    public @Nullable Component getItemName() {
-        return Component.text("Wand");
+    public Set<SpellAttributeModifier<?, ?>> getAttributeModifiers() {
+        return new HashSet<>(attributeModifiers);
     }
 
     @Override
@@ -326,42 +177,16 @@ public class Wand implements Attributable {
                     )
                     .toList());
         }
-
-        Table<Integer, Integer, SpellInstance> rawSpellTable = getRawSpellTable();
-        if (rawSpellTable.isEmpty()) {
-            lore.add(Component.text("Spells:").color(NamedTextColor.AQUA).append(Component.text(" None").color(NamedTextColor.GOLD)));
-        } else {
-            lore.add(Component.text("Spells:").color(NamedTextColor.AQUA));
-
-            rawSpellTable.columnMap().forEach((column, rowMap) -> {
-                rowMap.forEach((row, instance) -> {
-                    lore.add(Component.text("  - ").color(NamedTextColor.GOLD)
-                            .append(
-                                    instance.getDefinition().displayName()
-                            ));
-                });
-            });
-        }
-
         return lore;
     }
 
     public void toItem(ItemStack item) {
         item.editMeta(meta -> {
-            meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.WAND, this);
-            meta.getPersistentDataContainer().set(Wand.WAND_UUID, PersistentDataType.STRING, uuid);
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+
+            container.set(WAND_TYPE, WbsPersistentDataType.NAMESPACED_KEY, getWandType().getKey());
             ItemDecorator.decorate(this, meta);
         });
-    }
-
-    public void setModifier(SpellAttributeModifier<?, ?> updatedModifier) {
-        attributeModifiers.removeIf(modifier -> modifier.attribute().equals(updatedModifier.attribute()));
-
-        attributeModifiers.add(updatedModifier);
-    }
-
-    public Set<SpellAttributeModifier<?, ?>> getAttributeModifiers() {
-        return new HashSet<>(attributeModifiers);
     }
 
     public @NotNull String getUUID() {
@@ -369,7 +194,30 @@ public class Wand implements Attributable {
     }
 
     public void startEditing(Player player, ItemStack item) {
-        player.openInventory(getInventory(item).getInventory());
+        player.openInventory(getMenu(item).getInventory());
         player.clearActiveItem();
     }
+
+    public abstract @NotNull WandHolder<?> getMenu(ItemStack item);
+
+    public boolean canContain(@NotNull ItemStack addedItem) {
+        return SpellInstance.fromItem(addedItem) != null;
+    }
+
+    public abstract void updateItems(Inventory inventory);
+
+    @Override
+    public abstract @NotNull Component getItemName();
+
+    public void setModifier(SpellAttributeModifier<?, ?> updatedModifier) {
+        attributeModifiers.removeIf(modifier -> modifier.attribute().equals(updatedModifier.attribute()));
+
+        attributeModifiers.add(updatedModifier);
+    }
+
+    public abstract @NotNull WandType<?> getWandType();
+
+    public abstract void toContainer(PersistentDataContainer container);
+
+    public abstract boolean isItemSlot(int slot);
 }

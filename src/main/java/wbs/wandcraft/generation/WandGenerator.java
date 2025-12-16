@@ -1,4 +1,4 @@
-package wbs.wandcraft.generator;
+package wbs.wandcraft.generation;
 
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import org.bukkit.Keyed;
@@ -16,16 +16,15 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.ItemUtils;
-import wbs.wandcraft.wand.Wand;
-import wbs.wandcraft.wand.WandHolder;
-import wbs.wandcraft.wand.WandInventoryType;
-import wbs.wandcraft.wand.WandTexture;
+import wbs.wandcraft.wand.*;
+import wbs.wandcraft.wand.types.WandType;
+import wbs.wandcraft.wand.types.WizardryWand;
+import wbs.wandcraft.wand.types.WizardryWandHolder;
 
 import java.util.*;
 
 public class WandGenerator implements Keyed {
-    private final List<WandInventoryType> types = new LinkedList<>(WandcraftRegistries.WAND_INVENTORY_TYPES.values());
-
+    private final List<WandType<?>> types = new LinkedList<>(WandcraftRegistries.WAND_TYPES.values());
     private final List<WandTexture> textures = new LinkedList<>(WandcraftRegistries.WAND_TEXTURES.values());
     private final double hue;
 
@@ -67,17 +66,6 @@ public class WandGenerator implements Keyed {
         key = WbsWandcraft.getKey(name);
 
         hue = section.getDouble("hue", -1);
-
-        List<WandInventoryType> types = new LinkedList<>();
-        List<String> inventoryTypeStrings = section.getStringList("inventory_types");
-        for (String inventoryTypeString : inventoryTypeStrings) {
-            NamespacedKey invTypeKey = NamespacedKey.fromString(inventoryTypeString, WbsWandcraft.getInstance());
-            WandInventoryType type = WandcraftRegistries.WAND_INVENTORY_TYPES.get(invTypeKey);
-            if (type != null) {
-                types.add(type);
-            }
-        }
-        setTypes(types);
 
         List<WandTexture> textures = new LinkedList<>();
         List<String> textureStrings = section.getStringList("textures");
@@ -178,14 +166,10 @@ public class WandGenerator implements Keyed {
     }
 
     public ItemStack get() {
-        if (types.isEmpty()) {
-            types.addAll(WandcraftRegistries.WAND_INVENTORY_TYPES.values());
-        }
-        WandInventoryType inventoryType = WbsCollectionUtil.getRandom(types);
-
+        WandType<?> type = WbsCollectionUtil.getRandom(types);
         WandTexture texture = WbsCollectionUtil.getRandom(textures);
 
-        ItemStack wandItem = ItemUtils.buildWand(inventoryType, texture, hue, ItemUseAnimation.BLOCK, 1f / 4);
+        ItemStack wandItem = ItemUtils.buildWand(type, texture, hue, ItemUseAnimation.BLOCK, 1f / 4);
 
         Wand wand = Objects.requireNonNull(Wand.getIfValid(wandItem));
 
@@ -208,24 +192,27 @@ public class WandGenerator implements Keyed {
         }
 
         if (!spellGenerators.isEmpty()) {
-            WandHolder wandHolder = wand.getInventory(wandItem);
-            Inventory inventory = wandHolder.getInventory();
+            // TODO: Implement for other wand types
+            if (wand instanceof WizardryWand wizardryWand) {
+                WizardryWandHolder wandHolder = wizardryWand.getMenu(wandItem);
+                Inventory inventory = wandHolder.getInventory();
 
-            int spells = new Random().nextInt(minSpells, maxSpells + 1);
-            for (int i = 0; i < spells; i++) {
-                SpellInstanceGenerator spellGenerator = WbsCollectionUtil.getRandom(spellGenerators);
-                SpellInstance instance = spellGenerator.get();
+                int spells = new Random().nextInt(minSpells, maxSpells + 1);
+                for (int i = 0; i < spells; i++) {
+                    SpellInstanceGenerator spellGenerator = WbsCollectionUtil.getRandom(spellGenerators);
+                    SpellInstance instance = spellGenerator.get();
 
-                ItemStack instanceItem = ItemUtils.buildSpell(instance);
+                    ItemStack instanceItem = ItemUtils.buildSpell(instance);
 
-                inventory.addItem(instanceItem);
+                    inventory.addItem(instanceItem);
+                }
+
+                List<@Nullable ItemStack> contentsList = Arrays.asList(inventory.getContents());
+                Collections.shuffle(contentsList);
+                inventory.setContents(contentsList.toArray(ItemStack[]::new));
+
+                wandHolder.save();
             }
-
-            List<@Nullable ItemStack> contentsList = Arrays.asList(inventory.getContents());
-            Collections.shuffle(contentsList);
-            inventory.setContents(contentsList.toArray(ItemStack[]::new));
-
-            wandHolder.save();
         }
 
         wand.toItem(wandItem);
@@ -253,14 +240,14 @@ public class WandGenerator implements Keyed {
         return this;
     }
 
-    public WandGenerator setTypes(WandInventoryType ... types) {
+    public WandGenerator setTypes(WandType<?> ... types) {
         return setTypes(Arrays.asList(types));
     }
-    public WandGenerator setTypes(List<WandInventoryType> types) {
+    public WandGenerator setTypes(List<WandType<?>> types) {
         this.types.clear();
 
         if (types.isEmpty()) {
-            this.types.addAll(WandcraftRegistries.WAND_INVENTORY_TYPES.values());
+            this.types.addAll(WandcraftRegistries.WAND_TYPES.values());
         } else {
             this.types.addAll(types);
         }

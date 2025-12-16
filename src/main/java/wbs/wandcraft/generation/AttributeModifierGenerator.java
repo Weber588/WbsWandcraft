@@ -1,4 +1,4 @@
-package wbs.wandcraft.generator;
+package wbs.wandcraft.generation;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;

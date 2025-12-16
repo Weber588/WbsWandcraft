@@ -7,11 +7,12 @@ import wbs.wandcraft.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
 
 public final class WandTexture implements Keyed, TextureProvider {
-    public static final WandTexture GEM = new WandTexture("gem");
-    public static final WandTexture SCEPTRE = new WandTexture("sceptre");
-    public static final WandTexture TRIDENT = new WandTexture("trident", "sceptre");
+    public static final WandTexture MAGE = new WandTexture("mage");
+    public static final WandTexture WIZARDRY = new WandTexture("wizardry");
+    public static final WandTexture SORCERY = new WandTexture("sorcery");
+    public static final WandTexture TRIDENT = new WandTexture("trident", "wizardry");
     public static final WandTexture FIRE = new WandTexture("fire").setAnimated(true);
-    public static final WandTexture GEM_OVERGROWN = new WandTexture(WbsWandcraft.getKey("gem_overgrown"), "gem", "gem_overgrown");
+    public static final WandTexture OVERGROWN = new WandTexture(WbsWandcraft.getKey("overgrown"), "mage", "overgrown");
 
     private final NamespacedKey key;
     private final String textureKey;
