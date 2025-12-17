@@ -56,6 +56,11 @@ public class WandcraftSettings extends WbsSettings {
         }
 
         loadGenerators();
+        loadCredits();
+    }
+
+    private void loadCredits() {
+        saveResource("credits.txt", true);
     }
 
     private void loadGenerators() {

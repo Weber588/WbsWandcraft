@@ -3,7 +3,6 @@ package wbs.wandcraft.wand.types;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.util.persistent.AbstractPersistentWandType;
@@ -37,10 +36,6 @@ public class WandType<T extends Wand> implements Keyed {
 
     public T getWand(PersistentDataContainerView container) {
         return container.get(Wand.WAND_KEY, persistentDataType);
-    }
-
-    public void toContainer(T wand, PersistentDataContainer container) {
-        container.set(Wand.WAND_KEY, persistentDataType, wand);
     }
 
     @Override

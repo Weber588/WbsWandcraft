@@ -8,7 +8,6 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -200,12 +199,6 @@ public abstract class Wand implements Attributable {
 
     public abstract @NotNull WandHolder<?> getMenu(ItemStack item);
 
-    public boolean canContain(@NotNull ItemStack addedItem) {
-        return SpellInstance.fromItem(addedItem) != null;
-    }
-
-    public abstract void updateItems(Inventory inventory);
-
     @Override
     public abstract @NotNull Component getItemName();
 
@@ -217,7 +210,10 @@ public abstract class Wand implements Attributable {
 
     public abstract @NotNull WandType<?> getWandType();
 
-    public abstract void toContainer(PersistentDataContainer container);
-
-    public abstract boolean isItemSlot(int slot);
+    public SpellInstance applyModifiers(SpellInstance spellInstance) {
+        attributeModifiers.forEach(modifier ->
+                modifier.modify(spellInstance)
+        );
+        return spellInstance;
+    }
 }

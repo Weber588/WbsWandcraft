@@ -3,17 +3,9 @@
 wands:
   # The name of the generator. Must be lowercase, and only contain letters, numbers, and underscores.
   basic_wand:
-    # The types of inventory it can be.
-    # The list is weighted, so types that appear more will be more likely to be chosen.
-    inventory_types:
-      - 'line_5'
-      - 'line_5'
-      - 'line_5'
-      - 'line_9'
-    # A weighted list of possible textures.
     textures:
-      - 'gem'
-      - 'gem'
+      - 'wizardry'
+      - 'sorcery'
       - 'sceptre'
     # The hue of the wand, from 0-1. Use -1 to pick at random
     hue: -1

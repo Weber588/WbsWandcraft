@@ -19,12 +19,13 @@ import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.modifier.ModifierScope;
+import wbs.wandcraft.spell.modifier.ModifierTexture;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.WandTexture;
 import wbs.wandcraft.wand.types.WandType;
 
+import java.util.Random;
 import java.util.UUID;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -115,11 +116,12 @@ public class ItemUtils {
         return item;
     }
     
-    public static @NotNull ItemStack buildModifier(ModifierScope scope) {
+    public static @NotNull ItemStack buildModifier() {
         ItemStack item = ItemStack.of(BASE_MATERIAL_MODIFIER);
-        SpellModifier modifier = new SpellModifier(scope);
+        SpellModifier modifier = new SpellModifier();
 
         item.getDataTypes().forEach(item::unsetData);
+        item.setData(DataComponentTypes.ITEM_NAME, Component.text("Spell Modifier"));
 
         CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
 
@@ -131,7 +133,13 @@ public class ItemUtils {
             cloneBuilder.addStrings(data.strings());
         }
 
-        cloneBuilder.addString(scope.key().asString());
+        ModifierTexture[] values = ModifierTexture.values();
+        String texture = values[new Random().nextInt(values.length)].getTexture();
+
+        double hue = Math.random();
+
+        cloneBuilder.addString(WbsWandcraft.getKey(texture).asString());
+        cloneBuilder.addColor(WbsColours.fromHSB(hue, 1, 1));
         item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
 
         NamespacedKey itemModelKey = BASE_MATERIAL_MODIFIER.getKey();

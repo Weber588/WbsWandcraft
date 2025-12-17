@@ -11,13 +11,21 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.WandHolder;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 public final class WizardryWandHolder extends WandHolder<WizardryWand> {
     private static final ItemStack LOCKED_SLOT = new ItemStack(Material.STRUCTURE_VOID);
+    public static final int ITEM_COLUMN_START = 3;
+    public static final int ITEM_COLUMN_END = 7;
+    public static final int ITEM_ROW_END = 4;
+    public static final int ITEM_ROW_START = 1;
+    public static final int FULL_INV_COLUMNS = 9;
+    public static final int FULL_INV_ROWS = 6;
 
     static {
         LOCKED_SLOT.setData(DataComponentTypes.ITEM_MODEL, Material.BARRIER.getKey());
@@ -79,6 +87,8 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
 
         int slots = wand.getAttribute(WizardryWand.SLOTS, Integer.MAX_VALUE);
 
+        List<ItemStack> items = wand.getItems();
+        int itemIndex = 0;
         int itemSlotsUnlocked = 0;
         for (int row = 0; row < 6; row++) {
             for (int column = 0; column < 9; column++) {
@@ -86,6 +96,13 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
                 if (isItemSlot(slot)) {
                     if (itemSlotsUnlocked >= slots) {
                         inventory.setItem(slot, LOCKED_SLOT);
+                    } else {
+                        if (items.size() > itemIndex) {
+                            inventory.setItem(slot, items.get(itemIndex));
+                        }
+                        
+                        itemSlotsUnlocked++;
+                        itemIndex++;
                     }
                     continue;
                 }
@@ -98,17 +115,50 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
             }
         }
 
-        wand.getItems().rowMap().forEach((row, map) -> {
-            map.forEach((column, item) -> {
-                inventory.setItem(row * 9 + column, item);
-            });
-        });
-
         return inventory;
     }
 
     @Override
     protected void handleMenuClick(InventoryClickEvent event) {
 
+    }
+
+    @Override
+    public void updateItems(Inventory inventory) {
+        List<ItemStack> items = wand.getItems();
+        List<ItemStack> newItems = new LinkedList<>();
+
+        // TODO: Make upgrade slots save somewhere
+        for (int column = ITEM_COLUMN_START; column < ITEM_COLUMN_END; column++) {
+            for (int row = ITEM_ROW_START; row < ITEM_ROW_END; row++) {
+                int slot = row * FULL_INV_COLUMNS + column;
+                ItemStack item = inventory.getItem(slot);
+                if (item == null || canContainItem(item)) {
+                    newItems.add(item);
+                } else {
+                    newItems.add(null);
+                }
+            }
+        }
+        
+        items.clear();
+        items.addAll(newItems);
+    }
+
+    @Override
+    public boolean isItemSlot(int slot) {
+        int row = slot / FULL_INV_COLUMNS;
+        int column = slot % FULL_INV_COLUMNS;
+
+        return row >= ITEM_ROW_START &&
+                row <= ITEM_ROW_END &&
+                column >= ITEM_COLUMN_START &&
+                column <= ITEM_COLUMN_END
+                ;
+    }
+
+    @Override
+    public boolean canContainItem(@NotNull ItemStack addedItem) {
+        return super.canContainItem(addedItem) || SpellModifier.fromItem(addedItem) != null;
     }
 }

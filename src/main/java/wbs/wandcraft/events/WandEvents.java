@@ -2,10 +2,12 @@ package wbs.wandcraft.events;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
@@ -51,7 +53,8 @@ public class WandEvents implements Listener {
         wand.tryCasting(player, item);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    // Can't ignore cancelled for interacting with air :(
+    @EventHandler
     public void onWandClick(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) {
             return;
@@ -59,7 +62,11 @@ public class WandEvents implements Listener {
 
         ItemStack item = event.getItem();
 
-        if (item == null) {
+        if (item == null || event.useItemInHand() == Event.Result.DENY) {
+            return;
+        }
+
+        if (event.getClickedBlock() != null && event.useInteractedBlock() == Event.Result.DENY) {
             return;
         }
 
@@ -84,8 +91,7 @@ public class WandEvents implements Listener {
         } else {
             // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
             Consumable consumable = item.getData(DataComponentTypes.CONSUMABLE);
-            if (consumable == null || consumable.consumeSeconds() < 0.05f) {
-                player.swingMainHand();
+            if (consumable == null || consumable.consumeSeconds() < 1 / (float) Ticks.TICKS_PER_SECOND) {
                 wand.tryCasting(player, item);
                 event.setCancelled(true);
             }

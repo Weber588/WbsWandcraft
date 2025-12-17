@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.cost.CostUtils;
@@ -24,8 +25,9 @@ import java.util.Set;
 public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public static final NamespacedKey SPELL_INSTANCE_KEY = WbsWandcraft.getKey("spell_instance");
 
+    @Contract("null -> null")
     @Nullable
-    public static SpellInstance fromItem(ItemStack itemStack){
+    public static SpellInstance fromItem(@Nullable ItemStack itemStack){
         if (itemStack == null) {
             return null;
         }

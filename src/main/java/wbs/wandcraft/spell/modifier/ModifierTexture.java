@@ -5,23 +5,21 @@ import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
 
-public enum ModifierScope implements TextureProvider {
-    NEXT,
-    PREVIOUS,
-    LEFT,
-    RIGHT,
-    ABOVE,
-    BELOW,
-    GLOBAL,
-    WAND,
+public enum ModifierTexture implements TextureProvider {
+    BLANK("modifier_blank"),
+    UP_ARROW("modifier_up_arrow"),
+    PLUS("modifier_plus"),
+    EXPLOSION,
+    SKULL,
+    HEART,
     ;
 
     private final String texture;
 
-    ModifierScope() {
+    ModifierTexture() {
         texture = getTextureFallback();
     }
-    ModifierScope(String texture) {
+    ModifierTexture(String texture) {
         this.texture = texture;
     }
 
@@ -32,11 +30,11 @@ public enum ModifierScope implements TextureProvider {
 
     @NotNull
     private String getTextureFallback() {
-        return "modifier_default";
+        return "modifier_blank";
     }
 
     @Override
     public @NotNull NamespacedKey getKey() {
-        return WbsWandcraft.getKey("scope_" + name().toLowerCase());
+        return WbsWandcraft.getKey("modifier_" + name().toLowerCase());
     }
 }

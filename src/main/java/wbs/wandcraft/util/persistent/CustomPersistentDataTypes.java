@@ -17,7 +17,6 @@ import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
-import wbs.wandcraft.spell.modifier.ModifierScope;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 
 import java.util.LinkedList;
@@ -130,7 +129,6 @@ public class CustomPersistentDataTypes {
         private static final NamespacedKey EFFECTS = WbsWandcraft.getKey( "effects");
         private static final NamespacedKey DEFINITION = WbsWandcraft.getKey( "definition");
         private static final NamespacedKey EFFECT_ATTRIBUTES = WbsWandcraft.getKey( "attributes");
-        private static final NamespacedKey SCOPE = WbsWandcraft.getKey( "scope");
 
         @Override
         public @NotNull Class<PersistentDataContainer> getPrimitiveType() {
@@ -167,15 +165,12 @@ public class CustomPersistentDataTypes {
 
             container.set(EFFECTS, PersistentDataType.LIST.dataContainers(), effectContainerList);
 
-            container.set(SCOPE, new PersistentEnumType<>(ModifierScope.class), modifier.getScope());
-
             return container;
         }
 
         @Override
         public @NotNull SpellModifier fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
-            ModifierScope modifierScope = container.get(SCOPE, new PersistentEnumType<>(ModifierScope.class));
-            SpellModifier spellModifier = new SpellModifier(modifierScope);
+            SpellModifier spellModifier = new SpellModifier();
 
             List<PersistentDataContainer> modifierContainerList = container.get(ATTRIBUTE_MODIFIERS, PersistentDataType.LIST.dataContainers());
             if (modifierContainerList == null) {

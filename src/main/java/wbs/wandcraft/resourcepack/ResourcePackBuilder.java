@@ -12,7 +12,7 @@ import wbs.utils.util.configuration.WbsConfigReader;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.modifier.ModifierScope;
+import wbs.wandcraft.spell.modifier.ModifierTexture;
 import wbs.wandcraft.util.ItemUtils;
 
 import java.io.File;
@@ -94,9 +94,12 @@ public class ResourcePackBuilder {
                     WandcraftRegistries.SPELLS.stream().toList())
             );
 
-            writeJSONToFile(plugin.getDataPath().resolve(itemsFolder), ItemUtils.BASE_MATERIAL_MODIFIER.getKey(), gson, new ItemSelectorDefinition(
-                    ItemUtils.BASE_MATERIAL_MODIFIER,
-                    Arrays.stream(ModifierScope.values()).toList())
+            writeJSONToFile(plugin.getDataPath().resolve(itemsFolder), ItemUtils.BASE_MATERIAL_MODIFIER.getKey(), gson,
+                    new ItemSelectorDefinition(
+                            ItemUtils.BASE_MATERIAL_MODIFIER,
+                            Arrays.stream(ModifierTexture.values()).toList(),
+                            List.of(new ModelTint())
+                    )
             );
 
             writeJSONToFile(plugin.getDataPath().resolve(itemsFolder), ItemUtils.BASE_MATERIAL_WAND.getKey(), gson,
@@ -118,6 +121,21 @@ public class ResourcePackBuilder {
                         key.getNamespace() + ":item/" + definition.getTexture()
                 ));
                 resourcesToLoad.add(texturesPath + definition.getTexture() + ".png");
+            });
+
+            resourcesToLoad.add(WbsWandcraft.getKey("item/modifier_overlay").asString());
+            resourcesToLoad.add(texturesPath + "modifier_overlay.png");
+            Arrays.stream(ModifierTexture.values()).forEach(texture -> {
+                NamespacedKey key = texture.getKey();
+
+                String texturePath = key.getNamespace() + ":item/modifier_overlay";
+                String baseTexture = key.getNamespace() + ":item/" + texture.getTexture();
+                writeJSONToFile(plugin.getDataPath().resolve(itemModelsPath), key, gson, new ModelDefinition(
+                        "minecraft:item/handheld",
+                        texturePath,
+                        baseTexture
+                ));
+                resourcesToLoad.add(texturesPath + texture.getTexture() + ".png");
             });
 
             WandcraftRegistries.WAND_TEXTURES.stream().forEach(texture -> {

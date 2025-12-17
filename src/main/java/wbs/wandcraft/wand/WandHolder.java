@@ -10,6 +10,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
+import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.modifier.SpellModifier;
 
 import java.util.Set;
 
@@ -56,16 +58,30 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
         return fakeWand;
     }
 
+    protected boolean isDisplaySlot(int slot, ItemStack itemInSlot) {
+        if (slot == getWandDisplaySlot()) {
+            return true;
+        }
+        if (itemInSlot == null) {
+            return false;
+        }
+
+        return MAIN_OUTLINE.isSimilar(itemInSlot) || SECONDARY_OUTLINE.isSimilar(itemInSlot) || UPGRADE_DISPLAY.isSimilar(itemInSlot);
+    }
+
     public abstract int getWandDisplaySlot();
 
     public abstract int getUpgradeDisplaySlot();
 
     public abstract Set<Integer> getUpgradeSlots();
+    public boolean isUpgradeSlot(int slot) {
+        return getUpgradeSlots().contains(slot);
+    }
 
     protected abstract Inventory buildInventory();
 
     public void save() {
-        wand.updateItems(inventory);
+        updateItems(inventory);
         wand.toItem(wandItem);
     }
 
@@ -82,27 +98,27 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
         return inventory;
     }
 
-    public final boolean isItemSlot(int slot) {
-        return wand.isItemSlot(slot);
-    }
-
     public final void handleClick(InventoryClickEvent event) {
         int slot = event.getSlot();
+
+        ItemStack itemInSlot = event.getCurrentItem();
+
+        if (isDisplaySlot(slot, itemInSlot)) {
+            event.setCancelled(true);
+            return;
+        }
+
         if (isItemSlot(slot)) {
             handleItemClick(event);
+        } else if (isUpgradeSlot(slot)){
+            handleUpgradeClick(event);
         } else {
-            ItemStack itemInSlot = event.getCurrentItem();
-            if (isDisplaySlot(slot, itemInSlot)) {
-                event.setCancelled(true);
-                return;
-            }
-
             handleMenuClick(event);
         }
     }
 
-    protected boolean isDisplaySlot(int slot, ItemStack itemInSlot) {
-        return slot == getWandDisplaySlot() || MAIN_OUTLINE.isSimilar(itemInSlot) || SECONDARY_OUTLINE.isSimilar(itemInSlot) || UPGRADE_DISPLAY.isSimilar(itemInSlot);
+    private void handleUpgradeClick(InventoryClickEvent event) {
+
     }
 
     protected abstract void handleMenuClick(InventoryClickEvent event);
@@ -110,9 +126,21 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     private void handleItemClick(InventoryClickEvent event) {
         ItemStack addedItem = WbsEventUtils.getItemAddedToTopInventory(event);
         if (addedItem != null) {
-            if (!wand().canContain(addedItem)) {
+            if (!canContainItem(addedItem)) {
                 event.setCancelled(true);
             }
         }
+    }
+
+    public abstract void updateItems(Inventory inventory);
+
+    public abstract boolean isItemSlot(int slot);
+
+    public boolean canContainItem(@NotNull ItemStack addedItem) {
+        return SpellInstance.fromItem(addedItem) != null;
+    }
+
+    public boolean canContainUpgrade(@NotNull ItemStack addedItem) {
+        return SpellModifier.fromItem(addedItem) != null;
     }
 }
