@@ -1,13 +1,10 @@
 package wbs.wandcraft.wand.types;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -19,18 +16,12 @@ import java.util.List;
 import java.util.Set;
 
 public final class WizardryWandHolder extends WandHolder<WizardryWand> {
-    private static final ItemStack LOCKED_SLOT = new ItemStack(Material.STRUCTURE_VOID);
     public static final int ITEM_COLUMN_START = 3;
     public static final int ITEM_COLUMN_END = 7;
     public static final int ITEM_ROW_END = 4;
     public static final int ITEM_ROW_START = 1;
     public static final int FULL_INV_COLUMNS = 9;
     public static final int FULL_INV_ROWS = 6;
-
-    static {
-        LOCKED_SLOT.setData(DataComponentTypes.ITEM_MODEL, Material.BARRIER.getKey());
-        LOCKED_SLOT.setData(DataComponentTypes.ITEM_NAME, Component.text("Locked").color(NamedTextColor.RED));
-    }
 
     private static int slot(int row, int column) {
         return row * 9 + column;
@@ -77,11 +68,6 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
     }
 
     @Override
-    protected boolean isDisplaySlot(int slot, ItemStack itemInSlot) {
-        return super.isDisplaySlot(slot, itemInSlot) || itemInSlot.isSimilar(LOCKED_SLOT);
-    }
-
-    @Override
     protected Inventory buildInventory() {
         Inventory inventory = Bukkit.createInventory(this, 6 * 9, wandItem.effectiveName().color(NamedTextColor.BLACK));
 
@@ -116,11 +102,6 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
         }
 
         return inventory;
-    }
-
-    @Override
-    protected void handleMenuClick(InventoryClickEvent event) {
-
     }
 
     @Override

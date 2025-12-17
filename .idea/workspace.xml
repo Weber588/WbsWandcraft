@@ -5,63 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Began migrating to generic spell modifiers">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/credits.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_blank.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_overlay.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_plus.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_up_arrow.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_arcane_spark.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_arcane_spark.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_chain_lightning.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_chain_lightning.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_charm.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_charm.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_crows_call.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_crows_call.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_discover_item.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_discover_item.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_displace.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_displace.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_fire_breath.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_fire_breath.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_planar_binding.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_planar_binding.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_stun.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_stun.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_fire.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_fire.png.mcmeta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_fire_0.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_fire_1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_fire_2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_fire_3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_fire_base.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_mage.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_mage_base.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_overgrown.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_overgrown_base.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_sorcery.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_sorcery_base.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_trident.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_wizardry.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_wizardry_base.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftSettings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildModifier.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellInstance.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/ModifierScope.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/ModifierTexture.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/CustomPersistentDataTypes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/CustomPersistentDataTypes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentWizardryWandType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentWizardryWandType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WandType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WandType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWandHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/generators.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/generators.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/minecraft/items/globe_banner_pattern.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/minecraft/items/globe_banner_pattern.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -444,7 +391,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765887660568</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Began migrating to generic spell modifiers">
+      <option name="closed" value="true" />
+      <created>1765939530197</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1765939530197</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="UnknownFeatures">

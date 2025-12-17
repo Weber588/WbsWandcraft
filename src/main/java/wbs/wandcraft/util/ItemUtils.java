@@ -7,10 +7,12 @@ import io.papermc.paper.datacomponent.item.UseCooldown;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.WbsColours;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -26,6 +28,7 @@ import wbs.wandcraft.wand.WandTexture;
 import wbs.wandcraft.wand.types.WandType;
 
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -115,6 +118,12 @@ public class ItemUtils {
 
         return item;
     }
+
+    private static final Set<Color> MODIFIER_COLOURS = Set.of(
+            WbsColours.fromHSB(0.958, 0.85, 1),
+            WbsColours.fromHSB(0.675, 0.5, 0.6),
+            WbsColours.fromHSB(0.025, 0.6, 0.75)
+    );
     
     public static @NotNull ItemStack buildModifier() {
         ItemStack item = ItemStack.of(BASE_MATERIAL_MODIFIER);
@@ -136,10 +145,8 @@ public class ItemUtils {
         ModifierTexture[] values = ModifierTexture.values();
         String texture = values[new Random().nextInt(values.length)].getTexture();
 
-        double hue = Math.random();
-
         cloneBuilder.addString(WbsWandcraft.getKey(texture).asString());
-        cloneBuilder.addColor(WbsColours.fromHSB(hue, 1, 1));
+        cloneBuilder.addColor(WbsCollectionUtil.getRandom(MODIFIER_COLOURS));
         item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
 
         NamespacedKey itemModelKey = BASE_MATERIAL_MODIFIER.getKey();

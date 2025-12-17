@@ -3,6 +3,7 @@ package wbs.wandcraft.wand;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -18,13 +19,18 @@ import java.util.Set;
 public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     protected static final ItemStack MAIN_OUTLINE = new ItemStack(Material.PURPLE_STAINED_GLASS_PANE);
     protected static final ItemStack SECONDARY_OUTLINE = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-    private static final ItemStack UPGRADE_DISPLAY = new ItemStack(Material.STRUCTURE_VOID);
+    protected static final ItemStack UPGRADE_DISPLAY = new ItemStack(Material.STRUCTURE_VOID);
+    protected static final ItemStack LOCKED_SLOT = new ItemStack(Material.STRUCTURE_VOID);
 
     static {
         MAIN_OUTLINE.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
         SECONDARY_OUTLINE.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
+
         UPGRADE_DISPLAY.setData(DataComponentTypes.ITEM_MODEL, Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE.getKey());
         UPGRADE_DISPLAY.setData(DataComponentTypes.ITEM_NAME, Component.text("Upgrades"));
+
+        LOCKED_SLOT.setData(DataComponentTypes.ITEM_MODEL, Material.BARRIER.getKey());
+        LOCKED_SLOT.setData(DataComponentTypes.ITEM_NAME, Component.text("Locked").color(NamedTextColor.RED));
     }
 
     protected final T wand;
@@ -66,7 +72,11 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
             return false;
         }
 
-        return MAIN_OUTLINE.isSimilar(itemInSlot) || SECONDARY_OUTLINE.isSimilar(itemInSlot) || UPGRADE_DISPLAY.isSimilar(itemInSlot);
+        return MAIN_OUTLINE.isSimilar(itemInSlot)
+                || SECONDARY_OUTLINE.isSimilar(itemInSlot)
+                || UPGRADE_DISPLAY.isSimilar(itemInSlot)
+                || LOCKED_SLOT.isSimilar(itemInSlot)
+                ;
     }
 
     public abstract int getWandDisplaySlot();
@@ -117,12 +127,6 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
         }
     }
 
-    private void handleUpgradeClick(InventoryClickEvent event) {
-
-    }
-
-    protected abstract void handleMenuClick(InventoryClickEvent event);
-
     private void handleItemClick(InventoryClickEvent event) {
         ItemStack addedItem = WbsEventUtils.getItemAddedToTopInventory(event);
         if (addedItem != null) {
@@ -130,6 +134,19 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
                 event.setCancelled(true);
             }
         }
+    }
+
+    private void handleUpgradeClick(InventoryClickEvent event) {
+        ItemStack addedItem = WbsEventUtils.getItemAddedToTopInventory(event);
+        if (addedItem != null) {
+            if (!canContainUpgrade(addedItem)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    protected void handleMenuClick(InventoryClickEvent event) {
+
     }
 
     public abstract void updateItems(Inventory inventory);
