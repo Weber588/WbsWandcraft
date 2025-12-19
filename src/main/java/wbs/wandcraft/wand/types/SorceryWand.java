@@ -81,6 +81,7 @@ public class SorceryWand extends Wand {
 
         spellList.add(instance);
         tier = 0;
+        toItem(wandItem);
 
         return spellList;
     }

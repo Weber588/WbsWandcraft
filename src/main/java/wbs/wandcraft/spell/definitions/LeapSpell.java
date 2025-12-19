@@ -1,7 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.util.Ticks;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,7 +23,7 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
         Player player = context.player();
         player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation(), 160, 0, 0, 0, 0.5);
         // Entity velocity is stored in blocks per SECOND, not tick
-        player.setVelocity(getDirection(context, context.instance().getAttribute(SPEED) * Ticks.TICKS_PER_SECOND));
+        player.setVelocity(getDirection(context, context.instance().getAttribute(SPEED)));
 
         player.setFallDistance(0);
 

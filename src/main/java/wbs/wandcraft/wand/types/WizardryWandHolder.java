@@ -62,7 +62,7 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
 
     @Override
     protected Inventory instantiateInventory() {
-        return Bukkit.createInventory(this, 6 * 9, wandItem.effectiveName().color(NamedTextColor.BLACK));
+        return Bukkit.createInventory(this, 6 * 9, wandItem.effectiveName().color(NamedTextColor.DARK_GRAY));
     }
 
     @Override
