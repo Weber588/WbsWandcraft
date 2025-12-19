@@ -8,30 +8,45 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 import wbs.wandcraft.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 public interface Attributable extends ItemDecorator {
-    Set<SpellAttributeInstance<?>> getAttributeValues();
+    /**
+     * @return The actual underlying set containing stored attribute instances. Mutable & modifiable.
+     */
+    Set<SpellAttributeInstance<?>> getAttributeInstances();
+
+    /**
+     * Implementors may override this method to self-apply modifiers, without changing what's stored or
+     * used in internal attribute calculations.
+     * @return A derived set of attribute instances to be used in reality, but not stored.
+     */
+    @Unmodifiable
+    default Set<SpellAttributeInstance<?>> deriveAttributeValues() {
+        return Collections.unmodifiableSet(getAttributeInstances());
+    }
 
     default <T> void setAttribute(SpellAttribute<T> attribute, T value) {
         setAttribute(attribute.getInstance(value));
     }
 
     default void setAttribute(SpellAttributeInstance<?> instance) {
-        getAttributeValues().removeIf(existing -> existing.attribute().equals(instance.attribute()));
-        getAttributeValues().add(instance.clone());
+        getAttributeInstances().removeIf(existing -> existing.attribute().equals(instance.attribute()));
+        getAttributeInstances().add(instance.clone());
     }
 
     default <T> T getAttribute(SpellAttribute<T> attribute) {
         //noinspection unchecked
         SpellAttributeInstance<T> instance =
-                (SpellAttributeInstance<T>) getAttributeValues().stream()
+                (SpellAttributeInstance<T>) deriveAttributeValues().stream()
                         .filter(value -> value.attribute().equals(attribute))
                         .findFirst()
                         .orElse(null);
@@ -53,8 +68,8 @@ public interface Attributable extends ItemDecorator {
         return attributeValue;
     }
 
-    default  <T> void applyModifier(SpellAttributeModifier<T, ?> modifier) {
-        for (SpellAttributeInstance<?> attributeInstance : getAttributeValues()) {
+    default <T> void applyModifier(SpellAttributeModifier<T, ?> modifier) {
+        for (SpellAttributeInstance<?> attributeInstance : getAttributeInstances()) {
             if (attributeInstance.attribute().equals(modifier.attribute())) {
                 attributeInstance.modify(modifier);
             }
@@ -63,7 +78,7 @@ public interface Attributable extends ItemDecorator {
 
     default void writeAttributes(PersistentDataContainer container, NamespacedKey key) {
         PersistentDataContainer attributes = container.getAdapterContext().newPersistentDataContainer();
-        for (SpellAttributeInstance<?> attribute : getAttributeValues()) {
+        for (SpellAttributeInstance<?> attribute : getAttributeInstances()) {
             attribute.writeTo(attributes);
         }
 
@@ -88,7 +103,7 @@ public interface Attributable extends ItemDecorator {
 
     @Override
     default @NotNull List<Component> getLore() {
-        return getAttributeValues().stream()
+        return deriveAttributeValues().stream()
                 .sorted()
                 .filter(instance -> instance.shouldShow(this))
                 .map(instance ->

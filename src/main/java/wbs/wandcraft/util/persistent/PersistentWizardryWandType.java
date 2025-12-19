@@ -32,10 +32,10 @@ public class PersistentWizardryWandType extends AbstractPersistentWandType<Wizar
 
     @Override
     protected void populateWand(WizardryWand wand, @NotNull PersistentDataContainer container) {
-        List<ItemStack> itemStacks = container.get(INVENTORY, PersistentDataType.LIST.listTypeFrom(WbsPersistentDataType.ITEM_AS_BYTES));
+        List<ItemStack> items = container.get(INVENTORY, PersistentDataType.LIST.listTypeFrom(WbsPersistentDataType.ITEM_AS_BYTES));
 
-        if (itemStacks != null) {
-            wand.getItems().addAll(itemStacks);
+        if (items != null) {
+            wand.setItems(items);
         }
     }
 }

@@ -130,7 +130,6 @@ public class ItemUtils {
         SpellModifier modifier = new SpellModifier();
 
         item.getDataTypes().forEach(item::unsetData);
-        item.setData(DataComponentTypes.ITEM_NAME, Component.text("Spell Modifier"));
 
         CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
 
@@ -183,7 +182,7 @@ public class ItemUtils {
     }
 
     public static @NotNull AttributeModificationResult modifyWand(ItemStack item, SpellAttributeInstance<?> attributeInstance, @NotNull AttributeModifierType modifierType, SpellAttribute<?> attribute, Wand wand) {
-        if (wand.getAttributeValues().stream().anyMatch(value -> value.attribute().equals(attribute))) {
+        if (wand.getAttributeInstances().stream().anyMatch(value -> value.attribute().equals(attribute))) {
             wand.setAttribute(attributeInstance);
             wand.toItem(item);
             return AttributeModificationResult.MODIFIED_WAND_ATTRIBUTE;

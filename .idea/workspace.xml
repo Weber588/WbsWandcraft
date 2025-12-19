@@ -4,11 +4,41 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Began migrating to generic spell modifiers">
+    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Wand Holder fixes">
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentSorceryWandType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWandHolder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_heart.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_x.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/ItemDecorator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/ItemDecorator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandModifyAttributes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandModifyAttributes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandModifyEffects.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandModifyEffects.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandInventoryEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandInventoryEvents.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/Attributable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/Attributable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/SpellAttributeInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/SpellAttributeInstance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeAddOperator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeAddOperator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeMultiplyOperator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeMultiplyOperator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeSetOperator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeSetOperator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/SpellAttributeModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/SpellAttributeModifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellInstance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/SpellEffectDefinition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/SpellEffectDefinition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/SpellEffectInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/SpellEffectInstance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/ModifierTexture.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/ModifierTexture.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/AbstractPersistentWandType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/AbstractPersistentWandType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/CustomPersistentDataTypes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/CustomPersistentDataTypes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentWizardryWandType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentWizardryWandType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandHolder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WandType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WandType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWandHolder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_plus.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_plus.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_up_arrow.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_up_arrow.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +99,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/IdeaProjects/WbsWandcraft/src/main/resources/resourcepack/assets/wbswandcraft/models/item&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/IdeaProjects/WbsWandcraft/src/main/java/wbs/wandcraft/wand/types&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
@@ -85,11 +115,11 @@
       <recent name="wbs.wandcraft.generator" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\IdeaProjects\WbsWandcraft\src\main\java\wbs\wandcraft\wand\types" />
       <recent name="C:\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\wbswandcraft\models\item" />
       <recent name="C:\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\minecraft\items" />
       <recent name="C:\Users\idont\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\minecraft\items" />
       <recent name="C:\Users\idont\IdeaProjects\WbsWandcraft\src\main\resources" />
-      <recent name="C:\Users\idont\IdeaProjects\WbsWandcraft\src\main\java\wbs\wandcraft\objects" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\idont\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\wbswandcraft\textures" />
@@ -103,8 +133,8 @@
       <recent name="wbs.wandcraft.spells" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="wbs.wandcraft.wand.types" />
       <recent name="wbs.wandcraft.util.persistent" />
+      <recent name="wbs.wandcraft.wand.types" />
       <recent name="wbs.wandcraft.spell.attributes" />
       <recent name="wbs.wandcraft.spell.definitions" />
       <recent name="wbs.wandcraft.effects" />
@@ -399,7 +429,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765939530197</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Wand Holder fixes">
+      <option name="closed" value="true" />
+      <created>1765950453947</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1765950453947</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -418,7 +456,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed damage projectiles not doing damage" />
     <MESSAGE value="Made Blink directional to allow accuracy" />
     <MESSAGE value="Made Leap directional to allow accuracy" />
     <MESSAGE value="Various attribute default tweaks" />
@@ -443,6 +480,7 @@
     <MESSAGE value="Added targeter system" />
     <MESSAGE value="Began implementing multiple wand types" />
     <MESSAGE value="Began migrating to generic spell modifiers" />
-    <option name="LAST_COMMIT_MESSAGE" value="Began migrating to generic spell modifiers" />
+    <MESSAGE value="Wand Holder fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Wand Holder fixes" />
   </component>
 </project>

@@ -76,7 +76,7 @@ public class CommandModifyEffects extends WbsSubcommand {
                 List<SpellAttribute<?>> attributes = new LinkedList<>();
 
                 if (attributable != null) {
-                    attributable.getAttributeValues().stream()
+                    attributable.deriveAttributeValues().stream()
                             .map(SpellAttributeInstance::attribute)
                             .forEach(attributes::add);
                 } else {

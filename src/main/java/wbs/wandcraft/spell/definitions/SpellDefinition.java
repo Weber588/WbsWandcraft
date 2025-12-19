@@ -58,7 +58,7 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
     }
 
     @Override
-    public Set<SpellAttributeInstance<?>> getAttributeValues() {
+    public Set<SpellAttributeInstance<?>> getAttributeInstances() {
         return defaultAttributes;
     }
 

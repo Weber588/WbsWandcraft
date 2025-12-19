@@ -7,6 +7,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.WandEntry;
@@ -76,7 +77,9 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
     public @NotNull List<Component> getLore() {
         List<Component> loreList = new LinkedList<>();
 
-        if (!modifiers.isEmpty()) {
+        if (modifiers.isEmpty()) {
+            loreList.add(Component.text("Attributes:").color(NamedTextColor.AQUA).append(Component.text(" None").color(NamedTextColor.GOLD)));
+        } else {
             loreList.add(Component.text("Attributes:").color(NamedTextColor.AQUA));
 
             loreList.addAll(modifiers.stream()
@@ -87,7 +90,9 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
                     .toList());
         }
 
-        if (!effects.isEmpty()) {
+        if (effects.isEmpty()) {
+        //    loreList.add(Component.text("Effects:").color(NamedTextColor.AQUA).append(Component.text(" None").color(NamedTextColor.GOLD)));
+        } else {
             loreList.add(Component.text("Effects:").color(NamedTextColor.AQUA));
 
             loreList.addAll(effects.stream()
@@ -120,5 +125,10 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
     @Override
     public @NotNull NamespacedKey getKey() {
         return getTypeKey();
+    }
+
+    @Override
+    public @Nullable Component getItemName() {
+        return Component.text("Spell Modifier");
     }
 }

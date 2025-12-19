@@ -28,8 +28,21 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
         this.modifierValue = modifierValue;
     }
 
+    @SuppressWarnings("unchecked")
     public T modify(T value) {
-        return modifierOperation.modify(value, modifierValue);
+        T modified = modifierOperation.modify(value, modifierValue);
+
+        if (value instanceof Number && modified instanceof Number modifiedNumber) {
+            return switch (value) {
+                case Double ignored -> (T) Double.valueOf(modifiedNumber.doubleValue());
+                case Integer ignored -> (T) Integer.valueOf(modifiedNumber.intValue());
+                case Float ignored -> (T) Float.valueOf(modifiedNumber.floatValue());
+                case Long ignored -> (T) Long.valueOf(modifiedNumber.longValue());
+                default -> modified;
+            };
+        }
+
+        return modified;
     }
 
     public void modify(SpellInstance instance) {

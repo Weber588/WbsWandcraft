@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +45,7 @@ public class WizardryWand extends Wand {
     }
 
     @Override
-    protected @NotNull Queue<SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem) {
+    protected @NotNull Queue<SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
         LinkedList<SpellInstance> spellList = new LinkedList<>();
 
         getSpellInstances().stream()
@@ -59,7 +60,7 @@ public class WizardryWand extends Wand {
         return spellList;
     }
 
-    private @NotNull List<@NotNull SpellInstance> getSpellInstances() {
+    protected @NotNull List<@NotNull SpellInstance> getSpellInstances() {
         return items.stream()
                 .map(SpellInstance::fromItem)
                 .filter(Objects::nonNull)
@@ -113,5 +114,10 @@ public class WizardryWand extends Wand {
         item.editMeta(meta ->
                 meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.WIZARDRY_WAND_TYPE, this)
         );
+    }
+
+    public void setItems(List<ItemStack> newItems) {
+        this.items.clear();
+        this.items.addAll(newItems);
     }
 }

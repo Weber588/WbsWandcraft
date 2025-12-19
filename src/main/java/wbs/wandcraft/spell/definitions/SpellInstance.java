@@ -43,10 +43,10 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public SpellInstance(SpellDefinition definition) {
         this.definition = definition;
 
-        attributeValues.addAll(definition.getAttributeValues());
+        attributeValues.addAll(definition.getAttributeInstances());
     }
 
-    public Set<SpellAttributeInstance<?>> getAttributeValues() {
+    public Set<SpellAttributeInstance<?>> getAttributeInstances() {
         return attributeValues;
     }
 

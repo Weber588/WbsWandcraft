@@ -74,7 +74,7 @@ public abstract class SpellEffectDefinition<T> implements Keyed, ComponentRepres
     }
 
     @Override
-    public Set<SpellAttributeInstance<?>> getAttributeValues() {
+    public Set<SpellAttributeInstance<?>> getAttributeInstances() {
         return attributeValues;
     }
 }

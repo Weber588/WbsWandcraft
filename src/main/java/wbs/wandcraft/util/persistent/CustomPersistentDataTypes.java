@@ -30,6 +30,7 @@ public class CustomPersistentDataTypes {
     public static final PersistentAttributeModifierType SPELL_ATTRIBUTE_MODIFIER = new PersistentAttributeModifierType();
 
     public static final PersistentWizardryWandType WIZARDRY_WAND_TYPE = new PersistentWizardryWandType();
+    public static final PersistentSorceryWandType SORCERY_WAND_TYPE = new PersistentSorceryWandType();
 
     public static final PersistentStatusEffectType STATUS_EFFECT = new PersistentStatusEffectType();
 

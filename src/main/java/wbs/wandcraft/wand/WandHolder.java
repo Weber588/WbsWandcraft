@@ -11,9 +11,13 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
+import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public abstract class WandHolder<T extends Wand> implements InventoryHolder {
@@ -21,6 +25,14 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     protected static final ItemStack SECONDARY_OUTLINE = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
     protected static final ItemStack UPGRADE_DISPLAY = new ItemStack(Material.STRUCTURE_VOID);
     protected static final ItemStack LOCKED_SLOT = new ItemStack(Material.STRUCTURE_VOID);
+    protected static final ItemStack SLOT_LABEL = new ItemStack(Material.PURPLE_BANNER);
+
+    public static final int ITEM_COLUMN_START = 3;
+    public static final int ITEM_COLUMN_END = 7;
+    public static final int ITEM_ROW_END = 4;
+    public static final int ITEM_ROW_START = 1;
+    public static final int FULL_INV_COLUMNS = 9;
+    public static final int FULL_INV_ROWS = 6;
 
     static {
         MAIN_OUTLINE.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
@@ -41,17 +53,42 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
         this.wand = wand;
         this.wandItem = wandItem;
 
-        inventory = buildInventory();
+        inventory = instantiateInventory();
+        reload();
+    }
+
+    protected void reload() {
         populateBonusSlots();
+        populateUpgrades();
+    }
+
+    private void populateUpgrades() {
+        int upgradeIndex = 0;
+        List<ItemStack> upgrades = wand.getUpgrades();
+
+        for (int row = 0; row < 6; row++) {
+            for (int column = 0; column < 9; column++) {
+                int slot = row * 9 + column;
+
+                if (isUpgradeSlot(slot)) {
+                    if (upgrades.size() > upgradeIndex) {
+                        ItemStack upgradeItem = upgrades.get(upgradeIndex);
+
+                        inventory.setItem(slot, upgradeItem);
+
+                        upgradeIndex++;
+                    } else {
+                        inventory.setItem(slot, null);
+                    }
+                }
+            }
+        }
     }
 
     private void populateBonusSlots() {
         ItemStack fakeWand = getFakeWand();
 
         inventory.setItem(getWandDisplaySlot(), fakeWand);
-
-        getUpgradeSlots().forEach(slot -> inventory.setItem(slot, null));
-
         inventory.setItem(getUpgradeDisplaySlot(), UPGRADE_DISPLAY);
     }
 
@@ -76,6 +113,7 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
                 || SECONDARY_OUTLINE.isSimilar(itemInSlot)
                 || UPGRADE_DISPLAY.isSimilar(itemInSlot)
                 || LOCKED_SLOT.isSimilar(itemInSlot)
+                || SLOT_LABEL.matchesWithoutData(itemInSlot, Set.of(DataComponentTypes.ITEM_NAME))
                 ;
     }
 
@@ -88,19 +126,26 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
         return getUpgradeSlots().contains(slot);
     }
 
-    protected abstract Inventory buildInventory();
+    protected abstract Inventory instantiateInventory();
 
     public void save() {
-        updateItems(inventory);
+        saveItems();
+        saveUpgrades();
         wand.toItem(wandItem);
     }
 
-    public final T wand() {
-        return wand;
-    }
+    protected void saveUpgrades() {
+        List<ItemStack> newUpgrades = new LinkedList<>();
+        for (Integer upgradeSlot : getUpgradeSlots().stream().sorted().toList()) {
+            ItemStack item = inventory.getItem(upgradeSlot);
+            if (item != null && canContainUpgrade(item)) {
+                newUpgrades.add(item);
+            } else {
+                newUpgrades.add(null);
+            }
+        }
 
-    public final ItemStack wandItem() {
-        return wandItem;
+        wand.setUpgrades(newUpgrades);
     }
 
     @Override
@@ -110,6 +155,17 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
 
     public final void handleClick(InventoryClickEvent event) {
         int slot = event.getSlot();
+        if (event.getView().getBottomInventory().equals(event.getClickedInventory())) {
+            if (event.isShiftClick()) {
+                slot = event.getView().getTopInventory().firstEmpty();
+            } else {
+                return;
+            }
+        }
+
+        if (slot == -1) {
+            return;
+        }
 
         ItemStack itemInSlot = event.getCurrentItem();
 
@@ -132,6 +188,24 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
         if (addedItem != null) {
             if (!canContainItem(addedItem)) {
                 event.setCancelled(true);
+
+                // Can't shift click into the current slot, but we might be able to redirect
+                if (canContainUpgrade(addedItem) && event.isShiftClick()) {
+                    Inventory playerInventory = event.getView().getBottomInventory();
+                    if (playerInventory.equals(event.getClickedInventory())) {
+                        for (int upgradeSlot : getUpgradeSlots().stream().sorted().toList()) {
+                            Inventory wandInventory = event.getView().getTopInventory();
+                            ItemStack existingItem = wandInventory.getItem(upgradeSlot);
+                            if (existingItem == null || existingItem.isEmpty()) {
+                                int clickedSlot = event.getSlot();
+                                playerInventory.setItem(clickedSlot, ItemStack.empty());
+                                wandInventory.setItem(upgradeSlot, addedItem);
+                                save();
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -141,6 +215,24 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
         if (addedItem != null) {
             if (!canContainUpgrade(addedItem)) {
                 event.setCancelled(true);
+
+                // Can't shift click into the current slot, but we might be able to redirect
+                if (canContainItem(addedItem) && event.isShiftClick()) {
+                    Inventory playerInventory = event.getView().getBottomInventory();
+                    if (playerInventory.equals(event.getClickedInventory())) {
+                        for (int itemSlot : getItemSlots()) {
+                            Inventory wandInventory = event.getView().getTopInventory();
+                            ItemStack existingItem = wandInventory.getItem(itemSlot);
+                            if (existingItem == null || existingItem.isEmpty()) {
+                                int clickedSlot = event.getSlot();
+                                playerInventory.setItem(clickedSlot, ItemStack.empty());
+                                wandInventory.setItem(itemSlot, addedItem);
+                                save();
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -149,9 +241,20 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
 
     }
 
-    public abstract void updateItems(Inventory inventory);
+    public abstract void saveItems();
 
     public abstract boolean isItemSlot(int slot);
+    private Set<Integer> getItemSlots() {
+        // TODO: Cache this
+        Set<Integer> itemSlots = new HashSet<>();
+        for (int slot = 0; slot < FULL_INV_COLUMNS * FULL_INV_ROWS; slot++) {
+            if (isItemSlot(slot)) {
+                itemSlots.add(slot);
+            }
+        }
+
+        return itemSlots;
+    }
 
     public boolean canContainItem(@NotNull ItemStack addedItem) {
         return SpellInstance.fromItem(addedItem) != null;
@@ -159,5 +262,14 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
 
     public boolean canContainUpgrade(@NotNull ItemStack addedItem) {
         return SpellModifier.fromItem(addedItem) != null;
+    }
+
+    public void saveNextTick(InventoryClickEvent event) {
+        WbsWandcraft.getInstance().runSync(() -> {
+            // Save if still open -- if not, it's been done in the Close event
+            if (event.getWhoClicked().getOpenInventory().getTopInventory().getHolder() instanceof WandHolder<?> updatedHolder) {
+                updatedHolder.save();
+            }
+        });
     }
 }

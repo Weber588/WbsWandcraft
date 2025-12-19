@@ -11,7 +11,8 @@ public enum ModifierTexture implements TextureProvider {
     PLUS("modifier_plus"),
     EXPLOSION,
     SKULL,
-    HEART,
+    HEART("modifier_heart"),
+    X("modifier_x"),
     ;
 
     private final String texture;

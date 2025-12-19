@@ -39,4 +39,9 @@ public class AttributeMultiplyOperator<T extends Number, M extends Number> exten
 
         return attribute.displayName().append(Component.text(" x" + format.format(modifierValue)));
     }
+
+    @Override
+    public String toString() {
+        return "*";
+    }
 }

@@ -16,7 +16,10 @@ public interface ItemDecorator {
     // have access to the item meta as they could change other things, even if it's default only those two in a default
     // method.
     static void decorate(ItemDecorator decorator, ItemMeta meta) {
-        meta.itemName(decorator.getItemName());
+        Component itemName = decorator.getItemName();
+        if (itemName != null) {
+            meta.itemName(itemName);
+        }
         TextDecorationAndState notItalic = TextDecoration.ITALIC.withState(TriState.FALSE);
         meta.lore(
                 decorator.getLore().stream()

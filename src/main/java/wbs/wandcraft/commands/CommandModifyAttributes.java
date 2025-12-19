@@ -70,7 +70,7 @@ public class CommandModifyAttributes extends WbsSubcommand {
                 Set<SpellAttribute<?>> attributes = new HashSet<>();
 
                 if (attributable != null) {
-                    attributable.getAttributeValues().stream()
+                    attributable.deriveAttributeValues().stream()
                             .map(SpellAttributeInstance::attribute)
                             .forEach(attributes::add);
 

@@ -8,11 +8,13 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleEffect;
@@ -29,10 +31,12 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.types.WandType;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static wbs.wandcraft.util.persistent.AbstractPersistentWandType.WAND_TYPE;
 
@@ -78,15 +82,17 @@ public abstract class Wand implements Attributable {
     }
 
     private final @NotNull String uuid;
-    protected final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
+    protected final Set<SpellAttributeInstance<?>> attributeInstances = new HashSet<>();
     protected final Set<SpellAttributeModifier<?, ?>> attributeModifiers = new HashSet<>();
+
+    protected final List<@Nullable ItemStack> upgrades = new LinkedList<>();
 
     protected Wand(@NotNull String uuid) {
         this.uuid = uuid;
         setAttribute(COOLDOWN.defaultInstance());
     }
 
-    public void tryCasting(@NotNull Player player, ItemStack wandItem) {
+    public void tryCasting(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
         if (player.getCooldown(wandItem) > 0) {
             return;
         }
@@ -112,11 +118,10 @@ public abstract class Wand implements Attributable {
             return;
         }
 
-        Queue<SpellInstance> spellList = getSpellQueue(player, wandItem);
+        Queue<SpellInstance> spellList = getSpellQueue(player, wandItem, event);
 
         if (spellList.isEmpty()) {
-            plugin.sendActionBar("&wThis wand is empty...", player);
-            FAIL_EFFECT.play(Particle.SMOKE, WbsEntityUtil.getMiddleLocation(player));
+            handleNoSpellAvailable(player, wandItem, event);
             return;
         }
 
@@ -140,6 +145,11 @@ public abstract class Wand implements Attributable {
         }
     }
 
+    protected void handleNoSpellAvailable(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
+        WbsWandcraft.getInstance().sendActionBar("&wThis wand is empty...", player);
+        FAIL_EFFECT.play(Particle.SMOKE, WbsEntityUtil.getMiddleLocation(player));
+    }
+
     protected void handleWandBreak(@NotNull Player player, ItemStack preDamageItem) {
         // TODO: Drop all spells
     }
@@ -148,12 +158,32 @@ public abstract class Wand implements Attributable {
         return 0;
     }
 
-    protected abstract @NotNull Queue<SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem);
+    protected abstract @NotNull Queue<SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event);
 
-
-    public Set<SpellAttributeInstance<?>> getAttributeValues() {
-        return attributeValues;
+    public Set<SpellAttributeInstance<?>> getAttributeInstances() {
+        return attributeInstances;
     }
+
+    @Override
+    public @Unmodifiable Set<SpellAttributeInstance<?>> deriveAttributeValues() {
+        List<SpellAttributeModifier<?, ?>> modifiers = new LinkedList<>();
+
+        List<SpellModifier> upgradeModifiers = getUpgradeModifiers();
+        upgradeModifiers.forEach(spellModifier -> {
+            modifiers.addAll(spellModifier.getModifiers());
+        });
+
+        return Attributable.super.deriveAttributeValues().stream()
+                .map(instance -> {
+                    SpellAttributeInstance<?> clone = instance.clone();
+                    for (SpellAttributeModifier<?, ?> modifier : modifiers) {
+                        clone.modify(modifier);
+                    }
+                    return clone;
+                })
+                .collect(Collectors.toSet());
+    }
+
     public Set<SpellAttributeModifier<?, ?>> getAttributeModifiers() {
         return new HashSet<>(attributeModifiers);
     }
@@ -177,6 +207,22 @@ public abstract class Wand implements Attributable {
                     .toList());
         }
         return lore;
+    }
+
+    public List<ItemStack> getUpgrades() {
+        return upgrades;
+    }
+
+    public List<SpellModifier> getUpgradeModifiers() {
+        return getUpgrades().stream()
+                .map(SpellModifier::fromItem)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    public void setUpgrades(List<ItemStack> newUpgrades) {
+        this.upgrades.clear();
+        this.upgrades.addAll(newUpgrades);
     }
 
     public void toItem(ItemStack item) {
@@ -214,6 +260,9 @@ public abstract class Wand implements Attributable {
         attributeModifiers.forEach(modifier ->
                 modifier.modify(spellInstance)
         );
+
+        getUpgradeModifiers().forEach(modifier -> modifier.modify(spellInstance));
+
         return spellInstance;
     }
 }

@@ -18,10 +18,10 @@ public class WandType<T extends Wand> implements Keyed {
             CustomPersistentDataTypes.WIZARDRY_WAND_TYPE,
             () -> new WizardryWand(UUID.randomUUID().toString())
     );
-    public static final WandType<WizardryWand> SORCERY = new WandType<>(
+    public static final WandType<SorceryWand> SORCERY = new WandType<>(
             WbsWandcraft.getKey("sorcery"),
-            CustomPersistentDataTypes.WIZARDRY_WAND_TYPE, // TODO
-            () -> new WizardryWand(UUID.randomUUID().toString()) // TODO
+            CustomPersistentDataTypes.SORCERY_WAND_TYPE,
+            () -> new SorceryWand(UUID.randomUUID().toString())
     );
 
     private final NamespacedKey key;

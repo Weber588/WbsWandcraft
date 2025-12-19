@@ -11,6 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -19,6 +20,10 @@ import org.bukkit.inventory.ItemStack;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.wand.Wand;
+import wbs.wandcraft.wand.types.SorceryWand;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class WandEvents implements Listener {
@@ -50,8 +55,18 @@ public class WandEvents implements Listener {
 
         // TODO: Add field to Wand "being_edited" that allows stateful tracking of when casting is possible, to
         //  avoid lag issues allowing players to cast while in the wand's menu.
-        wand.tryCasting(player, item);
+        wand.tryCasting(player, item, event);
     }
+
+    // Drop is called before interact, so track it so we can distinguish punch from drop when arm swings
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        droppedItemsThisTick.add(player);
+        WbsWandcraft.getInstance().runLater(() -> droppedItemsThisTick.remove(player), 1);
+    }
+
+    private final Set<Player> droppedItemsThisTick = new HashSet<>();
 
     // Can't ignore cancelled for interacting with air :(
     @EventHandler
@@ -71,6 +86,10 @@ public class WandEvents implements Listener {
         }
 
         Player player = event.getPlayer();
+
+        if (droppedItemsThisTick.contains(player)) {
+            return;
+        }
 
         // Crafting, not crafter or workbench -- represents the internal player inventory. Returned when nothing open.
         InventoryType inventoryType = player.getOpenInventory().getType();
@@ -92,7 +111,7 @@ public class WandEvents implements Listener {
             // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
             Consumable consumable = item.getData(DataComponentTypes.CONSUMABLE);
             if (consumable == null || consumable.consumeSeconds() < 1 / (float) Ticks.TICKS_PER_SECOND) {
-                wand.tryCasting(player, item);
+                wand.tryCasting(player, item, event);
                 event.setCancelled(true);
             }
         }
@@ -124,6 +143,34 @@ public class WandEvents implements Listener {
             player.swingMainHand();
             wand.startEditing(player, item);
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onDropWand(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+
+        // Crafting, not crafter or workbench -- represents the internal player inventory. Returned when nothing open.
+        InventoryType inventoryType = player.getOpenInventory().getType();
+        if (inventoryType != InventoryType.CRAFTING && inventoryType != InventoryType.CREATIVE) {
+            return;
+        }
+
+        ItemStack item = event.getItemDrop().getItemStack();
+
+        Wand wand = Wand.getIfValid(item);
+        if (wand == null) {
+            return;
+        }
+
+        if (wand instanceof SorceryWand sorceryWand) {
+            event.setCancelled(true);
+            if (player.isSneaking()) {
+                // Run next tick, or it'll look in the players inventory and say "oh, they're not holding the wand!"
+                WbsWandcraft.getInstance().runLater(() -> sorceryWand.tryCasting(player, item, event), 1);
+            } else {
+                sorceryWand.changeTier(player, item);
+            }
         }
     }
 }

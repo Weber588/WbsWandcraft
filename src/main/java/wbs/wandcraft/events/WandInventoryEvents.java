@@ -32,14 +32,7 @@ public class WandInventoryEvents implements Listener {
     public void monitorInventoryClick(InventoryClickEvent event) {
         if (event.getInventory().getHolder() instanceof WandHolder<?> holder) {
             debug("Should save after click -- checking next tick.");
-            WbsWandcraft.getInstance().runSync(() -> {
-                debug("Next tick!");
-                // Save if still open -- if not, it's been done in the Close event
-                if (event.getWhoClicked().getOpenInventory().getTopInventory().getHolder() instanceof WandHolder<?> updatedHolder) {
-                    debug("Saving!");
-                    updatedHolder.save();
-                }
-            });
+            holder.saveNextTick(event);
         }
     }
 

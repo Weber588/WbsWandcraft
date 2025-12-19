@@ -8,7 +8,7 @@ import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 
-public final class SpellAttributeInstance<T> implements ComponentRepresentable, Comparable<SpellAttributeInstance<?>> {
+public final class SpellAttributeInstance<T> implements ComponentRepresentable, Comparable<SpellAttributeInstance<?>>, Cloneable {
     private final SpellAttribute<T> attribute;
     private T value;
 
@@ -17,7 +17,7 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
         this.value = value;
     }
     public void value(@NotNull Object value) {
-        if (attribute.getTClass().isInstance(value)) {
+        if (attribute.getTClass().isAssignableFrom(value.getClass())) {
             //noinspection unchecked
             this.value = (T) value;
         }
@@ -74,8 +74,9 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
         return attribute.shouldShow(value, attributable);
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    protected SpellAttributeInstance<T> clone() {
+    public SpellAttributeInstance<T> clone() {
         return new SpellAttributeInstance<>(attribute, value);
     }
 }

@@ -2,10 +2,12 @@ package wbs.wandcraft.util.persistent;
 
 
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.wand.Wand;
@@ -18,6 +20,7 @@ public abstract class AbstractPersistentWandType<T extends Wand> implements Pers
     private static final NamespacedKey WAND_ATTRIBUTES = WbsWandcraft.getKey("wand_attributes");
     private static final NamespacedKey WAND_ATTRIBUTE_MODIFIERS = WbsWandcraft.getKey("wand_attribute_modifiers");
     private static final NamespacedKey UUID = WbsWandcraft.getKey("wand_uuid");
+    private static final NamespacedKey UPGRADES = WbsWandcraft.getKey("upgrades");
 
     public static final NamespacedKey WAND_TYPE = WbsWandcraft.getKey("wand_type");
 
@@ -41,6 +44,8 @@ public abstract class AbstractPersistentWandType<T extends Wand> implements Pers
         container.set(WAND_ATTRIBUTE_MODIFIERS, PersistentDataType.LIST.dataContainers(), modifierContainerList);
         container.set(UUID, PersistentDataType.STRING, wand.getUUID());
 
+        container.set(UPGRADES, PersistentDataType.LIST.listTypeFrom(WbsPersistentDataType.ITEM_AS_BYTES), wand.getUpgrades());
+
         writeTo(container, wand, context);
 
         return container;
@@ -63,6 +68,12 @@ public abstract class AbstractPersistentWandType<T extends Wand> implements Pers
 
                 wand.setModifier(attributeModifier);
             }
+        }
+
+        List<ItemStack> upgrades = container.get(UPGRADES, PersistentDataType.LIST.listTypeFrom(WbsPersistentDataType.ITEM_AS_BYTES));
+
+        if (upgrades != null) {
+            wand.setUpgrades(upgrades);
         }
 
         populateWand(wand, container);

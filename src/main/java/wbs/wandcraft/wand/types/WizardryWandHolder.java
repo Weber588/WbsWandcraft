@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.WandHolder;
 
 import java.util.LinkedList;
@@ -16,12 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 public final class WizardryWandHolder extends WandHolder<WizardryWand> {
-    public static final int ITEM_COLUMN_START = 3;
-    public static final int ITEM_COLUMN_END = 7;
-    public static final int ITEM_ROW_END = 4;
-    public static final int ITEM_ROW_START = 1;
-    public static final int FULL_INV_COLUMNS = 9;
-    public static final int FULL_INV_ROWS = 6;
 
     private static int slot(int row, int column) {
         return row * 9 + column;
@@ -68,9 +61,12 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
     }
 
     @Override
-    protected Inventory buildInventory() {
-        Inventory inventory = Bukkit.createInventory(this, 6 * 9, wandItem.effectiveName().color(NamedTextColor.BLACK));
+    protected Inventory instantiateInventory() {
+        return Bukkit.createInventory(this, 6 * 9, wandItem.effectiveName().color(NamedTextColor.BLACK));
+    }
 
+    @Override
+    protected void reload() {
         int slots = wand.getAttribute(WizardryWand.SLOTS, Integer.MAX_VALUE);
 
         List<ItemStack> items = wand.getItems();
@@ -86,14 +82,11 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
                         if (items.size() > itemIndex) {
                             inventory.setItem(slot, items.get(itemIndex));
                         }
-                        
+
                         itemSlotsUnlocked++;
                         itemIndex++;
                     }
-                    continue;
-                }
-
-                if (column == 0 || column == 2 || column == 8) {
+                } else if (column == 0 || column == 2 || column == 8) {
                     inventory.setItem(slot, SECONDARY_OUTLINE);
                 } else {
                     inventory.setItem(slot, MAIN_OUTLINE);
@@ -101,17 +94,15 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
             }
         }
 
-        return inventory;
+        super.reload();
     }
 
     @Override
-    public void updateItems(Inventory inventory) {
-        List<ItemStack> items = wand.getItems();
+    public void saveItems() {
         List<ItemStack> newItems = new LinkedList<>();
 
-        // TODO: Make upgrade slots save somewhere
-        for (int column = ITEM_COLUMN_START; column < ITEM_COLUMN_END; column++) {
-            for (int row = ITEM_ROW_START; row < ITEM_ROW_END; row++) {
+        for (int column = ITEM_COLUMN_START; column <= ITEM_COLUMN_END; column++) {
+            for (int row = ITEM_ROW_START; row <= ITEM_ROW_END; row++) {
                 int slot = row * FULL_INV_COLUMNS + column;
                 ItemStack item = inventory.getItem(slot);
                 if (item == null || canContainItem(item)) {
@@ -121,9 +112,8 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
                 }
             }
         }
-        
-        items.clear();
-        items.addAll(newItems);
+
+        wand.setItems(newItems);
     }
 
     @Override
@@ -136,10 +126,5 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
                 column >= ITEM_COLUMN_START &&
                 column <= ITEM_COLUMN_END
                 ;
-    }
-
-    @Override
-    public boolean canContainItem(@NotNull ItemStack addedItem) {
-        return super.canContainItem(addedItem) || SpellModifier.fromItem(addedItem) != null;
     }
 }
