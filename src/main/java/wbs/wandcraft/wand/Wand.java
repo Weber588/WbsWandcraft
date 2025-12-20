@@ -25,12 +25,14 @@ import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
+import wbs.wandcraft.cost.CostUtils;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.types.WandType;
 
@@ -125,14 +127,28 @@ public abstract class Wand implements Attributable {
             return;
         }
 
+        int cost = 0;
+        for (SpellInstance instance : spellList) {
+            Integer instanceCost = instance.getAttribute(CastableSpell.COST, 0);
+
+            cost += instanceCost;
+        }
+
+        if (cost > 0) {
+            int remainder = CostUtils.takeCost(player, cost);
+
+            if (remainder > 0) {
+                onFailCost(player, wandItem, additionalCooldown);
+                return;
+            }
+        }
+        onSucceedCost(player, cost, wandItem);
+
         CastingQueue queue = new CastingQueue(spellList, this);
 
         queue.startCasting(player);
 
-        wandItem.editMeta(meta -> {
-            updateLastUsed(meta.getPersistentDataContainer());
-            player.setCooldown(wandItem, additionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
-        });
+        setCooldown(player, wandItem, additionalCooldown);
 
         Integer maxDamage = wandItem.getData(DataComponentTypes.MAX_DAMAGE);
         if (maxDamage != null && maxDamage > 0) {
@@ -143,6 +159,22 @@ public abstract class Wand implements Attributable {
                 handleWandBreak(player, preDamageItem);
             }
         }
+    }
+
+    private void setCooldown(@NotNull Player player, ItemStack wandItem, int additionalCooldown) {
+        wandItem.editMeta(meta -> {
+            updateLastUsed(meta.getPersistentDataContainer());
+            player.setCooldown(wandItem, additionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
+        });
+    }
+
+    protected void onFailCost(@NotNull Player player, ItemStack wandItem, int additionalCooldown) {
+        WbsWandcraft.getInstance().sendActionBar("&wNot enough mana!", player);
+        setCooldown(player, wandItem, additionalCooldown);
+    }
+
+    protected void onSucceedCost(@NotNull Player player, int cost, ItemStack wandItem) {
+
     }
 
     protected void handleNoSpellAvailable(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {

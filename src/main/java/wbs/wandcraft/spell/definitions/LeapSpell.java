@@ -16,13 +16,13 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
 
         setAttribute(COOLDOWN, 5);
         setAttribute(IMPRECISION, 5d);
+        setAttribute(SPEED, 1.5d);
     }
 
     @Override
     public void cast(CastContext context) {
         Player player = context.player();
         player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation(), 160, 0, 0, 0, 0.5);
-        // Entity velocity is stored in blocks per SECOND, not tick
         player.setVelocity(getDirection(context, context.instance().getAttribute(SPEED)));
 
         player.setFallDistance(0);

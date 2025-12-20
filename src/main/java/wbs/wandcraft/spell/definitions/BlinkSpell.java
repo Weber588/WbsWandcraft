@@ -15,6 +15,7 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 public class BlinkSpell extends SpellDefinition implements CastableSpell, RangedSpell, SpeedSpell, DirectionalSpell {
     public BlinkSpell() {
         super("blink");
+        setAttribute(COST, 300);
         setAttribute(RANGE, 10.0);
         setAttribute(COOLDOWN, 15);
         setAttribute(IMPRECISION, 5d);

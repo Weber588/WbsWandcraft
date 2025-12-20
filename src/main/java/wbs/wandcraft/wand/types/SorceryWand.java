@@ -206,7 +206,7 @@ public class SorceryWand extends Wand {
         if (tier >= getMaxTier()) {
             // Only go back to 0 if not already there (happens if only one tier)
             if (tier == 0) {
-                WbsWandcraft.getInstance().sendActionBar("This wand does not have tiers.", player);
+                WbsWandcraft.getInstance().sendActionBar("&hThis wand does not have tiers.", player);
                 return;
             }
 
@@ -217,9 +217,9 @@ public class SorceryWand extends Wand {
 
         toItem(item);
         if (tier == 0) {
-            WbsWandcraft.getInstance().sendActionBar("Tier reverted to 1!", player);
+            WbsWandcraft.getInstance().sendActionBar("&hTier reverted to 1!", player);
         } else {
-            WbsWandcraft.getInstance().sendActionBar("Tier " + (tier + 1) + " spell primed!", player);
+            WbsWandcraft.getInstance().sendActionBar("&hTier " + (tier + 1) + " spell primed!", player);
         }
     }
 

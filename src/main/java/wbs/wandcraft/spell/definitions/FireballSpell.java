@@ -8,6 +8,7 @@ import wbs.wandcraft.spell.definitions.extensions.EntityProjectileSpell;
 public class FireballSpell extends SpellDefinition implements EntityProjectileSpell<Fireball> {
     public FireballSpell() {
         super("fireball");
+        setAttribute(COST, 500);
     }
 
     @Override
