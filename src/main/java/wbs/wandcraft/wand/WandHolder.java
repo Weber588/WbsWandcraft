@@ -10,12 +10,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsEventUtils;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -27,12 +27,7 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     protected static final ItemStack LOCKED_SLOT = new ItemStack(Material.STRUCTURE_VOID);
     protected static final ItemStack SLOT_LABEL = new ItemStack(Material.PURPLE_BANNER);
 
-    public static final int ITEM_COLUMN_START = 3;
-    public static final int ITEM_COLUMN_END = 7;
-    public static final int ITEM_ROW_END = 4;
-    public static final int ITEM_ROW_START = 1;
     public static final int FULL_INV_COLUMNS = 9;
-    public static final int FULL_INV_ROWS = 6;
 
     static {
         MAIN_OUTLINE.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
@@ -88,8 +83,14 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     private void populateBonusSlots() {
         ItemStack fakeWand = getFakeWand();
 
-        inventory.setItem(getWandDisplaySlot(), fakeWand);
-        inventory.setItem(getUpgradeDisplaySlot(), UPGRADE_DISPLAY);
+        Integer wandDisplaySlot = getWandDisplaySlot();
+        if (wandDisplaySlot != null) {
+            inventory.setItem(wandDisplaySlot, fakeWand);
+        }
+        Integer upgradeDisplaySlot = getUpgradeDisplaySlot();
+        if (upgradeDisplaySlot != null) {
+            inventory.setItem(upgradeDisplaySlot, UPGRADE_DISPLAY);
+        }
     }
 
     protected @NotNull ItemStack getFakeWand() {
@@ -102,7 +103,8 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     }
 
     protected boolean isDisplaySlot(int slot, ItemStack itemInSlot) {
-        if (slot == getWandDisplaySlot()) {
+        Integer wandDisplaySlot = getWandDisplaySlot();
+        if (wandDisplaySlot != null && slot == wandDisplaySlot) {
             return true;
         }
         if (itemInSlot == null) {
@@ -117,11 +119,11 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
                 ;
     }
 
-    public abstract int getWandDisplaySlot();
+    public abstract @Nullable Integer getWandDisplaySlot();
 
-    public abstract int getUpgradeDisplaySlot();
+    public abstract @Nullable Integer getUpgradeDisplaySlot();
 
-    public abstract Set<Integer> getUpgradeSlots();
+    public abstract List<Integer> getUpgradeSlots();
     public boolean isUpgradeSlot(int slot) {
         return getUpgradeSlots().contains(slot);
     }
@@ -193,7 +195,7 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
                 if (canContainUpgrade(addedItem) && event.isShiftClick()) {
                     Inventory playerInventory = event.getView().getBottomInventory();
                     if (playerInventory.equals(event.getClickedInventory())) {
-                        for (int upgradeSlot : getUpgradeSlots().stream().sorted().toList()) {
+                        for (int upgradeSlot : getUpgradeSlots()) {
                             Inventory wandInventory = event.getView().getTopInventory();
                             ItemStack existingItem = wandInventory.getItem(upgradeSlot);
                             if (existingItem == null || existingItem.isEmpty()) {
@@ -244,10 +246,10 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     public abstract void saveItems();
 
     public abstract boolean isItemSlot(int slot);
-    private Set<Integer> getItemSlots() {
+    private List<Integer> getItemSlots() {
         // TODO: Cache this
-        Set<Integer> itemSlots = new HashSet<>();
-        for (int slot = 0; slot < FULL_INV_COLUMNS * FULL_INV_ROWS; slot++) {
+        List<Integer> itemSlots = new LinkedList<>();
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
             if (isItemSlot(slot)) {
                 itemSlots.add(slot);
             }

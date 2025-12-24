@@ -64,7 +64,7 @@ public class SorceryWand extends Wand {
     }
 
     @Override
-    protected @NotNull Queue<SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
+    protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
         LinkedList<SpellInstance> spellList = new LinkedList<>();
 
         WandControl control = getWandControl(event);
@@ -233,6 +233,17 @@ public class SorceryWand extends Wand {
 
     public int getTierCount() {
         return getAttribute(TIERS);
+    }
+
+    @Override
+    public void handleDrop(PlayerDropItemEvent event, Player player, ItemStack item) {
+        event.setCancelled(true);
+        if (player.isSneaking()) {
+            // Run next tick, or it'll look in the players inventory and say "oh, they're not holding the wand!"
+            WbsWandcraft.getInstance().runLater(() -> tryCasting(player, item, event), 1);
+        } else {
+            changeTier(player, item);
+        }
     }
 
     public enum WandControl {

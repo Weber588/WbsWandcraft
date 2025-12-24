@@ -13,12 +13,12 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.*;
 
-public class VortexSpell extends SpellDefinition implements CastableSpell, SpeedSpell, DurationalSpell, ParticleSpell, RadiusedSpell {
+public class WindWalkSpell extends SpellDefinition implements CastableSpell, SpeedSpell, DurationalSpell, ParticleSpell, RadiusedSpell {
     private final RingParticleEffect effect = (RingParticleEffect) new RingParticleEffect()
             .setRadius(2);
 
-    public VortexSpell() {
-        super("vortex");
+    public WindWalkSpell() {
+        super("wind_walk");
 
         setAttribute(SPEED, 0.5d);
         setAttribute(DURATION, 40);

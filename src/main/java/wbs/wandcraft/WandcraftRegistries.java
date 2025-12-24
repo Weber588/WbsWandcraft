@@ -33,11 +33,14 @@ public class WandcraftRegistries {
     );
 
     public static final WbsRegistry<WandType<?>> WAND_TYPES = new WbsRegistry<>(
+        WandType.BASIC,
         WandType.WIZARDRY,
-        WandType.SORCERY
+        WandType.SORCERY,
+        WandType.MAGE
     );
 
     public static final WbsRegistry<WandTexture> WAND_TEXTURES = new WbsRegistry<>(
+            WandTexture.BASIC,
             WandTexture.MAGE,
             WandTexture.WIZARDRY,
             WandTexture.SORCERY,
@@ -56,7 +59,7 @@ public class WandcraftRegistries {
             new AntiMagicShellSpell(),
             new ArcaneSurgeSpell(),
             new ConflagrationSpell(),
-            new VortexSpell(),
+            new WindWalkSpell(),
             new CrowsCallSpell(),
             new StunSpell(),
             new FireBreathSpell(),
@@ -66,7 +69,8 @@ public class WandcraftRegistries {
             new DeathWalkSpell(),
             new ChainLightningSpell(),
             new CharmSpell(),
-            new DisplaceSpell()
+            new DisplaceSpell(),
+            new EnergyBurstSpell()
     );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
             StatusEffect.GLIDING,

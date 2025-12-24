@@ -20,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.wand.Wand;
-import wbs.wandcraft.wand.types.SorceryWand;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -163,14 +162,6 @@ public class WandEvents implements Listener {
             return;
         }
 
-        if (wand instanceof SorceryWand sorceryWand) {
-            event.setCancelled(true);
-            if (player.isSneaking()) {
-                // Run next tick, or it'll look in the players inventory and say "oh, they're not holding the wand!"
-                WbsWandcraft.getInstance().runLater(() -> sorceryWand.tryCasting(player, item, event), 1);
-            } else {
-                sorceryWand.changeTier(player, item);
-            }
-        }
+        wand.handleDrop(event, player, item);
     }
 }

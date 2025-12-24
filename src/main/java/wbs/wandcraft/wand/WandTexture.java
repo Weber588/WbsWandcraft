@@ -7,6 +7,7 @@ import wbs.wandcraft.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
 
 public final class WandTexture implements Keyed, TextureProvider {
+    public static final WandTexture BASIC = new WandTexture("basic");
     public static final WandTexture MAGE = new WandTexture("mage");
     public static final WandTexture WIZARDRY = new WandTexture("wizardry");
     public static final WandTexture SORCERY = new WandTexture("sorcery");

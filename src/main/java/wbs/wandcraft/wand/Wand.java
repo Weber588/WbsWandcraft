@@ -8,10 +8,12 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -190,7 +192,7 @@ public abstract class Wand implements Attributable {
         return 0;
     }
 
-    protected abstract @NotNull Queue<SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event);
+    protected abstract @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event);
 
     public Set<SpellAttributeInstance<?>> getAttributeInstances() {
         return attributeInstances;
@@ -288,6 +290,8 @@ public abstract class Wand implements Attributable {
 
     public abstract @NotNull WandType<?> getWandType();
 
+    @Contract("!null -> !null")
+    @Nullable
     public SpellInstance applyModifiers(SpellInstance spellInstance) {
         attributeModifiers.forEach(modifier ->
                 modifier.modify(spellInstance)
@@ -296,5 +300,9 @@ public abstract class Wand implements Attributable {
         getUpgradeModifiers().forEach(modifier -> modifier.modify(spellInstance));
 
         return spellInstance;
+    }
+
+    public void handleDrop(PlayerDropItemEvent event, Player player, ItemStack item) {
+
     }
 }

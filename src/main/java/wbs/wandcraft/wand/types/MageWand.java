@@ -1,0 +1,196 @@
+package wbs.wandcraft.wand.types;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.util.Ticks;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
+import wbs.wandcraft.wand.Wand;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Queue;
+
+@SuppressWarnings("UnstableApiUsage")
+public class MageWand extends Wand {
+    private final List<@Nullable ItemStack> items = new LinkedList<>();
+    private int currentSlot = 0;
+
+    public MageWand(@NotNull String uuid) {
+        super(uuid);
+    }
+
+    @Override
+    protected int getAdditionalCooldown(@NotNull Player player, ItemStack wandItem) {
+        int additionalCooldown = 0;
+
+        SpellInstance spell = getCurrentSpellInstance();
+        if (spell != null) {
+            additionalCooldown += (int) (spell.getAttribute(CastableSpell.COOLDOWN) * Ticks.SINGLE_TICK_DURATION_MS);
+            additionalCooldown += (int) (spell.getAttribute(CastableSpell.DELAY) * Ticks.SINGLE_TICK_DURATION_MS);
+        }
+
+        return additionalCooldown;
+    }
+
+    @Override
+    protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
+        LinkedList<SpellInstance> spellList = new LinkedList<>();
+
+
+        SpellInstance currentSpellInstance = getCurrentSpellInstance();
+        if (currentSpellInstance != null) {
+            spellList.add(applyModifiers(currentSpellInstance));
+        }
+
+        return spellList;
+    }
+
+    protected @Nullable SpellInstance getCurrentSpellInstance() {
+        if (items.size() <= currentSlot || currentSlot < 0) {
+            return null;
+        }
+
+        return SpellInstance.fromItem(items.get(currentSlot));
+    }
+
+    protected @NotNull List<@NotNull SpellInstance> getSpellInstances() {
+        return items.stream()
+                .map(SpellInstance::fromItem)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    @Override
+    public @NotNull MageWandHolder getMenu(ItemStack item) {
+        return new MageWandHolder(this, item);
+    }
+
+    public List<ItemStack> getItems() {
+        return items;
+    }
+
+    // TODO: Make this configurable
+    @Override
+    public @NotNull Component getItemName() {
+        return Component.text("Mage Wand");
+    }
+
+    @Override
+    public @NotNull WandType<MageWand> getWandType() {
+        return WandType.MAGE;
+    }
+
+    @Override
+    public @NotNull List<Component> getLore() {
+        List<Component> lore = new LinkedList<>(super.getLore());
+
+        // TODO: Display Current spell, next spell, and previous spell.
+
+        List<SpellInstance> spellInstances = getSpellInstances();
+
+        SpellInstance currentSpell = getCurrentSpellInstance();
+
+        if (currentSpell == null) {
+            lore.add(Component.text("Spells:").color(NamedTextColor.AQUA).append(Component.text(" None").color(NamedTextColor.GOLD)));
+            return lore;
+        }
+
+        lore.add(Component.text("Current Spell: ")
+                .color(NamedTextColor.AQUA)
+                .append(currentSpell.getDefinition()
+                        .displayName()
+                        .color(NamedTextColor.GOLD)
+                )
+        );
+
+        if (spellInstances.size() > 1) {
+            // Take abs() to get modulo instead of remainder
+            int prevSlot = Math.abs((currentSlot - 1) % spellInstances.size());
+            int nextSlot = (currentSlot + 1) % spellInstances.size();
+
+            SpellInstance prevInstance = SpellInstance.fromItem(items.get(prevSlot));
+            SpellInstance nextInstance = SpellInstance.fromItem(items.get(nextSlot));
+
+            if (prevInstance != null || nextInstance != null) {
+                lore.add(Component.empty());
+                if (prevInstance != null) {
+                    lore.add(Component.text("Previous Spell: ")
+                            .color(NamedTextColor.AQUA)
+                            .append(prevInstance.getDefinition()
+                                    .displayName()
+                                    .color(NamedTextColor.GOLD)
+                            )
+                    );
+                }
+                if (nextInstance != null) {
+                    lore.add(Component.text("Next Spell: ")
+                            .color(NamedTextColor.AQUA)
+                            .append(nextInstance.getDefinition()
+                                    .displayName()
+                                    .color(NamedTextColor.GOLD)
+                            )
+                    );
+                }
+            }
+        }
+
+        return lore;
+    }
+
+    @Override
+    public void toItem(ItemStack item) {
+        super.toItem(item);
+        item.editMeta(meta ->
+                meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.MAGE_WAND_TYPE, this)
+        );
+    }
+
+    public void setItems(List<ItemStack> newItems) {
+        this.items.clear();
+        this.items.addAll(newItems);
+        clampCurrentSlot();
+    }
+
+    public int getCurrentSlot() {
+        return currentSlot;
+    }
+
+    public void setCurrentSlot(int currentSlot) {
+        this.currentSlot = currentSlot;
+        clampCurrentSlot();
+    }
+
+    private void clampCurrentSlot() {
+        if (getSpellInstances().isEmpty()) {
+            return;
+        }
+        currentSlot = Math.abs(currentSlot % getSpellInstances().size());
+    }
+
+    @Override
+    public void handleDrop(PlayerDropItemEvent event, Player player, ItemStack item) {
+        event.setCancelled(true);
+
+        if (player.isSneaking()) {
+            setCurrentSlot(currentSlot - 1);
+        } else {
+            setCurrentSlot(currentSlot + 1);
+        }
+
+        SpellInstance spell = getCurrentSpellInstance();
+        if (spell != null) {
+            player.sendActionBar(spell.getDefinition().displayName().color(NamedTextColor.AQUA));
+        }
+
+        toItem(item);
+    }
+}

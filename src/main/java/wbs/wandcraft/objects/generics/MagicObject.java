@@ -154,6 +154,8 @@ public abstract class MagicObject {
 		if (timerID != -1) {
 			Bukkit.getScheduler().cancelTask(timerID);
 		}
+
+		castContext.runEffects(SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER, getLocation());
 		
 		if (endEffects != null) {
 			endEffects.play(getLocation());

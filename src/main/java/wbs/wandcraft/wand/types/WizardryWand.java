@@ -45,7 +45,7 @@ public class WizardryWand extends Wand {
     }
 
     @Override
-    protected @NotNull Queue<SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
+    protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
         LinkedList<SpellInstance> spellList = new LinkedList<>();
 
         getSpellInstances().stream()

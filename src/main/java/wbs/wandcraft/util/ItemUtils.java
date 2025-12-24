@@ -7,6 +7,7 @@ import io.papermc.paper.datacomponent.item.UseCooldown;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -24,7 +25,6 @@ import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.ModifierTexture;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.Wand;
-import wbs.wandcraft.wand.WandTexture;
 import wbs.wandcraft.wand.types.WandType;
 
 import java.util.Random;
@@ -37,7 +37,7 @@ public class ItemUtils {
     public static final Material BASE_MATERIAL_SPELL = Material.FLOW_BANNER_PATTERN;
     public static final Material BASE_MATERIAL_MODIFIER = Material.GLOBE_BANNER_PATTERN;
 
-    public static @NotNull ItemStack buildWand(WandType<?> type, WandTexture wandTexture, Double hue, ItemUseAnimation animation, float animationSeconds) {
+    public static @NotNull ItemStack buildWand(WandType<?> type, Double hue) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_WAND);
 
         Wand wand = type.newWand();
@@ -48,24 +48,24 @@ public class ItemUtils {
                 .cooldownGroup(WbsWandcraft.getKey(UUID.randomUUID().toString()))
         );
 
-        if (wandTexture != null) {
-            if (hue == null || hue < 0) {
-                hue = Math.random();
-            }
-
-            item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
-                    .addString(wandTexture.getKey().asString())
-                    .addColor(WbsColours.fromHSB(hue, 1, 1))
-            );
-
-            item.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_WAND.getKey());
+        if (hue == null || hue < 0) {
+            hue = Math.random();
         }
 
-        if (animation != null && animationSeconds >= 0.05) {
+        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
+                .addString(type.getWandTexture().getKey().asString())
+                .addColor(WbsColours.fromHSB(hue, 1, 1))
+        );
+
+        item.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_WAND.getKey());
+
+
+        ItemUseAnimation animation = type.getAnimation();
+        if (animation != null && type.getAnimationTicks() >= 1) {
             item.setData(DataComponentTypes.CONSUMABLE, Consumable.consumable()
                     .animation(animation)
                     .hasConsumeParticles(false)
-                    .consumeSeconds(animationSeconds)
+                    .consumeSeconds((float) type.getAnimationTicks() / Ticks.TICKS_PER_SECOND)
                     .sound(Key.key("entity.illusioner.cast_spell"))
             );
         }

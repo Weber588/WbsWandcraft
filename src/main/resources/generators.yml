@@ -3,10 +3,6 @@
 wands:
   # The name of the generator. Must be lowercase, and only contain letters, numbers, and underscores.
   basic_wand:
-    textures:
-      - 'wizardry'
-      - 'sorcery'
-      - 'sceptre'
     # The hue of the wand, from 0-1. Use -1 to pick at random
     hue: -1
 

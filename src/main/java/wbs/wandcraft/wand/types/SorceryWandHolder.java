@@ -29,7 +29,7 @@ public final class SorceryWandHolder extends WandHolder<SorceryWand> {
 
     private static final int WAND_DISPLAY_SLOT = slot(0, 5);
     private static final int UPGRADE_DISPLAY_SLOT = slot(1, 1);
-    private static final Set<Integer> UPGRADE_SLOTS = Set.of(
+    private static final List<Integer> UPGRADE_SLOTS = List.of(
             slot(3, 1),
             slot(4, 1)
     );
@@ -48,15 +48,15 @@ public final class SorceryWandHolder extends WandHolder<SorceryWand> {
     }
 
     @Override
-    public int getWandDisplaySlot() {
+    public Integer getWandDisplaySlot() {
         return WAND_DISPLAY_SLOT;
     }
     @Override
-    public int getUpgradeDisplaySlot() {
+    public Integer getUpgradeDisplaySlot() {
         return UPGRADE_DISPLAY_SLOT;
     }
     @Override
-    public Set<Integer> getUpgradeSlots() {
+    public List<Integer> getUpgradeSlots() {
         return UPGRADE_SLOTS;
     }
 

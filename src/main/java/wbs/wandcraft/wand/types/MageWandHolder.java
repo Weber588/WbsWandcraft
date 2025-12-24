@@ -13,25 +13,27 @@ import wbs.wandcraft.wand.WandHolder;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class WizardryWandHolder extends WandHolder<WizardryWand> {
+public final class MageWandHolder extends WandHolder<MageWand> {
 
     private static int slot(int row, int column) {
         return row * 9 + column;
     }
 
-    private static final int WAND_DISPLAY_SLOT = slot(0, 5);
-    private static final int UPGRADE_DISPLAY_SLOT = slot(1, 1);
+    private static final int WAND_DISPLAY_SLOT = slot(2, 4);
+    private static final int UPGRADE_DISPLAY_SLOT = slot(0, 4);
     private static final List<Integer> UPGRADE_SLOTS = List.of(
-            slot(3, 1),
-            slot(4, 1)
+            slot(1, 2),
+            slot(1, 3),
+            slot(1, 4),
+            slot(1, 5),
+            slot(1, 6)
     );
-
-    private static final int ITEM_COLUMN_START = 3;
+    private static final int ITEM_COLUMN_START = 1;
     private static final int ITEM_COLUMN_END = 7;
+    private static final int ITEM_ROW_START = 3;
     private static final int ITEM_ROW_END = 4;
-    private static final int ITEM_ROW_START = 1;
 
-    public WizardryWandHolder(WizardryWand wand, ItemStack item) {
+    public MageWandHolder(MageWand wand, ItemStack item) {
         super(wand, item);
     }
 
@@ -53,12 +55,13 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
         ItemStack fakeWand = super.getFakeWand();
 
         Style style = Style.style(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false);
+        Style keybindStyle = Style.style(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false);
 
         // TODO: Make this configurable
         fakeWand.lore(List.of(
                 Component.text("Place spell scrolls in the below slots!").style(style),
-                Component.text("When you use the wand, they'll ALL be cast").style(style),
-                Component.text("in quick succession!").style(style)
+                Component.text("You can cycle between spells to cast with").style(style),
+                Component.keybind("key.drop").style(keybindStyle).append(Component.text(" and ")).append(Component.keybind("key.sneak").style(keybindStyle)).append(Component.text("+").style(style)).append(Component.keybind("key.drop").style(keybindStyle))
         ));
 
         return fakeWand;
@@ -71,26 +74,18 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
 
     @Override
     protected void reload() {
-        int slots = wand.getAttribute(WizardryWand.SLOTS, Integer.MAX_VALUE);
-
         List<ItemStack> items = wand.getItems();
         int itemIndex = 0;
-        int itemSlotsUnlocked = 0;
         for (int row = 0; row < 6; row++) {
             for (int column = 0; column < 9; column++) {
                 int slot = row * 9 + column;
                 if (isItemSlot(slot)) {
-                    if (itemSlotsUnlocked >= slots) {
-                        inventory.setItem(slot, LOCKED_SLOT);
-                    } else {
-                        if (items.size() > itemIndex) {
-                            inventory.setItem(slot, items.get(itemIndex));
-                        }
-
-                        itemSlotsUnlocked++;
-                        itemIndex++;
+                    if (items.size() > itemIndex) {
+                        inventory.setItem(slot, items.get(itemIndex));
                     }
-                } else if (column == 0 || column == 2 || column == 8) {
+
+                    itemIndex++;
+                } else if (row == 0 || row == 2 || row == 5) {
                     inventory.setItem(slot, SECONDARY_OUTLINE);
                 } else {
                     inventory.setItem(slot, MAIN_OUTLINE);

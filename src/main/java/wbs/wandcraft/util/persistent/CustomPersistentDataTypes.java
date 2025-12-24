@@ -29,8 +29,10 @@ public class CustomPersistentDataTypes {
     public static final PersistentSpellInstanceType SPELL_INSTANCE = new PersistentSpellInstanceType();
     public static final PersistentAttributeModifierType SPELL_ATTRIBUTE_MODIFIER = new PersistentAttributeModifierType();
 
+    public static final PersistentBasicWandType BASIC_WAND_TYPE = new PersistentBasicWandType();
     public static final PersistentWizardryWandType WIZARDRY_WAND_TYPE = new PersistentWizardryWandType();
     public static final PersistentSorceryWandType SORCERY_WAND_TYPE = new PersistentSorceryWandType();
+    public static final PersistentMageWandType MAGE_WAND_TYPE = new PersistentMageWandType();
 
     public static final PersistentStatusEffectType STATUS_EFFECT = new PersistentStatusEffectType();
 

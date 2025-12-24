@@ -1,6 +1,5 @@
 package wbs.wandcraft.generation;
 
-import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,7 +15,7 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.ItemUtils;
-import wbs.wandcraft.wand.*;
+import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.types.WandType;
 import wbs.wandcraft.wand.types.WizardryWand;
 import wbs.wandcraft.wand.types.WizardryWandHolder;
@@ -25,7 +24,6 @@ import java.util.*;
 
 public class WandGenerator implements Keyed {
     private final List<WandType<?>> types = new LinkedList<>(WandcraftRegistries.WAND_TYPES.values());
-    private final List<WandTexture> textures = new LinkedList<>(WandcraftRegistries.WAND_TEXTURES.values());
     private final double hue;
 
     private final int minAttributes;
@@ -66,17 +64,6 @@ public class WandGenerator implements Keyed {
         key = WbsWandcraft.getKey(name);
 
         hue = section.getDouble("hue", -1);
-
-        List<WandTexture> textures = new LinkedList<>();
-        List<String> textureStrings = section.getStringList("textures");
-        for (String textureString : textureStrings) {
-            NamespacedKey textureKey = NamespacedKey.fromString(textureString, WbsWandcraft.getInstance());
-            WandTexture texture = WandcraftRegistries.WAND_TEXTURES.get(textureKey);
-            if (texture != null) {
-                textures.add(texture);
-            }
-        }
-        setTextures(textures);
 
         ConfigurationSection spellsSection = section.getConfigurationSection("spells");
         if (spellsSection == null) {
@@ -167,9 +154,8 @@ public class WandGenerator implements Keyed {
 
     public ItemStack get() {
         WandType<?> type = WbsCollectionUtil.getRandom(types);
-        WandTexture texture = WbsCollectionUtil.getRandom(textures);
 
-        ItemStack wandItem = ItemUtils.buildWand(type, texture, hue, ItemUseAnimation.BLOCK, 1f / 4);
+        ItemStack wandItem = ItemUtils.buildWand(type, hue);
 
         Wand wand = Objects.requireNonNull(Wand.getIfValid(wandItem));
 
@@ -223,21 +209,6 @@ public class WandGenerator implements Keyed {
     @Override
     public @NotNull NamespacedKey getKey() {
         return key;
-    }
-
-    public WandGenerator setTextures(WandTexture ... textures) {
-        return setTextures(Arrays.asList(textures));
-    }
-    public WandGenerator setTextures(List<WandTexture> textures) {
-        this.textures.clear();
-
-        if (textures.isEmpty()) {
-            this.textures.addAll(WandcraftRegistries.WAND_TEXTURES.values());
-        } else {
-            this.textures.addAll(textures);
-        }
-
-        return this;
     }
 
     public WandGenerator setTypes(WandType<?> ... types) {

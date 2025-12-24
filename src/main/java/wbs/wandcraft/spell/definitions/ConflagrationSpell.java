@@ -14,7 +14,7 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
 
-public class ConflagrationSpell extends SpellDefinition implements CastableSpell, DamageSpell, SpeedSpell, BurnTimeSpell, RadiusedSpell {
+public class ConflagrationSpell extends SpellDefinition implements CastableSpell, DamageSpell, ForceSpell, BurnTimeSpell, RadiusedSpell {
     private final DiscParticleEffect popEffect = new DiscParticleEffect();
     private final DiscParticleEffect fireEffect = new DiscParticleEffect();
 
@@ -22,7 +22,7 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
         super("conflagration");
 
         setAttribute(DAMAGE, 2d);
-        setAttribute(SPEED, 0.25);
+        setAttribute(FORCE, 0.25);
         setAttribute(BURN_TIME, 60);
         setAttribute(RADIUS, 4d);
     }
@@ -57,7 +57,7 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
                                 .subtract(context.location())
                                 .toVector()
                                 .normalize()
-                                .multiply(instance.getAttribute(SPEED))
+                                .multiply(instance.getAttribute(FORCE))
                 );
             }
         }
