@@ -65,7 +65,7 @@ public abstract class MagicObject {
 		}
 	}
 
-	public void spawn() {
+	public boolean spawn() {
 		if (timerID != -1) {
 			throw new MagicObjectExistsException();
 		}
@@ -75,7 +75,7 @@ public abstract class MagicObject {
 		Bukkit.getPluginManager().callEvent(spawnEvent);
 
 		if (spawnEvent.isCancelled()) {
-			return;
+			return false;
 		}
 
 		onRun();
@@ -115,6 +115,7 @@ public abstract class MagicObject {
 	    }.runTaskTimer(WbsWandcraft.getInstance(), 0L, 1L).getTaskId();
 
 		debug("Spawned: \n" + this);
+		return true;
 	}
 
 	protected void onMaxAgeHit() {
@@ -295,7 +296,7 @@ public abstract class MagicObject {
 	@Override
 	public String toString() {
 		return "spawnLocation=" + spawnLocation +
-				", caster=" + caster +
+				", casterUUID=" + caster +
 				", castContext=" + castContext +
 				", world=" + world +
 				", active=" + active +

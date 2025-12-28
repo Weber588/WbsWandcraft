@@ -65,7 +65,7 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
     @Override
     public Component description() {
         return Component.text(
-                "The most simple projectile spell that fires a blast of energy in the direction the caster is facing, dealing damage to anything hit."
+                "The most simple projectile spell that fires a blast of energy in the direction the casterUUID is facing, dealing damage to anything hit."
         );
     }
 }

@@ -38,6 +38,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     private BiFunction<@NotNull T, Attributable, @NotNull Boolean> shouldShow = (value, attributable) -> true;
     private Function<@NotNull T, @NotNull String> formatter = Objects::toString;
     private final List<TypedFormatter<?>> typedFormatters = new LinkedList<>();
+    private boolean isWritable = false;
 
     public SpellAttribute(@NotNull NamespacedKey key, @NotNull RegisteredPersistentDataType<T> type, @Nullable T defaultValue, @NotNull Function<String, T> parse) {
         this.key = key;
@@ -246,6 +247,15 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
 
     public SpellAttributeInstance<T> defaultInstance() {
         return getInstance(defaultValue);
+    }
+
+    public boolean isWritable() {
+        return isWritable;
+    }
+
+    public SpellAttribute<T> setWritable(boolean writable) {
+        isWritable = writable;
+        return this;
     }
 
     private record TypedFormatter<M>(RegisteredPersistentDataType<M> dataType, Function<@Nullable M, String> formatter) {

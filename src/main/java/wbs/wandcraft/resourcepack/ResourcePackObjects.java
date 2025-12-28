@@ -3,8 +3,7 @@ package wbs.wandcraft.resourcepack;
 import com.google.gson.annotations.SerializedName;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Material;
-import org.jetbrains.annotations.Nullable;
-import wbs.wandcraft.TextureProvider;
+import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 
 import java.util.*;
 
@@ -19,6 +18,7 @@ public final class ResourcePackObjects {
     public static final class ModelDefinition {
         private final String parent;
         private final Map<String, String> textures = new HashMap<>();
+        private Map<String, DisplayTransform> display;
 
         public ModelDefinition(String parent, String ... textures) {
             this(parent, Arrays.asList(textures));
@@ -29,15 +29,40 @@ public final class ResourcePackObjects {
                 this.textures.put("layer" + i, textures.get(i));
             }
         }
+
+        public void addDisplay(ItemDisplayTransform displayType, DisplayTransform transform) {
+            if (display == null) {
+                display = new HashMap<>();
+            }
+            display.put(displayType.name().toLowerCase(), transform);
+        }
+
+        public void defaultDisplay(DisplayTransform transform) {
+            if (display == null) {
+                display = new HashMap<>();
+            }
+
+            for (ItemDisplayTransform value : ItemDisplayTransform.values()) {
+                display.putIfAbsent(value.name().toLowerCase(), transform);
+            }
+        }
+
+        public void setDisplays(Map<ItemDisplayTransform, DisplayTransform> transforms) {
+            if (display == null) {
+                display = new HashMap<>();
+            }
+
+            display.clear();
+            transforms.forEach((value, transform) -> {
+                display.put(value.name().toLowerCase(), transform);
+            });
+        }
     }
 
     public static final class ItemSelectorDefinition {
         private final Model model;
 
         public ItemSelectorDefinition(Material baseMaterial, List<? extends TextureProvider> definitions) {
-            this(baseMaterial, definitions, null);
-        }
-        public ItemSelectorDefinition(Material baseMaterial, List<? extends TextureProvider> definitions, @Nullable List<ModelTint> tints) {
             StaticModel fallback = new StaticModel("minecraft:item/" + baseMaterial.key().value(), null);
 
             SelectModel model = new SelectModel("custom_model_data", 0, fallback);
@@ -46,7 +71,7 @@ public final class ResourcePackObjects {
                 Key key = definition.key();
                 model.addCase(new ModelCase(
                         key.asString(),
-                        new StaticModel(key.namespace() + ":item/" + key.value(), tints)
+                        definition.buildBaseModel()
                 ));
             }
 
@@ -81,6 +106,19 @@ public final class ResourcePackObjects {
         }
     }
 
+    public static class ConditionModel extends Model {
+        private final String property;
+        private final Model on_true;
+        private final Model on_false;
+
+        public ConditionModel(String property, Model onTrue, Model onFalse) {
+            super("condition");
+            this.property = property;
+            on_true = onTrue;
+            on_false = onFalse;
+        }
+    }
+
     public static class StaticModel extends Model {
         private final String model;
         private final List<ModelTint> tints;
@@ -94,9 +132,14 @@ public final class ResourcePackObjects {
 
     public static final class ModelTint {
         private final String type = "minecraft:custom_model_data";
-        private final int index = 0;
+        private final int index;
         @SerializedName("default")
-        private final int defaultValue = 32768;
+        private final int defaultValue;
+
+        public ModelTint(int index, int defaultValue) {
+            this.index = index;
+            this.defaultValue = defaultValue;
+        }
     }
 
     public static final class ModelCase {
@@ -106,6 +149,42 @@ public final class ResourcePackObjects {
         public ModelCase(String when, Model model) {
             this.when = when;
             this.model = model;
+        }
+    }
+
+    @SuppressWarnings("MismatchedReadAndWriteOfArray")
+    public static final class DisplayTransform {
+        private double[] rotation;
+        private double[] translation;
+        private double[] scale;
+
+        public DisplayTransform() {}
+
+        public DisplayTransform rotation(double x, double y, double z) {
+            this.rotation = new double[3];
+            this.rotation[0] = x;
+            this.rotation[1] = y;
+            this.rotation[2] = z;
+
+            return this;
+        }
+
+        public DisplayTransform translation(double x, double y, double z) {
+            this.translation = new double[3];
+            this.translation[0] = x;
+            this.translation[1] = y;
+            this.translation[2] = z;
+
+            return this;
+        }
+
+        public DisplayTransform scale(double x, double y, double z) {
+            this.scale = new double[3];
+            this.scale[0] = x;
+            this.scale[1] = y;
+            this.scale[2] = z;
+
+            return this;
         }
     }
 }

@@ -100,9 +100,8 @@ public final class MageWandHolder extends WandHolder<MageWand> {
     public void saveItems() {
         List<ItemStack> newItems = new LinkedList<>();
 
-        for (int column = ITEM_COLUMN_START; column <= ITEM_COLUMN_END; column++) {
-            for (int row = ITEM_ROW_START; row <= ITEM_ROW_END; row++) {
-                int slot = row * FULL_INV_COLUMNS + column;
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            if (isItemSlot(slot)) {
                 ItemStack item = inventory.getItem(slot);
                 if (item == null || canContainItem(item)) {
                     newItems.add(item);

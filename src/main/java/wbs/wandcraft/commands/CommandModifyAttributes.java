@@ -163,6 +163,10 @@ public class CommandModifyAttributes extends WbsSubcommand {
         }
 
         String stringValue = configuredArgumentMap.get(ATTRIBUTE_VALUE);
+        if (stringValue == null || stringValue.isEmpty()) {
+            plugin.sendMessage("Specify a value for " + attribute.getKey().asString(), sender);
+            return Command.SINGLE_SUCCESS;
+        }
         SpellAttributeInstance<?> attributeInstance = attribute.getParsedInstance(stringValue);
 
         AttributeModifierType modifierType = null;

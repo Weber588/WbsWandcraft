@@ -2,14 +2,45 @@ package wbs.wandcraft.wand;
 
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.jetbrains.annotations.NotNull;
-import wbs.wandcraft.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.resourcepack.ResourcePackObjects;
+import wbs.wandcraft.resourcepack.ResourcePackObjects.ModelDefinition;
+import wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModel;
+import wbs.wandcraft.resourcepack.TextureLayer;
+import wbs.wandcraft.resourcepack.TextureProvider;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static wbs.wandcraft.resourcepack.ResourcePackObjects.DisplayTransform;
 
 public final class WandTexture implements Keyed, TextureProvider {
-    public static final WandTexture BASIC = new WandTexture("basic");
+    public static final WandTexture BASIC = new WandTexture("basic")
+            .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_LEFTHAND, new DisplayTransform()
+                    .scale(0.68, 0.68, 0.68)
+                    .translation(1.13, 3.2, 1.13)
+                    .rotation(0, -90, 45)
+            )
+            .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_RIGHTHAND, new DisplayTransform()
+                    .scale(0.68, 0.68, 0.68)
+                    .translation(1.13, 3.2, 1.13)
+                    .rotation(0, 90, -45)
+            );
     public static final WandTexture MAGE = new WandTexture("mage");
-    public static final WandTexture WIZARDRY = new WandTexture("wizardry");
+    public static final WandTexture WIZARDRY = new WandTexture("wizardry")
+            .addDisplay(ItemDisplayTransform.THIRDPERSON_LEFTHAND, new DisplayTransform()
+                    .scale(1, 1, 1)
+                    .translation(0, 3.0, 0.5)
+                    .rotation(0, 90, -55)
+            )
+            .addDisplay(ItemDisplayTransform.THIRDPERSON_RIGHTHAND, new DisplayTransform()
+                    .scale(1, 1, 1)
+                    .translation(0, 3.0, 0.5)
+                    .rotation(0, -90, 55)
+            );
     public static final WandTexture SORCERY = new WandTexture("sorcery");
     public static final WandTexture TRIDENT = new WandTexture("trident", "wizardry");
     public static final WandTexture FIRE = new WandTexture("fire").setAnimated(true);
@@ -18,6 +49,10 @@ public final class WandTexture implements Keyed, TextureProvider {
     private final NamespacedKey key;
     private final String textureKey;
     private final String baseTexture;
+
+    private Map<ItemDisplayTransform, DisplayTransform> displays;
+    private Map<ItemDisplayTransform, DisplayTransform> inUseDisplay;
+
     private boolean isAnimated;
     private boolean isBaseAnimated;
 
@@ -39,16 +74,45 @@ public final class WandTexture implements Keyed, TextureProvider {
     }
 
     @Override
-    public @NotNull String getTexture() {
-        return textureKey;
+    public @NotNull List<TextureLayer> getTextures() {
+        return List.of(
+                new TextureLayer(textureKey, isAnimated, 0x008000),
+                new TextureLayer(baseTexture, isBaseAnimated)
+        );
     }
 
-    public String getBaseTexture() {
-        return baseTexture;
+    @Override
+    public Map<String, ModelDefinition> getModelDefinitions() {
+        Map<String, ModelDefinition> namedModelDefinitions = new HashMap<>();
+
+        ModelDefinition modelDefinition = new ModelDefinition(
+                getModelParent(),
+                getLayerResourceLocations()
+        );
+
+        if (displays != null) {
+            modelDefinition.setDisplays(displays);
+        }
+
+        namedModelDefinitions.put(textureName(), modelDefinition);
+
+        if (inUseDisplay != null) {
+            ModelDefinition inUseDefinition = new ModelDefinition(
+                    getModelParent(),
+                    getLayerResourceLocations()
+            );
+
+            inUseDefinition.setDisplays(inUseDisplay);
+            namedModelDefinitions.put(textureName() + "_active", inUseDefinition);
+        }
+
+
+        return namedModelDefinitions;
     }
 
-    public boolean isAnimated() {
-        return isAnimated;
+    @Override
+    public @NotNull String getModelParent() {
+        return "minecraft:item/handheld";
     }
 
     public WandTexture setAnimated(boolean animated) {
@@ -56,12 +120,34 @@ public final class WandTexture implements Keyed, TextureProvider {
         return this;
     }
 
-    public boolean isBaseAnimated() {
-        return isBaseAnimated;
+    public WandTexture addDisplay(ItemDisplayTransform display, DisplayTransform transform) {
+        if (this.displays == null) {
+            displays = new HashMap<>();
+        }
+        this.displays.put(display, transform);
+        return this;
     }
 
-    public WandTexture setBaseAnimated(boolean baseAnimated) {
-        isBaseAnimated = baseAnimated;
+    public WandTexture addInUseDisplay(ItemDisplayTransform display, DisplayTransform transform) {
+        if (this.inUseDisplay == null) {
+            inUseDisplay = new HashMap<>();
+        }
+        this.inUseDisplay.put(display, transform);
         return this;
+    }
+
+    @Override
+    public ResourcePackObjects.Model buildBaseModel() {
+        ResourcePackObjects.Model defaultModel = TextureProvider.super.buildBaseModel();
+
+        if (inUseDisplay != null) {
+            return new ResourcePackObjects.ConditionModel(
+                    "using_item",
+                    new StaticModel(namespace() + ":item/" + textureName() + "_active", getTints()),
+                    defaultModel
+            );
+        }
+
+        return defaultModel;
     }
 }

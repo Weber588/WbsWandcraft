@@ -46,22 +46,17 @@ public class WbsWandcraft extends WbsPlugin {
         WbsCommand.getStatic(this, "wandcraft")
                 .setPermission("wbswandcraft.command")
                 .addSubcommands(
-                        new CommandInfo(this, "info"),
-                        WbsCommand.getStatic(this, "build").addSubcommands(
-                                new CommandBuildWand(this, "wand"),
-                                new CommandBuildSpell(this, "spell"),
-                                new CommandBuildModifier(this, "modifier"),
-                                WbsSubcommand.simpleSubcommand(this, "artificer", context -> {
-                                    Player sender = (Player) context.getSource().getSender();
-                                    sendMessage("Gave 1 artificing table!", sender);
-                                    sender.getInventory().addItem(settings.getArtificingConfig().getItem());
-                                })
-                        ),
-                        WbsCommand.getStatic(this, "modify").addSubcommands(
+                        WbsCommand.getStatic(this, "spell").addSubcommands(
+                                new CommandSpellLearn(this, "learn"),
                                 new CommandModifyAttributes(this, "attribute"),
-                                new CommandModifyEffects(this, "effect"),
-                                new CommandModifyPlayer(this, "player"),
-                                WbsSubcommand.simpleSubcommand(this, "wand", context -> {
+                                new CommandInfo(this, "info"),
+                                new CommandSpellBuild(this, "build")
+                        ),
+                        WbsCommand.getStatic(this, "wand").addSubcommands(
+                                new CommandWandBuild(this, "build"),
+                                new CommandModifyAttributes(this, "attribute"),
+                                new CommandGenerateWand(this, "generate"),
+                                WbsSubcommand.simpleSubcommand(this, "modify", context -> {
                                     CommandSender sender = context.getSource().getSender();
                                     if (!(sender instanceof Player player)) {
                                         sendMessage("This command is only usable by players.", sender);
@@ -76,13 +71,20 @@ public class WbsWandcraft extends WbsPlugin {
                                     wand.startEditing(player, item);
                                 })
                         ),
+                        WbsCommand.getStatic(this, "modifier").addSubcommands(
+                                new CommandModifierBuild(this, "build"),
+                                new CommandModifyEffects(this, "effect"),
+                                new CommandModifyAttributes(this, "attribute")
+                        ),
+                        new CommandBuildSpellbook(this, "spellbook"),
+                        new CommandModifyPlayer(this, "player"),
+                        WbsSubcommand.simpleSubcommand(this, "artificer", context -> {
+                            Player sender = (Player) context.getSource().getSender();
+                            sendMessage("Gave 1 artificing table!", sender);
+                            sender.getInventory().addItem(settings.getArtificingConfig().getItem());
+                        }),
                         WbsReloadSubcommand.getStatic(this, settings),
-                        WbsErrorsSubcommand.getStatic(this, settings),
-                        new CommandGenerateWand(this, "generate"),
-                        WbsSubcommand.simpleSubcommand(this, "tutorial", context -> {
-                            CommandSender sender = context.getSource().getSender();
-                            sendMessage("Not implemented.", sender);
-                        })
+                        WbsErrorsSubcommand.getStatic(this, settings)
                 )
                 .inferSubPermissions()
                 .addAliases("wbswandcraft", "wandc", "wwc")
@@ -90,9 +92,11 @@ public class WbsWandcraft extends WbsPlugin {
 
         registerListener(new WandInventoryEvents());
         registerListener(new WandEvents());
+        registerListener(new SpellbookEvents());
         registerListener(new ArtificingBlockEvents());
         registerListener(new ArtificingItemEvents());
         registerListener(new StatusEffectEvents());
+        registerListener(new MagicBlockEvents());
 
         // Run next tick, when the plugin is fully enabled
         runSync(() -> {

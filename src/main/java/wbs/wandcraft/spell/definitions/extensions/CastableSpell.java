@@ -6,9 +6,11 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
 public interface CastableSpell extends ISpellDefinition {
+    // TODO: Decide if delay is needed at spell level, since only used by wizardry -- make it a wand attribute?
     SpellAttribute<Integer> DELAY = new IntegerSpellAttribute("cast_delay", 4)
             .setShowAttribute(delay -> delay > 0)
             .setTicksToSecondsFormatter();
+    // TODO: Populate cooldown for all spells
     SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("cooldown", 5)
             .setShowAttribute(cooldown -> cooldown > 0)
             .setTicksToSecondsFormatter();

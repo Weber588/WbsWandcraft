@@ -2,8 +2,11 @@ package wbs.wandcraft.spell.modifier;
 
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
-import wbs.wandcraft.TextureProvider;
+import wbs.wandcraft.resourcepack.TextureLayer;
+import wbs.wandcraft.resourcepack.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
+
+import java.util.List;
 
 public enum ModifierTexture implements TextureProvider {
     BLANK("modifier_blank"),
@@ -24,9 +27,13 @@ public enum ModifierTexture implements TextureProvider {
         this.texture = texture;
     }
 
+
     @Override
-    public @NotNull String getTexture() {
-        return texture;
+    public @NotNull List<TextureLayer> getTextures() {
+        return List.of(
+                new TextureLayer("modifier_overlay", false, 0xEC273F),
+                new TextureLayer(texture)
+        );
     }
 
     @NotNull

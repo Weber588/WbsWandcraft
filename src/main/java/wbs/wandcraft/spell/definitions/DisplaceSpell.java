@@ -30,7 +30,7 @@ public class DisplaceSpell extends SpellDefinition implements CastableSpell, Tar
 
     @Override
     public Component description() {
-        return Component.text("Swaps the caster with a random target.");
+        return Component.text("Swaps the casterUUID with a random target.");
     }
 
     @Override

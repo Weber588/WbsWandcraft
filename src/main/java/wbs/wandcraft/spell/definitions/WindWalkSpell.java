@@ -27,7 +27,7 @@ public class WindWalkSpell extends SpellDefinition implements CastableSpell, Spe
 
     @Override
     public Component description() {
-        return Component.text("The caster is pulled into a vortex, moving in the direction they're looking for a short time.");
+        return Component.text("The casterUUID is pulled into a vortex, moving in the direction they're looking for a short time.");
     }
 
     @Override

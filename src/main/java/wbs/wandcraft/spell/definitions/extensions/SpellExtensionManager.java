@@ -17,6 +17,7 @@ public class SpellExtensionManager {
         registerSpellExtension(DamageSpell.class, DamageSpell::setUpDamage);
         registerSpellExtension(DurationalSpell.class, DurationalSpell::setUpDurational);
         registerSpellExtension(ParticleSpell.class, ParticleSpell::setupParticles);
+        registerSpellExtension(MaterialSpell.class, MaterialSpell::setupMaterials);
         registerSpellExtension(SpeedSpell.class, SpeedSpell::setupSpeed);
         registerSpellExtension(CustomProjectileSpell.class, CustomProjectileSpell::setupCustomProjectile);
         registerSpellExtension(RadiusedSpell.class, RadiusedSpell::setupRadiused);

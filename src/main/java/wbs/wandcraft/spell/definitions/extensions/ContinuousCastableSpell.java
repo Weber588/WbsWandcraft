@@ -1,5 +1,7 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,6 +38,10 @@ public interface ContinuousCastableSpell extends CastableSpell {
         if (isContinuousCast) {
             endTick = startTick + context.instance().getAttribute(MAX_DURATION);
         } else {
+            Component continuousCastPrompt = Component.text("Hold ").color(NamedTextColor.LIGHT_PURPLE)
+                    .append(Component.keybind("key.sneak").color(NamedTextColor.AQUA))
+                    .append(Component.text(" to continuous cast!"));
+            player.sendActionBar(continuousCastPrompt);
             endTick = startTick + context.instance().getAttribute(FIXED_DURATION);
         }
 

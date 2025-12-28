@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class AntiMagicShellSpell extends SpellDefinition implements CastableSpell, RadiusedSpell, DurationalSpell, ParticleSpell {
-    private static final SpellAttribute<Boolean> FOLLOWS_PLAYER = new BooleanSpellAttribute("follow_player", false);
+    private static final SpellAttribute<Boolean> FOLLOWS_PLAYER = new BooleanSpellAttribute("follow_player", false)
+            .setWritable(true);
     private static final SpellAttribute<Boolean> IS_REFLECTIVE = new BooleanSpellAttribute("is_reflective", true);
     private static final SpellAttribute<Integer> MAXIMUM_HITS = new IntegerSpellAttribute("maximum_hits", 6)
             .setShowAttribute(value -> value > 0);

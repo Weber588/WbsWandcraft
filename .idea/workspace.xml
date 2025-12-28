@@ -4,40 +4,67 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/EnergyBurstSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/ForceSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentBasicWandType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentMageWandType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BasicWand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BasicWandHolder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWandHolder.java" afterDir="false" />
+    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Added missed textures">
+      <change afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandLearnSpell.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandModifierBuild.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandSpellLearn.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/MagicBlockEvents.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/SpellbookEvents.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/colliders/MagicSpawnedBlock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/TextureLayer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/TextureProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ShieldSpell.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/MaterialSpell.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spellbook/Spellbook.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentSpellbookType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/RegisteredPersistentDataType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/RegisteredPersistentDataType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/TextureProvider.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftRegistries.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftRegistries.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildWand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/generation/WandGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/generation/WandGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraft.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraft.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildSpellbook.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandSpellBuild.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandBuildWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandWandBuild.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandModifyAttributes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandModifyAttributes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/MagicObjectManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/MagicObjectManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MagicEntityEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MagicEntityEffect.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MagicObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MagicObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ConflagrationSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ConflagrationSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/VortexSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WindWalkSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MissileObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MissileObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackObjects.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackObjects.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/SpellAttribute.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/SpellAttribute.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/AntiMagicShellSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/AntiMagicShellSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ArcaneSurgeSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ArcaneSurgeSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/BlinkSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/BlinkSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/DisplaceSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/DisplaceSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/EldritchBlastSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/EldritchBlastSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/EnergyBurstSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/EnergyBurstSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/LeapSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/LeapSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PrismaticRaySpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PrismaticRaySpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WindWalkSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WindWalkSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/CastableSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/CastableSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/ContinuousCastableSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/ContinuousCastableSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/ParticleSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/ParticleSpell.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/SpellExtensionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/SpellExtensionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/SpellTriggeredEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/event/SpellTriggeredEvents.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/ModifierTexture.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/ModifierTexture.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/CustomPersistentDataTypes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/CustomPersistentDataTypes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandHolder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandTexture.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandTexture.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWandHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WandType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WandType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWandHolder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWandHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/generators.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/generators.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_sorcery.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_sorcery.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_sorcery_base.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_sorcery_base.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_vortex.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_wind_walk.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WbsWaygates/src/main/java/wbs/waygates/data/Waygate.java" beforeDir="false" afterPath="$PROJECT_DIR$/../WbsWaygates/src/main/java/wbs/waygates/data/Waygate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WbsWaygates/src/main/java/wbs/waygates/listeners/WorldListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/../WbsWaygates/src/main/java/wbs/waygates/listeners/WorldListener.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,12 +74,48 @@
   <component name="CodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="WbsWandcraft" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="WbsWandcraft" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="WbsWandcraft" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
-        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -67,7 +130,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Weber588/WbsWandcraft.git&quot;,
+    &quot;url&quot;: &quot;https://github.com/Weber588/WbsWaygates.git&quot;,
     &quot;accountId&quot;: &quot;7e222093-83f2-4848-8213-25313e5f0ca2&quot;
   }
 }</component>
@@ -87,6 +150,12 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Gradle.Build WbsWandcraft.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.C:/IdeaProjects/WbsWandcraft [unlink].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.C:/IdeaProjects/WbsWandcraft.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.WbsWandcraft [assemble].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.WbsWandcraft [build].executor&quot;: &quot;Run&quot;,
     &quot;Maven.WbsWandcraft [compile].executor&quot;: &quot;Run&quot;,
     &quot;Maven.WbsWandcraft [install].executor&quot;: &quot;Run&quot;,
     &quot;Maven.WbsWandcraft [package].executor&quot;: &quot;Run&quot;,
@@ -98,11 +167,11 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/IdeaProjects/WbsWandcraft/src/main/java/wbs/wandcraft/wand/types&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/IdeaProjects/WbsWandcraft&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;build.tools&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -114,11 +183,11 @@
       <recent name="wbs.wandcraft.generator" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\IdeaProjects\WbsWandcraft" />
       <recent name="C:\IdeaProjects\WbsWandcraft\src\main\java\wbs\wandcraft\wand\types" />
       <recent name="C:\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\wbswandcraft\models\item" />
       <recent name="C:\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\minecraft\items" />
       <recent name="C:\Users\idont\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\minecraft\items" />
-      <recent name="C:\Users\idont\IdeaProjects\WbsWandcraft\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\idont\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\wbswandcraft\textures" />
@@ -132,12 +201,114 @@
       <recent name="wbs.wandcraft.spells" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="wbs.wandcraft.commands" />
       <recent name="wbs.wandcraft.util.persistent" />
+      <recent name="wbs.wandcraft.spell.definitions" />
       <recent name="wbs.wandcraft.wand.types" />
       <recent name="wbs.wandcraft.spell.definitions.extensions" />
-      <recent name="wbs.wandcraft.spell.definitions" />
-      <recent name="wbs.wandcraft.spell.attributes" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="gradle unlink" />
+      <command value="gradle" />
+    </option>
+  </component>
+  <component name="RunManager" selected="Gradle.WbsWandcraft [build]">
+    <configuration name="C:/IdeaProjects/WbsWandcraft [unlink]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="unlink" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="C:/IdeaProjects/WbsWandcraft" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list />
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="WbsWandcraft [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="assemble" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="WbsWandcraft [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.WbsWandcraft [build]" />
+        <item itemvalue="Gradle.WbsWandcraft [assemble]" />
+        <item itemvalue="Gradle.C:/IdeaProjects/WbsWandcraft" />
+        <item itemvalue="Gradle.C:/IdeaProjects/WbsWandcraft [unlink]" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -460,7 +631,23 @@
       <option name="project" value="LOCAL" />
       <updated>1766219391804</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="Added Basic and Mage wands">
+      <option name="closed" value="true" />
+      <created>1766567100094</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1766567100094</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Added missed textures">
+      <option name="closed" value="true" />
+      <created>1766567124654</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1766567124654</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -479,8 +666,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Moved to 1.21.4 data components &#10;Added consumable animation support&#10;Added configurable item model defaults" />
-    <MESSAGE value="Moved from accuracy to imprecision attribute for directions, for clarity and consistency between spells." />
     <MESSAGE value="Fix units on LeapSpell" />
     <MESSAGE value="Added Status Effect &amp; event support" />
     <MESSAGE value="Added wand generators and began work on config/commands to support" />
@@ -504,6 +689,8 @@
     <MESSAGE value="Added Sorcery Wand&#10;Fixed numeric attribute modifiers" />
     <MESSAGE value="Tweaked default values for some spells" />
     <MESSAGE value="Added cost mechanics" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added cost mechanics" />
+    <MESSAGE value="Added Basic and Mage wands" />
+    <MESSAGE value="Added missed textures" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added missed textures" />
   </component>
 </project>

@@ -5,8 +5,9 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.string.WbsStrings;
-import wbs.wandcraft.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.resourcepack.TextureLayer;
+import wbs.wandcraft.resourcepack.TextureProvider;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.SpellExtensionManager;
@@ -65,8 +66,10 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
     public abstract Component description();
 
     @Override
-    public @NotNull final String getTexture() {
-        return "spell_" + key().value();
+    public @NotNull final List<TextureLayer> getTextures() {
+        return List.of(
+                new TextureLayer("spell_" + key().value())
+        );
     }
 
     public void registerEvents() {

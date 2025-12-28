@@ -26,11 +26,12 @@ import java.util.Set;
 public class PrismaticRaySpell extends SpellDefinition implements CastableSpell, RangedSpell, DamageSpell, DirectionalSpell {
     private static final double STEP_SIZE = 0.3;
     // TODO: Make beam width attribute
-    private static final RadiusSelector<LivingEntity> radiusTargeter = new RadiusSelector<>(LivingEntity.class).setRange(0.2);
+    private static final RadiusSelector<LivingEntity> radiusTargeter = new RadiusSelector<>(LivingEntity.class).setRange(1);
 
     public PrismaticRaySpell() {
         super("prismatic_ray");
         setAttribute(IMPRECISION, 0d);
+        setAttribute(DAMAGE, 2d);
     }
 
     @Override

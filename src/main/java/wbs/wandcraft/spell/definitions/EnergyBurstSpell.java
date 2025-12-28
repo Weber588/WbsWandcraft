@@ -70,7 +70,8 @@ public class EnergyBurstSpell extends SpellDefinition implements CustomProjectil
         SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (result) -> {
             Collection<LivingEntity> hit = new RadiusSelector<>(LivingEntity.class)
                     .setRange(instance.getAttribute(RADIUS))
-                    .selectExcluding(context.player());
+                    .exclude(context.player())
+                    .select(result);
 
             DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
                     .withDirectEntity(context.player())
@@ -89,13 +90,13 @@ public class EnergyBurstSpell extends SpellDefinition implements CustomProjectil
 
     @Override
     public Particle getDefaultParticle() {
-        return Particle.WITCH;
+        return Particle.HAPPY_VILLAGER;
     }
 
     @Override
     public Component description() {
         return Component.text(
-                "The most simple projectile spell that fires a blast of energy in the direction the caster is facing, dealing damage to anything hit."
+                "The most simple projectile spell that fires a blast of energy in the direction the casterUUID is facing, dealing damage to anything hit."
         );
     }
 }

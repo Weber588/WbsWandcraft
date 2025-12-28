@@ -22,6 +22,7 @@ public class WandcraftRegistries {
             RegisteredPersistentDataType.STRING,
             RegisteredPersistentDataType.LONG,
             RegisteredPersistentDataType.PARTICLE,
+            RegisteredPersistentDataType.MATERIAL,
             RegisteredPersistentDataType.TARGETER,
             RegisteredPersistentDataType.SPELL
     );
@@ -70,7 +71,8 @@ public class WandcraftRegistries {
             new ChainLightningSpell(),
             new CharmSpell(),
             new DisplaceSpell(),
-            new EnergyBurstSpell()
+            new EnergyBurstSpell(),
+            new ShieldSpell()
     );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
             StatusEffect.GLIDING,

@@ -25,14 +25,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandBuildSpell extends WbsSubcommand {
+public class CommandSpellBuild extends WbsSubcommand {
     private static final KeyedSimpleArgument DEFINITION = new KeyedSimpleArgument(
             "definition",
             ArgumentTypes.namespacedKey(),
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
-    public CommandBuildSpell(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandSpellBuild(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
         addSimpleArgument(DEFINITION);
     }

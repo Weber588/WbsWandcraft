@@ -117,8 +117,8 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
     @Override
     public Component description() {
         return Component.text(
-                "The caster moves forward for a set distance, dealing damage to nearby creatures. " +
-                        "The caster is immune to all damage while moving."
+                "The casterUUID moves forward for a set distance, dealing damage to nearby creatures. " +
+                        "The casterUUID is immune to all damage while moving."
         );
     }
 }

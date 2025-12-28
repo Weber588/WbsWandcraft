@@ -11,8 +11,10 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.WbsColours;
 import wbs.wandcraft.WbsWandcraft;
@@ -24,6 +26,7 @@ import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.ModifierTexture;
 import wbs.wandcraft.spell.modifier.SpellModifier;
+import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.types.WandType;
 
@@ -36,6 +39,8 @@ public class ItemUtils {
     public static final Material BASE_MATERIAL_WAND = Material.STICK;
     public static final Material BASE_MATERIAL_SPELL = Material.FLOW_BANNER_PATTERN;
     public static final Material BASE_MATERIAL_MODIFIER = Material.GLOBE_BANNER_PATTERN;
+    public static final Material BASE_MATERIAL_SPELLBOOK = Material.BOOK;
+    public static final Material DISPLAY_MATERIAL_SPELLBOOK = Material.KNOWLEDGE_BOOK;
 
     public static @NotNull ItemStack buildWand(WandType<?> type, Double hue) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_WAND);
@@ -80,6 +85,52 @@ public class ItemUtils {
         item.editMeta(meta -> meta.setItemModel(finalItemModel));
 
         wand.toItem(item);
+
+        return item;
+    }
+
+    public static @NotNull ItemStack buildSpellbook(@Nullable Player fromPlayer) {
+        ItemStack item = ItemStack.of(BASE_MATERIAL_SPELLBOOK);
+
+        Spellbook spellbook = new Spellbook();
+
+        if (fromPlayer != null) {
+            spellbook.learnSpells(fromPlayer);
+        }
+
+        item.getDataTypes().forEach(item::unsetData);
+        item.setData(DataComponentTypes.ITEM_NAME, Component.text("Spellbook"));
+        item.setData(DataComponentTypes.USE_COOLDOWN, UseCooldown.useCooldown(0.0001f)
+                .cooldownGroup(WbsWandcraft.getKey(UUID.randomUUID().toString()))
+        );
+
+//        if (hue == null || hue < 0) {
+//            hue = Math.random();
+//        }
+
+        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
+                .addString(WbsWandcraft.getKey("spellbook").asString())
+              //  .addColor(WbsColours.fromHSB(hue, 1, 1))
+        );
+
+        item.setData(DataComponentTypes.ITEM_MODEL, DISPLAY_MATERIAL_SPELLBOOK.getKey());
+        item.setData(DataComponentTypes.CONSUMABLE, Consumable.consumable()
+                .animation(ItemUseAnimation.BLOCK)
+                .hasConsumeParticles(false)
+                .consumeSeconds(2)
+                .sound(Key.key("not.a.real.sound"))
+        );
+
+        NamespacedKey itemModel = WbsWandcraft.getInstance().getSettings().getItemModel("spellbook");
+
+        if (itemModel == null) {
+            itemModel = DISPLAY_MATERIAL_SPELLBOOK.getKey();
+        }
+
+        NamespacedKey finalItemModel = itemModel;
+        item.editMeta(meta -> meta.setItemModel(finalItemModel));
+
+        spellbook.toItem(item);
 
         return item;
     }
@@ -142,7 +193,7 @@ public class ItemUtils {
         }
 
         ModifierTexture[] values = ModifierTexture.values();
-        String texture = values[new Random().nextInt(values.length)].getTexture();
+        String texture = values[new Random().nextInt(values.length)].textureName();
 
         cloneBuilder.addString(WbsWandcraft.getKey(texture).asString());
         cloneBuilder.addColor(WbsCollectionUtil.getRandom(MODIFIER_COLOURS));

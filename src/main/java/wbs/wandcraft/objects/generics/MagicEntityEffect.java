@@ -121,7 +121,7 @@ public class MagicEntityEffect extends KinematicMagicObject {
         Location toReturn = super.move(location);
 
         if (moveEntityWithObject && !location.equals(toReturn)) {
-            // TODO: Does this need to check for caster to use magic teleport?
+            // TODO: Does this need to check for casterUUID to use magic teleport?
             entity.teleport(toReturn);
         }
 

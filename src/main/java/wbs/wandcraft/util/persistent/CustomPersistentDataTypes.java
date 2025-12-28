@@ -34,6 +34,8 @@ public class CustomPersistentDataTypes {
     public static final PersistentSorceryWandType SORCERY_WAND_TYPE = new PersistentSorceryWandType();
     public static final PersistentMageWandType MAGE_WAND_TYPE = new PersistentMageWandType();
 
+    public static final PersistentSpellbookType SPELLBOOK_TYPE = new PersistentSpellbookType();
+
     public static final PersistentStatusEffectType STATUS_EFFECT = new PersistentStatusEffectType();
 
     public static class PersistentStatusEffectType implements PersistentDataType<PersistentDataContainer, StatusEffectInstance> {

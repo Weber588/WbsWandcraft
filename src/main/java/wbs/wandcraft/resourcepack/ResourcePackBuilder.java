@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import wbs.utils.util.WbsFileUtil;
@@ -13,6 +13,7 @@ import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.modifier.ModifierTexture;
+import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.ItemUtils;
 
 import java.io.File;
@@ -21,11 +22,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import static wbs.wandcraft.resourcepack.ResourcePackObjects.*;
+import static wbs.wandcraft.resourcepack.ResourcePackObjects.ItemSelectorDefinition;
 
 public class ResourcePackBuilder {
+
+    public static final String ITEMS_FOLDER = "resourcepack/assets/minecraft/items/";
+    public static final String ITEM_MODELS_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/models/item/";
+    public static final String TEXTURES_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/textures/item/";
+
     public static void loadResourcePack(WandcraftSettings settings, YamlConfiguration config) {
         createResourcePack(settings, config);
         writeToExternalPlugins();
@@ -83,80 +92,15 @@ public class ResourcePackBuilder {
 
             resourcesToLoad.add("resourcepack/pack.mcmeta");
 
-            String itemsFolder = "resourcepack/assets/minecraft/items/";
-            String itemModelsPath = "resourcepack/assets/" + namespace + "/models/item/";
-            String texturesPath = "resourcepack/assets/" + namespace + "/textures/item/";
-
             Gson gson = new Gson();
 
-            writeJSONToFile(plugin.getDataPath().resolve(itemsFolder), ItemUtils.BASE_MATERIAL_SPELL.getKey(), gson, new ItemSelectorDefinition(
-                    ItemUtils.BASE_MATERIAL_SPELL,
-                    WandcraftRegistries.SPELLS.stream().toList())
-            );
+            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.SPELLS.stream().toList(), ItemUtils.BASE_MATERIAL_SPELL));
+            resourcesToLoad.addAll(writeProviders(gson, Arrays.stream(ModifierTexture.values()).toList(), ItemUtils.BASE_MATERIAL_MODIFIER));
+            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.WAND_TEXTURES.stream().toList(), ItemUtils.BASE_MATERIAL_WAND));
+            resourcesToLoad.addAll(writeProviders(gson, List.of(new Spellbook()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
 
-            writeJSONToFile(plugin.getDataPath().resolve(itemsFolder), ItemUtils.BASE_MATERIAL_MODIFIER.getKey(), gson,
-                    new ItemSelectorDefinition(
-                            ItemUtils.BASE_MATERIAL_MODIFIER,
-                            Arrays.stream(ModifierTexture.values()).toList(),
-                            List.of(new ModelTint())
-                    )
-            );
-
-            writeJSONToFile(plugin.getDataPath().resolve(itemsFolder), ItemUtils.BASE_MATERIAL_WAND.getKey(), gson,
-                    new ItemSelectorDefinition(
-                            ItemUtils.BASE_MATERIAL_WAND,
-                            WandcraftRegistries.WAND_TEXTURES.stream().toList(),
-                            List.of(new ModelTint())
-                    )
-            );
-
-            resourcesToLoad.add(itemModelsPath + "blank_scroll.json");
-            resourcesToLoad.add(texturesPath + "blank_scroll.png");
-
-            WandcraftRegistries.SPELLS.stream().forEach(definition -> {
-                NamespacedKey key = definition.getKey();
-
-                writeJSONToFile(plugin.getDataPath().resolve(itemModelsPath), key, gson, new ModelDefinition(
-                        "minecraft:item/generated",
-                        key.getNamespace() + ":item/" + definition.getTexture()
-                ));
-                resourcesToLoad.add(texturesPath + definition.getTexture() + ".png");
-            });
-
-            resourcesToLoad.add(WbsWandcraft.getKey("item/modifier_overlay").asString());
-            resourcesToLoad.add(texturesPath + "modifier_overlay.png");
-            Arrays.stream(ModifierTexture.values()).forEach(texture -> {
-                NamespacedKey key = texture.getKey();
-
-                String texturePath = key.getNamespace() + ":item/modifier_overlay";
-                String baseTexture = key.getNamespace() + ":item/" + texture.getTexture();
-                writeJSONToFile(plugin.getDataPath().resolve(itemModelsPath), key, gson, new ModelDefinition(
-                        "minecraft:item/handheld",
-                        texturePath,
-                        baseTexture
-                ));
-                resourcesToLoad.add(texturesPath + texture.getTexture() + ".png");
-            });
-
-            WandcraftRegistries.WAND_TEXTURES.stream().forEach(texture -> {
-                NamespacedKey key = texture.getKey();
-
-                String texturePath = key.getNamespace() + ":item/" + texture.getTexture();
-                String baseTexture = key.getNamespace() + ":item/" + texture.getBaseTexture();
-                writeJSONToFile(plugin.getDataPath().resolve(itemModelsPath), key, gson, new ModelDefinition(
-                        "minecraft:item/handheld",
-                        texturePath,
-                        baseTexture
-                ));
-                resourcesToLoad.add(texturesPath + texture.getTexture() + ".png");
-                resourcesToLoad.add(texturesPath + texture.getBaseTexture() + ".png");
-                if (texture.isAnimated()) {
-                    resourcesToLoad.add(texturesPath + texture.getTexture() + ".png.mcmeta");
-                }
-                if (texture.isBaseAnimated()) {
-                    resourcesToLoad.add(texturesPath + texture.getBaseTexture() + ".png.mcmeta");
-                }
-            });
+            resourcesToLoad.add(ITEM_MODELS_PATH + "blank_scroll.json");
+            resourcesToLoad.add(TEXTURES_PATH + "blank_scroll.png");
 
             resourcesToLoad.forEach(path -> {
                 if (plugin.getResource(path) != null) {
@@ -177,10 +121,46 @@ public class ResourcePackBuilder {
         }
     }
 
+    private static <T extends TextureProvider> Set<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial) {
+        Set<String> resourcesToLoad = new HashSet<>();
+
+        WbsWandcraft plugin = WbsWandcraft.getInstance();
+
+        writeJSONToFile(
+                plugin.getDataPath().resolve(ResourcePackBuilder.ITEMS_FOLDER),
+                baseMaterial.key().value(),
+                gson,
+                new ItemSelectorDefinition(
+                        baseMaterial,
+                        providers
+                )
+        );
+
+        providers.forEach(provider -> {
+            provider.getModelDefinitions().forEach((name, definition) -> {
+                writeJSONToFile(
+                        plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH),
+                        name,
+                        gson,
+                        definition
+                );
+            });
+
+            for (TextureLayer texture : provider.getTextures()) {
+                resourcesToLoad.add(TEXTURES_PATH + texture.name() + ".png");
+                if (texture.isAnimated()) {
+                    resourcesToLoad.add(TEXTURES_PATH + texture.name() + ".png.mcmeta");
+                }
+            }
+        });
+
+        return resourcesToLoad;
+    }
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void writeJSONToFile(Path folder, NamespacedKey key, Gson gson, Object object) {
+    private static void writeJSONToFile(Path folder, String key, Gson gson, Object object) {
         try {
-            File file = folder.resolve(key.getKey() + ".json").toFile();
+            File file = folder.resolve(key + ".json").toFile();
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }

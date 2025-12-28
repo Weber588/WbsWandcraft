@@ -2,6 +2,7 @@ package wbs.wandcraft.wand.types;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -113,12 +114,8 @@ public class MageWand extends Wand {
         );
 
         if (spellInstances.size() > 1) {
-            // Take abs() to get modulo instead of remainder
-            int prevSlot = Math.abs((currentSlot - 1) % spellInstances.size());
-            int nextSlot = (currentSlot + 1) % spellInstances.size();
-
-            SpellInstance prevInstance = SpellInstance.fromItem(items.get(prevSlot));
-            SpellInstance nextInstance = SpellInstance.fromItem(items.get(nextSlot));
+            SpellInstance prevInstance = getPrevInstance(spellInstances);
+            SpellInstance nextInstance = getNextInstance(spellInstances);
 
             if (prevInstance != null || nextInstance != null) {
                 lore.add(Component.empty());
@@ -144,6 +141,16 @@ public class MageWand extends Wand {
         }
 
         return lore;
+    }
+
+    private @Nullable SpellInstance getNextInstance(List<SpellInstance> spellInstances) {
+        int nextSlot = (currentSlot + 1) % spellInstances.size();
+        return SpellInstance.fromItem(items.get(nextSlot));
+    }
+
+    private @Nullable SpellInstance getPrevInstance(List<SpellInstance> spellInstances) {
+        int prevSlot = Math.abs((currentSlot - 1) % spellInstances.size());
+        return SpellInstance.fromItem(items.get(prevSlot));
     }
 
     @Override
@@ -188,7 +195,27 @@ public class MageWand extends Wand {
 
         SpellInstance spell = getCurrentSpellInstance();
         if (spell != null) {
-            player.sendActionBar(spell.getDefinition().displayName().color(NamedTextColor.AQUA));
+            List<SpellInstance> spellInstances = getSpellInstances();
+
+            Component currentSpellDisplay = spell.getDefinition().displayName().color(NamedTextColor.AQUA).decorate(TextDecoration.BOLD, TextDecoration.UNDERLINED);
+
+            Component spellDisplay = Component.empty();
+
+            SpellInstance prevInstance = getPrevInstance(spellInstances);
+            if (prevInstance != null) {
+                spellDisplay = spellDisplay.append(prevInstance.getDefinition().displayName().color(NamedTextColor.GRAY));
+                spellDisplay = spellDisplay.append(Component.text(" ← ").color(NamedTextColor.GOLD));
+            }
+
+            spellDisplay = spellDisplay.append(currentSpellDisplay);
+
+            SpellInstance nextInstance = getNextInstance(spellInstances);
+            if (nextInstance != null) {
+                spellDisplay = spellDisplay.append(Component.text(" → ").color(NamedTextColor.GOLD));
+                spellDisplay = spellDisplay.append(nextInstance.getDefinition().displayName().color(NamedTextColor.GRAY));
+            }
+
+            player.sendActionBar(spellDisplay);
         }
 
         toItem(item);

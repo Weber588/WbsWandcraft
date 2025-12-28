@@ -1,6 +1,7 @@
 package wbs.wandcraft;
 
 import org.bukkit.Keyed;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.persistence.PersistentDataType;
@@ -24,6 +25,8 @@ public record RegisteredPersistentDataType<T>(NamespacedKey key, PersistentDataT
             = new RegisteredPersistentDataType<>("long", PersistentDataType.LONG);
     public static final RegisteredPersistentDataType<Particle> PARTICLE
             = new RegisteredPersistentDataType<>("particle", new CustomPersistentDataTypes.PersistentEnumType<>(Particle.class));
+    public static final RegisteredPersistentDataType<Material> MATERIAL
+            = new RegisteredPersistentDataType<>("material", new CustomPersistentDataTypes.PersistentEnumType<>(Material.class));
     public static final RegisteredPersistentDataType<TargetedSpell.TargeterType> TARGETER
             = new RegisteredPersistentDataType<>("targeter", new CustomPersistentDataTypes.PersistentEnumType<>(TargetedSpell.TargeterType.class));
     public static final RegisteredPersistentDataType<SpellInstance> SPELL

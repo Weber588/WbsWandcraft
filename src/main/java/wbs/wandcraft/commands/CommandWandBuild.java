@@ -18,7 +18,7 @@ import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.types.WandType;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandBuildWand extends WbsSubcommand {
+public class CommandWandBuild extends WbsSubcommand {
     private static final WbsSimpleArgument.KeyedSimpleArgument WAND_TYPE = new WbsSimpleArgument.KeyedSimpleArgument(
             "wand_type",
             ArgumentTypes.namespacedKey(),
@@ -31,7 +31,7 @@ public class CommandBuildWand extends WbsSubcommand {
             Double.class
     ).addSuggestions(0d, 0.25d, 0.5d, 0.75d, 1d);
 
-    public CommandBuildWand(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandWandBuild(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
         addSimpleArgument(WAND_TYPE);
         addSimpleArgument(WAND_HUE);

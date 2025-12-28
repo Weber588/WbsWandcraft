@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import wbs.wandcraft.TextureProvider;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
@@ -20,7 +19,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider {
+public class SpellModifier implements WandEntry<SpellModifier> {
     public static final NamespacedKey SPELL_MODIFIER_KEY = WbsWandcraft.getKey("spell_modifier");
 
     public static SpellModifier fromItem(ItemStack itemStack) {
@@ -108,23 +107,6 @@ public class SpellModifier implements WandEntry<SpellModifier>, TextureProvider 
 
     public void removeModifier(SpellAttributeModifier<?, ?> modifier) {
         modifiers.remove(modifier);
-    }
-
-    @Override
-    @NotNull
-    public String getTexture() {
-        return getTextureFallback();
-    }
-
-    @NotNull
-    private String getTextureFallback() {
-        // TODO: Move this to a default modifier texture
-        return "blank_scroll";
-    }
-
-    @Override
-    public @NotNull NamespacedKey getKey() {
-        return getTypeKey();
     }
 
     @Override

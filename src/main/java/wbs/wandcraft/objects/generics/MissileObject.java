@@ -74,7 +74,7 @@ public abstract class MissileObject extends KinematicMagicObject {
 	}
 	
 	@Override
-	public void spawn() {
+	public boolean spawn() {
 		if (timerID != -1) {
 			throw new MagicObjectExistsException();
 		}
@@ -119,6 +119,7 @@ public abstract class MissileObject extends KinematicMagicObject {
 				}
 	        }
 	    }.runTaskTimer(WbsWandcraft.getInstance(), 0L, 1L).getTaskId();
+		return true;
 	}
 	
 	/**

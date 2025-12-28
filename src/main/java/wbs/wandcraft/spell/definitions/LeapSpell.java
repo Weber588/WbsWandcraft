@@ -46,7 +46,7 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
     @Override
     public Component description() {
         return Component.text(
-                "The caster is thrown in the direction they're facing, and takes no fall damage."
+                "The casterUUID is thrown in the direction they're facing, and takes no fall damage."
         );
     }
 }

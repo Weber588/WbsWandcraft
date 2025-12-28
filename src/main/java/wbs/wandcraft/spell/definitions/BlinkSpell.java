@@ -54,7 +54,7 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
     @Override
     public Component description() {
         return Component.text(
-                "The caster is teleported a short distance in the direction they're facing."
+                "The casterUUID is teleported a short distance in the direction they're facing."
         );
     }
 }

@@ -3,8 +3,10 @@ package wbs.wandcraft.objects;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import wbs.wandcraft.objects.colliders.MagicSpawnedBlock;
 import wbs.wandcraft.objects.generics.MagicEntityEffect;
 import wbs.wandcraft.objects.generics.MagicObject;
 
@@ -21,6 +23,25 @@ public class MagicObjectManager {
 
     public static Collection<MagicObject> getAllActive(Player player) {
         return activeObjects.get(player.getUniqueId());
+    }
+
+    public static <T extends MagicObject> Collection<T> getAllActive(Player player, Class<T> clazz) {
+        return activeObjects.get(player.getUniqueId()).stream()
+                .filter(clazz::isInstance)
+                .map(clazz::cast)
+                .toList();
+    }
+    public static <T extends MagicObject> Collection<T> getAllActive(Class<T> clazz) {
+        return getAllActive().stream()
+                .filter(clazz::isInstance)
+                .map(clazz::cast)
+                .toList();
+    }
+
+    public static Collection<MagicSpawnedBlock> getAllActive(Block block) {
+        return MagicObjectManager.getAllActive(MagicSpawnedBlock.class).stream()
+                .filter(magicSpawnedBlock -> magicSpawnedBlock.getBlock().equals(block))
+                .toList();
     }
 
     public static List<MagicObject> getNearbyActive(Location location, double distance) {

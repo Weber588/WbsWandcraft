@@ -18,7 +18,8 @@ public interface ParticleSpell extends ISpellDefinition {
                 }
 
                 return true;
-            });
+            })
+            .setWritable(true);
 
     default void setupParticles() {
         setAttribute(PARTICLE, getDefaultParticle());
