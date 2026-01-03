@@ -4,14 +4,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
@@ -19,22 +13,19 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleA
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.util.ItemUtils;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import wbs.wandcraft.spell.definitions.SpellInstance;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandSpellBuild extends WbsSubcommand {
+public class CommandSpellCast extends WbsSubcommand {
     private static final KeyedSimpleArgument DEFINITION = new KeyedSimpleArgument(
             "definition",
             ArgumentTypes.namespacedKey(),
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
-    public CommandSpellBuild(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandSpellCast(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
         addSimpleArgument(DEFINITION);
     }
@@ -46,30 +37,11 @@ public class CommandSpellBuild extends WbsSubcommand {
             return 1;
         }
 
-
         NamespacedKey definitionKey = configuredArgumentMap.get(DEFINITION);
 
         if (definitionKey == null) {
-            List<SpellDefinition> list = WandcraftRegistries.SPELLS.stream().sorted(Comparator.comparing(SpellDefinition::getKey)).toList();
-            if (list.size() > 54) {
-                plugin.sendMessage("&wWarning! Not all spells in menu.", context.getSource().getSender());
-                plugin.sendMessage("Choose a spell: "
-                                + WandcraftRegistries.SPELLS.stream()
-                                .map(Keyed::key)
-                                .map(Key::asString)
-                                .collect(Collectors.joining(", ")),
-                        context.getSource().getSender());
-            }
-
-            Inventory inventory = Bukkit.createInventory(null, 6 * 9, Component.text("Spells"));
-
-            for (int i = 0; i < Math.min(inventory.getSize(), list.size()); i++) {
-                inventory.setItem(i, ItemUtils.buildSpell(list.get(i)));
-            }
-
-            player.openInventory(inventory);
-
-            return Command.SINGLE_SUCCESS;
+            sendSimpleArgumentUsage(context);
+            return 1;
         }
 
         SpellDefinition spell = WandcraftRegistries.SPELLS.get(definitionKey);
@@ -79,13 +51,12 @@ public class CommandSpellBuild extends WbsSubcommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        ItemStack item = ItemUtils.buildSpell(spell);
-
-        player.getInventory().addItem(item);
-        WbsWandcraft.getInstance().buildMessage("Got 1 ")
-                .append(item.effectiveName())
+        WbsWandcraft.getInstance().buildMessage("Casting ")
+                .append(spell.displayName())
                 .build()
                 .send(player);
+
+        new CastingQueue(new SpellInstance(spell), null).startCasting(player);
 
         return Command.SINGLE_SUCCESS;
     }

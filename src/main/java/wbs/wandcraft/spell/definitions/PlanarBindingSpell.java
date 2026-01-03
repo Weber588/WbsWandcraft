@@ -1,24 +1,33 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
 
+import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
+import static wbs.wandcraft.spell.definitions.type.SpellType.SCULK;
+
 public class PlanarBindingSpell extends SpellDefinition implements StatusEffectSpell<LivingEntity> {
     public PlanarBindingSpell() {
         super("planar_binding");
 
-        setAttribute(DURATION, 100);
+        addSpellType(SCULK);
+        addSpellType(ENDER);
+
+        setAttribute(COST, 100);
+        setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
+
+        setAttribute(DURATION, 10 * Ticks.TICKS_PER_SECOND);
         setAttribute(TARGET, TargeterType.LINE_OF_SIGHT);
         setAttribute(TARGET_RANGE, 50d);
         setAttribute(MAX_TARGETS, 1);
     }
 
     @Override
-    public Component description() {
-        return Component.text("Prevents all nearby entities from teleporting for a short duration.");
+    public String rawDescription() {
+        return "Prevents all nearby entities from teleporting for a short duration.";
     }
 
     @Override

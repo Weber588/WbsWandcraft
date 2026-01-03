@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,11 +10,19 @@ import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DirectionalSpell;
 import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
 
+import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
+import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
+
 public class LeapSpell extends SpellDefinition implements CastableSpell, DirectionalSpell, SpeedSpell {
     public LeapSpell() {
         super("leap");
 
-        setAttribute(COOLDOWN, 5);
+        addSpellType(VOID);
+        addSpellType(ENDER);
+
+        setAttribute(COST, 15);
+        setAttribute(COOLDOWN, Ticks.TICKS_PER_SECOND);
+
         setAttribute(IMPRECISION, 5d);
         setAttribute(SPEED, 1.5d);
     }
@@ -44,9 +52,7 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
     }
 
     @Override
-    public Component description() {
-        return Component.text(
-                "The casterUUID is thrown in the direction they're facing, and takes no fall damage."
-        );
+    public String rawDescription() {
+        return "The caster is thrown in the direction they're facing, and takes no fall damage.";
     }
 }

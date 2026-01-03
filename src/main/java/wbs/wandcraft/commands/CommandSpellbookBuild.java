@@ -12,8 +12,8 @@ import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.util.ItemUtils;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandBuildSpellbook extends WbsSubcommand {
-    public CommandBuildSpellbook(@NotNull WbsPlugin plugin, @NotNull String label) {
+public class CommandSpellbookBuild extends WbsSubcommand {
+    public CommandSpellbookBuild(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
     }
 
@@ -21,7 +21,7 @@ public class CommandBuildSpellbook extends WbsSubcommand {
     protected int executeNoArgs(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
         if (sender instanceof Player player) {
-            ItemStack item = ItemUtils.buildSpellbook(player);
+            ItemStack item = ItemUtils.buildSpellbook();
             player.getInventory().addItem(item);
         } else {
             plugin.sendMessage("This command is only usable by players", sender);

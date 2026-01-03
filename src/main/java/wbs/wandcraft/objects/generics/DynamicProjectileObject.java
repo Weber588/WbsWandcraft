@@ -40,7 +40,7 @@ public class DynamicProjectileObject extends DynamicMagicObject {
 
         setStepsPerTick(getVelocity().length() * 5);
 
-        if (effects != null && (getAge() * getStepsPerTick() > 5 || getLocation().distance(getSpawnLocation()) > 1)) {
+        if (effects != null && (getAge() * getStepsPerTick() > 2 || getLocation().distance(getSpawnLocation()) > 0.5)) {
             debug("Projectile object playing effects");
             effects.buildAndPlay(location);
         }

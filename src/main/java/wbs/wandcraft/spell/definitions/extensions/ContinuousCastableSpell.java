@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.definitions.extensions;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,11 +13,11 @@ import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 public interface ContinuousCastableSpell extends CastableSpell {
-    SpellAttribute<Integer> FIXED_DURATION = new IntegerSpellAttribute("fixed_duration", 20)
+    SpellAttribute<Integer> FIXED_DURATION = new IntegerSpellAttribute("fixed_duration", Ticks.TICKS_PER_SECOND)
             .setShowAttribute(duration -> duration != 20);
-    SpellAttribute<Integer> MAX_DURATION = new IntegerSpellAttribute("max_duration", 100)
+    SpellAttribute<Integer> MAX_DURATION = new IntegerSpellAttribute("max_duration", 5 * Ticks.TICKS_PER_SECOND)
             .setShowAttribute(duration -> duration > 0);
-    SpellAttribute<Integer> COST_PER_TICK = new IntegerSpellAttribute("cost_per_tick", 1)
+    SpellAttribute<Integer> COST_PER_TICK = new IntegerSpellAttribute("cost_per_tick", 5)
             .setShowAttribute(cost -> cost > 0);
 
     default void setupContinuousCast() {

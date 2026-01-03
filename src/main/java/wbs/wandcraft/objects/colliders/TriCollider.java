@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
 import wbs.wandcraft.objects.generics.MagicObject;
 
 public class TriCollider extends PlaneCollider {
@@ -25,10 +24,7 @@ public class TriCollider extends PlaneCollider {
     }
 
     @Override
-    protected @Nullable Collision getCollision(MagicObjectMoveEvent event) {
-        Location start = event.getMagicObject().getLocation();
-        Location end = event.getNewLocation();
-
+    public @Nullable Collision getCollision(Location start, Location end) {
         boolean isAboveBefore = isAbove(start);
         boolean isAboveAfter = isAbove(end);
 

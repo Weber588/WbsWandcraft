@@ -5,15 +5,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsFileUtil;
 import wbs.utils.util.configuration.WbsConfigReader;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.modifier.ModifierTexture;
-import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.ItemUtils;
 
 import java.io.File;
@@ -97,10 +98,8 @@ public class ResourcePackBuilder {
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.SPELLS.stream().toList(), ItemUtils.BASE_MATERIAL_SPELL));
             resourcesToLoad.addAll(writeProviders(gson, Arrays.stream(ModifierTexture.values()).toList(), ItemUtils.BASE_MATERIAL_MODIFIER));
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.WAND_TEXTURES.stream().toList(), ItemUtils.BASE_MATERIAL_WAND));
-            resourcesToLoad.addAll(writeProviders(gson, List.of(new Spellbook()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
-
-            resourcesToLoad.add(ITEM_MODELS_PATH + "blank_scroll.json");
-            resourcesToLoad.add(TEXTURES_PATH + "blank_scroll.png");
+            resourcesToLoad.addAll(writeProviders(gson, List.of(new SpellbookTextureProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
+            resourcesToLoad.addAll(writeProviders(gson, List.of(getSimpleProvider("blank_scroll")), ItemUtils.BASE_MATERIAL_BLANK_SCROLL));
 
             resourcesToLoad.forEach(path -> {
                 if (plugin.getResource(path) != null) {
@@ -126,16 +125,7 @@ public class ResourcePackBuilder {
 
         WbsWandcraft plugin = WbsWandcraft.getInstance();
 
-        writeJSONToFile(
-                plugin.getDataPath().resolve(ResourcePackBuilder.ITEMS_FOLDER),
-                baseMaterial.key().value(),
-                gson,
-                new ItemSelectorDefinition(
-                        baseMaterial,
-                        providers
-                )
-        );
-
+        Set<T> valid = new HashSet<>();
         providers.forEach(provider -> {
             provider.getModelDefinitions().forEach((name, definition) -> {
                 writeJSONToFile(
@@ -147,12 +137,29 @@ public class ResourcePackBuilder {
             });
 
             for (TextureLayer texture : provider.getTextures()) {
-                resourcesToLoad.add(TEXTURES_PATH + texture.name() + ".png");
+                String imagePath = TEXTURES_PATH + texture.name() + ".png";
+
+                if (plugin.getResource(imagePath) != null) {
+                    valid.add(provider);
+                }
+
+                resourcesToLoad.add(imagePath);
                 if (texture.isAnimated()) {
-                    resourcesToLoad.add(TEXTURES_PATH + texture.name() + ".png.mcmeta");
+                    String metaPath = TEXTURES_PATH + texture.name() + ".png.mcmeta";
+                    resourcesToLoad.add(metaPath);
                 }
             }
         });
+
+        writeJSONToFile(
+                plugin.getDataPath().resolve(ResourcePackBuilder.ITEMS_FOLDER),
+                baseMaterial.key().value(),
+                gson,
+                new ItemSelectorDefinition(
+                        baseMaterial,
+                        valid.stream().toList()
+                )
+        );
 
         return resourcesToLoad;
     }
@@ -173,5 +180,21 @@ public class ResourcePackBuilder {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static TextureProvider getSimpleProvider(String name) {
+        return new TextureProvider() {
+            @Override
+            public @NotNull List<TextureLayer> getTextures() {
+                return List.of(
+                        new TextureLayer(name)
+                );
+            }
+
+            @Override
+            public @NotNull NamespacedKey getKey() {
+                return WbsWandcraft.getKey(name);
+            }
+        };
     }
 }

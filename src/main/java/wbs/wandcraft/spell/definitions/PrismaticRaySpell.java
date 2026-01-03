@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
+
 public class PrismaticRaySpell extends SpellDefinition implements CastableSpell, RangedSpell, DamageSpell, DirectionalSpell {
     private static final double STEP_SIZE = 0.3;
     // TODO: Make beam width attribute
@@ -30,6 +32,13 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
 
     public PrismaticRaySpell() {
         super("prismatic_ray");
+
+        addSpellType(ARCANE);
+
+        setAttribute(COST, 100);
+        setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
+
+        setAttribute(RANGE, 300d);
         setAttribute(IMPRECISION, 0d);
         setAttribute(DAMAGE, 2d);
     }
@@ -80,9 +89,7 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
     }
 
     @Override
-    public Component description() {
-        return Component.text(
-                "A beam of energy is instantly sent out in the direct you're facing dealing damage to ALL creatures in its path."
-        );
+    public String rawDescription() {
+        return "A beam of energy is instantly sent out in the direct you're facing dealing damage to ALL creatures in its path.";
     }
 }

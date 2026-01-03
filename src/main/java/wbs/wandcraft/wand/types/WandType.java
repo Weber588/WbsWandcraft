@@ -2,6 +2,7 @@ package wbs.wandcraft.wand.types;
 
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import io.papermc.paper.persistence.PersistentDataContainerView;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
@@ -18,38 +19,49 @@ import java.util.function.Supplier;
 public class WandType<T extends Wand> implements Keyed {
     public static final WandType<BasicWand> BASIC = new WandType<>(
             WbsWandcraft.getKey("basic"),
+            Component.text("Basic Wand"),
+            "A wand with a single slot for a spell scroll.",
+            1,
             CustomPersistentDataTypes.BASIC_WAND_TYPE,
             WandTexture.BASIC,
             ItemUseAnimation.BLOCK,
             15,
-            () -> new BasicWand(UUID.randomUUID().toString())
-    );
-    public static final WandType<WizardryWand> WIZARDRY = new WandType<>(
-            WbsWandcraft.getKey("wizardry"),
-            CustomPersistentDataTypes.WIZARDRY_WAND_TYPE,
-            WandTexture.WIZARDRY,
-            ItemUseAnimation.BOW,
-            10,
-            () -> new WizardryWand(UUID.randomUUID().toString())
-    );
-    public static final WandType<SorceryWand> SORCERY = new WandType<>(
-            WbsWandcraft.getKey("sorcery"),
-            CustomPersistentDataTypes.SORCERY_WAND_TYPE,
-            WandTexture.SORCERY,
-            null,
-            0,
-            () -> new SorceryWand(UUID.randomUUID().toString())
-    );
+            () -> new BasicWand(UUID.randomUUID().toString()));
     public static final WandType<MageWand> MAGE = new WandType<>(
             WbsWandcraft.getKey("mage"),
+            Component.text("Mage Wand"),
+            "A wand with a list of slots that can be cycled between, allowing you to choose what to cast.",
+            16,
             CustomPersistentDataTypes.MAGE_WAND_TYPE,
             WandTexture.MAGE,
             null,
             0,
-            () -> new MageWand(UUID.randomUUID().toString())
-    );
+            () -> new MageWand(UUID.randomUUID().toString()));
+    public static final WandType<WizardryWand> WIZARDRY = new WandType<>(
+            WbsWandcraft.getKey("wizardry"),
+            Component.text("Wizardry Wand"),
+            "A wand with a list of slots that ALL cast rapidly when the wand is used.",
+            32,
+            CustomPersistentDataTypes.WIZARDRY_WAND_TYPE,
+            WandTexture.WIZARDRY,
+            ItemUseAnimation.BOW,
+            10,
+            () -> new WizardryWand(UUID.randomUUID().toString()));
+    public static final WandType<SorceryWand> SORCERY = new WandType<>(
+            WbsWandcraft.getKey("sorcery"),
+            Component.text("Sorcery Wand"),
+            "A wand with a slot for various controls, allowing a different spell for punch, right click, and a few others.",
+            32,
+            CustomPersistentDataTypes.SORCERY_WAND_TYPE,
+            WandTexture.SORCERY,
+            null,
+            0,
+            () -> new SorceryWand(UUID.randomUUID().toString()));
 
     private final NamespacedKey key;
+    private final @NotNull Component itemName;
+    private final @NotNull String rawDescription;
+    private final int echoShardCost;
     private final AbstractPersistentWandType<T> persistentDataType;
     private final WandTexture wandTexture;
     @Nullable
@@ -57,8 +69,11 @@ public class WandType<T extends Wand> implements Keyed {
     private final int animationTicks;
     private final Supplier<T> supplier;
 
-    public WandType(NamespacedKey key, AbstractPersistentWandType<T> persistentDataType, WandTexture wandTexture, ItemUseAnimation animation, int animationTicks, Supplier<T> supplier) {
+    public WandType(NamespacedKey key, @NotNull Component itemName, @NotNull String rawDescription, int echoShardCost, AbstractPersistentWandType<T> persistentDataType, WandTexture wandTexture, ItemUseAnimation animation, int animationTicks, Supplier<T> supplier) {
         this.key = key;
+        this.itemName = itemName;
+        this.rawDescription = rawDescription;
+        this.echoShardCost = echoShardCost;
         this.persistentDataType = persistentDataType;
         this.wandTexture = wandTexture;
         this.animation = animation;
@@ -89,5 +104,21 @@ public class WandType<T extends Wand> implements Keyed {
 
     public int getAnimationTicks() {
         return animationTicks;
+    }
+
+    public @NotNull Component getItemName() {
+        return itemName;
+    }
+
+    public @NotNull String getRawDescription() {
+        return rawDescription;
+    }
+
+    public @NotNull Component getDescription() {
+        return Component.text(rawDescription);
+    }
+
+    public int getEchoShardCost() {
+        return echoShardCost;
     }
 }

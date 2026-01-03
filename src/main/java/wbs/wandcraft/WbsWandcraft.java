@@ -13,6 +13,7 @@ import wbs.wandcraft.commands.*;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.events.*;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
+import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -34,28 +35,26 @@ public class WbsWandcraft extends WbsPlugin {
     }
 
     @Override
-    public void onLoad() {
+    public void onEnable() {
         instance = this;
 
         this.settings = new WandcraftSettings(this);
         this.settings.reload();
-    }
 
-    @Override
-    public void onEnable() {
         WbsCommand.getStatic(this, "wandcraft")
                 .setPermission("wbswandcraft.command")
                 .addSubcommands(
                         WbsCommand.getStatic(this, "spell").addSubcommands(
                                 new CommandSpellLearn(this, "learn"),
+                                new CommandSpellForget(this, "forget"),
                                 new CommandModifyAttributes(this, "attribute"),
-                                new CommandInfo(this, "info"),
+                                new CommandSpellInfo(this, "info"),
                                 new CommandSpellBuild(this, "build")
-                        ),
+                        ).inferSubPermissions(),
                         WbsCommand.getStatic(this, "wand").addSubcommands(
                                 new CommandWandBuild(this, "build"),
                                 new CommandModifyAttributes(this, "attribute"),
-                                new CommandGenerateWand(this, "generate"),
+                                new CommandWandGenerate(this, "generate"),
                                 WbsSubcommand.simpleSubcommand(this, "modify", context -> {
                                     CommandSender sender = context.getSource().getSender();
                                     if (!(sender instanceof Player player)) {
@@ -70,19 +69,29 @@ public class WbsWandcraft extends WbsPlugin {
                                     }
                                     wand.startEditing(player, item);
                                 })
-                        ),
+                        ).inferSubPermissions(),
                         WbsCommand.getStatic(this, "modifier").addSubcommands(
                                 new CommandModifierBuild(this, "build"),
                                 new CommandModifyEffects(this, "effect"),
                                 new CommandModifyAttributes(this, "attribute")
-                        ),
-                        new CommandBuildSpellbook(this, "spellbook"),
-                        new CommandModifyPlayer(this, "player"),
-                        WbsSubcommand.simpleSubcommand(this, "artificer", context -> {
-                            Player sender = (Player) context.getSource().getSender();
-                            sendMessage("Gave 1 artificing table!", sender);
-                            sender.getInventory().addItem(settings.getArtificingConfig().getItem());
-                        }),
+                        ).inferSubPermissions(),
+                        WbsCommand.getStatic(this, "item").addSubcommands(
+                                new CommandWandBuild(this, "wand"),
+                                new CommandSpellBuild(this, "spell"),
+                                new CommandSpellbookBuild(this, "spellbook"),
+                                WbsSubcommand.simpleSubcommand(this, "artificer", context -> {
+                                    Player sender = (Player) context.getSource().getSender();
+                                    sendMessage("Got 1 artificing table", sender);
+                                    sender.getInventory().addItem(settings.getArtificingConfig().getItem());
+                                }),
+                                WbsSubcommand.simpleSubcommand(this, "blank_scroll", context -> {
+                                    Player sender = (Player) context.getSource().getSender();
+                                    sendMessage("Got 1 blank scroll", sender);
+                                    sender.getInventory().addItem(ItemUtils.buildBlankScroll());
+                                })
+                        ).inferSubPermissions(),
+                        new CommandPlayerModify(this, "player"),
+                        new CommandSpellCast(this, "cast"),
                         WbsReloadSubcommand.getStatic(this, settings),
                         WbsErrorsSubcommand.getStatic(this, settings)
                 )
@@ -92,11 +101,12 @@ public class WbsWandcraft extends WbsPlugin {
 
         registerListener(new WandInventoryEvents());
         registerListener(new WandEvents());
+        registerListener(new SpellEvents());
         registerListener(new SpellbookEvents());
-        registerListener(new ArtificingBlockEvents());
-        registerListener(new ArtificingItemEvents());
+        registerListener(new ArtificingTableEvents());
         registerListener(new StatusEffectEvents());
         registerListener(new MagicBlockEvents());
+        registerListener(new RecipeEvents());
 
         // Run next tick, when the plugin is fully enabled
         runSync(() -> {

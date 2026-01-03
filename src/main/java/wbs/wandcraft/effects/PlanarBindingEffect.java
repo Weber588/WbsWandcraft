@@ -18,7 +18,8 @@ public class PlanarBindingEffect implements StatusEffect {
     @Override
     public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
         EFFECT.setRadius(entity.getWidth())
-                .play(Particle.REVERSE_PORTAL, WbsEntityUtil.getMiddleLocation(entity));
+                .play(Particle.REVERSE_PORTAL, WbsEntityUtil.getMiddleLocation(entity))
+                .play(Particle.SMOKE, WbsEntityUtil.getMiddleLocation(entity));
         return false;
     }
 

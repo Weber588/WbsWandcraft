@@ -54,7 +54,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
         Double speed = instance.getAttribute(SPEED);
         Double drag = instance.getAttribute(DRAG);
         Double gravity = instance.getAttribute(GRAVITY);
-        Particle particle = instance.getAttribute(PARTICLE, getDefaultParticle());
+        Particle particle = getParticle(instance);
         double hitboxSize = instance.getAttribute(SIZE);
         int bounces = instance.getAttribute(BOUNCES);
 

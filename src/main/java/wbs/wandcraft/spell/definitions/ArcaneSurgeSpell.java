@@ -1,7 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Color;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -23,22 +22,29 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
 
+import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
+
 // TODO: Make this a continuous cast spell
 public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, DurationalSpell, DamageSpell, SpeedSpell, ParticleSpell {
-    private final Particle.DustOptions data = new Particle.DustOptions(Color.fromRGB(200, 140, 200), 0.6F);
-    private final Particle.DustOptions dataCore = new Particle.DustOptions(Color.fromRGB(120, 0, 144), 1F);
+    private final Particle.DustOptions data = new Particle.DustOptions(ARCANE.mulColor(1.2), 0.6F);
+    private final Particle.DustOptions dataCore = new Particle.DustOptions(ARCANE.mulColor(0.5), 1F);
 
     private final PotionEffect effect = new PotionEffect(PotionEffectType.RESISTANCE, 20, 7);
 
     private final RingParticleEffect particleEffect = (RingParticleEffect) new RingParticleEffect()
             .setAmount(75)
-            .setOptions(data);
+            .setData(data);
     private final RingParticleEffect coreEffect = (RingParticleEffect) new RingParticleEffect()
             .setAmount(75)
-            .setOptions(dataCore);
+            .setData(dataCore);
 
     public ArcaneSurgeSpell() {
         super("arcane_surge");
+
+        addSpellType(ARCANE);
+
+        setAttribute(COST, 200);
+        setAttribute(COOLDOWN, 15 * Ticks.TICKS_PER_SECOND);
     }
 
     @Override
@@ -94,7 +100,7 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
 
                 sound.play(playerLoc);
 
-                Particle particle = context.instance().getAttribute(PARTICLE, getDefaultParticle());
+                Particle particle = getParticle(context.instance());
 
                 particleEffect.play(particle, playerLoc);
                 coreEffect.play(particle, playerLoc);
@@ -115,10 +121,8 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
     }
 
     @Override
-    public Component description() {
-        return Component.text(
-                "The casterUUID moves forward for a set distance, dealing damage to nearby creatures. " +
-                        "The casterUUID is immune to all damage while moving."
-        );
+    public String rawDescription() {
+        return "The caster moves forward for a set distance, dealing damage to nearby creatures. " +
+                        "The caster is immune to all damage while moving.";
     }
 }

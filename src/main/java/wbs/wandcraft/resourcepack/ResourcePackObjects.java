@@ -77,6 +77,9 @@ public final class ResourcePackObjects {
 
             this.model = model;
         }
+        public ItemSelectorDefinition(Model model) {
+            this.model = model;
+        }
     }
 
     public abstract static class Model {

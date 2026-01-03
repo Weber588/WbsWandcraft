@@ -27,14 +27,14 @@ public interface DirectionalSpell extends ISpellDefinition {
     default Vector getDirection(CastContext context, Location location, double magnitude) {
         Vector direction = location.getDirection();
         if (direction.lengthSquared() == 0) {
-            return direction;
+            return WbsMath.scaleVector(direction, magnitude);
         }
 
         double imprecision = context.instance().getAttribute(IMPRECISION);
         double offsetAngle = Math.random() * imprecision;
 
         if (offsetAngle <= 0) {
-            return direction;
+            return WbsMath.scaleVector(direction, magnitude);
         }
 
         return WbsMath.scaleVector(WbsMath.rotateRandomDirection(direction, offsetAngle), magnitude);

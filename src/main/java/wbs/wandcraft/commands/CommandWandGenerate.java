@@ -17,14 +17,14 @@ import wbs.wandcraft.generation.WandGenerator;
 
 import java.util.stream.Collectors;
 
-public class CommandGenerateWand extends WbsSubcommand  {
+public class CommandWandGenerate extends WbsSubcommand  {
     private static final WbsSimpleArgument.KeyedSimpleArgument WAND_GENERATOR = new WbsSimpleArgument.KeyedSimpleArgument(
             "wand_generator",
             ArgumentTypes.namespacedKey(),
             WandcraftRegistries.WAND_GENERATORS.stream().findFirst().orElseThrow().getKey()
     ).addKeyedSuggestions(WandcraftRegistries.WAND_GENERATORS.values());
 
-    public CommandGenerateWand(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandWandGenerate(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
         addSimpleArgument(WAND_GENERATOR);
     }

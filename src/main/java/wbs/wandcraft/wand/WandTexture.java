@@ -21,13 +21,13 @@ public final class WandTexture implements Keyed, TextureProvider {
     public static final WandTexture BASIC = new WandTexture("basic")
             .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_LEFTHAND, new DisplayTransform()
                     .scale(0.68, 0.68, 0.68)
-                    .translation(1.13, 3.2, 1.13)
-                    .rotation(0, -90, 45)
+                    .translation(0.5, 3.2, 1.13)
+                    .rotation(0, 80, 30)
             )
             .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_RIGHTHAND, new DisplayTransform()
                     .scale(0.68, 0.68, 0.68)
-                    .translation(1.13, 3.2, 1.13)
-                    .rotation(0, 90, -45)
+                    .translation(0.5, 3.2, 1.13)
+                    .rotation(0, -80, -30)
             );
     public static final WandTexture MAGE = new WandTexture("mage");
     public static final WandTexture WIZARDRY = new WandTexture("wizardry")

@@ -2,25 +2,36 @@ package wbs.wandcraft.spell.definitions;
 
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.cost.CostUtils;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
-import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
 import wbs.wandcraft.spell.event.SpellTriggeredEvent;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
+import wbs.wandcraft.wand.Wand;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+
+import static wbs.wandcraft.spellbook.Spellbook.DESCRIPTION_COLOR;
 
 public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public static final NamespacedKey SPELL_INSTANCE_KEY = WbsWandcraft.getKey("spell_instance");
@@ -50,10 +61,22 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
         return attributeValues;
     }
 
+    @Override
+    public void writeAttributes(PersistentDataContainer container, NamespacedKey key) {
+        PersistentDataContainer attributes = container.getAdapterContext().newPersistentDataContainer();
+        for (SpellAttributeInstance<?> attribute : getAttributeInstances()) {
+            if (!getAttribute(attribute.attribute()).equals(definition.getAttribute(attribute.attribute()))) {
+                attribute.writeTo(attributes);
+            }
+        }
+
+        container.set(key, PersistentDataType.TAG_CONTAINER, attributes);
+    }
+
     @Nullable
-    public CastContext cast(Player player, Runnable callback) {
+    public CastContext cast(Player player, @Nullable Wand wand, EquipmentSlot slot, Runnable callback) {
         if (definition instanceof CastableSpell castable) {
-            CastContext context = new CastContext(player, this, player.getEyeLocation(), null, callback);
+            CastContext context = new CastContext(player, this, wand, slot, player.getEyeLocation(), null, callback);
             castable.cast(context);
 
             // If a spell has completeAfterCast = false, then it will handle the callback itself at a later time.
@@ -110,5 +133,41 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     @Override
     public String toString() {
         return definition.getKey().asString();
+    }
+
+    @Override
+    public @NotNull List<Component> getLore() {
+        List<Component> lore = new LinkedList<>();
+
+        Component types = Component.join(
+                JoinConfiguration.builder()
+                        .separator(Component.text(" - ")
+                                .decorate(TextDecoration.ITALIC)
+                                .color(DESCRIPTION_COLOR)
+                        )
+                        .build(),
+                definition.getTypes()
+                        .stream()
+                        .map(spellType ->
+                                spellType.displayName()
+                                        .color(spellType.textColor())
+                                        .decorate(TextDecoration.ITALIC)
+                        )
+                        .toList()
+        );
+
+        lore.add(types);
+        lore.addAll(definition.loreDescription());
+
+        deriveAttributeValues().stream()
+                .sorted()
+                .filter(instance -> !instance.value().equals(definition.getDefault(instance.attribute())))
+                .map(instance ->
+                        (Component) Component.text("  - ").style(Style.style(NamedTextColor.GOLD, Set.of()))
+                                .append(instance.toComponent())
+                )
+                .forEachOrdered(lore::add);
+
+        return lore;
     }
 }

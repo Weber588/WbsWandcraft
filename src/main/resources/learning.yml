@@ -1,0 +1,54 @@
+wands: {}
+spells:
+  anti_magic_shell:
+    # List advancement keys that, when any is achieved, will teach this spell
+    # Vanilla keys can be found here: https://minecraft.wiki/w/Advancement
+    advancements:
+      - "minecraft:adventure/avoid_vibration" # Sneak 100
+    enter-structure:
+      - "minecraft:ancient_city"
+  arcane_burst:
+
+  arcane_spark:
+
+  arcane_surge:
+
+  blink:
+
+  carve:
+
+  chain_lightning:
+
+  charm:
+
+  conflagration:
+
+  crows_call:
+
+  death_walk:
+
+  discover_item:
+
+  displace:
+
+  eldritch_blast:
+
+  fireball:
+
+  fire_breath:
+
+  leap:
+
+  planar_binding:
+
+  prismatic_ray:
+
+  recall:
+
+  shield:
+
+  stun:
+
+  warp:
+
+  wind_walk:

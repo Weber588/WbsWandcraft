@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandModifyPlayer extends WbsSubcommand {
+public class CommandPlayerModify extends WbsSubcommand {
     private static final WbsSimpleArgument<PlayerSelectorArgumentResolver> PLAYER = new WbsSimpleArgument<>("player",
             ArgumentTypes.player(),
             null,
@@ -46,7 +46,7 @@ public class CommandModifyPlayer extends WbsSubcommand {
         return builder.buildFuture();
     });
 
-    public CommandModifyPlayer(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandPlayerModify(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
 
         addSimpleArgument(PLAYER);

@@ -7,6 +7,7 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.*;
 import wbs.wandcraft.spell.definitions.extensions.*;
+import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spell.event.CastSpellEffect;
 import wbs.wandcraft.spell.event.ForcePullEffect;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
@@ -49,6 +50,7 @@ public class WandcraftRegistries {
             WandTexture.FIRE,
             WandTexture.OVERGROWN
     );
+    public static final WbsRegistry<SpellType> SPELL_TYPES = new WbsRegistry<>();
     public static final WbsRegistry<SpellDefinition> SPELLS = new WbsRegistry<>(
             new FireballSpell(),
             new LeapSpell(),
@@ -71,8 +73,9 @@ public class WandcraftRegistries {
             new ChainLightningSpell(),
             new CharmSpell(),
             new DisplaceSpell(),
-            new EnergyBurstSpell(),
-            new ShieldSpell()
+            new ArcaneBurstSpell(),
+            new ShieldSpell(),
+            new CarveSpell()
     );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
             StatusEffect.GLIDING,
@@ -86,7 +89,7 @@ public class WandcraftRegistries {
             new CastSpellEffect()
     );
     public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>(
-            new WandGenerator(WbsWandcraft.getKey("example"), 1, 2, -1, 0, 1, 1, 3)
+            new WandGenerator(WbsWandcraft.getKey("example"), 1, 2, 0, 1, 1, 3)
                     .addAttributeGenerator(
                             new AttributeInstanceGenerator<>(WizardryWand.COOLDOWN)
                                     .setValues(5, 10, 10, 15, 20)

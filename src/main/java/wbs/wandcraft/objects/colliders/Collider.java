@@ -53,8 +53,12 @@ public abstract class Collider {
         objectsWithColliders.put(parent, this);
     }
 
+    protected @Nullable Collision getCollision(MagicObjectMoveEvent event) {
+        return getCollision(event.getMagicObject().getLocation(), event.getNewLocation());
+    }
+
     @Nullable
-    protected abstract Collision getCollision(MagicObjectMoveEvent event);
+    public abstract Collision getCollision(Location start, Location end);
 
     @Nullable
     public final Collision tryColliding(MagicObjectMoveEvent moveEvent) {

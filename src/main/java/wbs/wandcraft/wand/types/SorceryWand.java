@@ -2,6 +2,8 @@ package wbs.wandcraft.wand.types;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.util.Ticks;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -14,7 +16,10 @@ import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -67,23 +72,29 @@ public class SorceryWand extends Wand {
     protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
         LinkedList<SpellInstance> spellList = new LinkedList<>();
 
-        WandControl control = getWandControl(event);
-
-        ItemStack item = getTieredItems().get(control);
-        if (item == null) {
+        SpellInstance instance = getSpellInstance(event);
+        if (instance == null) {
             return spellList;
         }
 
-        SpellInstance instance = SpellInstance.fromItem(item);
-        if (instance == null) {
-            throw new IllegalStateException("Sorcery Wand item did not have a Spell Instance!");
-        }
-
-        spellList.add(instance);
+        spellList.add(applyModifiers(instance));
         tier = 0;
         toItem(wandItem);
 
         return spellList;
+    }
+
+    private @Nullable SpellInstance getSpellInstance(PlayerEvent event) {
+        ItemStack item = getItemFor(event);
+
+        return SpellInstance.fromItem(item);
+    }
+
+    private ItemStack getItemFor(PlayerEvent event) {
+        WandControl control = getWandControl(event);
+
+        ItemStack item = getTieredItems().get(control);
+        return item;
     }
 
     private static @NotNull WandControl getWandControl(PlayerEvent event) {
@@ -118,12 +129,6 @@ public class SorceryWand extends Wand {
 
     public Map<Integer, Map<WandControl, ItemStack>> getAllItems() {
         return items;
-    }
-
-    // TODO: Make this configurable
-    @Override
-    public @NotNull Component getItemName() {
-        return Component.text("Sorcery Wand");
     }
 
     @Override
@@ -177,6 +182,36 @@ public class SorceryWand extends Wand {
         item.editMeta(meta ->
                 meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.SORCERY_WAND_TYPE, this)
         );
+    }
+
+    @Override
+    protected int getAdditionalCooldown(@NotNull PlayerEvent event, ItemStack wandItem) {
+        int additionalCooldown = 0;
+
+        SpellInstance spell = getSpellInstance(event);
+        if (spell == null) {
+            return additionalCooldown;
+        }
+
+        additionalCooldown += (int) (spell.getAttribute(CastableSpell.COOLDOWN) * Ticks.SINGLE_TICK_DURATION_MS);
+        additionalCooldown += (int) (spell.getAttribute(CastableSpell.DELAY) * Ticks.SINGLE_TICK_DURATION_MS);
+
+        return additionalCooldown;
+    }
+
+    @Override
+    protected @Nullable Color getWandColour() {
+        List<Color> colors = new LinkedList<>(getSpellInstances().values().stream()
+                .map(SpellInstance::getDefinition)
+                .map(SpellDefinition::getPrimarySpellType)
+                .map(SpellType::wandColor)
+                .toList());
+
+        if (colors.isEmpty()) {
+            return null;
+        }
+
+        return colors.removeFirst().mixColors(colors.toArray(Color[]::new));
     }
 
     @NotNull

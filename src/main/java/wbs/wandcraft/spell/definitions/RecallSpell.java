@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
@@ -11,14 +11,17 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.utils.util.string.WbsStringify;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.generics.MagicObject;
-import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
 
 import java.time.Duration;
 import java.util.Collection;
+
+import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
+import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
 
 public class RecallSpell extends SpellDefinition implements CastableSpell, DurationalSpell {
     private static final NormalParticleEffect TELEPORT_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
@@ -28,6 +31,12 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
 
     public RecallSpell() {
         super("recall");
+
+        setAttribute(COST, 100);
+        setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
+
+        addSpellType(ENDER);
+        addSpellType(ARCANE);
 
         setAttribute(DURATION, 0);
     }
@@ -142,9 +151,7 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
     }
 
     @Override
-    public Component description() {
-        return Component.text(
-                "Leave behind a magic checkpoint, that you return to when you cast it again!"
-        );
+    public String rawDescription() {
+        return "Leave behind a magic checkpoint, that you return to when you cast it again!";
     }
 }

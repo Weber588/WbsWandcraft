@@ -103,8 +103,6 @@ public class WandEvents implements Listener {
 
         Block clicked = event.getClickedBlock();
         if (clicked != null && ArtificingConfig.isInstance(clicked)) {
-            player.swingMainHand();
-            wand.startEditing(player, item);
             event.setCancelled(true);
         } else {
             // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.

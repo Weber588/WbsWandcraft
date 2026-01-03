@@ -1,13 +1,16 @@
 package wbs.wandcraft.crafting;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -15,20 +18,35 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
-import wbs.utils.util.WbsMath;
+import wbs.utils.util.particles.NormalParticleEffect;
+import wbs.utils.util.persistent.BlockChunkStorageUtil;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.cost.PlayerMana;
+import wbs.wandcraft.spell.definitions.SpellDefinition;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spellbook.Spellbook;
+import wbs.wandcraft.util.ItemUtils;
+import wbs.wandcraft.wand.Wand;
+import wbs.wandcraft.wand.types.WandType;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 @NullMarked
-public class ArtificingTable {
-    public static final int MAX_ITEMS = 7;
-    public static final double ITEM_DISTANCE = 1.5;
+public class ArtificingTable implements InventoryHolder {
     private static final NamespacedKey SPAWN_TIME = WbsWandcraft.getKey("spawn_time");
+    private static final NamespacedKey ARTIFICING_INVENTORY = WbsWandcraft.getKey("artificing_inventory");
+    private static final NormalParticleEffect CONVERT_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
+            .setXYZ(0.5)
+            .setSpeed(0.1)
+            .setAmount(10);
 
     private static final Team COLOUR_TEAM;
 
@@ -50,9 +68,156 @@ public class ArtificingTable {
     }
 
     private final Block block;
+    private final @NotNull Inventory inventory;
 
     public ArtificingTable(Block block) {
         this.block = block;
+        inventory = Bukkit.createInventory(this, InventoryType.HOPPER, Component.text("Artificing"));
+
+        PersistentDataContainer container = BlockChunkStorageUtil.getContainer(block);
+
+        List<ItemStack> itemStacks = container.get(ARTIFICING_INVENTORY, PersistentDataType.LIST.listTypeFrom(WbsPersistentDataType.ITEM_AS_BYTES));
+
+        if (itemStacks != null && !itemStacks.isEmpty()) {
+            itemStacks.forEach(inventory::addItem);
+        }
+    }
+
+    public void interact(Player player, EquipmentSlot hand) {
+        Item item = getItem();
+
+        if (player.isSneaking()) {
+            dropItem();
+        } else {
+            ItemStack heldItem = player.getInventory().getItem(hand);
+            Wand wand = Wand.getIfValid(heldItem);
+            if (wand != null) {
+                wand.startEditing(player, heldItem);
+                return;
+            }
+            Spellbook spellbook = Spellbook.fromItem(heldItem);
+            if (spellbook != null) {
+                handleSpellbookClick(player, spellbook);
+                return;
+            }
+
+            if (item == null && (heldItem.isSimilar(ItemUtils.buildBlankScroll()) || heldItem.isSimilar(ItemStack.of(Material.STICK)))) {
+                Item droppedItem = player.dropItem(hand, 1);
+
+                if (droppedItem != null) {
+                    acceptItem(droppedItem);
+                } else {
+                    throw new IllegalStateException("Failed to drop item previously checked?");
+                }
+            } else {
+                player.openInventory(inventory);
+            }
+        }
+    }
+
+    private void dropItem() {
+        Item item = getItem();
+        if (item != null) {
+            dropFromTable(item);
+        }
+    }
+
+    private void handleSpellbookClick(Player player, Spellbook spellbook) {
+        Item item = getItem();
+        if (item == null) {
+            // TODO: Find a better way to signal this
+            player.sendActionBar(Component.text("No item on table!"));
+            return;
+        }
+
+        SpellDefinition currentSpell = spellbook.getCurrentSpell();
+        WandType<?> currentWandType = spellbook.getCurrentWandType();
+
+        boolean hasWandIngredient = item.getItemStack().equals(ItemStack.of(Material.STICK));
+        boolean hasSpellIngredient = item.getItemStack().equals(ItemUtils.buildBlankScroll());
+
+        // TODO: Add a recipe system (ingredient, wand/spell def, echo shard cost)
+        if (currentSpell != null) {
+            if (hasSpellIngredient) {
+                handleSpellCraft(player, item, currentSpell);
+                return;
+            }
+        } else if (currentWandType != null) {
+            if (hasWandIngredient) {
+                handleWandCraft(player, item, currentWandType);
+                return;
+            }
+        }
+
+        if (hasWandIngredient) {
+            WbsWandcraft.getInstance().sendActionBar("Select a wand page in the book", player);
+        } else if (hasSpellIngredient) {
+            WbsWandcraft.getInstance().sendActionBar("Select a spell page in the book", player);
+        } else {
+            player.sendActionBar(Component.text("No item on table!"));
+        }
+    }
+
+    private void handleWandCraft(Player player, Item item, WandType<?> currentWandType) {
+        int shardsAvailable = 0;
+        for (ItemStack content : getInventory().getContents()) {
+            if (content != null) {
+                shardsAvailable += content.getAmount();
+            }
+        }
+
+        int cost = currentWandType.getEchoShardCost();
+
+        if (shardsAvailable >= cost) {
+            getInventory().removeItem(ItemStack.of(Material.ECHO_SHARD, cost));
+            save();
+
+            item.setItemStack(ItemUtils.buildWand(currentWandType));
+            dropItem();
+            CONVERT_EFFECT.play(Particle.END_ROD, item.getLocation().add(0, 0.15, 0));
+        } else {
+            WbsWandcraft.getInstance().sendActionBar("Not enough echo shards! (" + shardsAvailable + "/" + cost + ")", player);
+        }
+    }
+
+    private void handleSpellCraft(Player player, Item item, SpellDefinition currentSpell) {
+        if (!Spellbook.getKnownSpells(player).contains(currentSpell)) {
+            player.sendActionBar(Spellbook.getErrorMessage(currentSpell));
+        } else {
+            int shardsAvailable = 0;
+            for (ItemStack content : getInventory().getContents()) {
+                if (content != null) {
+                    shardsAvailable += content.getAmount();
+                }
+            }
+
+            // TODO: Get this from spell definition somehow
+            int cost = 64 * currentSpell.getDefault(CastableSpell.COST) / PlayerMana.DEFAULT_MAX_MANA;
+
+            if (shardsAvailable >= cost) {
+                getInventory().removeItem(ItemStack.of(Material.ECHO_SHARD, cost));
+                save();
+
+                item.setItemStack(ItemUtils.buildSpell(currentSpell));
+                dropItem();
+                List<SpellType> types = currentSpell.getTypes();
+                Color color1 = types.get(0).color();
+                Color color2 = color1;
+                if (types.size() > 1) {
+                    color2 = types.get(1).color();
+                }
+                CONVERT_EFFECT.setData(new Particle.DustTransition(color1, color2, 1.3f))
+                        .play(Particle.DUST_COLOR_TRANSITION, item.getLocation().add(0, 0.15, 0));
+            } else {
+                WbsWandcraft.getInstance().sendActionBar("Not enough echo shards! (" + shardsAvailable + "/" + cost + ")", player);
+            }
+        }
+    }
+
+    public void save() {
+        BlockChunkStorageUtil.modifyContainer(block, container -> {
+            container.set(ARTIFICING_INVENTORY, PersistentDataType.LIST.listTypeFrom(WbsPersistentDataType.ITEM_AS_BYTES), Arrays.asList(inventory.getContents()));
+        });
     }
 
     public Location getCentralItemLocation() {
@@ -61,20 +226,12 @@ public class ArtificingTable {
     }
 
     @Nullable
-    public Item getCentralItem() {
-        List<Item> items = getItems();
-        if (items.isEmpty()) {
-            return null;
-        }
-        return items.getFirst();
-    }
-
-    public List<Item> getItems() {
+    public Item getItem() {
         NamespacedKey blockKey = ArtificingConfig.getBlockKey(block);
 
         // Sort by age, oldest first -- that's the order they were added. First item is at the centre.
         return block.getWorld().getNearbyEntities(
-                BoundingBox.of(block).expand(32),
+                        BoundingBox.of(block).expand(32),
                         entity -> Objects.equals(
                                 entity.getPersistentDataContainer().get(ArtificingConfig.TAG, WbsPersistentDataType.NAMESPACED_KEY),
                                 blockKey
@@ -86,57 +243,16 @@ public class ArtificingTable {
                     }
                     return null;
                 }).filter(Objects::nonNull)
-                .sorted(Comparator.comparing(item -> Objects.requireNonNull(
-                        item.getPersistentDataContainer().get(SPAWN_TIME, PersistentDataType.LONG))
-                ))
-                .collect(Collectors.toCollection(LinkedList::new));
+                .min(Comparator.comparing(item -> item.getLocation().distance(block.getLocation().toCenterLocation())))
+                .orElse(null);
     }
 
-    public int occupiedOuterSlots() {
-        return Math.min(0, getItems().size() - 1);
-    }
-
-    public int getRemainingSlots() {
-        return MAX_ITEMS - occupiedOuterSlots() - 1;
-    }
-
-    public boolean canAcceptItems() {
-        return getItems().size() < MAX_ITEMS;
-    }
-
-    /**
-     * Accept an item onto the table.
-     * @param spawningItem The already existing item in the world.
-     * @return The affected item entity, if it still exists. Null if it was removed for any reason.
-     */
-    @Nullable
     public Item acceptItem(Item spawningItem) {
-        if (!canAcceptItems()) {
+        if (getItem() != null) {
             throw new IllegalStateException("Table is not able to accept new items.");
         }
 
         Location centralItemLocation = getCentralItemLocation();
-
-        // If more than 1 item provided, split out new items until the table can't hold more.
-        if (spawningItem.getItemStack().getAmount() > 1) {
-            ItemStack stack = spawningItem.getItemStack();
-
-            int amount = stack.getAmount();
-            int remainingSlots = getRemainingSlots();
-            for (int i = 0; i < remainingSlots && i < amount; i++) {
-                // Recurse, always with stack size == 1 to avoid looping
-                spawningItem.getWorld().dropItem(centralItemLocation, stack.asOne(), this::acceptItem);
-            }
-
-            int remainingInStack = amount - remainingSlots;
-            if (remainingInStack > 0) {
-                spawningItem.setItemStack(stack.asQuantity(remainingInStack));
-                return spawningItem;
-            } else {
-                spawningItem.remove();
-                return null;
-            }
-        }
 
         spawningItem.setGravity(false);
         spawningItem.setGlowing(true);
@@ -152,49 +268,8 @@ public class ArtificingTable {
         container.set(SPAWN_TIME, PersistentDataType.LONG, System.currentTimeMillis());
         container.set(ArtificingConfig.TAG, WbsPersistentDataType.NAMESPACED_KEY, ArtificingConfig.getBlockKey(block));
 
-        List<Item> currentItems = getItems();
-
-        if (currentItems.isEmpty()) {
-            spawningItem.teleport(centralItemLocation);
-            return spawningItem;
-        }
-
-        Item centralItem = currentItems.removeFirst();
-        currentItems.add(spawningItem);
-
-        // Can't make rotation random, or adding subsequent items will move existing ones to a random rotation too
-        ArrayList<Vector> offsets = WbsMath.get2Ring(currentItems.size(), ITEM_DISTANCE, 0);
-
-        for (int i = 0; i < currentItems.size(); i++) {
-            Item item = currentItems.get(i);
-            Vector offset = offsets.get(i);
-
-            Location itemLoc = centralItemLocation.clone().add(offset);
-            item.teleport(itemLoc);
-            item.getWorld().getNearbyPlayers(item.getLocation(), 32)
-                    .forEach(player -> {
-                        // Hide and immediately show the entity to nearby players -- this forces packets to instantly update their positions.
-                        player.hideEntity(WbsWandcraft.getInstance(), item);
-                        player.showEntity(WbsWandcraft.getInstance(), item);
-                    });
-        }
-
-        tryCrafting();
-
-        // The item may have been removed while crafting --
-        if (spawningItem.isValid()) {
-            return spawningItem;
-        }
-
-        return null;
-    }
-
-    private void tryCrafting() {
-        List<Item> items = getItems();
-
-        Item central = items.removeFirst();
-
-
+        spawningItem.teleport(centralItemLocation);
+        return spawningItem;
     }
 
     public void breakTable() {
@@ -202,7 +277,10 @@ public class ArtificingTable {
 
         NamespacedKey blockKey = ArtificingConfig.getBlockKey(block);
 
-        getItems().forEach(ArtificingTable::dropFromTable);
+        Item item = getItem();
+        if (item != null) {
+            dropFromTable(item);
+        }
 
         block.getWorld().getNearbyEntities(
                 BoundingBox.of(block).expand(32),
@@ -214,7 +292,9 @@ public class ArtificingTable {
 
     private static void dropFromTable(Item item) {
         ItemStack stack = item.getItemStack();
-        item.getWorld().dropItem(item.getLocation(), stack);
+        item.getWorld().dropItem(item.getLocation(), stack, spawned -> {
+            spawned.setVelocity(new Vector(0, 0.15, 0));
+        });
         item.remove();
     }
 
@@ -222,14 +302,9 @@ public class ArtificingTable {
         return block;
     }
 
-    public void dropLatestItem() {
-        List<Item> items = getItems();
-        if (items.isEmpty()) {
-            return;
-        }
-
-        Item last = items.getLast();
-        dropFromTable(last);
-        // TODO: Add method for recalculating circle positions
+    @Override
+    public @NotNull Inventory getInventory() {
+        return inventory;
     }
+
 }

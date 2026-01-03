@@ -5,10 +5,12 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.event.SpellTriggeredEvent;
+import wbs.wandcraft.wand.Wand;
 
 import java.util.Objects;
 
@@ -16,31 +18,32 @@ import java.util.Objects;
 public final class CastContext {
     private final Player player;
     private final SpellInstance instance;
+    @Nullable
+    private final Wand wand;
+    private final EquipmentSlot slot;
     private final Location location;
     private final @Nullable CastContext parent;
     private final @Nullable Runnable finishCallback;
     private final @Nullable Runnable failCallback;
     private boolean hasFinished = false;
 
-    public CastContext(Player player, SpellInstance instance, Location location, @Nullable CastContext parent, @Nullable Runnable finishCallback, @Nullable Runnable failCallback) {
+    public CastContext(Player player, SpellInstance instance, @Nullable Wand wand, EquipmentSlot slot, Location location, @Nullable CastContext parent, @Nullable Runnable finishCallback, @Nullable Runnable failCallback) {
         this.player = player;
         this.instance = instance;
+        this.wand = wand;
+        this.slot = slot;
         this.location = location;
         this.parent = parent;
         this.finishCallback = finishCallback;
         this.failCallback = failCallback;
     }
 
-    public CastContext(Player player, SpellInstance instance, Location location, @Nullable CastContext parent, @Nullable Runnable finishCallback) {
-        this(player, instance, location, parent, finishCallback, null);
+    public CastContext(Player player, SpellInstance instance, @Nullable Wand wand, EquipmentSlot slot, Location location, @Nullable CastContext parent, @Nullable Runnable finishCallback) {
+        this(player, instance, wand, slot, location, parent, finishCallback, null);
     }
 
     public void cast() {
         instance.cast(this);
-    }
-
-    public void cast(SpellInstance other, Location source) {
-        other.cast(new CastContext(player, other, source, parent, null, null));
     }
 
     public <T> void runEffects(SpellTriggeredEvent<T> trigger, T event) {
@@ -109,5 +112,13 @@ public final class CastContext {
     @Override
     public int hashCode() {
         return Objects.hash(player, instance, location, parent);
+    }
+
+    public @Nullable Wand wand() {
+        return wand;
+    }
+
+    public EquipmentSlot slot() {
+        return slot;
     }
 }

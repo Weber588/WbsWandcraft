@@ -1,14 +1,20 @@
 package wbs.wandcraft;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.plugin.WbsSettings;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.generation.WandGenerator;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
+import wbs.wandcraft.util.ItemUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,8 +61,42 @@ public class WandcraftSettings extends WbsSettings {
             artificingConfig = new ArtificingConfig(artificingTableSection, this, "config.yml/artificing-table");
         }
 
+        loadRecipes();
         loadGenerators();
         loadCredits();
+    }
+
+    // TODO: Make these configurable
+    private void loadRecipes() {
+        ShapelessRecipe spellbook = new ShapelessRecipe(WbsWandcraft.getKey("spellbook"), ItemUtils.buildSpellbook());
+
+        spellbook.addIngredient(ItemStack.of(Material.FEATHER));
+        spellbook.addIngredient(ItemStack.of(Material.BOOK));
+        spellbook.addIngredient(ItemStack.of(Material.AMETHYST_SHARD));
+
+        Bukkit.addRecipe(spellbook);
+
+        ShapelessRecipe blankScroll = new ShapelessRecipe(WbsWandcraft.getKey("blank_scroll"), ItemUtils.buildBlankScroll());
+
+        int paperInRecipe = 6;
+        for (int i = 0; i < paperInRecipe; i++) {
+            blankScroll.addIngredient(ItemStack.of(Material.PAPER));
+        }
+
+        Bukkit.addRecipe(blankScroll);
+
+        ShapedRecipe artificingTable = new ShapedRecipe(WbsWandcraft.getKey("artificing_table"), getArtificingConfig().getItem());
+
+        artificingTable.shape(
+                "ddd",
+                "ebe",
+                "bbb"
+        );
+        artificingTable.setIngredient('d', Material.DEEPSLATE);
+        artificingTable.setIngredient('e', Material.ECHO_SHARD);
+        artificingTable.setIngredient('b', Material.BLACKSTONE);
+
+        Bukkit.addRecipe(artificingTable);
     }
 
     private void loadCredits() {

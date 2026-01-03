@@ -5,29 +5,28 @@ import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
+import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spellbook.Spellbook;
 
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandLearnSpell extends WbsSubcommand {
+public class CommandSpellInfo extends WbsSubcommand {
     private static final WbsSimpleArgument.KeyedSimpleArgument DEFINITION = new WbsSimpleArgument.KeyedSimpleArgument(
             "definition",
             ArgumentTypes.namespacedKey(),
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
-    public CommandLearnSpell(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandSpellInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
         
         this.addSimpleArgument(DEFINITION);
@@ -37,31 +36,38 @@ public class CommandLearnSpell extends WbsSubcommand {
     protected int onSimpleArgumentCallback(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
         NamespacedKey definitionKey = configuredArgumentMap.get(DEFINITION);
 
-        CommandSender sender = context.getSource().getSender();
-
         if (definitionKey == null) {
             plugin.sendMessage("Choose a spell: "
                             + WandcraftRegistries.SPELLS.stream()
                             .map(Keyed::key)
                             .map(Key::asString)
                             .collect(Collectors.joining(", ")),
-                    sender);
+                    context.getSource().getSender());
             return Command.SINGLE_SUCCESS;
         }
 
         SpellDefinition spell = WandcraftRegistries.SPELLS.get(definitionKey);
 
         if (spell == null) {
-            plugin.sendMessage("Invalid spell definition: " + definitionKey.asString() + ".", sender);
+            plugin.sendMessage("Invalid spell definition: " + definitionKey.asString() + ".", context.getSource().getSender());
             return Command.SINGLE_SUCCESS;
         }
 
-        if (!(sender instanceof Player player)) {
-            plugin.sendMessage("This command is only usable by players", sender);
-            return 1;
-        }
+        WbsMessageBuilder builder = plugin.buildMessage("=======================")
+                .append("\nSpell: ")
+                .append(spell.displayName().color(NamedTextColor.GOLD))
+                .append("\nDescription: ")
+                .append(spell.description().color(NamedTextColor.GOLD))
+                .append("\nAttributes: ");
 
-        Spellbook.teachSpell(player, spell);
+        spell.getLore().forEach(text -> {
+            builder.append("\n")
+                    .append(text);
+        });
+
+        builder
+                .append("\n=======================")
+                .send(context.getSource().getSender());
 
         return Command.SINGLE_SUCCESS;
     }

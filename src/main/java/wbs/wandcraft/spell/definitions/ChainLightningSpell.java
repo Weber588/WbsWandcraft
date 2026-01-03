@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.damage.DamageSource;
@@ -13,12 +13,15 @@ import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.WbsLocationUtil;
 import wbs.utils.util.WbsMath;
+import wbs.utils.util.entities.WbsEntityUtil;
+import wbs.utils.util.particles.ElectricParticleEffect;
 import wbs.utils.util.particles.LineParticleEffect;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
 import wbs.wandcraft.spell.definitions.extensions.DirectionalSpell;
 import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
+import wbs.wandcraft.spell.definitions.type.SpellType;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,6 +41,11 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
     public ChainLightningSpell() {
         super("chain_lightning");
 
+        addSpellType(SpellType.NATURE);
+
+        setAttribute(COST, 500);
+        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
+
         setAttribute(MAX_DURATION, 100);
         setAttribute(COST_PER_TICK, 3);
         setAttribute(RANGE, 5d);
@@ -46,8 +54,8 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
     }
 
     @Override
-    public Component description() {
-        return Component.text("Continuously throws lightning out, sparking until it hits a ");
+    public String rawDescription() {
+        return "Continuously throws lightning out, sparking until it hits a ";
     }
 
     @Override
@@ -59,8 +67,14 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
 
         double damage = context.instance().getAttribute(DAMAGE);
 
-        if (player.isInWaterOrRainOrBubbleColumn()) {
+        if (player.isInWater() || player.isInRain()) {
             player.damage(damage, DamageSource.builder(DamageType.INDIRECT_MAGIC).build());
+            ElectricParticleEffect sparkingEffect = new ElectricParticleEffect()
+                    .setTicks(2 * Ticks.TICKS_PER_SECOND);
+
+            sparkingEffect.setData(new Particle.DustOptions(WbsCollectionUtil.getRandom(COLOURS), 0.4f));
+
+            sparkingEffect.play(Particle.DUST, WbsEntityUtil.getMiddleLocation(player));
             return;
         }
 
@@ -135,7 +149,12 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
     }
 
     private static void updateEffectColour() {
-        EFFECT.setOptions(new Particle.DustOptions(WbsCollectionUtil.getRandom(COLOURS), 0.4f));
+        EFFECT.setData(new Particle.DustOptions(WbsCollectionUtil.getRandom(COLOURS), 0.4f));
+    }
+
+    @Override
+    public @NotNull String getKilledVerb() {
+        return "electrocuted";
     }
 
     // Implementing a rapidly-exploring random tree

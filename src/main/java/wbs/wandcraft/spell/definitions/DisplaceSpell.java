@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -18,19 +18,28 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
+import static wbs.wandcraft.spell.definitions.type.SpellType.SCULK;
+
 public class DisplaceSpell extends SpellDefinition implements CastableSpell, TargetedSpell<LivingEntity> {
     private static final LineParticleEffect LINE_EFFECT = (LineParticleEffect) new LineParticleEffect()
             .setScaleAmount(true)
             .setRadius(0.1)
-            .setAmount(15);
+            .setAmount(5);
 
     public DisplaceSpell() {
         super("displace");
+
+        setAttribute(COST, 150);
+        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
+
+        addSpellType(ENDER);
+        addSpellType(SCULK);
     }
 
     @Override
-    public Component description() {
-        return Component.text("Swaps the casterUUID with a random target.");
+    public String rawDescription() {
+        return "Swaps the caster with a random target.";
     }
 
     @Override

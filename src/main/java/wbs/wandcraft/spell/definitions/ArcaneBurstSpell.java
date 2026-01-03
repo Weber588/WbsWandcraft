@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Particle;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -25,23 +25,35 @@ import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 import java.util.Collection;
 
-public class EnergyBurstSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell, RadiusedSpell, ForceSpell {
+import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
+import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
+
+public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell, RadiusedSpell, ForceSpell {
     private static final WbsParticleGroup EXPLODE_GROUP = new WbsParticleGroup();
 
     static {
         NormalParticleEffect explodeEffect = new NormalParticleEffect();
         explodeEffect.setXYZ(0);
-        explodeEffect.setAmount(500);
-        explodeEffect.setSpeed(1);
+        explodeEffect.setAmount(250);
+        explodeEffect.setSpeed(1.5);
+        NormalParticleEffect explodeEffect2 = new NormalParticleEffect();
+        explodeEffect2.setXYZ(0);
+        explodeEffect2.setAmount(500);
+        explodeEffect2.setSpeed(0.3);
 
-        Particle explodeParticle = Particle.TOTEM_OF_UNDYING;
-        EXPLODE_GROUP.addEffect(explodeEffect, explodeParticle);
+        EXPLODE_GROUP.addEffect(explodeEffect, Particle.CRIT);
+        EXPLODE_GROUP.addEffect(explodeEffect2, Particle.SMOKE);
     }
 
-    public EnergyBurstSpell() {
-        super("energy_burst");
+    public ArcaneBurstSpell() {
+        super("arcane_burst");
 
-        setAttribute(COST, 150);
+        addSpellType(ARCANE);
+        addSpellType(VOID);
+
+        setAttribute(COST, 350);
+        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
+
         setAttribute(SPEED, 5d);
         setAttribute(FORCE, 1.5);
         setAttribute(DAMAGE, 6.0);
@@ -61,8 +73,9 @@ public class EnergyBurstSpell extends SpellDefinition implements CustomProjectil
         CycleGenerator cycleGenerator = new CycleGenerator(0, 360, instance.getAttribute(SPEED) * 30, 0);
         effect.setRotation(new NumProvider(cycleGenerator));
         effect.setAbout(new VectorProvider(VectorGenerator.buildAnonymous(projectile::getVelocity)));
+        // effect.setData(new Particle.DustTransition(ARCANE.color(), ARCANE.mulColor(2), 0.75f));
 
-        Particle particle = instance.getAttribute(PARTICLE, getDefaultParticle());
+        Particle particle = getParticle(instance);
 
         projectile.setParticle(new WbsParticleGroup().addEffect(effect, particle));
         projectile.setEndEffects(EXPLODE_GROUP);
@@ -90,13 +103,11 @@ public class EnergyBurstSpell extends SpellDefinition implements CustomProjectil
 
     @Override
     public Particle getDefaultParticle() {
-        return Particle.HAPPY_VILLAGER;
+        return Particle.CRIT;
     }
 
     @Override
-    public Component description() {
-        return Component.text(
-                "The most simple projectile spell that fires a blast of energy in the direction the casterUUID is facing, dealing damage to anything hit."
-        );
+    public String rawDescription() {
+        return "A burst of arcane energy that spirals and ";
     }
 }

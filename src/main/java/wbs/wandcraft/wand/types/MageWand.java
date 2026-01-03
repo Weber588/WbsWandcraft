@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.Ticks;
+import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEvent;
@@ -30,7 +31,7 @@ public class MageWand extends Wand {
     }
 
     @Override
-    protected int getAdditionalCooldown(@NotNull Player player, ItemStack wandItem) {
+    protected int getAdditionalCooldown(@NotNull PlayerEvent event, ItemStack wandItem) {
         int additionalCooldown = 0;
 
         SpellInstance spell = getCurrentSpellInstance();
@@ -77,12 +78,6 @@ public class MageWand extends Wand {
 
     public List<ItemStack> getItems() {
         return items;
-    }
-
-    // TODO: Make this configurable
-    @Override
-    public @NotNull Component getItemName() {
-        return Component.text("Mage Wand");
     }
 
     @Override
@@ -159,6 +154,16 @@ public class MageWand extends Wand {
         item.editMeta(meta ->
                 meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.MAGE_WAND_TYPE, this)
         );
+    }
+
+
+    @Override
+    protected @Nullable Color getWandColour() {
+        SpellInstance spellInstance = getCurrentSpellInstance();
+        if (spellInstance != null) {
+            return spellInstance.getDefinition().getPrimarySpellType().wandColor();
+        }
+        return null;
     }
 
     public void setItems(List<ItemStack> newItems) {

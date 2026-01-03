@@ -3,6 +3,7 @@ package wbs.wandcraft.wand.types;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.Ticks;
+import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +27,7 @@ public class BasicWand extends Wand {
     }
 
     @Override
-    protected int getAdditionalCooldown(@NotNull Player player, ItemStack wandItem) {
+    protected int getAdditionalCooldown(@NotNull PlayerEvent event, ItemStack wandItem) {
         int additionalCooldown = 0;
 
         SpellInstance spell = getSpellInstance();
@@ -63,11 +64,6 @@ public class BasicWand extends Wand {
         return item;
     }
 
-    // TODO: Make this configurable
-    @Override
-    public @NotNull Component getItemName() {
-        return Component.text("Basic Wand");
-    }
 
     @Override
     public @NotNull WandType<BasicWand> getWandType() {
@@ -102,5 +98,14 @@ public class BasicWand extends Wand {
 
     public void setItem(@Nullable ItemStack newItem) {
         this.item = newItem;
+    }
+
+    @Override
+    protected Color getWandColour() {
+        SpellInstance spellInstance = getSpellInstance();
+        if (spellInstance != null) {
+            return spellInstance.getDefinition().getPrimarySpellType().wandColor();
+        }
+        return null;
     }
 }

@@ -3,18 +3,23 @@ package wbs.wandcraft.util;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.CustomModelData;
+import io.papermc.paper.datacomponent.item.Tool;
 import io.papermc.paper.datacomponent.item.UseCooldown;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.TypedKey;
+import io.papermc.paper.registry.set.RegistrySet;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.Ticks;
+import net.kyori.adventure.util.TriState;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
+import org.bukkit.block.BlockType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.WbsColours;
 import wbs.wandcraft.WbsWandcraft;
@@ -30,6 +35,7 @@ import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.types.WandType;
 
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -41,25 +47,49 @@ public class ItemUtils {
     public static final Material BASE_MATERIAL_MODIFIER = Material.GLOBE_BANNER_PATTERN;
     public static final Material BASE_MATERIAL_SPELLBOOK = Material.BOOK;
     public static final Material DISPLAY_MATERIAL_SPELLBOOK = Material.KNOWLEDGE_BOOK;
+    public static final Material BASE_MATERIAL_BLANK_SCROLL = Material.PAPER;
 
-    public static @NotNull ItemStack buildWand(WandType<?> type, Double hue) {
+    public static @NotNull ItemStack buildBlankScroll() {
+        ItemStack blankScroll = ItemStack.of(BASE_MATERIAL_BLANK_SCROLL);
+        blankScroll.getDataTypes().forEach(blankScroll::unsetData);
+        blankScroll.setData(DataComponentTypes.ITEM_NAME, Component.text("Blank Scroll"));
+
+        blankScroll.setData(
+                DataComponentTypes.CUSTOM_MODEL_DATA,
+                CustomModelData.customModelData()
+                        .addString(WbsWandcraft.getKey("blank_scroll").asString())
+                        .build()
+        );
+        blankScroll.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_BLANK_SCROLL.getKey());
+
+        return blankScroll;
+    }
+
+    public static @NotNull ItemStack buildWand(WandType<?> type) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_WAND);
 
         Wand wand = type.newWand();
 
         item.getDataTypes().forEach(item::unsetData);
         item.setData(DataComponentTypes.ITEM_NAME, Component.text("Wand"));
+
+        List<TypedKey<BlockType>> allBlockTypes = RegistryAccess.registryAccess().getRegistry(RegistryKey.BLOCK).keyStream()
+                .map(RegistryKey.BLOCK::typedKey)
+                .toList();
+
+        // Allow spells to break block with correct tool
+        item.setData(DataComponentTypes.TOOL,
+                Tool.tool()
+                        .addRule(Tool.rule(RegistrySet.keySet(RegistryKey.BLOCK, allBlockTypes), Float.MIN_VALUE, TriState.TRUE))
+                        .build()
+        );
         item.setData(DataComponentTypes.USE_COOLDOWN, UseCooldown.useCooldown(0.0001f)
                 .cooldownGroup(WbsWandcraft.getKey(UUID.randomUUID().toString()))
         );
 
-        if (hue == null || hue < 0) {
-            hue = Math.random();
-        }
-
         item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
                 .addString(type.getWandTexture().getKey().asString())
-                .addColor(WbsColours.fromHSB(hue, 1, 1))
+                .addColor(Color.WHITE)
         );
 
         item.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_WAND.getKey());
@@ -89,14 +119,10 @@ public class ItemUtils {
         return item;
     }
 
-    public static @NotNull ItemStack buildSpellbook(@Nullable Player fromPlayer) {
+    public static @NotNull ItemStack buildSpellbook() {
         ItemStack item = ItemStack.of(BASE_MATERIAL_SPELLBOOK);
 
         Spellbook spellbook = new Spellbook();
-
-        if (fromPlayer != null) {
-            spellbook.learnSpells(fromPlayer);
-        }
 
         item.getDataTypes().forEach(item::unsetData);
         item.setData(DataComponentTypes.ITEM_NAME, Component.text("Spellbook"));
@@ -114,12 +140,6 @@ public class ItemUtils {
         );
 
         item.setData(DataComponentTypes.ITEM_MODEL, DISPLAY_MATERIAL_SPELLBOOK.getKey());
-        item.setData(DataComponentTypes.CONSUMABLE, Consumable.consumable()
-                .animation(ItemUseAnimation.BLOCK)
-                .hasConsumeParticles(false)
-                .consumeSeconds(2)
-                .sound(Key.key("not.a.real.sound"))
-        );
 
         NamespacedKey itemModel = WbsWandcraft.getInstance().getSettings().getItemModel("spellbook");
 

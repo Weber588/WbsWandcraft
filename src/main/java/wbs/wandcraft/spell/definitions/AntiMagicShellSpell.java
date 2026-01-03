@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
@@ -25,9 +25,9 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 import java.util.List;
 import java.util.Objects;
 
-public class AntiMagicShellSpell extends SpellDefinition implements CastableSpell, RadiusedSpell, DurationalSpell, ParticleSpell {
-    private static final SpellAttribute<Boolean> FOLLOWS_PLAYER = new BooleanSpellAttribute("follow_player", false)
-            .setWritable(true);
+import static wbs.wandcraft.spell.definitions.type.SpellType.SCULK;
+
+public class AntiMagicShellSpell extends SpellDefinition implements CastableSpell, RadiusedSpell, DurationalSpell, ParticleSpell, FollowableSpell {
     private static final SpellAttribute<Boolean> IS_REFLECTIVE = new BooleanSpellAttribute("is_reflective", true);
     private static final SpellAttribute<Integer> MAXIMUM_HITS = new IntegerSpellAttribute("maximum_hits", 6)
             .setShowAttribute(value -> value > 0);
@@ -35,10 +35,15 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
     public AntiMagicShellSpell() {
         super("anti_magic_shell");
 
-        addAttribute(FOLLOWS_PLAYER);
+        addSpellType(SCULK);
+
+        setAttribute(COST, 250);
+        setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);
+
+        setAttribute(FOLLOWS_PLAYER, false);
         addAttribute(IS_REFLECTIVE);
         addAttribute(MAXIMUM_HITS);
-        setAttribute(DURATION, 600);
+        setAttribute(DURATION, 30 * Ticks.TICKS_PER_SECOND);
     }
 
     @Override
@@ -52,10 +57,10 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
 
     @Override
     public Particle getDefaultParticle() {
-        return Particle.HAPPY_VILLAGER;
+        return Particle.SCULK_CHARGE;
     }
 
-    public static class AntiMagicShellObject extends KinematicMagicObject implements Listener {
+    public class AntiMagicShellObject extends KinematicMagicObject implements Listener {
         public AntiMagicShellObject(Location location, Player caster, CastContext context) {
             super(location, caster, context);
 
@@ -69,7 +74,8 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
             hits = instance.getAttribute(MAXIMUM_HITS);
 
             effect.setRadius(radius);
-            effect.setAmount((int) (4 * Math.PI * radius * radius));
+            effect.setAmount((int) (7 * Math.PI * radius * radius));
+            effect.setChance(25);
 
             ((AntiMagicShellCollider) collider).setRadius(radius);
 
@@ -99,8 +105,8 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
         protected boolean tick() {
             SpellInstance instance = castContext.instance();
 
-            if (getAge() % 25 == 0) {
-                effect.play(instance.getAttribute(PARTICLE, ((AntiMagicShellSpell) castContext.instance().getDefinition()).getDefaultParticle()), getLocation());
+            if (getAge() % 5 == 0) {
+                playEffectSafely(effect, instance, getLocation());
             }
 
             if (hits == 0) {
@@ -147,9 +153,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
     }
 
     @Override
-    public Component description() {
-        return Component.text(
-                "Form a shield around you that prevents any magic objects from entering or leaving"
-        );
+    public String rawDescription() {
+        return "Form a shield around you that prevents any magic objects from entering or leaving";
     }
 }

@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -10,14 +10,23 @@ import org.bukkit.util.Vector;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.definitions.extensions.*;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.definitions.extensions.DirectionalSpell;
+import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
+import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
+
+import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
 
 public class BlinkSpell extends SpellDefinition implements CastableSpell, RangedSpell, SpeedSpell, DirectionalSpell {
     public BlinkSpell() {
         super("blink");
-        setAttribute(COST, 300);
+
+        addSpellType(ENDER);
+
+        setAttribute(COST, 500);
+        setAttribute(COOLDOWN, 3 * Ticks.TICKS_PER_SECOND);
+
         setAttribute(RANGE, 10.0);
-        setAttribute(COOLDOWN, 15);
         setAttribute(IMPRECISION, 5d);
         setAttribute(SPEED, 1d);
     }
@@ -52,9 +61,7 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
     }
 
     @Override
-    public Component description() {
-        return Component.text(
-                "The casterUUID is teleported a short distance in the direction they're facing."
-        );
+    public String rawDescription() {
+        return "The caster is teleported a short distance in the direction they're facing.";
     }
 }

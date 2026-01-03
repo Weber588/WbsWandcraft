@@ -1,11 +1,12 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Particle;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.DiscParticleEffect;
 import wbs.utils.util.pluginhooks.WbsRegionUtils;
@@ -14,22 +15,33 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
 
+import static wbs.wandcraft.spell.definitions.type.SpellType.NETHER;
+
 public class ConflagrationSpell extends SpellDefinition implements CastableSpell, DamageSpell, ForceSpell, BurnTimeSpell, RadiusedSpell {
-    private final DiscParticleEffect popEffect = new DiscParticleEffect();
-    private final DiscParticleEffect fireEffect = new DiscParticleEffect();
+    private final DiscParticleEffect popEffect = (DiscParticleEffect) new DiscParticleEffect()
+            .setSpeed(1)
+            .setAmount(10);
+    private final DiscParticleEffect fireEffect = (DiscParticleEffect) new DiscParticleEffect()
+            .setSpeed(0.05)
+            .setAmount(15);
 
     public ConflagrationSpell() {
         super("conflagration");
 
+        addSpellType(NETHER);
+
+        setAttribute(COST, 100);
+        setAttribute(COOLDOWN, 7 * Ticks.TICKS_PER_SECOND);
+
         setAttribute(DAMAGE, 2d);
-        setAttribute(FORCE, 0.25);
+        setAttribute(FORCE, 3d);
         setAttribute(BURN_TIME, 60);
         setAttribute(RADIUS, 4d);
     }
 
     @Override
-    public Component description() {
-        return Component.text("Throw out a wave of fire in all directions, repelling and burning nearby mobs.");
+    public String rawDescription() {
+        return "Throw out a wave of fire in all directions, repelling and burning nearby mobs.";
     }
 
     @Override
@@ -37,14 +49,15 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
         Player caster = context.player();
         SpellInstance instance = context.instance();
 
-        fireEffect.play(Particle.FLAME, context.location().add(0, 0.1, 0));
-        popEffect.play(Particle.LAVA, context.location());
+        double radius = instance.getAttribute(RADIUS);
+        fireEffect.setRadius(radius).play(Particle.FLAME, context.location().add(0, -caster.getEyeHeight() + 0.1, 0));
+        popEffect.setRadius(radius).play(Particle.LAVA, context.location().add(0, -caster.getEyeHeight(), 0));
 
         Collection<LivingEntity> hit = new RadiusSelector<>(LivingEntity.class)
-                .setRange(instance.getAttribute(RADIUS))
+                .setRange(radius)
                 .selectExcluding(caster);
 
-        DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
+        DamageSource source = DamageSource.builder(DamageType.IN_FIRE)
                 .withDirectEntity(context.player())
                 .build();
 
@@ -61,5 +74,10 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
                 );
             }
         }
+    }
+
+    @Override
+    public @NotNull String getKilledVerb() {
+        return "burnt to a crisp";
     }
 }

@@ -1,10 +1,14 @@
 package wbs.wandcraft.wand;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
+import io.papermc.paper.datacomponent.item.UseCooldown;
 import io.papermc.paper.persistence.PersistentDataContainerView;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.Ticks;
+import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -109,7 +113,7 @@ public abstract class Wand implements Attributable {
 
         PersistentDataContainerView wandContainer = wandItem.getPersistentDataContainer();
 
-        int additionalCooldown = getAdditionalCooldown(player, wandItem);
+        int additionalCooldown = getAdditionalCooldown(event, wandItem);
 
         long lastUsed = getLastUsed(wandContainer);
         long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / Ticks.TICKS_PER_SECOND + additionalCooldown;
@@ -165,8 +169,17 @@ public abstract class Wand implements Attributable {
 
     private void setCooldown(@NotNull Player player, ItemStack wandItem, int additionalCooldown) {
         wandItem.editMeta(meta -> {
+            int cooldownTicks = additionalCooldown * 20 / 1000 + getAttribute(COOLDOWN);
+
             updateLastUsed(meta.getPersistentDataContainer());
-            player.setCooldown(wandItem, additionalCooldown * 20 / 1000 + getAttribute(COOLDOWN));
+            UseCooldown useCooldown = wandItem.getData(DataComponentTypes.USE_COOLDOWN);
+            if (useCooldown != null && useCooldown.cooldownGroup() != null) {
+                Key cooldownKey = useCooldown.cooldownGroup();
+
+                player.setCooldown(cooldownKey, cooldownTicks);
+            } else {
+                player.setCooldown(wandItem, cooldownTicks);
+            }
         });
     }
 
@@ -188,9 +201,7 @@ public abstract class Wand implements Attributable {
         // TODO: Drop all spells
     }
 
-    protected int getAdditionalCooldown(@NotNull Player player, ItemStack wandItem) {
-        return 0;
-    }
+    protected abstract int getAdditionalCooldown(@NotNull PlayerEvent event, ItemStack wandItem);
 
     protected abstract @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event);
 
@@ -264,9 +275,20 @@ public abstract class Wand implements Attributable {
             PersistentDataContainer container = meta.getPersistentDataContainer();
 
             container.set(WAND_TYPE, WbsPersistentDataType.NAMESPACED_KEY, getWandType().getKey());
+
             ItemDecorator.decorate(this, meta);
         });
+
+        Color wandColour = getWandColour();
+        wandColour = wandColour == null ? Color.WHITE : wandColour;
+        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
+                .addString(getWandType().getWandTexture().getKey().asString())
+                .addColor(wandColour)
+        );
     }
+
+    @Nullable
+    protected abstract Color getWandColour();
 
     public @NotNull String getUUID() {
         return uuid;
@@ -280,7 +302,9 @@ public abstract class Wand implements Attributable {
     public abstract @NotNull WandHolder<?> getMenu(ItemStack item);
 
     @Override
-    public abstract @NotNull Component getItemName();
+    public @NotNull Component getItemName() {
+        return getWandType().getItemName();
+    }
 
     public void setModifier(SpellAttributeModifier<?, ?> updatedModifier) {
         attributeModifiers.removeIf(modifier -> modifier.attribute().equals(updatedModifier.attribute()));

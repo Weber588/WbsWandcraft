@@ -38,7 +38,7 @@ public class CastSpellEffect extends SpellEffectDefinition<Location> {
     public void run(CastContext context, SpellEffectInstance<Location> effectInstance, Location event) {
         SpellInstance triggeredCast = context.instance().getAttribute(SPELL);
 
-        CastContext updatedContext = new CastContext(context.player(), triggeredCast, event, context, null);
+        CastContext updatedContext = new CastContext(context.player(), triggeredCast, context.wand(), context.slot(), event, context, null);
         triggeredCast.cast(updatedContext);
     }
 

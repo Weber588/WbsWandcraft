@@ -3,8 +3,6 @@ package wbs.wandcraft.objects.colliders;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
-import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
-import wbs.wandcraft.objects.generics.KinematicMagicObject;
 import wbs.wandcraft.objects.generics.MagicObject;
 
 public class SphereCollider extends Collider {
@@ -17,21 +15,17 @@ public class SphereCollider extends Collider {
     }
 
     @Override
-    protected @Nullable Collision getCollision(MagicObjectMoveEvent moveEvent) {
-        KinematicMagicObject obj = moveEvent.getMagicObject();
-
-        double newDist = moveEvent.getNewLocation().distance(getLocation());
-        double currentDist =
-                moveEvent.getMagicObject()
-                        .getLocation()
-                        .distance(getLocation());
+    @Nullable
+    public Collision getCollision(Location start, Location end) {
+        double newDist = end.distance(getLocation());
+        double currentDist = start.distance(getLocation());
 
         if ((collideOnEnter && newDist < radius && currentDist > radius) ||
                 (collideOnLeave && newDist > radius && currentDist < radius))
         {
             boolean entering = newDist < radius;
 
-            Vector normal = obj.getLocation().subtract(getLocation()).toVector();
+            Vector normal = start.clone().subtract(getLocation()).toVector();
 
             Location hitPos = normal.normalize()
                     .multiply(radius)
@@ -43,20 +37,12 @@ public class SphereCollider extends Collider {
                     .toLocation(getWorld())
                     .add(getLocation());
 
-            normal = obj.getLocation().subtract(offset).toVector();
+            normal = start.clone().subtract(offset).toVector();
 
-            Collision collision = new Collision(this, hitPos, normal);
-
-            onCollide(moveEvent, collision, entering);
-
-            return collision;
+            return new Collision(this, hitPos, normal);
         }
 
         return null;
-    }
-
-    protected void onCollide(MagicObjectMoveEvent moveEvent, Collision collision, boolean entering) {
-
     }
 
     public double getRadius() {

@@ -11,14 +11,19 @@ import wbs.wandcraft.resourcepack.TextureProvider;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.SpellExtensionManager;
+import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spell.event.SpellTriggeredEvent;
 
 import java.util.*;
+
+import static wbs.wandcraft.spellbook.Spellbook.DESCRIPTION_COLOR;
 
 public abstract class SpellDefinition implements ISpellDefinition, TextureProvider {
     protected final Map<Key, SpellTriggeredEvent<?>> events = new HashMap<>();
 
     protected final Set<SpellAttributeInstance<?>> defaultAttributes = new HashSet<>();
+
+    protected final List<SpellType> spellTypes = new LinkedList<>();
 
     private final NamespacedKey key;
 
@@ -45,7 +50,15 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
 
     @Override
     public Component displayName() {
-        return Component.text(WbsStrings.capitalizeAll(key.value().replaceAll("_", " ")));
+        return Component.text(
+                WbsStrings.capitalizeAll(key.value().replaceAll("_", " "))
+        ).color(
+                getPrimarySpellType().textColor()
+        );
+    }
+
+    public @NotNull SpellType getPrimarySpellType() {
+        return spellTypes.stream().findFirst().orElse(SpellType.ARCANE);
     }
 
     public <T> T getDefault(SpellAttribute<T> attribute) {
@@ -63,7 +76,18 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
         return defaultAttributes;
     }
 
-    public abstract Component description();
+    public Component description() {
+        return Component.text(rawDescription());
+    }
+    public abstract String rawDescription();
+    public List<Component> loreDescription() {
+        LinkedList<Component> components = new LinkedList<>();
+        WbsStrings.wrapText(rawDescription(), 140).stream()
+                .map(Component::text)
+                .map(component -> component.color(DESCRIPTION_COLOR))
+                .forEachOrdered(components::add);
+        return components;
+    }
 
     @Override
     public @NotNull final List<TextureLayer> getTextures() {
@@ -72,7 +96,15 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
         );
     }
 
+    public void addSpellType(SpellType type) {
+        this.spellTypes.add(type);
+    }
+
     public void registerEvents() {
 
+    }
+
+    public List<SpellType> getTypes() {
+        return new LinkedList<>(spellTypes);
     }
 }

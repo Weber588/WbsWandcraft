@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,6 +12,7 @@ import wbs.utils.util.particles.RingParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.*;
+import wbs.wandcraft.spell.definitions.type.SpellType;
 
 public class WindWalkSpell extends SpellDefinition implements CastableSpell, SpeedSpell, DurationalSpell, ParticleSpell, RadiusedSpell {
     private final RingParticleEffect effect = (RingParticleEffect) new RingParticleEffect()
@@ -20,14 +21,20 @@ public class WindWalkSpell extends SpellDefinition implements CastableSpell, Spe
     public WindWalkSpell() {
         super("wind_walk");
 
+        addSpellType(SpellType.VOID);
+        addSpellType(SpellType.ENDER);
+
+        setAttribute(COST, 50);
+        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
+
         setAttribute(SPEED, 0.5d);
-        setAttribute(DURATION, 40);
+        setAttribute(DURATION, 2 * Ticks.TICKS_PER_SECOND);
         setAttribute(RADIUS, 3d);
     }
 
     @Override
-    public Component description() {
-        return Component.text("The casterUUID is pulled into a vortex, moving in the direction they're looking for a short time.");
+    public String rawDescription() {
+        return "The caster is pulled into a vortex, moving in the direction they're looking for a short time.";
     }
 
     @Override
@@ -52,7 +59,7 @@ public class WindWalkSpell extends SpellDefinition implements CastableSpell, Spe
                 Vector direction = WbsEntityUtil.getFacingVector(caster, speed);
                 effectClone.setAbout(direction);
                 effectClone.setRotation((i + 10) * 2);
-                effectClone.play(instance.getAttribute(PARTICLE, getDefaultParticle()), WbsEntityUtil.getMiddleLocation(caster));
+                effectClone.play(getParticle(instance), WbsEntityUtil.getMiddleLocation(caster));
 
                 caster.setVelocity(direction);
 

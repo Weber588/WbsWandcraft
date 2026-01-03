@@ -1,5 +1,6 @@
 package wbs.wandcraft.effects;
 
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
@@ -35,9 +36,11 @@ public class CharmedEffect implements StatusEffect {
 
     @Override
     public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
-        EFFECT.setXYZ(entity.getWidth())
-                .setY(entity.getHeight())
-                .play(Particle.COMPOSTER, WbsEntityUtil.getMiddleLocation(entity));
+        if (Bukkit.getCurrentTick() % 5 == 0) {
+            EFFECT.setXYZ(entity.getWidth())
+                    .setY(entity.getHeight())
+                    .play(Particle.HEART, WbsEntityUtil.getMiddleLocation(entity));
+        }
 
         if (entity instanceof Mob mob) {
             Entity cause = instance.getCauseEntity();

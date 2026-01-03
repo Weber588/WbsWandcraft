@@ -1,28 +1,29 @@
 package wbs.wandcraft.events;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Interaction;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.WbsEventUtils;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.crafting.ArtificingTable;
-import wbs.wandcraft.wand.types.WizardryWand;
 
 import java.util.List;
 import java.util.Objects;
 
-public class ArtificingBlockEvents implements Listener {
+public class ArtificingTableEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent event) {
         if (!event.getItemInHand().getPersistentDataContainer().has(ArtificingConfig.TAG)) {
@@ -68,7 +69,8 @@ public class ArtificingBlockEvents implements Listener {
         if (table != null) {
             EquipmentSlot hand = event.getHand();
             if (hand != null) {
-                handleInteract(event, event.getPlayer(), table, hand);
+                table.interact(event.getPlayer(), hand);
+                event.setCancelled(true);
             }
         }
     }
@@ -83,22 +85,28 @@ public class ArtificingBlockEvents implements Listener {
         EquipmentSlot hand = event.getHand();
 
         if (table != null) {
-            handleInteract(event, event.getPlayer(), table, hand);
+            table.interact(event.getPlayer(), hand);
+            event.setCancelled(true);
         }
     }
 
-    private static void handleInteract(Cancellable event, Player player, ArtificingTable table, @NotNull EquipmentSlot hand) {
-        if (player.isSneaking()) {
-            table.dropLatestItem();
-            event.setCancelled(true);
-        } else if (table.canAcceptItems()) {
-            ItemStack heldItem = player.getInventory().getItem(hand);
-            if (WizardryWand.getIfValid(heldItem) != null) {
-                return;
-            }
+    @EventHandler
+    public void onCloseInventory(InventoryCloseEvent event) {
+        InventoryHolder holder = event.getView().getTopInventory().getHolder();
 
-            if (!heldItem.isEmpty() && !heldItem.getPersistentDataContainer().has(ArtificingConfig.TAG)) {
-                player.dropItem(hand, 1);
+        if (holder instanceof ArtificingTable table) {
+            table.save();
+        }
+    }
+
+    @EventHandler
+    public void onCloseInventory(InventoryClickEvent event) {
+        InventoryHolder holder = event.getView().getTopInventory().getHolder();
+
+        if (holder instanceof ArtificingTable) {
+            ItemStack added = WbsEventUtils.getItemAddedToTopInventory(event);
+
+            if (added != null && added.getType() != Material.ECHO_SHARD) {
                 event.setCancelled(true);
             }
         }

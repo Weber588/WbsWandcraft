@@ -7,16 +7,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.plugin.WbsPlugin;
-import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spellbook.Spellbook;
 
 @SuppressWarnings("UnstableApiUsage")
-public class CommandSpellLearn extends SpellSubcommand {
-    public CommandSpellLearn(@NotNull WbsPlugin plugin, @NotNull String label) {
+public class CommandSpellForget extends SpellSubcommand {
+    public CommandSpellForget(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
     }
-
 
     @Override
     protected int runSpellCommand(CommandContext<CommandSourceStack> context, CommandSender sender, SpellDefinition spell) {
@@ -25,7 +23,7 @@ public class CommandSpellLearn extends SpellSubcommand {
             return 1;
         }
 
-        Spellbook.teachSpell(player, spell);
+        Spellbook.forgetSpell(player, spell);
 
         return Command.SINGLE_SUCCESS;
     }
@@ -37,7 +35,7 @@ public class CommandSpellLearn extends SpellSubcommand {
             return 1;
         }
 
-        Spellbook.teachSpells(player, WandcraftRegistries.SPELLS.stream().toList());
+        Spellbook.forgetSpells(player, Spellbook.getKnownSpells(player));
 
         return Command.SINGLE_SUCCESS;
     }

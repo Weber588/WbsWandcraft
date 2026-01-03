@@ -1,6 +1,5 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,17 +14,26 @@ import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
 import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
 
+import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
+import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
+
 public class CrowsCallSpell extends SpellDefinition implements CastableSpell, DurationalSpell, SpeedSpell {
     public CrowsCallSpell() {
         super("crows_call");
+
+        addSpellType(ENDER);
+        addSpellType(VOID);
+
+        setAttribute(COST, 500);
+        setAttribute(COOLDOWN, 7 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(SPEED, 2d);
         setAttribute(DURATION, 30 * Ticks.TICKS_PER_SECOND);
     }
 
     @Override
-    public Component description() {
-        return Component.text("Fly straight up, and glide until you touch the ground.");
+    public String rawDescription() {
+        return "Fly straight up, and glide until you touch the ground.";
     }
 
     @Override

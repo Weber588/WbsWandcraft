@@ -3,6 +3,7 @@ package wbs.wandcraft.wand.types;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.Ticks;
+import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
@@ -11,8 +12,10 @@ import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.spell.attributes.BooleanSpellAttribute;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -33,7 +36,7 @@ public class WizardryWand extends Wand {
     }
 
     @Override
-    protected int getAdditionalCooldown(@NotNull Player player, ItemStack wandItem) {
+    protected int getAdditionalCooldown(@NotNull PlayerEvent event, ItemStack wandItem) {
         int additionalCooldown = 0;
 
         for (SpellInstance spell : getSpellInstances()) {
@@ -76,12 +79,6 @@ public class WizardryWand extends Wand {
         return items;
     }
 
-    // TODO: Make this configurable
-    @Override
-    public @NotNull Component getItemName() {
-        return Component.text("Wizardry Wand");
-    }
-
     @Override
     public @NotNull WandType<WizardryWand> getWandType() {
         return WandType.WIZARDRY;
@@ -114,6 +111,21 @@ public class WizardryWand extends Wand {
         item.editMeta(meta ->
                 meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.WIZARDRY_WAND_TYPE, this)
         );
+    }
+
+    @Override
+    protected @Nullable Color getWandColour() {
+        List<Color> colors = new LinkedList<>(getSpellInstances().stream()
+                .map(SpellInstance::getDefinition)
+                .map(SpellDefinition::getPrimarySpellType)
+                .map(SpellType::wandColor)
+                .toList());
+
+        if (colors.isEmpty()) {
+            return null;
+        }
+
+        return colors.removeFirst().mixColors(colors.toArray(Color[]::new));
     }
 
     public void setItems(List<ItemStack> newItems) {

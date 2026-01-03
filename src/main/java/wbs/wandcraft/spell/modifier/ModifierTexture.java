@@ -21,7 +21,7 @@ public enum ModifierTexture implements TextureProvider {
     private final String texture;
 
     ModifierTexture() {
-        texture = getTextureFallback();
+        texture = "modifier_blank";
     }
     ModifierTexture(String texture) {
         this.texture = texture;
@@ -34,11 +34,6 @@ public enum ModifierTexture implements TextureProvider {
                 new TextureLayer("modifier_overlay", false, 0xEC273F),
                 new TextureLayer(texture)
         );
-    }
-
-    @NotNull
-    private String getTextureFallback() {
-        return "modifier_blank";
     }
 
     @Override

@@ -24,7 +24,6 @@ import java.util.*;
 
 public class WandGenerator implements Keyed {
     private final List<WandType<?>> types = new LinkedList<>(WandcraftRegistries.WAND_TYPES.values());
-    private final double hue;
 
     private final int minAttributes;
     private final int maxAttributes;
@@ -42,14 +41,12 @@ public class WandGenerator implements Keyed {
     public WandGenerator(@NotNull NamespacedKey key,
                          int minAttributes,
                          int maxAttributes,
-                         double hue,
                          int minModifiers,
                          int maxModifiers,
                          int minSpells,
                          int maxSpells
     ) {
         this.key = key;
-        this.hue = hue;
         this.minAttributes = minAttributes;
         this.maxAttributes = maxAttributes;
         this.minModifiers = minModifiers;
@@ -62,8 +59,6 @@ public class WandGenerator implements Keyed {
         String name = section.getName();
 
         key = WbsWandcraft.getKey(name);
-
-        hue = section.getDouble("hue", -1);
 
         ConfigurationSection spellsSection = section.getConfigurationSection("spells");
         if (spellsSection == null) {
@@ -155,7 +150,7 @@ public class WandGenerator implements Keyed {
     public ItemStack get() {
         WandType<?> type = WbsCollectionUtil.getRandom(types);
 
-        ItemStack wandItem = ItemUtils.buildWand(type, hue);
+        ItemStack wandItem = ItemUtils.buildWand(type);
 
         Wand wand = Objects.requireNonNull(Wand.getIfValid(wandItem));
 

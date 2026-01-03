@@ -67,12 +67,21 @@ tasks {
 paperPluginYaml {
     load = BukkitPluginYaml.PluginLoadOrder.STARTUP
     main = "wbs.wandcraft.WbsWandcraft"
+    bootstrapper = "wbs.wandcraft.WbsWandcraftBootstrap"
     authors.add("Weber588")
     apiVersion = "1.21.8"
     dependencies {
+        bootstrap.create("WbsUtils", {
+            load = PaperPluginYaml.Load.BEFORE
+            required = true
+        })
         server.create("WbsUtils", {
             load = PaperPluginYaml.Load.BEFORE
             required = true
+        })
+        server.create("packetevents", {
+            load = PaperPluginYaml.Load.BEFORE
+            required = false
         })
         server.create("ResourcePackManager", {
             load = PaperPluginYaml.Load.BEFORE

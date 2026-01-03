@@ -1,6 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,6 +21,8 @@ import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 
 public class DiscoverItemSpell extends SpellDefinition implements CastableSpell, RadiusedSpell {
     private static final Set<Material> WHITELISTED_TILE_ENTITY_DISPLAYS = Set.of(
@@ -53,11 +55,16 @@ public class DiscoverItemSpell extends SpellDefinition implements CastableSpell,
 
     public DiscoverItemSpell() {
         super("discover_item");
+
+        addSpellType(ARCANE);
+
+        setAttribute(COST, 25);
+        setAttribute(COOLDOWN, 2 * Ticks.TICKS_PER_SECOND);
     }
 
     @Override
-    public Component description() {
-        return Component.text("Searches nearby containers for copies of the item in your off hand, and highlights them.");
+    public String rawDescription() {
+        return "Searches nearby containers for copies of the item in your off hand, and highlights them.";
     }
 
     @Override
