@@ -1,9 +1,11 @@
 package wbs.wandcraft.generation;
 
+import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
@@ -17,14 +19,19 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AttributeModifierGenerator<T> {
+@NullMarked
+public class AttributeModifierGenerator<T> implements Keyed {
     @Nullable
     public static AttributeModifierGenerator<?> fromConfig(ConfigurationSection section,
                                                            WandcraftSettings settings,
                                                            String directory,
                                                            @NotNull AttributeModifierType fallbackType
     ) {
-        String attributeString = section.getName();
+        String attributeString = section.getString("attribute");
+        if (attributeString == null) {
+            attributeString = section.getName();
+        }
+
         NamespacedKey attributeKey = NamespacedKey.fromString(attributeString, WbsWandcraft.getInstance());
 
         SpellAttribute<?> attribute = WandcraftRegistries.ATTRIBUTES.get(attributeKey);
@@ -55,15 +62,10 @@ public class AttributeModifierGenerator<T> {
         return null;
     }
 
+    private final NamespacedKey key;
     private final SpellAttribute<T> attribute;
     private final AttributeModifierType modifierType;
     private final List<ModifierValue<?>> values = new LinkedList<>();
-
-    public AttributeModifierGenerator(SpellAttribute<T> attribute, AttributeModifierType modifierType) {
-        this.attribute = attribute;
-        this.modifierType = modifierType;
-        values.add(new ModifierValue<>(attribute.type(), attribute.defaultValue()));
-    }
 
     public AttributeModifierGenerator(SpellAttribute<T> attribute,
                                       AttributeModifierType modifierType,
@@ -71,7 +73,26 @@ public class AttributeModifierGenerator<T> {
                                       WandcraftSettings settings,
                                       String directory
     ) {
-        this(attribute, modifierType);
+        this.attribute = attribute;
+        this.modifierType = modifierType;
+        values.add(new ModifierValue<>(attribute.type(), attribute.defaultValue()));
+
+        NamespacedKey tempKey = null;
+        String keyString = generatorSection.getString("key");
+        if (keyString != null) {
+            NamespacedKey checkKey = NamespacedKey.fromString(keyString, WbsWandcraft.getInstance());
+            if (checkKey == null) {
+                settings.logError("Invalid key \"" + keyString + "\"", directory + "/key");
+                tempKey = WbsWandcraft.getKey("anonymous");
+            }
+        }
+        if (tempKey == null) {
+            tempKey = NamespacedKey.fromString(generatorSection.getName(), WbsWandcraft.getInstance());
+        }
+        if (tempKey == null) {
+            tempKey = WbsWandcraft.getKey("anonymous");
+        }
+        key = tempKey;
 
         List<?> values = generatorSection.getList("values");
 
@@ -126,6 +147,11 @@ public class AttributeModifierGenerator<T> {
         }
 
         return this;
+    }
+
+    @Override
+    public NamespacedKey getKey() {
+        return key;
     }
 
     public record ModifierValue<M>(RegisteredPersistentDataType<M> type, M value) {

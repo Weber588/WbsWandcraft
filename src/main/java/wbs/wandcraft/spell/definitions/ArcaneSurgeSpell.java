@@ -23,11 +23,12 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 import java.util.Collection;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
+import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
 
 // TODO: Make this a continuous cast spell
 public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, DurationalSpell, DamageSpell, SpeedSpell, ParticleSpell {
     private final Particle.DustOptions data = new Particle.DustOptions(ARCANE.mulColor(1.2), 0.6F);
-    private final Particle.DustOptions dataCore = new Particle.DustOptions(ARCANE.mulColor(0.5), 1F);
+    private final Particle.DustOptions dataCore = new Particle.DustOptions(VOID.mulColor(0.5), 1F);
 
     private final PotionEffect effect = new PotionEffect(PotionEffectType.RESISTANCE, 20, 7);
 
@@ -42,6 +43,7 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
         super("arcane_surge");
 
         addSpellType(ARCANE);
+        addSpellType(VOID);
 
         setAttribute(COST, 200);
         setAttribute(COOLDOWN, 15 * Ticks.TICKS_PER_SECOND);

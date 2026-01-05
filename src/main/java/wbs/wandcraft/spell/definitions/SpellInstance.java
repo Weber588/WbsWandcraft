@@ -2,10 +2,8 @@ package wbs.wandcraft.spell.definitions;
 
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
@@ -30,8 +28,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import static wbs.wandcraft.spellbook.Spellbook.DESCRIPTION_COLOR;
 
 public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public static final NamespacedKey SPELL_INSTANCE_KEY = WbsWandcraft.getKey("spell_instance");
@@ -139,22 +135,7 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public @NotNull List<Component> getLore() {
         List<Component> lore = new LinkedList<>();
 
-        Component types = Component.join(
-                JoinConfiguration.builder()
-                        .separator(Component.text(" - ")
-                                .decorate(TextDecoration.ITALIC)
-                                .color(DESCRIPTION_COLOR)
-                        )
-                        .build(),
-                definition.getTypes()
-                        .stream()
-                        .map(spellType ->
-                                spellType.displayName()
-                                        .color(spellType.textColor())
-                                        .decorate(TextDecoration.ITALIC)
-                        )
-                        .toList()
-        );
+        Component types = definition.getTypesDisplay();
 
         lore.add(types);
         lore.addAll(definition.loreDescription());

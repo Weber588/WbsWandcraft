@@ -13,29 +13,31 @@ import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.generation.WandGenerator;
+import wbs.wandcraft.generation.SpellInstanceGenerator;
+import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.util.ItemUtils;
 
 import java.util.stream.Collectors;
 
-public class CommandWandGenerate extends WbsSubcommand  {
-    private static final WbsSimpleArgument.KeyedSimpleArgument WAND_GENERATOR = new WbsSimpleArgument.KeyedSimpleArgument(
-            "wand_generator",
+public class CommandSpellGenerate extends WbsSubcommand  {
+    private static final WbsSimpleArgument.KeyedSimpleArgument SPELL_GENERATOR = new WbsSimpleArgument.KeyedSimpleArgument(
+            "spell_generator",
             ArgumentTypes.namespacedKey(),
             null
-    ).addKeyedSuggestions(WandcraftRegistries.WAND_GENERATORS.values());
+    ).addKeyedSuggestions(WandcraftRegistries.SPELL_GENERATORS.values());
 
-    public CommandWandGenerate(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandSpellGenerate(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
-        addSimpleArgument(WAND_GENERATOR);
+        addSimpleArgument(SPELL_GENERATOR);
     }
 
     @Override
     protected int onSimpleArgumentCallback(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
-        NamespacedKey generatorKey = configuredArgumentMap.get(WAND_GENERATOR);
+        NamespacedKey generatorKey = configuredArgumentMap.get(SPELL_GENERATOR);
 
         if (generatorKey == null) {
-            plugin.sendMessage("Choose a wand generator: "
-                            + WandcraftRegistries.WAND_GENERATORS.stream()
+            plugin.sendMessage("Choose a spell generator: "
+                            + WandcraftRegistries.SPELL_GENERATORS.stream()
                             .map(Keyed::key)
                             .map(Key::asString)
                             .collect(Collectors.joining(", ")),
@@ -43,7 +45,7 @@ public class CommandWandGenerate extends WbsSubcommand  {
             return Command.SINGLE_SUCCESS;
         }
 
-        WandGenerator generator = WandcraftRegistries.WAND_GENERATORS.get(generatorKey);
+        SpellInstanceGenerator generator = WandcraftRegistries.SPELL_GENERATORS.get(generatorKey);
 
         if (generator == null) {
             plugin.sendMessage("Invalid generator key: " + generatorKey.asString() + ".", context.getSource().getSender());
@@ -51,7 +53,8 @@ public class CommandWandGenerate extends WbsSubcommand  {
         }
 
         if (context.getSource().getSender() instanceof Player player) {
-            player.getInventory().addItem(generator.get());
+            SpellInstance instance = generator.get();
+            player.getInventory().addItem(ItemUtils.buildSpell(instance));
         }
 
         return Command.SINGLE_SUCCESS;

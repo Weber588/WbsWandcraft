@@ -2,18 +2,19 @@ package wbs.wandcraft;
 
 import wbs.utils.util.WbsRegistry;
 import wbs.wandcraft.effects.StatusEffect;
-import wbs.wandcraft.generation.*;
+import wbs.wandcraft.generation.AttributeModifierGenerator;
+import wbs.wandcraft.generation.SpellInstanceGenerator;
+import wbs.wandcraft.generation.WandGenerator;
+import wbs.wandcraft.learning.*;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.*;
-import wbs.wandcraft.spell.definitions.extensions.*;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spell.event.CastSpellEffect;
 import wbs.wandcraft.spell.event.ForcePullEffect;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
 import wbs.wandcraft.wand.WandTexture;
 import wbs.wandcraft.wand.types.WandType;
-import wbs.wandcraft.wand.types.WizardryWand;
 
 public class WandcraftRegistries {
     public static final WbsRegistry<RegisteredPersistentDataType<?>> DATA_TYPES = new WbsRegistry<>(
@@ -77,6 +78,13 @@ public class WandcraftRegistries {
             new ShieldSpell(),
             new CarveSpell()
     );
+    public static final WbsRegistry<LearningMethodType<?>> LEARNING_PROVIDERS = new WbsRegistry<>(
+            LearningMethodType.build("advancements", AdvancementLearningTrigger::new),
+            LearningMethodType.build("deal-damage", DealDamageLearningTrigger::new),
+            LearningMethodType.build("enter-structure", EnterStructureLearningTrigger::new),
+            LearningMethodType.build("kill", KillLearningTrigger::new),
+            LearningMethodType.build("take-damage", TakeDamageLearningTrigger::new)
+    );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
             StatusEffect.GLIDING,
             StatusEffect.STUNNED,
@@ -88,42 +96,7 @@ public class WandcraftRegistries {
             new ForcePullEffect(),
             new CastSpellEffect()
     );
-    public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>(
-            new WandGenerator(WbsWandcraft.getKey("example"), 1, 2, 0, 1, 1, 3)
-                    .addAttributeGenerator(
-                            new AttributeInstanceGenerator<>(WizardryWand.COOLDOWN)
-                                    .setValues(5, 10, 10, 15, 20)
-                    ).addModifierGenerator(
-                            new AttributeModifierGenerator<>(CastableSpell.COST, AttributeModifierType.MULTIPLY)
-                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5, 0.75, 0.9, 1.1)
-                    ).addModifierGenerator(
-                            new AttributeModifierGenerator<>(CastableSpell.DELAY, AttributeModifierType.MULTIPLY)
-                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5, 0.75, 0.9, 1.1)
-                    )
-                    .addSpellGenerator(
-                            new SpellInstanceGenerator()
-                                    .addAttributeGenerator(
-                                            new AttributeModifierGenerator<>(CustomProjectileSpell.GRAVITY, AttributeModifierType.MULTIPLY)
-                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5d, 0.8d, 1.2d)
-                                    )
-                                    .addAttributeGenerator(
-                                            new AttributeModifierGenerator<>(SpeedSpell.SPEED, AttributeModifierType.MULTIPLY)
-                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5d, 0.8d, 1.2d, 2d)
-                                    )
-                                    .addAttributeGenerator(
-                                            new AttributeModifierGenerator<>(CustomProjectileSpell.BOUNCES, AttributeModifierType.ADD)
-                                                    .setValues(RegisteredPersistentDataType.INTEGER, 0, 0, 0, 1, 5)
-                                    )
-                                    .addAttributeGenerator(
-                                            new AttributeModifierGenerator<>(RangedSpell.RANGE, AttributeModifierType.MULTIPLY)
-                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5d, 0.8d, 1.2d, 2d)
-                                    )
-                                    .addAttributeGenerator(
-                                            new AttributeModifierGenerator<>(IProjectileSpell.IMPRECISION, AttributeModifierType.MULTIPLY)
-                                                    .setValues(RegisteredPersistentDataType.DOUBLE, 0.5d, 0.8d, 1.2d, 2d)
-                                    )
-                    )
-    );
-
-    public static final WbsRegistry<ConfiguredTrade> CONFIGURED_TRADES = new WbsRegistry<>();
+    public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>();
+    public static final WbsRegistry<SpellInstanceGenerator> SPELL_GENERATORS = new WbsRegistry<>();
+    public static final WbsRegistry<AttributeModifierGenerator<?>> MODIFIER_GENERATORS = new WbsRegistry<>();
 }

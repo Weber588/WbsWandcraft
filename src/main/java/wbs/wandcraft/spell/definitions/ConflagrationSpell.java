@@ -2,8 +2,6 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.Particle;
-import org.bukkit.damage.DamageSource;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -11,13 +9,16 @@ import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.DiscParticleEffect;
 import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.definitions.extensions.*;
+import wbs.wandcraft.spell.definitions.extensions.BurnDamageSpell;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.definitions.extensions.ForceSpell;
+import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
 
 import java.util.Collection;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.NETHER;
 
-public class ConflagrationSpell extends SpellDefinition implements CastableSpell, DamageSpell, ForceSpell, BurnTimeSpell, RadiusedSpell {
+public class ConflagrationSpell extends SpellDefinition implements CastableSpell, BurnDamageSpell, ForceSpell, RadiusedSpell {
     private final DiscParticleEffect popEffect = (DiscParticleEffect) new DiscParticleEffect()
             .setSpeed(1)
             .setAmount(10);
@@ -57,14 +58,10 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
                 .setRange(radius)
                 .selectExcluding(caster);
 
-        DamageSource source = DamageSource.builder(DamageType.IN_FIRE)
-                .withDirectEntity(context.player())
-                .build();
-
         for (LivingEntity target : hit) {
             if (WbsRegionUtils.canDealDamage(caster.getPlayer(), target)) {
-                target.damage(instance.getAttribute(DAMAGE), source);
-                target.setFireTicks((int) (instance.getAttribute(BURN_TIME) * (1 + (Math.random() * 0.4 - 0.2))));
+                damageAndBurn(target, context);
+
                 target.setVelocity(
                         target.getEyeLocation() // Give a slight upwards force by using eye height
                                 .subtract(context.location())

@@ -36,11 +36,11 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
         addSpellType(ARCANE);
 
         setAttribute(COST, 100);
-        setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(RANGE, 300d);
         setAttribute(IMPRECISION, 0d);
-        setAttribute(DAMAGE, 2d);
+        setAttribute(DAMAGE, 10d);
     }
 
     @Override

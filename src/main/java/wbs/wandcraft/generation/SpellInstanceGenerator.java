@@ -1,7 +1,9 @@
 package wbs.wandcraft.generation;
 
+import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.wandcraft.WandcraftRegistries;
@@ -15,15 +17,32 @@ import wbs.wandcraft.spell.definitions.SpellInstance;
 import java.util.*;
 
 @NullMarked
-public class SpellInstanceGenerator{
+public class SpellInstanceGenerator implements Keyed {
     private final List<SpellDefinition> definitions = new LinkedList<>(WandcraftRegistries.SPELLS.values());
     private final List<AttributeModifierGenerator<?>> modifierGenerators = new LinkedList<>();
+    private final NamespacedKey key;
 
-    public SpellInstanceGenerator() {}
     public SpellInstanceGenerator(ConfigurationSection section, WandcraftSettings settings, String directory) {
         readSpellDefinitions(section, settings, directory + "/spells");
 
         readAttributes(section, settings, directory + "/attributes");
+
+        NamespacedKey tempKey = null;
+        String keyString = section.getString("key");
+        if (keyString != null) {
+            NamespacedKey checkKey = NamespacedKey.fromString(keyString, WbsWandcraft.getInstance());
+            if (checkKey == null) {
+                settings.logError("Invalid key \"" + keyString + "\"", directory + "/key");
+                tempKey = WbsWandcraft.getKey("anonymous");
+            }
+        }
+        if (tempKey == null) {
+            tempKey = NamespacedKey.fromString(section.getName(), WbsWandcraft.getInstance());
+        }
+        if (tempKey == null) {
+            tempKey = WbsWandcraft.getKey("anonymous");
+        }
+        key = tempKey;
     }
 
     private void readSpellDefinitions(ConfigurationSection section, WandcraftSettings settings, String directory) {
@@ -51,7 +70,7 @@ public class SpellInstanceGenerator{
             }
         }
 
-        if (definitions.isEmpty()) {
+        if (!definitions.isEmpty()) {
             setSpellDefinitions(definitions);
         }
     }
@@ -110,5 +129,10 @@ public class SpellInstanceGenerator{
     public SpellInstanceGenerator addAttributeGenerator(AttributeModifierGenerator<?> generator) {
         modifierGenerators.add(generator);
         return this;
+    }
+
+    @Override
+    public @NotNull NamespacedKey getKey() {
+        return key;
     }
 }

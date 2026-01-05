@@ -12,6 +12,7 @@ import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.commands.*;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.events.*;
+import wbs.wandcraft.learning.RegistrableLearningMethod;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
@@ -49,10 +50,12 @@ public class WbsWandcraft extends WbsPlugin {
                                 new CommandSpellForget(this, "forget"),
                                 new CommandModifyAttributes(this, "attribute"),
                                 new CommandSpellInfo(this, "info"),
-                                new CommandSpellBuild(this, "build")
+                                new CommandSpellBuild(this, "build"),
+                                new CommandSpellGenerate(this, "generate")
                         ).inferSubPermissions(),
                         WbsCommand.getStatic(this, "wand").addSubcommands(
                                 new CommandWandBuild(this, "build"),
+                                new CommandWandInfo(this, "info"),
                                 new CommandModifyAttributes(this, "attribute"),
                                 new CommandWandGenerate(this, "generate"),
                                 WbsSubcommand.simpleSubcommand(this, "modify", context -> {
@@ -73,7 +76,8 @@ public class WbsWandcraft extends WbsPlugin {
                         WbsCommand.getStatic(this, "modifier").addSubcommands(
                                 new CommandModifierBuild(this, "build"),
                                 new CommandModifyEffects(this, "effect"),
-                                new CommandModifyAttributes(this, "attribute")
+                                new CommandModifyAttributes(this, "attribute"),
+                                new CommandModifierGenerate(this, "generate")
                         ).inferSubPermissions(),
                         WbsCommand.getStatic(this, "item").addSubcommands(
                                 new CommandWandBuild(this, "wand"),
@@ -107,11 +111,17 @@ public class WbsWandcraft extends WbsPlugin {
         registerListener(new StatusEffectEvents());
         registerListener(new MagicBlockEvents());
         registerListener(new RecipeEvents());
+        registerListener(new LearningEvents());
 
         // Run next tick, when the plugin is fully enabled
         runSync(() -> {
             WandcraftRegistries.SPELLS.stream().forEach(SpellDefinition::registerEvents);
             WandcraftRegistries.STATUS_EFFECTS.stream().forEach(StatusEffect::registerEvents);
+            settings.getLearningMap().values().forEach(method -> {
+                if (method instanceof RegistrableLearningMethod registrable) {
+                    registrable.registerEvents();
+                }
+            });
         });
     }
 }

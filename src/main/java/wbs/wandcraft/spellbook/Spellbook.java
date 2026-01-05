@@ -1,5 +1,6 @@
 package wbs.wandcraft.spellbook;
 
+import com.google.common.collect.Multimap;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
@@ -9,8 +10,10 @@ import io.papermc.paper.persistence.PersistentDataContainerView;
 import io.papermc.paper.persistence.PersistentDataViewHolder;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -29,11 +32,13 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.pluginhooks.PacketEventsWrapper;
+import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
+import wbs.wandcraft.learning.LearningMethod;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -41,6 +46,7 @@ import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.types.WandType;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,7 +102,7 @@ public class Spellbook implements ItemDecorator {
                         .toList()
         );
     }
-    private static boolean isKnown(PersistentDataViewHolder holder, SpellDefinition definition) {
+    public static boolean knowsSpell(PersistentDataViewHolder holder, SpellDefinition definition) {
         return getKnownSpells(holder).contains(definition);
     }
 
@@ -220,7 +226,7 @@ public class Spellbook implements ItemDecorator {
         }
 
         List<WandType<?>> wandDefinitions = getOrderedWands();
-        List<SpellDefinition> allDefinitions = getOrderedSpells();
+        List<SpellDefinition> spellDefinitions = getOrderedSpells();
 
         Component chapterPage = Component.empty();
 
@@ -231,39 +237,9 @@ public class Spellbook implements ItemDecorator {
         chapterPage = chapterPage.append(getChapterLink(2, "Wands"));
         chapterPage = chapterPage.append(getChapterLink(2 + wandDefinitions.size(), "Spell Descriptions"));
 
-        List<Component> wandPages = new LinkedList<>();
-        for (WandType<?> type : wandDefinitions) {
-            Component page = Component.empty().append(type.getItemName().color(NamedTextColor.GOLD))
-                    .append(LINE_BREAK)
-                    .append(type.getDescription().color(DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC));
+        List<Component> wandPages = getWandPages(wandDefinitions);
 
-            wandPages.add(page);
-        }
-
-        List<Component> spellPages = new LinkedList<>();
-        for (SpellDefinition definition : allDefinitions) {
-            Component page = Component.empty();
-
-            Component displayName = definition.displayName();
-            boolean isKnown = isKnown(player, definition);
-            if (!isKnown) {
-                displayName = displayName.font(Key.key("illageralt"));
-            }
-
-            page = page.append(displayName);
-
-            // TODO: Add spell schools
-
-            page = page.append(LINE_BREAK.color(NamedTextColor.GOLD));
-
-            Component description = definition.description().color(DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC);
-            if (!isKnown) {
-                description = description.font(Key.key("alt"));
-            }
-            page = page.append(description);
-
-            spellPages.add(page);
-        }
+        List<Component> spellPages = getSpellPages(player, spellDefinitions);
 
         WrittenBookContent.Builder book = WrittenBookContent.writtenBookContent("Spellbook", player.getName());
 
@@ -299,6 +275,60 @@ public class Spellbook implements ItemDecorator {
         });
 
         return this;
+    }
+
+    private static @NotNull List<Component> getWandPages(List<WandType<?>> wandDefinitions) {
+        List<Component> wandPages = new LinkedList<>();
+        for (WandType<?> type : wandDefinitions) {
+            Component page = Component.empty().append(type.getItemName().color(NamedTextColor.GOLD))
+                    .append(LINE_BREAK)
+                    .append(type.getDescription().color(DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC));
+
+            wandPages.add(page);
+        }
+        return wandPages;
+    }
+
+    private static @NotNull List<Component> getSpellPages(Player player, List<SpellDefinition> allDefinitions) {
+        List<Component> spellPages = new LinkedList<>();
+        for (SpellDefinition definition : allDefinitions) {
+            Component page = Component.empty();
+
+            Component displayName = definition.displayName();
+            boolean isKnown = knowsSpell(player, definition);
+
+            page = page.append(displayName);
+            page = page.appendNewline().append(definition.getTypesDisplay());
+
+            page = page.append(LINE_BREAK.color(NamedTextColor.GOLD));
+
+            Component description = definition.description().color(DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC);
+            if (!isKnown) {
+                description = description.font(Key.key("illageralt"));
+            }
+            page = page.append(description);
+
+            if (!isKnown) {
+                Multimap<SpellDefinition, LearningMethod> learningMap = WbsWandcraft.getInstance().getSettings().getLearningMap();
+
+                Collection<LearningMethod> methodList = learningMap.get(definition);
+                if (!methodList.isEmpty()) {
+                    Component indent = Component.text("  ");
+                    Component hoverText = Component.join(
+                            JoinConfiguration.builder()
+                                    .separator(Component.newline())
+                                    .build(),
+                            methodList.stream().map(method ->
+                                            method.describe(indent, false).color(NamedTextColor.GOLD)
+                                    ).toList()
+                            );
+
+                    page = page.hoverEvent(HoverEvent.showText(hoverText));
+                }
+            }
+            spellPages.add(page);
+        }
+        return spellPages;
     }
 
     private List<WandType<?>> getOrderedWands() {
@@ -348,7 +378,13 @@ public class Spellbook implements ItemDecorator {
 
     @Override
     public @NotNull List<Component> getLore() {
-        return List.of();
+
+        return new LinkedList<>(
+                WbsStrings.wrapText("Sneak + hold Right Click to Cast", 140).stream()
+                        .map(Component::text)
+                        .map(component -> component.color(NamedTextColor.AQUA))
+                        .toList()
+        );
     }
 
     public void tryCasting(Player player, ItemStack item) {
@@ -359,7 +395,7 @@ public class Spellbook implements ItemDecorator {
 
         SpellDefinition definition = getCurrentSpell();
         if (definition != null) {
-            if (!isKnown(player, definition)) {
+            if (!knowsSpell(player, definition)) {
                 Component errorMessage = getErrorMessage(definition);
 
                 player.sendActionBar(errorMessage);

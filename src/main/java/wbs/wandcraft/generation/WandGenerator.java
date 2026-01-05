@@ -38,23 +38,6 @@ public class WandGenerator implements Keyed {
     private final List<SpellInstanceGenerator> spellGenerators = new LinkedList<>();
     private final @NotNull NamespacedKey key;
 
-    public WandGenerator(@NotNull NamespacedKey key,
-                         int minAttributes,
-                         int maxAttributes,
-                         int minModifiers,
-                         int maxModifiers,
-                         int minSpells,
-                         int maxSpells
-    ) {
-        this.key = key;
-        this.minAttributes = minAttributes;
-        this.maxAttributes = maxAttributes;
-        this.minModifiers = minModifiers;
-        this.maxModifiers = maxModifiers;
-        this.minSpells = minSpells;
-        this.maxSpells = maxSpells;
-    }
-
     public WandGenerator(@NotNull ConfigurationSection section, WandcraftSettings settings, String directory) {
         String name = section.getName();
 

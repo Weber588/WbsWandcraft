@@ -1,4 +1,4 @@
-wands: {}
+wands: {} # Learning wands is not implemented yet -- all are known immediately.
 spells:
   anti_magic_shell:
     # List advancement keys that, when any is achieved, will teach this spell
@@ -10,45 +10,69 @@ spells:
   arcane_burst:
 
   arcane_spark:
-
+    enter-structure:
+      - ".*village.*" # Supports regex (across the whole key, including namespace)
   arcane_surge:
 
   blink:
-
+    advancements:
+      - "minecraft:end/root" # The End
   carve:
 
   chain_lightning:
-
+    # If only damage types are listed, any amount of damage taken, survived or not, will grant this spell
+    take-damage:
+      - ".*lightning.*"
   charm:
-
+    advancements:
+      - "minecraft:husbandry/bred_all_animals"
   conflagration:
-
+    advancements:
+      - "minecraft:story/enter_the_nether" # We Need to Go Deeper
   crows_call:
-
+    take-damage:
+      # Do they need to survive?
+      require-surviving: true
+      # How much damage do they need to take
+      min-amount: 10
+      # Damage types that will grant this spell when taken by a player
+      damage-types:
+        - ".*fall.*"
   death_walk:
-
+    advancements:
+      - "minecraft:nether/get_wither_skull"
   discover_item:
-
+  # Traded
   displace:
 
   eldritch_blast:
-
+    # When someone deals damage with this type, it will grant this spell
+    deal-damage:
+      - ".*magic.*" # Allows regex across whole key
   fireball:
-
+    advancements:
+      - "minecraft:nether/return_to_sender"
   fire_breath:
-
+    advancements:
+      - "minecraft:nether/obtain_blaze_rod" # Into Fire
   leap:
-
+    take-damage:
+      - ".*fall.*"
   planar_binding:
-
+    # Killing a mob of this type will grant this spell
+    kill:
+      - enderman
   prismatic_ray:
-
+    advancements:
+      - "minecraft:nether/all_potions" # Furious Cocktail
   recall:
-
+    advancements:
+      - "minecraft:end/enter_end_gateway" # Remote Getaway
   shield:
 
   stun:
 
   warp:
-
+    advancements:
+      - "minecraft:end/levitate" # Great View From Up Here
   wind_walk:

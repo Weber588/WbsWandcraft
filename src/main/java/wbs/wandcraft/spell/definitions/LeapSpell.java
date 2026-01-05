@@ -20,7 +20,7 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
         addSpellType(VOID);
         addSpellType(ENDER);
 
-        setAttribute(COST, 15);
+        setAttribute(COST, 50);
         setAttribute(COOLDOWN, Ticks.TICKS_PER_SECOND);
 
         setAttribute(IMPRECISION, 5d);
@@ -31,24 +31,27 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
     public void cast(CastContext context) {
         Player player = context.player();
         player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation(), 160, 0, 0, 0, 0.5);
-        player.setVelocity(getDirection(context, context.instance().getAttribute(SPEED)));
+        player.setVelocity(getDirection(context, context.instance().getAttribute(SPEED)).add(player.getVelocity().multiply(0.5)));
 
         player.setFallDistance(0);
 
-        new BukkitRunnable() {
-            int escape = 0;
-            @Override
-            public void run() {
-                player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation().add(0, 1, 0), 10, 0.4, 1, 0.4, 0);
+        //noinspection deprecation
+        if (player.isOnGround()) {
+            new BukkitRunnable() {
+                int escape = 0;
+                @Override
+                public void run() {
+                    player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation().add(0, 1, 0), 10, 0.4, 1, 0.4, 0);
 
-                escape++;
+                    escape++;
 
-                //noinspection deprecation
-                if (escape > 1000 || !player.isOnline() || player.isFlying() || (player.isOnGround() && escape >= 5)) {
-                    cancel();
+                    //noinspection deprecation
+                    if (escape > 1000 || !player.isOnline() || player.isFlying() || (player.isOnGround() && escape >= 5)) {
+                        cancel();
+                    }
                 }
-            }
-        }.runTaskTimer(WbsWandcraft.getInstance(), 2L, 2L);
+            }.runTaskTimer(WbsWandcraft.getInstance(), 2L, 2L);
+        }
     }
 
     @Override

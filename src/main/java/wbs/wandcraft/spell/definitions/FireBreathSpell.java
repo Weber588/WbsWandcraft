@@ -5,9 +5,6 @@ import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.damage.DamageSource;
-import org.bukkit.damage.DamageType;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
@@ -21,7 +18,7 @@ import wbs.wandcraft.spell.definitions.type.SpellType;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FireBreathSpell extends SpellDefinition implements ContinuousCastableSpell, DamageSpell, DirectionalSpell, RangedSpell, BurnTimeSpell, ParticleSpell {
+public class FireBreathSpell extends SpellDefinition implements ContinuousCastableSpell, BurnDamageSpell, DirectionalSpell, RangedSpell, ParticleSpell {
     private static final RingParticleEffect FIRE_EFFECT = (RingParticleEffect) new RingParticleEffect()
             .setRadius(0.01)
             .setVariation(0.03)
@@ -95,18 +92,8 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
             }
         } while (result != null && result.getHitEntity() != null);
 
-        double damage = instance.getAttribute(DAMAGE);
-        int burnTime = instance.getAttribute(BURN_TIME);
-
-        DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                .withDirectEntity(context.player())
-                .build();
-
         for (Entity hitEntity : hitEntities) {
-            hitEntity.setFireTicks(burnTime);
-            if (hitEntity instanceof Damageable damageable) {
-                damageable.damage(damage, source);
-            }
+            damageAndBurn(hitEntity, context);
         }
     }
 

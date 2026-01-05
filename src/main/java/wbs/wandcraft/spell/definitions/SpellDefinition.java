@@ -2,6 +2,8 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.string.WbsStrings;
@@ -106,5 +108,24 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
 
     public List<SpellType> getTypes() {
         return new LinkedList<>(spellTypes);
+    }
+
+    public Component getTypesDisplay() {
+        return Component.join(
+                JoinConfiguration.builder()
+                        .separator(Component.text(" - ")
+                                .decorate(TextDecoration.ITALIC)
+                                .color(DESCRIPTION_COLOR)
+                        )
+                        .build(),
+                getTypes()
+                        .stream()
+                        .map(spellType ->
+                                spellType.displayName()
+                                        .color(spellType.textColor())
+                                        .decorate(TextDecoration.ITALIC)
+                        )
+                        .toList()
+        );
     }
 }

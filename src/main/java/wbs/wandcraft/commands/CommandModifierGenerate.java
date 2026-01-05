@@ -13,29 +13,31 @@ import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.generation.WandGenerator;
+import wbs.wandcraft.generation.AttributeModifierGenerator;
+import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
+import wbs.wandcraft.util.ItemUtils;
 
 import java.util.stream.Collectors;
 
-public class CommandWandGenerate extends WbsSubcommand  {
-    private static final WbsSimpleArgument.KeyedSimpleArgument WAND_GENERATOR = new WbsSimpleArgument.KeyedSimpleArgument(
-            "wand_generator",
+public class CommandModifierGenerate extends WbsSubcommand  {
+    private static final WbsSimpleArgument.KeyedSimpleArgument MODIFIER_GENERATOR = new WbsSimpleArgument.KeyedSimpleArgument(
+            "modifier_generator",
             ArgumentTypes.namespacedKey(),
             null
-    ).addKeyedSuggestions(WandcraftRegistries.WAND_GENERATORS.values());
+    ).addKeyedSuggestions(WandcraftRegistries.MODIFIER_GENERATORS.values());
 
-    public CommandWandGenerate(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandModifierGenerate(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
-        addSimpleArgument(WAND_GENERATOR);
+        addSimpleArgument(MODIFIER_GENERATOR);
     }
 
     @Override
     protected int onSimpleArgumentCallback(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
-        NamespacedKey generatorKey = configuredArgumentMap.get(WAND_GENERATOR);
+        NamespacedKey generatorKey = configuredArgumentMap.get(MODIFIER_GENERATOR);
 
         if (generatorKey == null) {
-            plugin.sendMessage("Choose a wand generator: "
-                            + WandcraftRegistries.WAND_GENERATORS.stream()
+            plugin.sendMessage("Choose a modifier generator: "
+                            + WandcraftRegistries.MODIFIER_GENERATORS.stream()
                             .map(Keyed::key)
                             .map(Key::asString)
                             .collect(Collectors.joining(", ")),
@@ -43,7 +45,7 @@ public class CommandWandGenerate extends WbsSubcommand  {
             return Command.SINGLE_SUCCESS;
         }
 
-        WandGenerator generator = WandcraftRegistries.WAND_GENERATORS.get(generatorKey);
+        AttributeModifierGenerator<?> generator = WandcraftRegistries.MODIFIER_GENERATORS.get(generatorKey);
 
         if (generator == null) {
             plugin.sendMessage("Invalid generator key: " + generatorKey.asString() + ".", context.getSource().getSender());
@@ -51,7 +53,9 @@ public class CommandWandGenerate extends WbsSubcommand  {
         }
 
         if (context.getSource().getSender() instanceof Player player) {
-            player.getInventory().addItem(generator.get());
+            SpellAttributeModifier<?, ?> modifier = generator.get();
+
+            player.getInventory().addItem(ItemUtils.buildModifier(modifier));
         }
 
         return Command.SINGLE_SUCCESS;

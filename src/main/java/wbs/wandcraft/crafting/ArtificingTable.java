@@ -2,6 +2,7 @@ package wbs.wandcraft.crafting;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -72,7 +73,7 @@ public class ArtificingTable implements InventoryHolder {
 
     public ArtificingTable(Block block) {
         this.block = block;
-        inventory = Bukkit.createInventory(this, InventoryType.HOPPER, Component.text("Artificing"));
+        inventory = Bukkit.createInventory(this, InventoryType.HOPPER, Component.text("Echo Shard Storage"));
 
         PersistentDataContainer container = BlockChunkStorageUtil.getContainer(block);
 
@@ -192,7 +193,7 @@ public class ArtificingTable implements InventoryHolder {
             }
 
             // TODO: Get this from spell definition somehow
-            int cost = 64 * currentSpell.getDefault(CastableSpell.COST) / PlayerMana.DEFAULT_MAX_MANA;
+            int cost = Math.max(1, 64 * currentSpell.getDefault(CastableSpell.COST) / PlayerMana.DEFAULT_MAX_MANA);
 
             if (shardsAvailable >= cost) {
                 getInventory().removeItem(ItemStack.of(Material.ECHO_SHARD, cost));
@@ -282,6 +283,15 @@ public class ArtificingTable implements InventoryHolder {
             dropFromTable(item);
         }
 
+        inventory.forEach(inventoryStack -> {
+            if (item != null) block.getWorld().dropItemNaturally(block.getLocation().toCenterLocation(), inventoryStack);
+        });
+
+        block.getWorld().dropItemNaturally(
+                block.getLocation().toCenterLocation(),
+                WbsWandcraft.getInstance().getSettings().getArtificingConfig().getItem()
+        );
+
         block.getWorld().getNearbyEntities(
                 BoundingBox.of(block).expand(32),
                 entity -> entity.getPersistentDataContainer().has(blockKey)
@@ -293,7 +303,8 @@ public class ArtificingTable implements InventoryHolder {
     private static void dropFromTable(Item item) {
         ItemStack stack = item.getItemStack();
         item.getWorld().dropItem(item.getLocation(), stack, spawned -> {
-            spawned.setVelocity(new Vector(0, 0.15, 0));
+            spawned.setVelocity(new Vector(0, 0.2, 0));
+            spawned.setPickupDelay(2 * Ticks.TICKS_PER_SECOND);
         });
         item.remove();
     }

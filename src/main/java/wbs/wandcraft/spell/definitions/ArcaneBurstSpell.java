@@ -108,6 +108,6 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
 
     @Override
     public String rawDescription() {
-        return "A burst of arcane energy that spirals and ";
+        return "A spiral of arcane energy that flies and throws nearby mobs on impact.";
     }
 }

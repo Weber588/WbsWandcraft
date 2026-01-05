@@ -20,6 +20,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.block.BlockType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.WbsColours;
 import wbs.wandcraft.WbsWandcraft;
@@ -61,6 +62,7 @@ public class ItemUtils {
                         .build()
         );
         blankScroll.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_BLANK_SCROLL.getKey());
+        blankScroll.setData(DataComponentTypes.MAX_STACK_SIZE, 64);
 
         return blankScroll;
     }
@@ -197,8 +199,14 @@ public class ItemUtils {
     );
     
     public static @NotNull ItemStack buildModifier() {
+        return buildModifier(null);
+    }
+    public static @NotNull ItemStack buildModifier(@Nullable SpellAttributeModifier<?, ?> attributeModifier) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_MODIFIER);
         SpellModifier modifier = new SpellModifier();
+        if (attributeModifier != null) {
+            modifier.addModifier(attributeModifier);
+        }
 
         item.getDataTypes().forEach(item::unsetData);
 

@@ -107,7 +107,6 @@ public class SpellbookEvents implements Listener {
 
             player.swingHand(hand);
 
-            event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
 
             Block clickedBlock = event.getClickedBlock();

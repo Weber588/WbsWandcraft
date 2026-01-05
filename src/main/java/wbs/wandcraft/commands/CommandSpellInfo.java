@@ -1,10 +1,12 @@
 package wbs.wandcraft.commands;
 
+import com.google.common.collect.Multimap;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -14,8 +16,11 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.learning.LearningMethod;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -53,9 +58,12 @@ public class CommandSpellInfo extends WbsSubcommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        WbsMessageBuilder builder = plugin.buildMessage("=======================")
+        Component types = spell.getTypesDisplay();
+        WbsMessageBuilder builder = plugin.buildMessageNoPrefix("=======================")
                 .append("\nSpell: ")
                 .append(spell.displayName().color(NamedTextColor.GOLD))
+                .append("\nTypes: ")
+                .append(types)
                 .append("\nDescription: ")
                 .append(spell.description().color(NamedTextColor.GOLD))
                 .append("\nAttributes: ");
@@ -64,6 +72,17 @@ public class CommandSpellInfo extends WbsSubcommand {
             builder.append("\n")
                     .append(text);
         });
+
+        Multimap<SpellDefinition, LearningMethod> learningMap = WbsWandcraft.getInstance().getSettings().getLearningMap();
+
+        Collection<LearningMethod> methodList = learningMap.get(spell);
+        if (!methodList.isEmpty()) {
+            builder.append("\nLearning criteria:");
+            Component indent = Component.text("  ");
+            methodList.forEach(criteria ->
+                    builder.append(Component.newline().append(indent).append(criteria.describe(indent).color(NamedTextColor.GOLD)))
+            );
+        }
 
         builder
                 .append("\n=======================")

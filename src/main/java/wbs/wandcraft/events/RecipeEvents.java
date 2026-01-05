@@ -1,8 +1,6 @@
 package wbs.wandcraft.events;
 
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.*;
@@ -11,18 +9,26 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spellbook.Spellbook;
 
 import java.util.List;
 import java.util.Random;
 
 public class RecipeEvents implements Listener {
-
     public static final int XP_PER_SHARD = 5;
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        Bukkit.recipeIterator().forEachRemaining(recipe -> {
+            if (recipe instanceof Keyed keyed) {
+                if (keyed.key().namespace().equals("wbswandcraft")) {
+                    player.discoverRecipe(keyed.getKey());
+                }
+            }
+        });
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAmethystSculk(BlockSpreadEvent event) {
@@ -43,7 +49,7 @@ public class RecipeEvents implements Listener {
         World world = entity.getWorld();
 
         if (entity instanceof Monster monster) {
-            List<Entity> nearbyEntities = monster.getNearbyEntities(2, 2, 2);
+            List<Entity> nearbyEntities = monster.getNearbyEntities(3, 3, 3);
 
             int droppedExp = event.getDroppedExp();
 
@@ -80,29 +86,6 @@ public class RecipeEvents implements Listener {
                 if (converted > 0) {
                     event.setDroppedExp(droppedExp - (XP_PER_SHARD * converted));
                 }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onSpellbookLectern(PlayerInteractEvent event) {
-        if (!event.getAction().isRightClick() || event.getHand() != EquipmentSlot.HAND) {
-            return;
-        }
-
-        ItemStack item = event.getItem();
-        Spellbook spellbook = Spellbook.fromItem(item);
-        if (spellbook != null) {
-            SpellDefinition currentSpell = spellbook.getCurrentSpell();
-
-            Player player = event.getPlayer();
-            if (currentSpell == null) {
-                return;
-            }
-
-            if (!Spellbook.getKnownSpells(player).contains(currentSpell)) {
-                player.sendActionBar(Spellbook.getErrorMessage(currentSpell));
-                return;
             }
         }
     }

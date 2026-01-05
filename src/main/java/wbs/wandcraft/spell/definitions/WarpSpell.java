@@ -28,7 +28,7 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
 
         setAttribute(SIZE, 0.0);
         setAttribute(GRAVITY, 0.0);
-        setAttribute(IMPRECISION, 10d);
+        setAttribute(IMPRECISION, 3d);
         setAttribute(RANGE, 150d);
         setAttribute(SPEED, 3d);
     }
