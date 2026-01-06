@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import wbs.wandcraft.ItemDecorator;
+import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;

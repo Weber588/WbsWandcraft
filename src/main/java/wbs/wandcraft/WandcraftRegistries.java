@@ -2,13 +2,16 @@ package wbs.wandcraft;
 
 import wbs.utils.util.WbsRegistry;
 import wbs.wandcraft.effects.StatusEffect;
+import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.generation.AttributeModifierGenerator;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.generation.WandGenerator;
 import wbs.wandcraft.learning.*;
+import wbs.wandcraft.spell.NativeSpellLoader;
+import wbs.wandcraft.spell.SpellLoader;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
-import wbs.wandcraft.spell.definitions.*;
+import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spell.event.CastSpellEffect;
 import wbs.wandcraft.spell.event.ForcePullEffect;
@@ -52,32 +55,7 @@ public class WandcraftRegistries {
             WandTexture.OVERGROWN
     );
     public static final WbsRegistry<SpellType> SPELL_TYPES = new WbsRegistry<>();
-    public static final WbsRegistry<SpellDefinition> SPELLS = new WbsRegistry<>(
-            new FireballSpell(),
-            new LeapSpell(),
-            new BlinkSpell(),
-            new PrismaticRaySpell(),
-            new EldritchBlastSpell(),
-            new WarpSpell(),
-            new RecallSpell(),
-            new AntiMagicShellSpell(),
-            new ArcaneSurgeSpell(),
-            new ConflagrationSpell(),
-            new WindWalkSpell(),
-            new CrowsCallSpell(),
-            new StunSpell(),
-            new FireBreathSpell(),
-            new ArcaneSparkSpell(),
-            new PlanarBindingSpell(),
-            new DiscoverItemSpell(),
-            new DeathWalkSpell(),
-            new ChainLightningSpell(),
-            new CharmSpell(),
-            new DisplaceSpell(),
-            new ArcaneBurstSpell(),
-            new ShieldSpell(),
-            new CarveSpell()
-    );
+    public static final WbsRegistry<SpellDefinition> SPELLS = new WbsRegistry<>(SpellLoader.loadSpells(new NativeSpellLoader()));
     public static final WbsRegistry<LearningMethodType<?>> LEARNING_PROVIDERS = new WbsRegistry<>(
             LearningMethodType.build("advancements", AdvancementLearningTrigger::new),
             LearningMethodType.build("deal-damage", DealDamageLearningTrigger::new),
@@ -86,11 +64,12 @@ public class WandcraftRegistries {
             LearningMethodType.build("take-damage", TakeDamageLearningTrigger::new)
     );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
-            StatusEffect.GLIDING,
-            StatusEffect.STUNNED,
-            StatusEffect.PLANAR_BINDING,
-            StatusEffect.DEATH_WALK,
-            StatusEffect.CHARMED
+            StatusEffectManager.GLIDING,
+            StatusEffectManager.STUNNED,
+            StatusEffectManager.PLANAR_BINDING,
+            StatusEffectManager.DEATH_WALK,
+            StatusEffectManager.CHARMED,
+            StatusEffectManager.POLYMORPHED
     );
     public static final WbsRegistry<SpellEffectDefinition<?>> EFFECTS = new WbsRegistry<>(
             new ForcePullEffect(),

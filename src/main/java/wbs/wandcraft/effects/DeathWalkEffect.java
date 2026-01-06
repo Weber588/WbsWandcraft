@@ -15,12 +15,12 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
 
 @NullMarked
-public class DeathWalkEffect implements StatusEffect {
+public class DeathWalkEffect extends StatusEffect {
     private static final NormalParticleEffect EFFECT = (NormalParticleEffect) new NormalParticleEffect()
             .setData(Material.GRAVEL.createBlockData());
 
     @Override
-    public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
+    public boolean onTick(LivingEntity entity, StatusEffectInstance instance) {
         EFFECT.setXYZ(entity.getWidth())
                 .setY(entity.getHeight())
                 .play(Particle.FALLING_DUST, WbsEntityUtil.getMiddleLocation(entity));

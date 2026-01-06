@@ -9,6 +9,14 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class StatusEffectManager {
+    public static final GlidingStatusEffect GLIDING = new GlidingStatusEffect();
+    public static final StunnedEffect STUNNED = new StunnedEffect();
+    public static final PlanarBindingEffect PLANAR_BINDING = new PlanarBindingEffect();
+    public static final DeathWalkEffect DEATH_WALK = new DeathWalkEffect();
+    public static final CharmedEffect CHARMED = new CharmedEffect();
+    public static final PolymorphedEffect POLYMORPHED = new PolymorphedEffect();
+    public static final HoldEffect HOLD = new HoldEffect();
+
     private static final Table<NamespacedKey, UUID, StatusEffectInstance> EFFECT_INSTANCES = HashBasedTable.create();
 
     public static StatusEffectInstance getInstance(LivingEntity entity, StatusEffect effect) {

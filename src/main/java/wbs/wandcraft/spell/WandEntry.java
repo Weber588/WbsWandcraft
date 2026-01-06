@@ -3,7 +3,7 @@ package wbs.wandcraft.spell;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import wbs.wandcraft.ItemDecorator;
+import wbs.wandcraft.util.ItemDecorator;
 
 /**
  * Describes an object that can be added to a wand to have an effect.

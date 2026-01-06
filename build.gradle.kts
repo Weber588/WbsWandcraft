@@ -31,6 +31,7 @@ repositories {
     mavenLocal()
     maven {
         url = uri("https://repo.papermc.io/repository/maven-public/")
+        url = uri("https://mvn.lib.co.nz/public")
     }
 }
 
@@ -40,6 +41,7 @@ dependencies {
     // paperweight.devBundle("com.example.paperfork", "1.21.8-R0.1-SNAPSHOT")
     implementation("io.github.Weber588:WbsUtils:1.0-SNAPSHOT")
     implementation("net.kyori:adventure-text-serializer-ansi:4.24.0")
+    implementation("me.libraryaddict.disguises:libsdisguises:11.0.13")
 }
 
 tasks {
@@ -80,6 +82,10 @@ paperPluginYaml {
             required = true
         })
         server.create("packetevents", {
+            load = PaperPluginYaml.Load.BEFORE
+            required = false
+        })
+        server.create("LibsDisguises", {
             load = PaperPluginYaml.Load.BEFORE
             required = false
         })

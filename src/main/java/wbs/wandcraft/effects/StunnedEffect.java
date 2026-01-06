@@ -11,9 +11,9 @@ import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.WbsWandcraft;
 
 @NullMarked
-public class StunnedEffect implements StatusEffect {
+public class StunnedEffect extends StatusEffect {
     @Override
-    public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
+    public boolean onTick(LivingEntity entity, StatusEffectInstance instance) {
         ItemStack activeItem = entity.getActiveItem();
         if (!activeItem.isEmpty()) {
             entity.clearActiveItem();

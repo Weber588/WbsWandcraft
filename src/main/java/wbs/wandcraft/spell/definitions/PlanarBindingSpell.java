@@ -4,6 +4,7 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.effects.StatusEffect;
+import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
@@ -20,9 +21,9 @@ public class PlanarBindingSpell extends SpellDefinition implements StatusEffectS
         setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(DURATION, 10 * Ticks.TICKS_PER_SECOND);
-        setAttribute(TARGET, TargeterType.LINE_OF_SIGHT);
-        setAttribute(TARGET_RANGE, 50d);
-        setAttribute(MAX_TARGETS, 1);
+        setAttribute(TARGET, TargeterType.RADIUS);
+        setAttribute(TARGET_RANGE, 15d);
+        setAttribute(MAX_TARGETS, 10);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class PlanarBindingSpell extends SpellDefinition implements StatusEffectS
 
     @Override
     public @NotNull StatusEffect getStatusEffect() {
-        return StatusEffect.PLANAR_BINDING;
+        return StatusEffectManager.PLANAR_BINDING;
     }
 
     @Override

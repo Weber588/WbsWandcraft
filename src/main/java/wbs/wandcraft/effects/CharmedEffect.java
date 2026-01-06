@@ -18,7 +18,7 @@ import wbs.wandcraft.WbsWandcraft;
 import java.util.List;
 
 @NullMarked
-public class CharmedEffect implements StatusEffect {
+public class CharmedEffect extends StatusEffect {
     private static final NormalParticleEffect EFFECT = new NormalParticleEffect();
     private static final double FOLLOW_RANGE = 8;
 
@@ -35,7 +35,7 @@ public class CharmedEffect implements StatusEffect {
     }
 
     @Override
-    public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
+    public boolean onTick(LivingEntity entity, StatusEffectInstance instance) {
         if (Bukkit.getCurrentTick() % 5 == 0) {
             EFFECT.setXYZ(entity.getWidth())
                     .setY(entity.getHeight())
@@ -68,15 +68,11 @@ public class CharmedEffect implements StatusEffect {
             return;
         }
 
-        if (event.getEntity() instanceof LivingEntity entity) {
-            StatusEffectInstance instance = StatusEffectManager.getInstance(entity, this);
-
-            if (instance != null) {
-                if (event.getTarget().getUniqueId().equals(instance.getCause())) {
-                    event.setCancelled(true);
-                }
+        ifPresent(event.getEntity(), instance -> {
+            if (event.getTarget().getUniqueId().equals(instance.getCause())) {
+                event.setCancelled(true);
             }
-        }
+        });
     }
 
     private void onAttack(EntityDamageByEntityEvent event) {
@@ -95,15 +91,13 @@ public class CharmedEffect implements StatusEffect {
             }
 
             if (nearby instanceof Mob mob) {
-                StatusEffectInstance instance = StatusEffectManager.getInstance(mob, this);
-
-                if (instance != null) {
+                ifPresent(mob, instance -> {
                     if (victim.getUniqueId().equals(instance.getCause())) {
                         mob.setTarget(attacker);
                     } else if (attacker.getUniqueId().equals(instance.getCause())) {
                         mob.setTarget(victim);
                     }
-                }
+                });
             }
         }
     }

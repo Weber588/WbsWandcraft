@@ -112,7 +112,7 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
         }
     }
 
-    public static class RecallPoint extends MagicObject {
+    public class RecallPoint extends MagicObject {
         private int age = 0;
         private final int duration;
 
@@ -128,19 +128,19 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
 
             ringEffect = new RingParticleEffect();
             ringEffect.setRadius(0.5).setAmount(3);
-            ringEffect.setOptions(Bukkit.createBlockData(Material.PURPLE_WOOL));
+            ringEffect.setData(Bukkit.createBlockData(Material.PURPLE_WOOL));
         }
 
         @Override
         protected void onRemove() {
-            ((RecallSpell) castContext.instance().getDefinition()).recall(caster, this);
+            recall(caster, this);
         }
 
         @Override
         protected boolean tick() {
             age++;
             if (duration > 0 && age > duration) {
-                ((RecallSpell) castContext.instance().getDefinition()).recall(caster, this);
+                recall(caster, this);
                 return true;
             }
             effect.play(Particle.WITCH, getLocation());

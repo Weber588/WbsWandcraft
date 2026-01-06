@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
+@SuppressWarnings("unused")
 public class WbsWandcraftBootstrap implements PluginBootstrap {
     @Override
     public @NotNull JavaPlugin createPlugin(@NotNull PluginProviderContext context) {

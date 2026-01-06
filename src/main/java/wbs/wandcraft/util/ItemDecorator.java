@@ -1,4 +1,4 @@
-package wbs.wandcraft;
+package wbs.wandcraft.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;

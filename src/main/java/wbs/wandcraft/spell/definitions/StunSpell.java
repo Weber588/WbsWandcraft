@@ -4,6 +4,7 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.effects.StatusEffect;
+import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
@@ -30,7 +31,7 @@ public class StunSpell extends SpellDefinition implements StatusEffectSpell<Livi
 
     @Override
     public @NotNull StatusEffect getStatusEffect() {
-        return StatusEffect.STUNNED;
+        return StatusEffectManager.STUNNED;
     }
 
     @Override

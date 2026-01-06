@@ -13,11 +13,11 @@ import wbs.utils.util.particles.RingParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
 
 @NullMarked
-public class PlanarBindingEffect implements StatusEffect {
+public class PlanarBindingEffect extends StatusEffect {
     private static final RingParticleEffect EFFECT = new RingParticleEffect();
 
     @Override
-    public boolean tick(LivingEntity entity, StatusEffectInstance instance) {
+    public boolean onTick(LivingEntity entity, StatusEffectInstance instance) {
         EFFECT.setRadius(entity.getWidth())
                 .play(Particle.REVERSE_PORTAL, WbsEntityUtil.getMiddleLocation(entity))
                 .play(Particle.SMOKE, WbsEntityUtil.getMiddleLocation(entity));

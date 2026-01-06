@@ -31,6 +31,7 @@ public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
     default void setupTargeted() {
         addAttribute(MAX_TARGETS);
         addAttribute(TARGET);
+        addAttribute(TARGET_RANGE);
     }
 
     Class<T> getEntityClass();
@@ -78,6 +79,16 @@ public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
             }
             default -> throw new IllegalStateException("Targeter missing: " + this);
         }
+    }
+
+    default String getNoTargetsMessage(CastContext context) {
+        TargeterType targeterType = context.instance().getAttribute(TARGET);
+
+        return switch (targeterType) {
+            case SELF -> "Cannot target yourself!";
+            case LINE_OF_SIGHT -> "No valid targets in line of sight!";
+            case RADIUS -> "No valid targets in radius!";
+        };
     }
 
     enum TargeterType {

@@ -33,7 +33,7 @@ import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.pluginhooks.PacketEventsWrapper;
 import wbs.utils.util.string.WbsStrings;
-import wbs.wandcraft.ItemDecorator;
+import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;

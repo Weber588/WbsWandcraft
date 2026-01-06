@@ -10,10 +10,10 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsMath;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
 import wbs.wandcraft.objects.colliders.Collision;
-import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.spell.definitions.SpellDefinition;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,38 +36,38 @@ public class MagicEntityEffect extends KinematicMagicObject {
         return new LinkedList<>(entityEffects.get(uuid));
     }
 
-    public static Collection<MagicEntityEffect> getEffects(Entity entity, Class<? extends SpellInstance> clazz) {
+    public static Collection<MagicEntityEffect> getEffects(Entity entity, Class<? extends SpellDefinition> clazz) {
         return getEffects(entity.getUniqueId(), clazz);
     }
 
-    public static Collection<MagicEntityEffect> getEffects(UUID uuid, Class<? extends SpellInstance> clazz) {
+    public static Collection<MagicEntityEffect> getEffects(UUID uuid, Class<? extends SpellDefinition> clazz) {
         return entityEffects.get(uuid).stream()
                 .filter(effect ->
-                        clazz.isAssignableFrom(effect.getContext().getClass()))
+                        clazz.isAssignableFrom(effect.getContext().instance().getDefinition().getClass()))
                 .collect(Collectors.toList());
     }
 
     @Nullable
-    public static MagicEntityEffect getEffectBySpell(Entity entity, Class<? extends SpellInstance> clazz) {
+    public static MagicEntityEffect getEffectBySpell(Entity entity, Class<? extends SpellDefinition> clazz) {
         return getEffectBySpell(entity.getUniqueId(), clazz);
     }
 
     @Nullable
-    public static MagicEntityEffect getEffectBySpell(UUID uuid, Class<? extends SpellInstance> clazz) {
+    public static MagicEntityEffect getEffectBySpell(UUID uuid, Class<? extends SpellDefinition> clazz) {
         return entityEffects.get(uuid).stream()
                 .filter(check ->
-                        clazz.isAssignableFrom(check.getContext().getClass()))
+                        clazz.isAssignableFrom(check.getContext().instance().getDefinition().getClass()))
                 .findAny()
                 .orElse(null);
     }
 
     @Nullable
-    public static <T extends SpellInstance> T getAffectingSpell(Entity entity, Class<T> clazz) {
+    public static <T extends SpellDefinition> T getAffectingSpell(Entity entity, Class<T> clazz) {
         return getAffectingSpell(entity.getUniqueId(), clazz);
     }
 
     @Nullable
-    public static <T extends SpellInstance> T getAffectingSpell(UUID uuid, Class<T> clazz) {
+    public static <T extends SpellDefinition> T getAffectingSpell(UUID uuid, Class<T> clazz) {
         MagicEntityEffect effect = getEffectBySpell(uuid, clazz);
 
         if (effect != null) {

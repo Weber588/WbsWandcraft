@@ -8,8 +8,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectInstance;
+import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
 import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
@@ -59,7 +59,7 @@ public class CrowsCallSpell extends SpellDefinition implements CastableSpell, Du
                 if (updatedPlayer != null && updatedPlayer.isOnline()) {
                     // If they're falling, or already gliding, create/update effect
                     if (updatedPlayer.getVelocity().getY() <= 0 || updatedPlayer.isGliding()) {
-                        StatusEffectInstance.applyEffect(updatedPlayer, StatusEffect.GLIDING, duration, true, updatedPlayer);
+                        StatusEffectInstance.applyEffect(updatedPlayer, StatusEffectManager.GLIDING, duration, true, updatedPlayer);
                         cancel();
                     }
                 }

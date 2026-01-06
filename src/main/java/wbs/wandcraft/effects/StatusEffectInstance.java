@@ -84,7 +84,7 @@ public class StatusEffectInstance {
         );
         effectsContainer.set(effect.getKey(), CustomPersistentDataTypes.STATUS_EFFECT, this);
         container.set(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
-        effect.onApply(entity, this);
+        effect.applyTo(entity, this);
 
         taskId = new BukkitRunnable() {
             @Override
@@ -145,7 +145,7 @@ public class StatusEffectInstance {
     }
 
     public void cancel(boolean removeFromEntity) {
-        effect.onRemove(entity, this);
+        effect.removeFrom(entity, this);
         StatusEffectManager.stopTracking(entity, this);
         Bukkit.getScheduler().cancelTask(taskId);
 

@@ -26,7 +26,7 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
-import wbs.wandcraft.ItemDecorator;
+import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
