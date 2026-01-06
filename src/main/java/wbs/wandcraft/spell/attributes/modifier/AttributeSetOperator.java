@@ -20,6 +20,11 @@ public class AttributeSetOperator<T> extends AttributeModificationOperator<T, T>
     }
 
     @Override
+    public SpellAttribute.Polarity getPolarity(T modifierValue) {
+        return SpellAttribute.Polarity.NEUTRAL;
+    }
+
+    @Override
     public String toString() {
         return "=";
     }

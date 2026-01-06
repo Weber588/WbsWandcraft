@@ -91,7 +91,7 @@ public class ArtificingTable implements InventoryHolder {
             dropItem();
         } else {
             ItemStack heldItem = player.getInventory().getItem(hand);
-            Wand wand = Wand.getIfValid(heldItem);
+            Wand wand = Wand.fromItem(heldItem);
             if (wand != null) {
                 wand.startEditing(player, heldItem);
                 return;

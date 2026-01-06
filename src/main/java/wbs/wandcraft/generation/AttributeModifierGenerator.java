@@ -3,9 +3,11 @@ package wbs.wandcraft.generation;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
+import wbs.utils.exceptions.InvalidConfigurationException;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
@@ -14,19 +16,19 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
+import wbs.wandcraft.util.ItemUtils;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 @NullMarked
-public class AttributeModifierGenerator<T> implements Keyed {
-    @Nullable
+public class AttributeModifierGenerator<T> implements Keyed, ItemGenerator {
+    @NotNull
     public static AttributeModifierGenerator<?> fromConfig(ConfigurationSection section,
                                                            WandcraftSettings settings,
-                                                           String directory,
-                                                           @NotNull AttributeModifierType fallbackType
-    ) {
+                                                           String directory
+    ) throws InvalidConfigurationException {
         String attributeString = section.getString("attribute");
         if (attributeString == null) {
             attributeString = section.getName();
@@ -35,8 +37,10 @@ public class AttributeModifierGenerator<T> implements Keyed {
         NamespacedKey attributeKey = NamespacedKey.fromString(attributeString, WbsWandcraft.getInstance());
 
         SpellAttribute<?> attribute = WandcraftRegistries.ATTRIBUTES.get(attributeKey);
+        AttributeModifierType fallbackType = AttributeModifierType.SET;
+
         if (attribute == null) {
-            settings.logError("Invalid attribute key \"" + attributeString + "\".", directory + "/" + attributeString);
+            throw new InvalidConfigurationException("Invalid attribute key \"" + attributeString + "\".", directory + "/" + attributeString);
         } else {
             String operatorString = section.getString("operator");
             if (operatorString == null) {
@@ -58,8 +62,6 @@ public class AttributeModifierGenerator<T> implements Keyed {
                     directory + "/" + attributeString
             );
         }
-
-        return null;
     }
 
     private final NamespacedKey key;
@@ -122,7 +124,7 @@ public class AttributeModifierGenerator<T> implements Keyed {
         }
     }
 
-    public SpellAttributeModifier<T, ?> get() {
+    public SpellAttributeModifier<T, ?> generate() {
         return WbsCollectionUtil.getRandom(values).createModifier(attribute, modifierType);
     }
 
@@ -154,8 +156,13 @@ public class AttributeModifierGenerator<T> implements Keyed {
         return key;
     }
 
-    public record ModifierValue<M>(RegisteredPersistentDataType<M> type, M value) {
-        public static <T> ModifierValue<?> from(RegisteredPersistentDataType<T> type, Object value) {
+    @Override
+    public ItemStack generateItem() {
+        return ItemUtils.buildModifier(generate());
+    }
+
+    public record ModifierValue<M>(RegisteredPersistentDataType<M> type, @Nullable M value) {
+        public static <T> ModifierValue<?> from(RegisteredPersistentDataType<T> type, @Nullable Object value) {
             return new ModifierValue<>(type, type.dataType().getComplexType().cast(value));
         }
 

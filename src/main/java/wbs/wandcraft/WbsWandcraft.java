@@ -65,7 +65,7 @@ public class WbsWandcraft extends WbsPlugin {
                                         return;
                                     }
                                     ItemStack item = player.getInventory().getItemInMainHand();
-                                    Wand wand = Wand.getIfValid(item);
+                                    Wand wand = Wand.fromItem(item);
                                     if (wand == null) {
                                         sendMessage("Hold a wand to modify it.", sender);
                                         return;
@@ -117,11 +117,7 @@ public class WbsWandcraft extends WbsPlugin {
         runSync(() -> {
             WandcraftRegistries.SPELLS.stream().forEach(SpellDefinition::registerEvents);
             WandcraftRegistries.STATUS_EFFECTS.stream().forEach(StatusEffect::registerEvents);
-            settings.getLearningMap().values().forEach(method -> {
-                if (method instanceof RegistrableLearningMethod registrable) {
-                    registrable.registerEvents();
-                }
-            });
+            settings.getGenerationMethods().forEach(RegistrableLearningMethod::registerEvents);
         });
     }
 }

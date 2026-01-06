@@ -1,3 +1,5 @@
+# Things that can be done to instantly learn spells, without needing to find a scroll.
+
 wands: {} # Learning wands is not implemented yet -- all are known immediately.
 spells:
   anti_magic_shell:
@@ -42,7 +44,7 @@ spells:
     advancements:
       - "minecraft:nether/get_wither_skull"
   discover_item:
-  # Traded
+
   displace:
 
   eldritch_blast:

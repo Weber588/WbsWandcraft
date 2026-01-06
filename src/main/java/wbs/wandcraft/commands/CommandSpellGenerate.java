@@ -14,8 +14,6 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
-import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.util.ItemUtils;
 
 import java.util.stream.Collectors;
 
@@ -53,8 +51,7 @@ public class CommandSpellGenerate extends WbsSubcommand  {
         }
 
         if (context.getSource().getSender() instanceof Player player) {
-            SpellInstance instance = generator.get();
-            player.getInventory().addItem(ItemUtils.buildSpell(instance));
+            player.getInventory().addItem(generator.generateItem());
         }
 
         return Command.SINGLE_SUCCESS;

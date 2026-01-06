@@ -23,7 +23,7 @@ public class LearningMethodType<T extends Event> implements Keyed {
         this.provider = provider;
     }
 
-    public LearningTrigger<T> construct(ConfigurationSection parentSection, String key, String directory) throws InvalidConfigurationException {
+    public LearningMethod construct(ConfigurationSection parentSection, String key, String directory) throws InvalidConfigurationException {
         return provider.construct(parentSection, key, directory);
     }
 
@@ -34,6 +34,6 @@ public class LearningMethodType<T extends Event> implements Keyed {
 
     @FunctionalInterface
     public interface LearningMethodProvider<T extends Event> {
-        LearningTrigger<T> construct(ConfigurationSection parentSection, String key, String directory) throws InvalidConfigurationException;
+        LearningMethod construct(ConfigurationSection parentSection, String key, String directory) throws InvalidConfigurationException;
     }
 }

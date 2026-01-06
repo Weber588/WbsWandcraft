@@ -9,7 +9,8 @@ import wbs.wandcraft.spell.definitions.ISpellDefinition;
  */
 public interface BurnTimeSpell extends ISpellDefinition {
     SpellAttribute<Integer> BURN_TIME = new IntegerSpellAttribute("burn_time", 20)
-            .setTicksToSecondsFormatter();
+            .setTicksToSecondsFormatter()
+            .overrideTextureValue("duration");
 
     default void setupBurnTime() {
         addAttribute(BURN_TIME);

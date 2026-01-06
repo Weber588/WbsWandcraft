@@ -8,6 +8,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import wbs.wandcraft.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
@@ -38,7 +39,10 @@ public interface Attributable extends ItemDecorator {
         setAttribute(attribute.getInstance(value));
     }
 
-    default void setAttribute(SpellAttributeInstance<?> instance) {
+    default void setAttribute(@Nullable SpellAttributeInstance<?> instance) {
+        if (instance == null) {
+            return;
+        }
         getAttributeInstances().removeIf(existing -> existing.attribute().equals(instance.attribute()));
         getAttributeInstances().add(instance.clone());
     }

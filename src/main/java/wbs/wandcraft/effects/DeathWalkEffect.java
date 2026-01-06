@@ -17,7 +17,7 @@ import wbs.wandcraft.WbsWandcraft;
 @NullMarked
 public class DeathWalkEffect implements StatusEffect {
     private static final NormalParticleEffect EFFECT = (NormalParticleEffect) new NormalParticleEffect()
-            .setOptions(Material.GRAVEL.createBlockData());
+            .setData(Material.GRAVEL.createBlockData());
 
     @Override
     public boolean tick(LivingEntity entity, StatusEffectInstance instance) {

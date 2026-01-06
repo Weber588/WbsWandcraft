@@ -187,7 +187,7 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
                 heldItem = inventory.getItemInOffHand();
             }
 
-            Wand wand = Wand.getIfValid(heldItem);
+            Wand wand = Wand.fromItem(heldItem);
 
             if (wand != null) {
                 hitBlock.breakNaturally(heldItem);

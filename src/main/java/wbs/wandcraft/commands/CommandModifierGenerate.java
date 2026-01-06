@@ -53,7 +53,7 @@ public class CommandModifierGenerate extends WbsSubcommand  {
         }
 
         if (context.getSource().getSender() instanceof Player player) {
-            SpellAttributeModifier<?, ?> modifier = generator.get();
+            SpellAttributeModifier<?, ?> modifier = generator.generate();
 
             player.getInventory().addItem(ItemUtils.buildModifier(modifier));
         }

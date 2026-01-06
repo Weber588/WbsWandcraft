@@ -418,7 +418,7 @@ public class Spellbook implements ItemDecorator {
     }
 
     public void currentPage(int newPage) {
-        this.currentPage = Math.max(0, newPage);
+        this.currentPage = Math.clamp(newPage, 0, 1 + getOrderedSpells().size() + getOrderedWands().size());
     }
 
     @Nullable

@@ -18,15 +18,19 @@ import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, ParticleSpell {
     SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0)
-            .setShowAttribute(value -> value > 0);
+            .setShowAttribute(value -> value > 0)
+            .polarity(SpellAttribute.Polarity.NEUTRAL);
     SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0.16)
             .setShowAttribute(value -> value != 0)
-            .setNumericFormatter(20d, value -> value + " blocks/second²");
+            .setNumericFormatter(20d, value -> value + " blocks/second²")
+            .polarity(SpellAttribute.Polarity.NEUTRAL);
     SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size",0.3)
-            .setNumericFormatter(value -> value + " blocks");
+            .setNumericFormatter(value -> value + " blocks")
+            .polarity(SpellAttribute.Polarity.NEUTRAL);
     SpellAttribute<Double> DRAG = new DoubleSpellAttribute("drag",0)
             .setShowAttribute(value -> value != 0)
-            .setNumericFormatter(20d, value -> value + " blocks/second²");
+            .setNumericFormatter(20d, value -> value + " blocks/second²")
+            .polarity(SpellAttribute.Polarity.NEUTRAL);
 
     default void setupCustomProjectile() {
         addAttribute(BOUNCES);

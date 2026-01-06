@@ -13,7 +13,7 @@ import wbs.wandcraft.WbsWandcraft;
 
 @NullMarked
 public class SpellType implements Keyed {
-    public static final SpellType ARCANE = new SpellType("arcane", TextColor.color(0x928711), Color.fromRGB(0xd7c719));
+    public static final SpellType ARCANE = new SpellType("arcane", TextColor.color(0xaca55d), Color.fromRGB(0xd7c719));
     public static final SpellType NETHER = new SpellType("nether", TextColor.color(0x95232c), Color.fromRGB(0x95232c));
     public static final SpellType ENDER = new SpellType("ender", TextColor.color(0x871192), Color.fromRGB(0xc719d7));
     public static final SpellType SCULK = new SpellType("sculk", TextColor.color(0x5d8bac), Color.fromRGB(0x5daca5));

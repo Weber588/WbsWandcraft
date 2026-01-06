@@ -60,12 +60,17 @@ public abstract class Wand implements Attributable {
 
     public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 10)
             .setTicksToSecondsFormatter()
-            .displayName(Component.text("Recharge Time"));
+            .displayName(Component.text("Recharge Time"))
+            .polarity(SpellAttribute.Polarity.NEGATIVE);
 
     @Nullable
-    public static Wand getIfValid(ItemStack item) {
+    public static Wand fromItem(ItemStack item) {
         PersistentDataContainerView container = item.getPersistentDataContainer();
         NamespacedKey key = container.get(WAND_TYPE, WbsPersistentDataType.NAMESPACED_KEY);
+
+        if (key == null) {
+            return null;
+        }
 
         WandType<?> wandType = WandcraftRegistries.WAND_TYPES.get(key);
 

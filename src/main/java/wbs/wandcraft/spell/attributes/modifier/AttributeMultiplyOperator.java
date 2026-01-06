@@ -30,14 +30,38 @@ public class AttributeMultiplyOperator<T extends Number, M extends Number> exten
     public Component asComponent(SpellAttribute<T> attribute, M modifierValue) {
         DecimalFormat format = new DecimalFormat("0.#");
 
+        double asDouble = modifierValue.doubleValue();
+
         if (DO_DIVISION_SYMBOL) {
-            double inverse = 1 / modifierValue.doubleValue();
+            double inverse = 1 / asDouble;
             if (inverse % 1 == 0) {
-                return attribute.displayName().append(Component.text(" ÷" + format.format(inverse)));
+                return Component.text(" ÷" + format.format(inverse));
             }
         }
 
-        return attribute.displayName().append(Component.text(" x" + format.format(modifierValue)));
+        if (asDouble < 2 && asDouble > 0) {
+            double asPercentage = asDouble * 100;
+
+            Component display;
+            if (asPercentage < 100) {
+                double displayPercent = 100 - asPercentage;
+
+                display = Component.text(" -" + format.format(displayPercent) + "%");
+            } else {
+                double displayPercent = asPercentage - 100;
+
+                display = Component.text(" +" + format.format(displayPercent) + "%");
+            }
+
+            return display;
+        }
+
+        return Component.text(" x" + format.format(modifierValue));
+    }
+
+    @Override
+    public SpellAttribute.Polarity getPolarity(M modifierValue) {
+        return modifierValue.doubleValue() < 1 ? SpellAttribute.Polarity.NEGATIVE : SpellAttribute.Polarity.POSITIVE;
     }
 
     @Override

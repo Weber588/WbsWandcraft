@@ -37,7 +37,7 @@ public class WandEvents implements Listener {
     public void onConsumeWand(PlayerItemConsumeEvent event) {
         ItemStack item = event.getItem();
 
-        Wand wand = Wand.getIfValid(item);
+        Wand wand = Wand.fromItem(item);
         if (wand == null) {
             return;
         }
@@ -96,7 +96,7 @@ public class WandEvents implements Listener {
             return;
         }
 
-        Wand wand = Wand.getIfValid(item);
+        Wand wand = Wand.fromItem(item);
         if (wand == null) {
             return;
         }
@@ -130,7 +130,7 @@ public class WandEvents implements Listener {
             return;
         }
 
-        Wand wand = Wand.getIfValid(item);
+        Wand wand = Wand.fromItem(item);
         if (wand == null) {
             return;
         }
@@ -155,7 +155,7 @@ public class WandEvents implements Listener {
 
         ItemStack item = event.getItemDrop().getItemStack();
 
-        Wand wand = Wand.getIfValid(item);
+        Wand wand = Wand.fromItem(item);
         if (wand == null) {
             return;
         }

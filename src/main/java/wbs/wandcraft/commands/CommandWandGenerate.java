@@ -51,7 +51,7 @@ public class CommandWandGenerate extends WbsSubcommand  {
         }
 
         if (context.getSource().getSender() instanceof Player player) {
-            player.getInventory().addItem(generator.get());
+            player.getInventory().addItem(generator.generateItem());
         }
 
         return Command.SINGLE_SUCCESS;

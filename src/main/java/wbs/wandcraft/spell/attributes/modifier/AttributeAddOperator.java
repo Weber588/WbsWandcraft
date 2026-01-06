@@ -18,7 +18,12 @@ public class AttributeAddOperator<T extends Number, M extends Number> extends At
 
     @Override
     public Component asComponent(SpellAttribute<T> attribute, M modifierValue) {
-        return attribute.displayName().append(Component.text(" +" + attribute.formatAny(modifierValue)));
+        return Component.text("+" + attribute.formatAny(modifierValue));
+    }
+
+    @Override
+    public SpellAttribute.Polarity getPolarity(M modifierValue) {
+        return modifierValue.doubleValue() < 0 ? SpellAttribute.Polarity.NEGATIVE : SpellAttribute.Polarity.POSITIVE;
     }
 
     @Override

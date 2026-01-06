@@ -3,21 +3,22 @@ package wbs.wandcraft.generation;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.util.ItemUtils;
 
 import java.util.*;
 
 @NullMarked
-public class SpellInstanceGenerator implements Keyed {
+public class SpellInstanceGenerator implements Keyed, ItemGenerator {
     private final List<SpellDefinition> definitions = new LinkedList<>(WandcraftRegistries.SPELLS.values());
     private final List<AttributeModifierGenerator<?>> modifierGenerators = new LinkedList<>();
     private final NamespacedKey key;
@@ -85,22 +86,19 @@ public class SpellInstanceGenerator implements Keyed {
                 AttributeModifierGenerator<?> modifier = AttributeModifierGenerator.fromConfig(
                         Objects.requireNonNull(attributesSection.getConfigurationSection(key)),
                         settings,
-                        directory + "/" + key,
-                        AttributeModifierType.SET
+                        directory + "/" + key
                 );
 
-                if (modifier != null) {
-                    modifierGenerators.add(modifier);
-                }
+                modifierGenerators.add(modifier);
             }
         }
     }
 
-    public SpellInstance get() {
+    public SpellInstance generate() {
         SpellInstance instance = new SpellInstance(WbsCollectionUtil.getRandom(definitions));
 
         for (AttributeModifierGenerator<?> generator : modifierGenerators) {
-            SpellAttributeModifier<?, ?> modifier = generator.get();
+            SpellAttributeModifier<?, ?> modifier = generator.generate();
 
             // Only add the attribute if it's valid for the chosen spell
             if (instance.getAttribute(modifier.attribute()) != null) {
@@ -134,5 +132,10 @@ public class SpellInstanceGenerator implements Keyed {
     @Override
     public @NotNull NamespacedKey getKey() {
         return key;
+    }
+
+    @Override
+    public ItemStack generateItem() {
+        return ItemUtils.buildSpell(generate());
     }
 }

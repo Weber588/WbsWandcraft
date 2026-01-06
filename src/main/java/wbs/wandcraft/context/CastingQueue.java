@@ -49,9 +49,9 @@ public class CastingQueue {
     private void enqueueCast(@NotNull Player player) {
         EquipmentSlot slot = EquipmentSlot.HAND;
         if (wand != null) {
-            Wand check = Wand.getIfValid(player.getInventory().getItemInMainHand());
+            Wand check = Wand.fromItem(player.getInventory().getItemInMainHand());
             if (check == null || !check.getUUID().equals(wand.getUUID())) {
-                check = Wand.getIfValid(player.getInventory().getItemInOffHand());
+                check = Wand.fromItem(player.getInventory().getItemInOffHand());
                 slot = EquipmentSlot.OFF_HAND;
             }
 

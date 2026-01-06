@@ -14,7 +14,6 @@ import wbs.utils.util.configuration.WbsConfigReader;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.modifier.ModifierTexture;
 import wbs.wandcraft.util.ItemUtils;
 
 import java.io.File;
@@ -96,7 +95,7 @@ public class ResourcePackBuilder {
             Gson gson = new Gson();
 
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.SPELLS.stream().toList(), ItemUtils.BASE_MATERIAL_SPELL));
-            resourcesToLoad.addAll(writeProviders(gson, Arrays.stream(ModifierTexture.values()).toList(), ItemUtils.BASE_MATERIAL_MODIFIER));
+            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.ATTRIBUTES.stream().toList(), ItemUtils.BASE_MATERIAL_MODIFIER));
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.WAND_TEXTURES.stream().toList(), ItemUtils.BASE_MATERIAL_WAND));
             resourcesToLoad.addAll(writeProviders(gson, List.of(new SpellbookTextureProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
             resourcesToLoad.addAll(writeProviders(gson, List.of(getSimpleProvider("blank_scroll")), ItemUtils.BASE_MATERIAL_BLANK_SCROLL));

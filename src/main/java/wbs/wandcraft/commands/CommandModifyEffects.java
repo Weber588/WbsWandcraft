@@ -65,7 +65,7 @@ public class CommandModifyEffects extends WbsSubcommand {
                 ItemStack item = player.getInventory().getItemInMainHand();
 
                 Attributable attributable = null;
-                Wand wand = Wand.getIfValid(item);
+                Wand wand = Wand.fromItem(item);
                 SpellInstance instance = SpellInstance.fromItem(item);
                 if (wand != null) {
                     attributable = wand;

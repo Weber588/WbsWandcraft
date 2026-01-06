@@ -26,7 +26,43 @@ modifiers:
       - 1.1
       - 1.1
       - 1.5
+      - 1.6
+  reduce_imprecision:
+    attribute: imprecision
+    operator: multiply
+    values:
+      - 0.25
+      - 0.5
+      - 0.5
+      - 0.75
+      - 0.75
+      - 0.9
+      - 0.9
+      - 0.9
+  buff_force:
+    attribute: force
+    operator: multiply
+    values:
+      - 1.25
       - 1.5
+      - 1.5
+  buff_range:
+    attribute: range
+    operator: multiply
+    values:
+      - 1.25
+      - 1.5
+      - 1.5
+      - 1.75
+  buff_speed:
+    attribute: speed
+    operator: multiply
+    values:
+      - 1.25
+      - 1.5
+      - 1.5
+      - 1.75
+      - 2
 
 spells:
   # The name of the generator -- name can be anything, so long as it's unique.

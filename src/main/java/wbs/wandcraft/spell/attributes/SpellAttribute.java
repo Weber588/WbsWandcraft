@@ -1,18 +1,26 @@
 package wbs.wandcraft.spell.attributes;
 
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.util.Ticks;
+import org.bukkit.Color;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import wbs.utils.util.WbsColours;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.resourcepack.TextureLayer;
+import wbs.wandcraft.resourcepack.TextureProvider;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModificationOperator;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
@@ -22,7 +30,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
+@NullMarked
+public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, TextureProvider {
     @NotNull
     private final NamespacedKey key;
     @NotNull
@@ -39,6 +48,8 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     private Function<@NotNull T, @NotNull String> formatter = Objects::toString;
     private final List<TypedFormatter<?>> typedFormatters = new LinkedList<>();
     private boolean isWritable = false;
+    private String textureValue;
+    private Polarity polarity = Polarity.POSITIVE;
 
     public SpellAttribute(@NotNull NamespacedKey key, @NotNull RegisteredPersistentDataType<T> type, @Nullable T defaultValue, @NotNull Function<String, T> parse) {
         this.key = key;
@@ -46,7 +57,10 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         this.type = type;
         this.defaultValue = defaultValue;
         this.parse = parse;
-        this.suggestions.add(defaultValue);
+        if (defaultValue != null) {
+            this.suggestions.add(defaultValue);
+        }
+        textureValue = key.value();
 
         setFormatter(formatter);
         WandcraftRegistries.ATTRIBUTES.register(this);
@@ -77,7 +91,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         return this;
     }
 
-    public SpellAttributeInstance<T> getInstance(T value) {
+    public SpellAttributeInstance<T> getInstance(@Nullable T value) {
         return new SpellAttributeInstance<>(this, value);
     }
 
@@ -88,7 +102,12 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     }
 
     public SpellAttributeInstance<T> getInstance(PersistentDataContainer attributes) {
-        T value = WbsPersistentDataType.getOrDefault(attributes, key, type.dataType(), defaultValue);
+        T value;
+        if (defaultValue != null) {
+            value = attributes.getOrDefault(key, type.dataType(), defaultValue);
+        } else {
+            value = attributes.get(key, type.dataType());
+        }
 
         return getInstance(value);
     }
@@ -97,6 +116,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         return type;
     }
 
+    @Nullable
     public T defaultValue() {
         return defaultValue;
     }
@@ -157,14 +177,14 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         });
     }
 
-    public String formatValue(T value) {
+    public String formatValue(@Nullable T value) {
         if (value == null) {
             return "null";
         }
         return formatter.apply(value);
     }
 
-    public String formatAny(Object value) {
+    public String formatAny(@Nullable Object value) {
         if (value == null) {
             return "null";
         }
@@ -178,7 +198,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         return "FORMATTER_ERROR -- " + value + " (" + value.getClass().getName() + ")";
     }
 
-    public <M> SpellAttributeModifier<T, M> createModifier(PersistentDataContainer container, RegisteredPersistentDataType<M> modifierType) {
+    public <M> SpellAttributeModifier<T, M> createModifier(PersistentDataContainerView container, RegisteredPersistentDataType<M> modifierType) {
         M value =  container.get(SpellAttributeModifier.MODIFIER_VALUE, modifierType.dataType());
 
         NamespacedKey operationTypeKey = container.get(SpellAttributeModifier.MODIFIER_OPERATION, WbsPersistentDataType.NAMESPACED_KEY);
@@ -195,7 +215,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
     public <M> SpellAttributeModifier<T, M> createModifier(
             AttributeModifierType modifierDefinition,
             RegisteredPersistentDataType<M> modifierDataType,
-            M value
+            @Nullable M value
     ) {
         AttributeModificationOperator<T, M> operator = modifierDefinition.buildModifierType(type.dataType(), modifierDataType);
 
@@ -245,6 +265,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
         return Objects.hashCode(key);
     }
 
+    @Nullable
     public SpellAttributeInstance<T> defaultInstance() {
         return getInstance(defaultValue);
     }
@@ -255,6 +276,41 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
 
     public SpellAttribute<T> setWritable(boolean writable) {
         isWritable = writable;
+        return this;
+    }
+
+    @Override
+    public @NotNull List<TextureLayer> getTextures() {
+        return List.of(
+                new TextureLayer("modifier_overlay", false, 0xEC273F),
+                new TextureLayer("modifier_" + textureValue)
+        );
+    }
+
+    public SpellAttribute<T> overrideTextureValue(String textureValue) {
+        this.textureValue = textureValue;
+        return this;
+    }
+
+    public Polarity polarity() {
+        return polarity;
+    }
+
+    @Nullable
+    public TextColor getPolarityColor(boolean isPositive) {
+        if (isPositive) {
+            return polarity.color();
+        } else {
+            return polarity.invert().color();
+        }
+    }
+
+    public Polarity getPolarity(T value) {
+        return polarity;
+    }
+
+    public SpellAttribute<T> polarity(Polarity polarity) {
+        this.polarity = polarity;
         return this;
     }
 
@@ -269,6 +325,49 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>> {
 
             //noinspection unchecked
             return formatter.apply((M) value);
+        }
+    }
+
+    public enum Polarity {
+        POSITIVE(NamedTextColor.AQUA, WbsColours.fromHSB(0.675, 0.5, 0.6)),
+        NEGATIVE(NamedTextColor.RED, WbsColours.fromHSB(0.958, 0.85, 1)),
+        NEUTRAL(WbsColours.fromHSB(0.025, 0.6, 0.75));
+
+        @Nullable
+        private NamedTextColor color;
+        private final Color scrollColor;
+
+        Polarity(Color scrollColor) {
+
+            this.scrollColor = scrollColor;
+        }
+        Polarity(NamedTextColor color, Color scrollColor) {
+            this.color = color;
+            this.scrollColor = scrollColor;
+        }
+
+        public @Nullable NamedTextColor color() {
+            return color;
+        }
+
+        public Color getScrollColor() {
+            return scrollColor;
+        }
+
+        public Polarity invert() {
+            return switch (this) {
+                case POSITIVE -> NEGATIVE;
+                case NEGATIVE -> POSITIVE;
+                case NEUTRAL -> NEUTRAL;
+            };
+        }
+
+        public Polarity multiply(Polarity other) {
+            return switch (this) {
+                case POSITIVE -> other;
+                case NEGATIVE -> other.invert();
+                case NEUTRAL -> NEUTRAL;
+            };
         }
     }
 }

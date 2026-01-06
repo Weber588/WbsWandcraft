@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.block.TileState;
 import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -60,6 +61,8 @@ public class DiscoverItemSpell extends SpellDefinition implements CastableSpell,
 
         setAttribute(COST, 25);
         setAttribute(COOLDOWN, 2 * Ticks.TICKS_PER_SECOND);
+
+        setAttribute(RADIUS, 20d);
     }
 
     @Override
@@ -114,6 +117,7 @@ public class DiscoverItemSpell extends SpellDefinition implements CastableSpell,
                 transformation.getScale().set(scale);
                 transformation.getTranslation().set(-scale / 2 + 0.5);
                 display.setTransformation(transformation);
+                display.setBrightness(new Display.Brightness(15, 15));
 
                 displays.add(display);
 

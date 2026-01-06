@@ -21,8 +21,6 @@ import org.bukkit.block.BlockType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import wbs.utils.util.WbsCollectionUtil;
-import wbs.utils.util.WbsColours;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
@@ -30,15 +28,12 @@ import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.modifier.ModifierTexture;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.types.WandType;
 
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -192,12 +187,6 @@ public class ItemUtils {
         return item;
     }
 
-    private static final Set<Color> MODIFIER_COLOURS = Set.of(
-            WbsColours.fromHSB(0.958, 0.85, 1),
-            WbsColours.fromHSB(0.675, 0.5, 0.6),
-            WbsColours.fromHSB(0.025, 0.6, 0.75)
-    );
-    
     public static @NotNull ItemStack buildModifier() {
         return buildModifier(null);
     }
@@ -220,11 +209,15 @@ public class ItemUtils {
             cloneBuilder.addStrings(data.strings());
         }
 
-        ModifierTexture[] values = ModifierTexture.values();
-        String texture = values[new Random().nextInt(values.length)].textureName();
+        List<SpellAttributeModifier<?, ?>> modifiers = modifier.getModifiers();
+        if (!modifiers.isEmpty()) {
+            SpellAttributeModifier<?, ?> first = modifiers.getFirst();
+            cloneBuilder.addString(first.attribute().getKey().asString());
+            item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
 
-        cloneBuilder.addString(WbsWandcraft.getKey(texture).asString());
-        cloneBuilder.addColor(WbsCollectionUtil.getRandom(MODIFIER_COLOURS));
+            cloneBuilder.addColor(first.getPolarity().getScrollColor());
+        }
+
         item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
 
         NamespacedKey itemModelKey = BASE_MATERIAL_MODIFIER.getKey();
@@ -237,7 +230,7 @@ public class ItemUtils {
     
     public static AttributeModificationResult modifyItem(ItemStack item, SpellAttributeInstance<?> attributeInstance, @NotNull AttributeModifierType modifierType) {
         SpellModifier spellModifier = SpellModifier.fromItem(item);
-        Wand wand = Wand.getIfValid(item);
+        Wand wand = Wand.fromItem(item);
         SpellInstance instance = SpellInstance.fromItem(item);
 
         if (spellModifier != null) {

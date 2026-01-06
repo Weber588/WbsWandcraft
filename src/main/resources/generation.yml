@@ -1,0 +1,67 @@
+trading:
+  # Can be any name, just needs to be unique
+  spells_cleric_journeyman:
+    villager-level: 3
+    villager-profession: cleric
+    item-type: spell
+    item-generator:
+      spells:
+        - wbswandcraft:shield
+    payment:
+      min: 20
+      max: 40
+      material: minecraft:amethyst_shard
+    replace-existing: false # Add it, don't overtake a different trade
+    chance: 70 # Percentage chance every time a villager gains trades
+    allow-multiple: false # Don't allow this trade to appear multiple times in the same villager
+
+  spells_librarian_any:
+    villager-profession: librarian
+    item-type: spell
+    item-generator:
+      spells:
+        - wbswandcraft:discover_item
+    payment:
+      min: 10
+      max: 20
+      material: minecraft:amethyst_shard
+    replace-existing: false
+    chance: 10
+    allow-multiple: false
+
+  cast_delay_librarian_any:
+    villager-profession: librarian
+    item-type: modifier
+    item-generator: buff_cast_delay # Referencing the generator in "item-generators.yml"
+    payment:
+      min: 5
+      max: 16
+      material: minecraft:amethyst_shard
+    replace-existing: false
+    chance: 1
+    allow-multiple: false
+  damage_librarian_any:
+    villager-profession: librarian
+    item-type: modifier
+    item-generator: buff_damage
+    payment:
+      min: 5
+      max: 16
+      material: minecraft:echo_shard
+    replace-existing: false
+    chance: 1
+    allow-multiple: false
+  speed_fletcher_any:
+    villager-profession: fletcher
+    item-type: modifier
+    item-generator: buff_damage
+    payment:
+      min: 5
+      max: 16
+      material: minecraft:echo_shard
+    replace-existing: false
+    chance: 1
+    allow-multiple: false
+
+# Not implemented yet
+bartering:

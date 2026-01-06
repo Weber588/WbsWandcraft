@@ -19,17 +19,14 @@ import wbs.wandcraft.generation.AttributeModifierGenerator;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.generation.WandGenerator;
 import wbs.wandcraft.learning.LearningMethod;
-import wbs.wandcraft.learning.LearningTrigger;
 import wbs.wandcraft.learning.LearningMethodType;
+import wbs.wandcraft.learning.RegistrableLearningMethod;
+import wbs.wandcraft.learning.TradingMethod;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
-import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.util.ItemUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class WandcraftSettings extends WbsSettings {
     protected WandcraftSettings(WbsWandcraft plugin) {
@@ -75,17 +72,18 @@ public class WandcraftSettings extends WbsSettings {
         loadRecipes();
         loadGenerators();
         loadLearning();
+        loadGeneration();
         loadCredits();
     }
 
-    private static final Multimap<SpellDefinition, LearningMethod> LEARNING_MAP = HashMultimap.create();
+    private final Multimap<SpellDefinition, LearningMethod> learningMap = HashMultimap.create();
 
     public Multimap<SpellDefinition, LearningMethod> getLearningMap() {
-        return HashMultimap.create(LEARNING_MAP);
+        return HashMultimap.create(learningMap);
     }
 
     private void loadLearning() {
-        LEARNING_MAP.clear();
+        learningMap.clear();
 
         String path = "learning.yml";
         YamlConfiguration config = loadConfigSafely(genConfig(path));
@@ -129,12 +127,39 @@ public class WandcraftSettings extends WbsSettings {
                     }
 
                     try {
-                        LearningTrigger<?> criteria = type.construct(learningSection, learningKeyString, learningDirectory + "/" + learningKeyString);
+                        LearningMethod criteria = type.construct(learningSection, learningKeyString, learningDirectory + "/" + learningKeyString);
 
-                        LEARNING_MAP.put(spellDefinition, criteria);
+                        learningMap.put(spellDefinition, criteria);
                     } catch (InvalidConfigurationException ex) {
                         logError(ex.getMessage(), ex.getDirectory());
                     }
+                }
+            }
+        }
+    }
+
+    private final List<RegistrableLearningMethod> generationMethods = new LinkedList<>();
+    public List<RegistrableLearningMethod> getGenerationMethods() {
+        return new LinkedList<>(generationMethods);
+    }
+
+    private void loadGeneration() {
+        generationMethods.clear();
+
+        String path = "generation.yml";
+        YamlConfiguration config = loadConfigSafely(genConfig(path));
+
+        ConfigurationSection tradingSection = config.getConfigurationSection("trading");
+        if (tradingSection != null) {
+            String tradingDirectory = path + "/trading";
+            for (String methodKey : tradingSection.getKeys(false)) {
+                String methodDirectory = tradingDirectory + "/" + methodKey;
+
+                try {
+                    TradingMethod tradingMethod = new TradingMethod(tradingSection, methodKey, methodDirectory);
+                    generationMethods.add(tradingMethod);
+                } catch (InvalidConfigurationException ex) {
+                    logError(ex.getMessage(), ex.getDirectory());
                 }
             }
         }
@@ -181,7 +206,7 @@ public class WandcraftSettings extends WbsSettings {
     }
 
     private void loadGenerators() {
-        String path = "generators.yml";
+        String path = "item-generators.yml";
         YamlConfiguration config = loadConfigSafely(genConfig(path));
 
         ConfigurationSection wandsConfig = config.getConfigurationSection("wands");
@@ -219,14 +244,10 @@ public class WandcraftSettings extends WbsSettings {
                 AttributeModifierGenerator<?> generator = AttributeModifierGenerator.fromConfig(
                         Objects.requireNonNull(modifierSection),
                         this,
-                        path + "/modifiers",
-                        AttributeModifierType.SET
+                        path + "/modifiers"
                 );
-                if (generator != null) {
-                    WandcraftRegistries.MODIFIER_GENERATORS.register(generator);
-                } else {
-                    logError("Attribute modifier was null!", path + "/modifiers");
-                }
+
+                WandcraftRegistries.MODIFIER_GENERATORS.register(generator);
             }
         }
     }

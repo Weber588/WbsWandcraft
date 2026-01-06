@@ -12,7 +12,8 @@ import wbs.wandcraft.spell.definitions.ISpellDefinition;
 public interface DirectionalSpell extends ISpellDefinition {
     SpellAttribute<Double> IMPRECISION = new DoubleSpellAttribute("imprecision", 15)
             .setShowAttribute(value -> value != 0)
-            .setNumericFormatter(accuracy -> accuracy + " degrees");
+            .setNumericFormatter(accuracy -> accuracy + " degrees")
+            .polarity(SpellAttribute.Polarity.NEGATIVE);
 
     default Vector getDirection(CastContext context) {
         return getDirection(context, 1);

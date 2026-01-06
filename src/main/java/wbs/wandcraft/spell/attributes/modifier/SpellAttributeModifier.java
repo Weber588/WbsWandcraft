@@ -1,9 +1,13 @@
 package wbs.wandcraft.spell.attributes.modifier;
 
+import io.papermc.paper.persistence.PersistentDataContainerView;
+import io.papermc.paper.persistence.PersistentDataViewHolder;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.RegisteredPersistentDataType;
@@ -20,9 +24,10 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
 
     private final SpellAttribute<T> attribute;
     private final @NotNull AttributeModificationOperator<T, M> modifierOperation;
+    @Nullable
     private M modifierValue;
 
-    public SpellAttributeModifier(SpellAttribute<T> attribute, @NotNull AttributeModificationOperator<T, M> modifierOperation, M modifierValue) {
+    public SpellAttributeModifier(SpellAttribute<T> attribute, @NotNull AttributeModificationOperator<T, M> modifierOperation, @Nullable M modifierValue) {
         this.attribute = attribute;
         this.modifierOperation = modifierOperation;
         this.modifierValue = modifierValue;
@@ -61,13 +66,22 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
         modifierContainer.set(ATTRIBUTE_KEY, WbsPersistentDataType.NAMESPACED_KEY, attribute().getKey());
 
         modifierContainer.set(MODIFIER_TYPE, WbsPersistentDataType.NAMESPACED_KEY, modifierOperation.getModifierType().getKey());
-        modifierContainer.set(MODIFIER_VALUE, modifierOperation.getModifierType().dataType(), modifierValue);
+        if (modifierValue != null) {
+            modifierContainer.set(MODIFIER_VALUE, modifierOperation.getModifierType().dataType(), modifierValue);
+        } else {
+            modifierContainer.remove(MODIFIER_VALUE);
+        }
 
         modifierContainer.set(MODIFIER_OPERATION, WbsPersistentDataType.NAMESPACED_KEY, modifierOperation.getDefinition().getKey());
     }
 
-    public static SpellAttributeModifier<?, ?> fromContainer(PersistentDataContainer container) {
+    public static SpellAttributeModifier<?, ?> fromContainer(@NotNull PersistentDataContainerView container) {
         NamespacedKey attributeKey = container.get(ATTRIBUTE_KEY, WbsPersistentDataType.NAMESPACED_KEY);
+
+        if (attributeKey == null) {
+            return null;
+        }
+
         SpellAttribute<?> attribute = WandcraftRegistries.ATTRIBUTES.get(attributeKey);
         if (attribute == null) {
             throw new IllegalStateException("Attribute missing while generating attribute modifier.");
@@ -82,11 +96,23 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
         return attribute.createModifier(container, modifierType);
     }
 
+    public static SpellAttributeModifier<?, ?> fromItem(PersistentDataViewHolder holder) {
+        if (holder == null) {
+            return null;
+        }
+        return fromContainer(holder.getPersistentDataContainer());
+    }
 
     @Override
     public Component toComponent() {
-        return modifierOperation.asComponent(attribute, modifierValue);
+        NamedTextColor color = getPolarity().color();
+
+        return attribute.displayName().append(
+                modifierOperation.asComponent(attribute, modifierValue)
+                        .color(color)
+        );
     }
+
 
     public M value() {
         return modifierValue;
@@ -98,5 +124,9 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
 
     public void value(SpellAttributeModifier<T, M> modifierInstance) {
         value(modifierInstance.value());
+    }
+
+    public SpellAttribute.Polarity getPolarity() {
+        return modifierOperation.getPolarity(modifierValue).multiply(attribute.polarity());
     }
 }

@@ -59,7 +59,7 @@ public class CommandModifyAttributes extends WbsSubcommand {
                 ItemStack item = player.getInventory().getItemInMainHand();
 
                 Attributable attributable = null;
-                Wand wand = Wand.getIfValid(item);
+                Wand wand = Wand.fromItem(item);
                 SpellInstance instance = SpellInstance.fromItem(item);
                 if (wand != null) {
                     attributable = wand;
@@ -111,7 +111,7 @@ public class CommandModifyAttributes extends WbsSubcommand {
             if (context.getSource().getSender() instanceof Player player) {
                 ItemStack held = player.getInventory().getItemInMainHand();
 
-                if (SpellModifier.fromItem(held) != null || WizardryWand.getIfValid(held) != null) {
+                if (SpellModifier.fromItem(held) != null || WizardryWand.fromItem(held) != null) {
                     return KeyedSuggestionProvider.getStaticKeyed(WandcraftRegistries.MODIFIER_TYPES.values()).getSuggestions(context, builder);
                 }
             }

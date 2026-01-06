@@ -14,11 +14,14 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 public interface ContinuousCastableSpell extends CastableSpell {
     SpellAttribute<Integer> FIXED_DURATION = new IntegerSpellAttribute("fixed_duration", Ticks.TICKS_PER_SECOND)
-            .setShowAttribute(duration -> duration != 20);
+            .setShowAttribute(duration -> duration != 20)
+            .overrideTextureValue("duration");
     SpellAttribute<Integer> MAX_DURATION = new IntegerSpellAttribute("max_duration", 5 * Ticks.TICKS_PER_SECOND)
-            .setShowAttribute(duration -> duration > 0);
+            .setShowAttribute(duration -> duration > 0)
+            .overrideTextureValue("duration");
     SpellAttribute<Integer> COST_PER_TICK = new IntegerSpellAttribute("cost_per_tick", 5)
-            .setShowAttribute(cost -> cost > 0);
+            .setShowAttribute(cost -> cost > 0)
+            .overrideTextureValue("cost");
 
     default void setupContinuousCast() {
         addAttribute(MAX_DURATION);

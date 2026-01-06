@@ -10,6 +10,7 @@ import wbs.wandcraft.spell.definitions.ISpellDefinition;
 public interface DistanceSpell extends ISpellDefinition {
     SpellAttribute<Double> DISTANCE = new DoubleSpellAttribute("distance", 5)
             .addSuggestions(10.0, 20.0, 50.0, 100.0)
+            .overrideTextureValue("range")
             .setNumericFormatter(value -> value + " blocks");
 
     default void setupDistance() {
