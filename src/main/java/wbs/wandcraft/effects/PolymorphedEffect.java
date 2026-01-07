@@ -4,6 +4,7 @@ import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
@@ -23,9 +24,10 @@ import java.util.Map;
 
 @NullMarked
 public class PolymorphedEffect extends StatusEffect {
-    private static final NormalParticleEffect POLYMORPH_EFFECT = new NormalParticleEffect()
+    public static final NormalParticleEffect POLYMORPH_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
             .setSpeed(0.05)
-            .setXYZ(0);
+            .setXYZ(0)
+            .setAmount(15);
 
     private final AttributeModifier speedModifier = new AttributeModifier(getKey(), -0.5, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
     private final AttributeModifier damageModifier = new AttributeModifier(getKey(), -1, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
@@ -47,6 +49,11 @@ public class PolymorphedEffect extends StatusEffect {
     public void registerEvents() {
         WbsEventUtils.register(WbsWandcraft.getInstance(), EntityDamageByEntityEvent.class, this::onEntityDealDamage);
         WbsEventUtils.register(WbsWandcraft.getInstance(), EntityDamageEvent.class, this::onEntityTakeDamage);
+    }
+
+    @Override
+    public BossBar.Color barColour() {
+        return BossBar.Color.PINK;
     }
 
     @Override

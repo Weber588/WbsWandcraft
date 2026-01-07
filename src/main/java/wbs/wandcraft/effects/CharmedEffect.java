@@ -1,5 +1,6 @@
 package wbs.wandcraft.effects;
 
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -21,6 +22,11 @@ import java.util.List;
 public class CharmedEffect extends StatusEffect {
     private static final NormalParticleEffect EFFECT = new NormalParticleEffect();
     private static final double FOLLOW_RANGE = 8;
+
+    @Override
+    public BossBar.Color barColour() {
+        return BossBar.Color.PINK;
+    }
 
     @Override
     public void onApply(LivingEntity entity, StatusEffectInstance instance) {

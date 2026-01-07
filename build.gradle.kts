@@ -42,6 +42,7 @@ dependencies {
     implementation("io.github.Weber588:WbsUtils:1.0-SNAPSHOT")
     implementation("net.kyori:adventure-text-serializer-ansi:4.24.0")
     implementation("me.libraryaddict.disguises:libsdisguises:11.0.13")
+    implementation("com.github.retrooper:packetevents-spigot:2.11.1")
 }
 
 tasks {

@@ -69,7 +69,10 @@ public class WandcraftRegistries {
             StatusEffectManager.PLANAR_BINDING,
             StatusEffectManager.DEATH_WALK,
             StatusEffectManager.CHARMED,
-            StatusEffectManager.POLYMORPHED
+            StatusEffectManager.POLYMORPHED,
+            StatusEffectManager.HOLD,
+            StatusEffectManager.TRANQUILIZED,
+            StatusEffectManager.DISGUISED
     );
     public static final WbsRegistry<SpellEffectDefinition<?>> EFFECTS = new WbsRegistry<>(
             new ForcePullEffect(),

@@ -4,41 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Added conditional spell loading system">
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/HoldEffect.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/PolymorphedEffect.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/NativeSpellLoader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/RequiresPlugin.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/SpellLoader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/HoldSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PolymorphSpell.java" afterDir="false" />
+    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Added conditional spell loading system&#10;Added more status effect spells">
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/DisguisedEffect.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/PacifiedEffect.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/TranquilizedEffect.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/MassIllusionSpell.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WalkOfTranquilitySpell.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/ItemDecorator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemDecorator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftRegistries.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftRegistries.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraftBootstrap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraftBootstrap.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/CharmedEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/CharmedEffect.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/DeathWalkEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/DeathWalkEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/GlidingStatusEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/GlidingStatusEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/PlanarBindingEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/PlanarBindingEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StatusEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StatusEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StatusEffectInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StatusEffectInstance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/HoldEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/HoldEffect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/PolymorphedEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/PolymorphedEffect.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StatusEffectManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StatusEffectManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StunnedEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StunnedEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MagicEntityEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MagicEntityEffect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/WandEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/WandEntry.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/Attributable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/Attributable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/CharmSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/CharmSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/CrowsCallSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/CrowsCallSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/DeathWalkSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/DeathWalkSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PlanarBindingSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PlanarBindingSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/RecallSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/RecallSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/StunSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/StunSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DurationalSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DurationalSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/NativeSpellLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/NativeSpellLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/SpellLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/SpellLoader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/StatusEffectSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/StatusEffectSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/TargetedSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/TargetedSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spellbook/Spellbook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spellbook/Spellbook.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,11 +136,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="wbs.wandcraft.effects" />
       <recent name="wbs.wandcraft.spell" />
       <recent name="wbs.wandcraft.spell.attributes" />
       <recent name="wbs.wandcraft.learning" />
       <recent name="wbs.wandcraft.spell.definitions.type" />
-      <recent name="wbs.wandcraft.util.persistent" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\IdeaProjects\WbsWandcraft\src\main\resources" />
@@ -688,7 +670,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767679195031</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="Added conditional spell loading system&#10;Added more status effect spells">
+      <option name="closed" value="true" />
+      <created>1767702468776</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1767702468776</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -707,7 +697,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix many spells targeting caster" />
     <MESSAGE value="Implemented config for wand generators" />
     <MESSAGE value="Fixed artificing table picking up items from far above/below" />
     <MESSAGE value="Added projectile drag and continuous castable spells" />
@@ -732,6 +721,7 @@
     <MESSAGE value="Added ways to learn spells &amp; improved many UI components" />
     <MESSAGE value="Began implementing indirect learning methods" />
     <MESSAGE value="Added conditional spell loading system" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added conditional spell loading system" />
+    <MESSAGE value="Added conditional spell loading system&#10;Added more status effect spells" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added conditional spell loading system&#10;Added more status effect spells" />
   </component>
 </project>

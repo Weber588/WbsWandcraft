@@ -24,14 +24,14 @@ public interface StatusEffectSpell<T extends LivingEntity> extends CastableSpell
         if (targets.isEmpty()) {
             String noTargetsMessage = getNoTargetsMessage(context);
             WbsWandcraft.getInstance().sendActionBar(noTargetsMessage, player);
+        } else {
+            targets.forEach(target -> StatusEffectInstance.applyEffect(
+                    target,
+                    getStatusEffect(),
+                    instance.getAttribute(DURATION),
+                    true,
+                    player
+            ));
         }
-
-        targets.forEach(target -> StatusEffectInstance.applyEffect(
-                target,
-                getStatusEffect(),
-                instance.getAttribute(DURATION),
-                true,
-                player
-        ));
     }
 }

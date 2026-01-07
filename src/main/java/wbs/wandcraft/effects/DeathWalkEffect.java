@@ -1,6 +1,7 @@
 package wbs.wandcraft.effects;
 
 import io.papermc.paper.registry.keys.tags.EntityTypeTagKeys;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -25,6 +26,11 @@ public class DeathWalkEffect extends StatusEffect {
                 .setY(entity.getHeight())
                 .play(Particle.FALLING_DUST, WbsEntityUtil.getMiddleLocation(entity));
         return false;
+    }
+
+    @Override
+    public BossBar.Color barColour() {
+        return BossBar.Color.WHITE;
     }
 
     @Override

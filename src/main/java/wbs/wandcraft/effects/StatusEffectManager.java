@@ -16,6 +16,8 @@ public class StatusEffectManager {
     public static final CharmedEffect CHARMED = new CharmedEffect();
     public static final PolymorphedEffect POLYMORPHED = new PolymorphedEffect();
     public static final HoldEffect HOLD = new HoldEffect();
+    public static final TranquilizedEffect TRANQUILIZED = new TranquilizedEffect();
+    public static final DisguisedEffect DISGUISED = new DisguisedEffect();
 
     private static final Table<NamespacedKey, UUID, StatusEffectInstance> EFFECT_INSTANCES = HashBasedTable.create();
 
