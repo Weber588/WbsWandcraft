@@ -1,5 +1,6 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
+import net.kyori.adventure.util.Ticks;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
@@ -8,7 +9,7 @@ import wbs.wandcraft.spell.definitions.ISpellDefinition;
  * The specific duration of fire ticks an entity will be lit for
  */
 public interface BurnTimeSpell extends ISpellDefinition {
-    SpellAttribute<Integer> BURN_TIME = new IntegerSpellAttribute("burn_time", 20)
+    SpellAttribute<Integer> BURN_TIME = new IntegerSpellAttribute("burn_time", Ticks.TICKS_PER_SECOND)
             .setTicksToSecondsFormatter()
             .overrideTextureValue("duration");
 

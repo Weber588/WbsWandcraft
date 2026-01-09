@@ -3,8 +3,6 @@ package wbs.wandcraft.spell.definitions;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.damage.DamageSource;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -25,9 +23,9 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostUtils;
 import wbs.wandcraft.objects.colliders.Collider;
 import wbs.wandcraft.objects.colliders.Collision;
+import wbs.wandcraft.spell.definitions.extensions.BurnDamageSpell;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
 import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.wand.Wand;
@@ -36,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class CarveSpell extends SpellDefinition implements ContinuousCastableSpell, CastableSpell, DamageSpell, RangedSpell {
+public class CarveSpell extends SpellDefinition implements ContinuousCastableSpell, CastableSpell, BurnDamageSpell, RangedSpell {
     private static final Particle.DustTransition PARTICLE_DATA = new Particle.DustTransition(
             SpellType.ARCANE.color(),
             SpellType.NETHER.color(),
@@ -61,12 +59,13 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
         setAttribute(COST, 50);
         setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
 
-        setAttribute(COST_PER_TICK, 1);
+        setAttribute(COST_PER_TICK, 2);
         setAttribute(FIXED_DURATION, 5 * Ticks.TICKS_PER_SECOND);
         setAttribute(MAX_DURATION, 60 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(RANGE, 8d);
         setAttribute(DAMAGE, 0.5d);
+        setAttribute(BURN_TIME, 2 * Ticks.TICKS_PER_SECOND);
     }
 
     @Override
@@ -129,7 +128,7 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
 
             Entity hitEntity = result.getHitEntity();
             if (hitEntity != null) {
-                onHitEntity(context, hitEntity);
+                damageAndBurn(hitEntity, context);
                 HIT_EFFECT.play(Particle.SMALL_FLAME, endLocation);
             }
             Block hitBlock = result.getHitBlock();
@@ -225,20 +224,6 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
                     }
                 }
             }, ticksBeforeDecay);
-        }
-    }
-
-    private void onHitEntity(CastContext context, Entity hitEntity) {
-        double damage = context.instance().getAttribute(DAMAGE);
-
-        if (hitEntity instanceof Damageable damageable) {
-            damageable.damage(
-                    damage,
-                    DamageSource.builder(DamageType.MAGIC)
-                            .withDirectEntity(context.player())
-                            .build()
-            );
-            damageable.setFireTicks(2 * Ticks.TICKS_PER_SECOND);
         }
     }
 

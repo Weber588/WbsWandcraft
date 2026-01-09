@@ -118,23 +118,16 @@ public abstract class Wand implements Attributable {
 
         PersistentDataContainerView wandContainer = wandItem.getPersistentDataContainer();
 
-        int additionalCooldown = getAdditionalCooldown(event, wandItem);
-
-        long lastUsed = getLastUsed(wandContainer);
-        long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / Ticks.TICKS_PER_SECOND + additionalCooldown;
-        long timestamp = getTimestamp();
-        if (timestamp <= usableTick) {
-            Duration timeLeft = Duration.ofMillis(usableTick - timestamp);
-            String timeLeftString = WbsStringify.toString(timeLeft, false);
-
-            plugin.sendActionBar("You can use that again in " + timeLeftString, player);
-            return;
-        }
-
         Queue<SpellInstance> spellList = getSpellQueue(player, wandItem, event);
 
         if (spellList.isEmpty()) {
             handleNoSpellAvailable(player, wandItem, event);
+            return;
+        }
+
+        int additionalCooldown = getAdditionalCooldown(spellList);
+
+        if (!checkCooldown(player, wandContainer, event, additionalCooldown)) {
             return;
         }
 
@@ -149,7 +142,7 @@ public abstract class Wand implements Attributable {
             int remainder = CostUtils.takeCost(player, cost);
 
             if (remainder > 0) {
-                onFailCost(player, wandItem, additionalCooldown);
+                onFailCost(player, wandItem, event, additionalCooldown);
                 return;
             }
         }
@@ -159,7 +152,7 @@ public abstract class Wand implements Attributable {
 
         queue.startCasting(player);
 
-        setCooldown(player, wandItem, additionalCooldown);
+        setCooldown(player, wandItem, event, additionalCooldown);
 
         Integer maxDamage = wandItem.getData(DataComponentTypes.MAX_DAMAGE);
         if (maxDamage != null && maxDamage > 0) {
@@ -172,25 +165,39 @@ public abstract class Wand implements Attributable {
         }
     }
 
-    private void setCooldown(@NotNull Player player, ItemStack wandItem, int additionalCooldown) {
-        wandItem.editMeta(meta -> {
+    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, PlayerEvent event, int additionalCooldown) {
+        long lastUsed = getLastUsed(cooldownContainer);
+        long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / Ticks.TICKS_PER_SECOND + additionalCooldown;
+        long timestamp = getTimestamp();
+        if (timestamp <= usableTick) {
+            Duration timeLeft = Duration.ofMillis(usableTick - timestamp);
+            String timeLeftString = WbsStringify.toString(timeLeft, false);
+
+            WbsWandcraft.getInstance().sendActionBar("You can use that again in " + timeLeftString, player);
+            return false;
+        }
+        return true;
+    }
+
+    protected void setCooldown(@NotNull Player player, ItemStack itemForCooldown, PlayerEvent event, int additionalCooldown) {
+        itemForCooldown.editMeta(meta -> {
             int cooldownTicks = additionalCooldown * 20 / 1000 + getAttribute(COOLDOWN);
 
             updateLastUsed(meta.getPersistentDataContainer());
-            UseCooldown useCooldown = wandItem.getData(DataComponentTypes.USE_COOLDOWN);
+            UseCooldown useCooldown = itemForCooldown.getData(DataComponentTypes.USE_COOLDOWN);
             if (useCooldown != null && useCooldown.cooldownGroup() != null) {
                 Key cooldownKey = useCooldown.cooldownGroup();
 
                 player.setCooldown(cooldownKey, cooldownTicks);
             } else {
-                player.setCooldown(wandItem, cooldownTicks);
+                player.setCooldown(itemForCooldown, cooldownTicks);
             }
         });
     }
 
-    protected void onFailCost(@NotNull Player player, ItemStack wandItem, int additionalCooldown) {
+    protected void onFailCost(@NotNull Player player, ItemStack wandItem, PlayerEvent event, int additionalCooldown) {
         WbsWandcraft.getInstance().sendActionBar("&wNot enough mana!", player);
-        setCooldown(player, wandItem, additionalCooldown);
+        setCooldown(player, wandItem, event, additionalCooldown);
     }
 
     protected void onSucceedCost(@NotNull Player player, int cost, ItemStack wandItem) {
@@ -206,7 +213,16 @@ public abstract class Wand implements Attributable {
         // TODO: Drop all spells
     }
 
-    protected abstract int getAdditionalCooldown(@NotNull PlayerEvent event, ItemStack wandItem);
+    protected int getAdditionalCooldown(Queue<SpellInstance> spellList) {
+        int additionalCooldown = 0;
+
+        for (SpellInstance spell : spellList) {
+            additionalCooldown += (int) (spell.getAttribute(CastableSpell.COOLDOWN) * Ticks.SINGLE_TICK_DURATION_MS);
+            additionalCooldown += (int) (spell.getAttribute(CastableSpell.DELAY) * Ticks.SINGLE_TICK_DURATION_MS);
+        }
+
+        return additionalCooldown;
+    }
 
     protected abstract @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event);
 

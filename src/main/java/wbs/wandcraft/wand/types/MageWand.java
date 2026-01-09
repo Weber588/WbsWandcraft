@@ -3,7 +3,6 @@ package wbs.wandcraft.wand.types;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -12,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -28,19 +26,6 @@ public class MageWand extends Wand {
 
     public MageWand(@NotNull String uuid) {
         super(uuid);
-    }
-
-    @Override
-    protected int getAdditionalCooldown(@NotNull PlayerEvent event, ItemStack wandItem) {
-        int additionalCooldown = 0;
-
-        SpellInstance spell = getCurrentSpellInstance();
-        if (spell != null) {
-            additionalCooldown += (int) (spell.getAttribute(CastableSpell.COOLDOWN) * Ticks.SINGLE_TICK_DURATION_MS);
-            additionalCooldown += (int) (spell.getAttribute(CastableSpell.DELAY) * Ticks.SINGLE_TICK_DURATION_MS);
-        }
-
-        return additionalCooldown;
     }
 
     @Override

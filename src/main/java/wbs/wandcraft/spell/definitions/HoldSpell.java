@@ -12,6 +12,7 @@ public class HoldSpell extends SpellDefinition implements StatusEffectSpell<Livi
     public HoldSpell() {
         super("hold");
 
+        addSpellType(SpellType.VOID);
         addSpellType(SpellType.SCULK);
 
         setAttribute(DURATION, 10 * Ticks.TICKS_PER_SECOND);

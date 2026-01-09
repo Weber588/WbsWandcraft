@@ -36,18 +36,6 @@ public class WizardryWand extends Wand {
     }
 
     @Override
-    protected int getAdditionalCooldown(@NotNull PlayerEvent event, ItemStack wandItem) {
-        int additionalCooldown = 0;
-
-        for (SpellInstance spell : getSpellInstances()) {
-            additionalCooldown += (int) (spell.getAttribute(CastableSpell.COOLDOWN) * Ticks.SINGLE_TICK_DURATION_MS);
-            additionalCooldown += (int) (spell.getAttribute(CastableSpell.DELAY) * Ticks.SINGLE_TICK_DURATION_MS);
-        }
-
-        return additionalCooldown;
-    }
-
-    @Override
     protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
         LinkedList<SpellInstance> spellList = new LinkedList<>();
 

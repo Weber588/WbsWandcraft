@@ -75,6 +75,10 @@ public class StatusEffectEvents implements Listener {
         });
 
         // Update in case any old effects were removed
-        container.set(StatusEffectInstance.EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
+        if (effectsContainer.isEmpty()) {
+            container.remove(StatusEffectInstance.EFFECTS_KEY);
+        } else {
+            container.set(StatusEffectInstance.EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
+        }
     }
 }

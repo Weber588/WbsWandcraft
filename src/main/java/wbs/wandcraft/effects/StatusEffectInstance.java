@@ -91,13 +91,13 @@ public class StatusEffectInstance {
             public void run() {
                 Entity updatedEntity = Bukkit.getEntity(entity.getUniqueId());
 
-                if (updatedEntity == null) {
+                if (entity instanceof Player && !Bukkit.getOfflinePlayer(entity.getUniqueId()).isOnline()) {
                     StatusEffectInstance.this.cancel(false);
                     return;
                 }
 
-                if (updatedEntity instanceof Player player && !player.isOnline()) {
-                    StatusEffectInstance.this.cancel(false);
+                if (updatedEntity == null) {
+                    StatusEffectInstance.this.cancel(true);
                     return;
                 }
 
@@ -149,18 +149,32 @@ public class StatusEffectInstance {
         StatusEffectManager.stopTracking(entity, this);
         Bukkit.getScheduler().cancelTask(taskId);
 
-        Player updatedPlayer = Bukkit.getPlayer(entity.getUniqueId());
-        if (updatedPlayer != null) {
-            bar.removeViewer(updatedPlayer);
-
+        // Don't update the player, as if they're offline, we won't be able to edit persistent data container
+        if (entity instanceof Player player) {
+            bar.removeViewer(player);
             if (removeFromEntity) {
-                PersistentDataContainer container = updatedPlayer.getPersistentDataContainer();
+                removeFromEntity(player);
+            }
+        }
 
-                PersistentDataContainer effectsContainer = container.get(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER);
-                if (effectsContainer != null) {
-                    effectsContainer.remove(effect.getKey());
-                    container.set(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
-                }
+        Entity updatedEntity = Bukkit.getEntity(entity.getUniqueId());
+        if (updatedEntity != null) {
+            if (removeFromEntity) {
+                removeFromEntity(updatedEntity);
+            }
+        }
+    }
+
+    private void removeFromEntity(Entity updatedEntity) {
+        PersistentDataContainer container = updatedEntity.getPersistentDataContainer();
+
+        PersistentDataContainer effectsContainer = container.get(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER);
+        if (effectsContainer != null) {
+            effectsContainer.remove(effect.getKey());
+            if (effectsContainer.isEmpty()) {
+                container.remove(EFFECTS_KEY);
+            } else {
+                container.set(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
             }
         }
     }

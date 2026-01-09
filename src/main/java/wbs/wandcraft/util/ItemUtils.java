@@ -175,6 +175,10 @@ public class ItemUtils {
 
         item.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);
 
+        item.setData(DataComponentTypes.USE_COOLDOWN, UseCooldown.useCooldown(0.0001f)
+                .cooldownGroup(WbsWandcraft.getKey(UUID.randomUUID().toString()))
+        );
+
         spellInstance.toItem(item);
         return item;
     }

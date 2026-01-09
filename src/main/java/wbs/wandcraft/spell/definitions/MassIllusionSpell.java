@@ -4,6 +4,8 @@ import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
+import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
+import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -81,6 +83,11 @@ public class MassIllusionSpell extends SpellDefinition implements CastableSpell,
 
                 disguise.setEntity(target);
                 disguise.setSelfDisguiseVisible(false);
+
+                if (disguise.getWatcher() instanceof LivingWatcher watcher) {
+                    watcher.setScale(DisguiseUtilities.getEntityScaleWithoutLibsDisguises(disguiseTarget));
+                }
+
                 disguise.startDisguise();
 
                 StatusEffectInstance.applyEffect(

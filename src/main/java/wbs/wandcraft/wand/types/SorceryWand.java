@@ -1,8 +1,8 @@
 package wbs.wandcraft.wand.types;
 
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -18,7 +18,6 @@ import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
@@ -35,12 +34,38 @@ public class SorceryWand extends Wand {
     public SorceryWand(@NotNull String uuid) {
         this(uuid, 0);
     }
+
+    @Override
+    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, PlayerEvent event, int additionalCooldown) {
+        boolean canUseWand = super.checkCooldown(player, cooldownContainer, event, 0);
+
+        if (!canUseWand) {
+            return false;
+        }
+
+        ItemStack itemInSlot = getItemFor(event);
+
+        if (itemInSlot == null) {
+            throw new IllegalStateException("Item in slot was null when checking cooldown on Sorcery Wand");
+        }
+
+        return super.checkCooldown(player, itemInSlot.getPersistentDataContainer(), event, additionalCooldown);
+    }
+
+    @Override
+    protected void setCooldown(@NotNull Player player, ItemStack itemForCooldown, PlayerEvent event, int additionalCooldown) {
+        ItemStack itemInSlot = getItemFor(event);
+        super.setCooldown(player, itemInSlot, event, additionalCooldown);
+        toItem(itemForCooldown);
+    }
+
     public SorceryWand(@NotNull String uuid, int tier) {
         super(uuid);
 
         this.tier = tier;
 
         setAttribute(TIERS.defaultInstance());
+        setAttribute(COOLDOWN, 5);
     }
 
     @Override
@@ -182,21 +207,6 @@ public class SorceryWand extends Wand {
         item.editMeta(meta ->
                 meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.SORCERY_WAND_TYPE, this)
         );
-    }
-
-    @Override
-    protected int getAdditionalCooldown(@NotNull PlayerEvent event, ItemStack wandItem) {
-        int additionalCooldown = 0;
-
-        SpellInstance spell = getSpellInstance(event);
-        if (spell == null) {
-            return additionalCooldown;
-        }
-
-        additionalCooldown += (int) (spell.getAttribute(CastableSpell.COOLDOWN) * Ticks.SINGLE_TICK_DURATION_MS);
-        additionalCooldown += (int) (spell.getAttribute(CastableSpell.DELAY) * Ticks.SINGLE_TICK_DURATION_MS);
-
-        return additionalCooldown;
     }
 
     @Override
