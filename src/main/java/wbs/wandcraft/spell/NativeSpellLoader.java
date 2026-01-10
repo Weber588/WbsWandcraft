@@ -34,6 +34,8 @@ public class NativeSpellLoader extends SpellLoader {
             new Loader<>(MassIllusionSpell.class, MassIllusionSpell::new),
             new Loader<>(HeatRaySpell.class, HeatRaySpell::new),
             new Loader<>(InterruptSpell.class, InterruptSpell::new),
+            new Loader<>(HallucinationSpell.class, HallucinationSpell::new),
+            new Loader<>(NegateMagicSpell.class, NegateMagicSpell::new),
             new Loader<>(DeathWalkSpell.class, DeathWalkSpell::new)
     );
 

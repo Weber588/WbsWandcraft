@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class StatusEffectManager {
-    public static final GlidingStatusEffect GLIDING = new GlidingStatusEffect();
+    public static final GlidingEffect GLIDING = new GlidingEffect();
     public static final StunnedEffect STUNNED = new StunnedEffect();
     public static final PlanarBindingEffect PLANAR_BINDING = new PlanarBindingEffect();
     public static final DeathWalkEffect DEATH_WALK = new DeathWalkEffect();
@@ -18,8 +18,13 @@ public class StatusEffectManager {
     public static final HoldEffect HOLD = new HoldEffect();
     public static final TranquilizedEffect TRANQUILIZED = new TranquilizedEffect();
     public static final DisguisedEffect DISGUISED = new DisguisedEffect();
+    public static final InvisibleEffect INVISIBLE = new InvisibleEffect();
 
     private static final Table<NamespacedKey, UUID, StatusEffectInstance> EFFECT_INSTANCES = HashBasedTable.create();
+
+    public static StatusEffectInstance getInstance(UUID uuid, StatusEffect effect) {
+        return EFFECT_INSTANCES.get(effect.getKey(), uuid);
+    }
 
     public static StatusEffectInstance getInstance(LivingEntity entity, StatusEffect effect) {
         return EFFECT_INSTANCES.get(effect.getKey(), entity.getUniqueId());

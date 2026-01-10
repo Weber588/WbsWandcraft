@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import wbs.utils.util.entities.selector.LineOfSightSelector;
 import wbs.utils.util.entities.selector.RadiusSelector;
@@ -57,6 +58,7 @@ public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
                 LineOfSightSelector<T> selector = new LineOfSightSelector<>(entityClass)
                         .setRange(instance.getAttribute(TARGET_RANGE))
                         .setMaxSelections(instance.getAttribute(MAX_TARGETS))
+                        .setPredicate(this::isValid)
                         .setDirection(location.getDirection());
 
                 if (entityClass.isInstance(player)) {
@@ -69,6 +71,7 @@ public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
             case RADIUS -> {
                 RadiusSelector<T> selector = new RadiusSelector<>(entityClass)
                         .setRange(instance.getAttribute(TARGET_RANGE))
+                        .setPredicate(this::isValid)
                         .setMaxSelections(instance.getAttribute(MAX_TARGETS));
 
                 if (entityClass.isInstance(player)) {
@@ -79,6 +82,13 @@ public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
             }
             default -> throw new IllegalStateException("Targeter missing: " + this);
         }
+    }
+
+    private boolean isValid(T entity) {
+        if (entity instanceof LivingEntity livingEntity) {
+            return livingEntity.hasAI();
+        }
+        return true;
     }
 
     default String getNoTargetsMessage(CastContext context) {

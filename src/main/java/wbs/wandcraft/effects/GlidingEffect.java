@@ -11,7 +11,7 @@ import wbs.utils.util.WbsEventUtils;
 import wbs.wandcraft.WbsWandcraft;
 
 @NullMarked
-public class GlidingStatusEffect extends StatusEffect {
+public class GlidingEffect extends StatusEffect {
     @Override
     public boolean onTick(LivingEntity entity, StatusEffectInstance instance) {
         entity.setGliding(true);

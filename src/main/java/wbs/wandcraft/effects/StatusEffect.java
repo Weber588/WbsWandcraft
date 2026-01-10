@@ -95,7 +95,10 @@ public abstract class StatusEffect implements Keyed {
         return null;
     }
 
-    public void ifPresent(@NotNull Entity entity, Consumer<@NotNull StatusEffectInstance> ifPresent) {
+    public void ifPresent(@Nullable Entity entity, Consumer<@NotNull StatusEffectInstance> ifPresent) {
+        if (entity == null) {
+            return;
+        }
         StatusEffectInstance instance = getInstance(entity);
         if (instance != null) {
             ifPresent.accept(instance);
