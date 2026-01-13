@@ -91,7 +91,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
         private final SphereParticleEffect effect = new SphereParticleEffect();
 
         @Override
-        protected void onRun() {
+        protected void onSpawn() {
             effect.build();
 
             // Fizzle objects already in the shell

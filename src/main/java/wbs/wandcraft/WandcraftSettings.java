@@ -18,10 +18,7 @@ import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.generation.AttributeModifierGenerator;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.generation.WandGenerator;
-import wbs.wandcraft.learning.LearningMethod;
-import wbs.wandcraft.learning.LearningMethodType;
-import wbs.wandcraft.learning.RegistrableLearningMethod;
-import wbs.wandcraft.learning.TradingMethod;
+import wbs.wandcraft.learning.*;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.util.ItemUtils;
@@ -158,6 +155,34 @@ public class WandcraftSettings extends WbsSettings {
                 try {
                     TradingMethod tradingMethod = new TradingMethod(tradingSection, methodKey, methodDirectory);
                     generationMethods.add(tradingMethod);
+                } catch (InvalidConfigurationException ex) {
+                    logError(ex.getMessage(), ex.getDirectory());
+                }
+            }
+        }
+        ConfigurationSection barteringSection = config.getConfigurationSection("bartering");
+        if (barteringSection != null) {
+            String barteringDirectory = path + "/bartering";
+            for (String methodKey : barteringSection.getKeys(false)) {
+                String methodDirectory = barteringDirectory + "/" + methodKey;
+
+                try {
+                    BarteringMethod barteringMethod = new BarteringMethod(barteringSection, methodKey, methodDirectory);
+                    generationMethods.add(barteringMethod);
+                } catch (InvalidConfigurationException ex) {
+                    logError(ex.getMessage(), ex.getDirectory());
+                }
+            }
+        }
+        ConfigurationSection lootTablesSection = config.getConfigurationSection("loot-tables");
+        if (lootTablesSection != null) {
+            String lootTablesDirectory = path + "/loot-tables";
+            for (String methodKey : lootTablesSection.getKeys(false)) {
+                String methodDirectory = lootTablesDirectory + "/" + methodKey;
+
+                try {
+                    LootTableMethod lootTableMethod = new LootTableMethod(lootTablesSection, methodKey, methodDirectory);
+                    generationMethods.add(lootTableMethod);
                 } catch (InvalidConfigurationException ex) {
                     logError(ex.getMessage(), ex.getDirectory());
                 }

@@ -16,6 +16,11 @@ public interface DirectionalSpell extends ISpellDefinition {
             .polarity(SpellAttribute.Polarity.NEGATIVE);
 
     default Vector getDirection(CastContext context) {
+        if (this instanceof RangedSpell) {
+            double range = context.instance().getAttribute(RangedSpell.RANGE);
+            return getDirection(context, range);
+        }
+
         return getDirection(context, 1);
     }
 

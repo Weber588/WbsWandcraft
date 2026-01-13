@@ -27,7 +27,7 @@ public class SpellEvents implements Listener {
 
         Player killer = event.getPlayer().getKiller();
         if (killer != null) {
-            CastingQueue castingQueue = CastingManager.getCurrentContext(victim);
+            CastingQueue castingQueue = CastingManager.getCurrentQueue(victim);
             if (castingQueue != null) {
                 CastContext context = castingQueue.getCurrent();
 

@@ -78,7 +78,7 @@ public abstract class MagicObject {
 			return false;
 		}
 
-		onRun();
+		onSpawn();
 
 		timerID = new BukkitRunnable() {
 			boolean cancel = false;
@@ -125,7 +125,7 @@ public abstract class MagicObject {
 	/**
 	 * Called when the object starts running, before the timer is scheduled
 	 */
-	protected void onRun() {
+	protected void onSpawn() {
 
 	}
 

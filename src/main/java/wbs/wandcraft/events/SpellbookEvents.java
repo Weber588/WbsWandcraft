@@ -7,11 +7,13 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.Ticks;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Lectern;
-import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.Event;
@@ -42,6 +44,7 @@ import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spellbook.Spellbook;
+import wbs.wandcraft.util.EffectUtils;
 
 import java.util.Random;
 
@@ -185,13 +188,13 @@ public class SpellbookEvents implements Listener {
                     yVector
             );
 
-            TextDisplay entity = getTextDisplay(world, spawnLoc, glyph, translation, startingRotation, scale);
+            TextDisplay entity = getTextDisplay(spawnLoc, glyph, translation, startingRotation, scale);
 
             AxisAngle4f startingRotationReversed = new AxisAngle4f(
                     (float) Math.abs((angleFromNorth + Math.PI) % Math.TAU),
                     yVector
             );
-            TextDisplay reversed = getTextDisplay(world, spawnLoc, glyph, translation, startingRotationReversed, scale);
+            TextDisplay reversed = getTextDisplay(spawnLoc, glyph, translation, startingRotationReversed, scale);
 
             for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
                 PacketEventsWrapper.showFakeEntity(player, entity);
@@ -263,23 +266,12 @@ public class SpellbookEvents implements Listener {
         return color;
     }
 
-    private static @NotNull TextDisplay getTextDisplay(World world, Location spawnLoc, Component glyph, Vector3f translation, AxisAngle4f startingRotation, Vector3f scale) {
-        TextDisplay entity = world.createEntity(spawnLoc, TextDisplay.class);
-
-        entity.text(glyph);
-        entity.setTextOpacity((byte) 255);
-        entity.setBrightness(new Display.Brightness(15, 15));
-        entity.setBackgroundColor(Color.fromARGB(1, 0, 0, 0));
+    private static @NotNull TextDisplay getTextDisplay(Location spawnLoc, Component glyph, Vector3f translation, AxisAngle4f startingRotation, Vector3f scale) {
+        TextDisplay entity = EffectUtils.getGlyphDisplay(glyph, spawnLoc, translation, scale, startingRotation, new AxisAngle4f());
 
         entity.setInterpolationDuration(INTERPOLATION_DURATION);
         entity.setTeleportDuration(INTERPOLATION_DURATION);
 
-        entity.setTransformation(new Transformation(
-                translation,
-                startingRotation,
-                scale,
-                new AxisAngle4f()
-        ));
         return entity;
     }
 

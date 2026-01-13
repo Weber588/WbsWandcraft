@@ -36,6 +36,11 @@ public class NativeSpellLoader extends SpellLoader {
             new Loader<>(InterruptSpell.class, InterruptSpell::new),
             new Loader<>(HallucinationSpell.class, HallucinationSpell::new),
             new Loader<>(NegateMagicSpell.class, NegateMagicSpell::new),
+            new Loader<>(TurnUndeadSpell.class, TurnUndeadSpell::new),
+            new Loader<>(GrowSpell.class, GrowSpell::new),
+            new Loader<>(HealSpell.class, HealSpell::new),
+            new Loader<>(HealingCircle.class, HealingCircle::new),
+            new Loader<>(EmergencyTeleportSpell.class, EmergencyTeleportSpell::new),
             new Loader<>(DeathWalkSpell.class, DeathWalkSpell::new)
     );
 

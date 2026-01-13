@@ -169,6 +169,7 @@ public class ItemUtils {
         }
 
         cloneBuilder.addString(spell.key().asString());
+        cloneBuilder.addColor(spell.getPrimarySpellType().color());
         item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
 
         NamespacedKey itemModelKey = BASE_MATERIAL_SPELL.getKey();

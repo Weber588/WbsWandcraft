@@ -20,7 +20,7 @@ spells:
     advancements:
       - "minecraft:end/root" # The End
   carve:
-
+    # in generation.yml -- bartering
   chain_lightning:
     # If only damage types are listed, any amount of damage taken, survived or not, will grant this spell
     take-damage:
@@ -44,26 +44,49 @@ spells:
     advancements:
       - "minecraft:nether/get_wither_skull"
   discover_item:
-
+    # in generation.yml -- traded
   displace:
 
   eldritch_blast:
     # When someone deals damage with this type, it will grant this spell
     deal-damage:
       - ".*magic.*" # Allows regex across whole key
+  emergency_teleport:
+    take-damage:
+      - ".*ender_pearl.*" # Allows regex across whole key
   fireball:
     advancements:
       - "minecraft:nether/return_to_sender"
   fire_breath:
     advancements:
       - "minecraft:nether/obtain_blaze_rod" # Into Fire
+  grow:
+    # in generation.yml -- traded
+  hallucination:
+    # in generation.yml -- traded
+  healing_circle:
+    # in generation.yml -- loot tables
+  heal:
+    # in generation.yml -- traded
+  heat_ray:
+    # in generation.yml -- bartering
+  hold:
+
+  interrupt:
+
   leap:
     take-damage:
       - ".*fall.*"
+  mass_illusion:
+  # in generation.yml -- traded
+  negate_magic:
+    # in generation.yml -- traded
   planar_binding:
     # Killing a mob of this type will grant this spell
     kill:
       - enderman
+  polymorph:
+    # in generation.yml -- traded
   prismatic_ray:
     advancements:
       - "minecraft:nether/all_potions" # Furious Cocktail
@@ -71,8 +94,12 @@ spells:
     advancements:
       - "minecraft:end/enter_end_gateway" # Remote Getaway
   shield:
-
+    # in generation.yml -- traded
   stun:
+
+  turn_undead:
+    # in generation.yml -- traded
+  walk_of_tranquility:
 
   warp:
     advancements:

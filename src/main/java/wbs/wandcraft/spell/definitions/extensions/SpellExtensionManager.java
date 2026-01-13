@@ -27,6 +27,7 @@ public class SpellExtensionManager {
         registerSpellExtension(TargetedSpell.class, TargetedSpell::setupTargeted);
         registerSpellExtension(ForceSpell.class, ForceSpell::setupForce);
         registerSpellExtension(FollowableSpell.class, FollowableSpell::setUpFollowing);
+        registerSpellExtension(HealthSpell.class, HealthSpell::setupHealth);
     }
 
     public static <T extends ISpellDefinition> void registerSpellExtension(Class<T> clazz, Consumer<T> setupMethod) {

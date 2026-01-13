@@ -8,6 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.resourcepack.TextureLayer;
 import wbs.wandcraft.resourcepack.TextureProvider;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -28,6 +29,7 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
     protected final List<SpellType> spellTypes = new LinkedList<>();
 
     private final NamespacedKey key;
+    private List<TextureLayer> textureLayers;
 
     SpellDefinition(String nativeKey) {
         this(WbsWandcraft.getKey(nativeKey));
@@ -93,9 +95,25 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
 
     @Override
     public @NotNull final List<TextureLayer> getTextures() {
-        return List.of(
-                new TextureLayer("spell_" + key().value())
-        );
+        if (textureLayers == null) {
+            String texture = "spell_" + key().value();
+
+            String path = ResourcePackBuilder.TEXTURES_PATH + texture + ".png";
+            if (WbsWandcraft.getInstance().getResource(path) == null) {
+                WbsWandcraft.getInstance().getLogger().severe("The resource at path \"" + path + "\" was not found! A default texture will be used.");
+
+                textureLayers = List.of(
+                        new TextureLayer("default_spell_text_overlay", false, 0x008000),
+                        new TextureLayer("default_spell_background")
+                );
+            } else {
+                textureLayers = List.of(
+                        new TextureLayer(texture)
+                );
+            }
+        }
+
+        return textureLayers;
     }
 
     public void addSpellType(SpellType type) {

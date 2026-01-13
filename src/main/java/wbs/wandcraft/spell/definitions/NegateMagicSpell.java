@@ -1,5 +1,7 @@
 package wbs.wandcraft.spell.definitions;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -79,7 +81,18 @@ public class NegateMagicSpell extends SpellDefinition implements CastableSpell, 
 
         Collection<Entity> nearbyEntities = location.getNearbyEntities(radius, radius, radius);
 
-        location.getWorld().spawnParticle(Particle.END_ROD, location, 100, radius, radius, radius, 0.05);
+        location.getWorld().spawnParticle(
+                Particle.END_ROD,
+                location,
+                (int) (radius * radius),
+                radius / 2,
+                radius / 2,
+                radius / 2,
+                0.05
+        );
+
+        Component concentrationMessage = Component.text("Concentration broken!").color(NamedTextColor.RED);
+        Component castingMessage = Component.text("Spell interrupted!").color(NamedTextColor.RED);
 
         for (Entity nearbyEntity : nearbyEntities) {
             if (nearbyEntity.getLocation().distanceSquared(location) > radius * radius) {
@@ -101,12 +114,18 @@ public class NegateMagicSpell extends SpellDefinition implements CastableSpell, 
                 if (livingEntity instanceof Creaking creaking) {
                     creaking.setHealth(0);
                 }
-                if (livingEntity instanceof Player nearbyPlayer) {
-                    CastingManager.stopCasting(nearbyPlayer);
-                    ItemStack activeItem = nearbyPlayer.getActiveItem();
-                    if (Spellbook.isSpellbook(activeItem) || Wand.fromItem(activeItem) != null) {
-                        nearbyPlayer.clearActiveItem();
-                    }
+
+                if (CastingManager.isConcentrating(livingEntity)) {
+                    livingEntity.sendActionBar(concentrationMessage);
+                    CastingManager.stopConcentrating(livingEntity);
+                }
+                if (CastingManager.isCasting(livingEntity)) {
+                    livingEntity.sendActionBar(castingMessage);
+                    CastingManager.stopCasting(livingEntity);
+                }
+                ItemStack activeItem = livingEntity.getActiveItem();
+                if (Spellbook.isSpellbook(activeItem) || Wand.fromItem(activeItem) != null) {
+                    livingEntity.clearActiveItem();
                 }
             }
 

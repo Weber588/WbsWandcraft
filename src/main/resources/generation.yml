@@ -7,13 +7,30 @@ trading:
     item-generator:
       spells:
         - wbswandcraft:shield
+        - wbswandcraft:heal
+    payment:
+      min: 20
+      max: 40
+      material: minecraft:amethyst_shard # Defaults to emeralds if omitted.
+    replace-existing: false # Add it, don't overtake a different trade
+    chance: 70 # Percentage chance every time a villager gains trades
+    allow-multiple: false # Don't allow this trade to appear multiple times in the same villager
+
+  spells_cleric_master:
+    villager-level: 5
+    villager-profession: cleric
+    item-type: spell
+    item-generator:
+      spells:
+        - wbswandcraft:negate_magic
+        - wbswandcraft:turn_undead
     payment:
       min: 20
       max: 40
       material: minecraft:amethyst_shard
-    replace-existing: false # Add it, don't overtake a different trade
+    replace-existing: false
     chance: 70 # Percentage chance every time a villager gains trades
-    allow-multiple: false # Don't allow this trade to appear multiple times in the same villager
+    allow-multiple: true
 
   spells_librarian_any:
     villager-profession: librarian
@@ -29,6 +46,38 @@ trading:
     chance: 10
     allow-multiple: false
 
+  spells_farmer_master:
+    villager-level: 5
+    villager-profession: farmer
+    item-type: spell
+    item-generator:
+      spells:
+        - wbswandcraft:grow
+    payment:
+      min: 10
+      max: 20
+      material: minecraft:amethyst_shard
+    replace-existing: false
+    chance: 25
+    allow-multiple: false
+
+  spells_wandering_trader:
+    villager-profession: wandering_trader
+    item-type: spell
+    item-generator:
+      spells:
+        - wbswandcraft:hallucination
+        - wbswandcraft:polymorph
+    payment:
+      min: 32
+      max: 64
+      material: minecraft:amethyst_shard
+    replace-existing: false
+    chance: 10
+    allow-multiple: true
+
+  # MODIFIERS
+
   cast_delay_librarian_any:
     villager-profession: librarian
     item-type: modifier
@@ -40,28 +89,42 @@ trading:
     replace-existing: false
     chance: 1
     allow-multiple: false
-  damage_librarian_any:
-    villager-profession: librarian
-    item-type: modifier
-    item-generator: buff_damage
-    payment:
-      min: 5
-      max: 16
-      material: minecraft:echo_shard
-    replace-existing: false
-    chance: 1
-    allow-multiple: false
+
   speed_fletcher_any:
     villager-profession: fletcher
     item-type: modifier
-    item-generator: buff_damage
+    item-generator: buff_speed
     payment:
       min: 5
       max: 16
-      material: minecraft:echo_shard
+      material: minecraft:amethyst_shard
     replace-existing: false
     chance: 1
     allow-multiple: false
 
-# Not implemented yet
 bartering:
+  # Can be any name, just needs to be unique
+  nether_rays:
+    item-type: spell
+    item-generator:
+      spells:
+        - wbswandcraft:carve
+        - wbswandcraft:heat_ray
+    chance: 1
+
+  modifiers:
+    item-type: modifier
+    item-generator: buff_damage
+    chance: 3
+
+loot-tables:
+  # Can be any name, just needs to be unique
+  jungle_temples:
+    item-type: spell
+    item-generator:
+      spells:
+        - wbswandcraft:healing_circle
+        - wbswandcraft:grow
+    loot-table: '.*chest.*jungle_temple.*' # Supports regex across the whole key.
+    chance: 75 # Chance to add to the loot table
+    rolls: 2 # How many times should the item try to be added when a loot table is generated? The chance is calculated for each roll.

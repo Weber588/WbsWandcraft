@@ -1,7 +1,6 @@
 package wbs.wandcraft.spell.definitions;
 
 import com.destroystokyo.paper.entity.ai.*;
-import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
 import me.libraryaddict.disguise.disguisetypes.watchers.PlayerWatcher;
 import net.kyori.adventure.util.Ticks;
@@ -10,16 +9,16 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.block.Block;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
+import org.bukkit.entity.Pillager;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
-import wbs.utils.util.entities.WbsEntityUtil;
-import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.ai.CustomAvoidGoal;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.effects.PolymorphedEffect;
 import wbs.wandcraft.effects.StatusEffectInstance;
@@ -80,7 +79,7 @@ public class HallucinationSpell extends SpellDefinition implements CastableSpell
                 }
             }
 
-            mobGoals.addGoal(preSpawnedMob, 2, new AvoidEverythingGoal(preSpawnedMob));
+            mobGoals.addGoal(preSpawnedMob, 2, new CustomAvoidGoal(preSpawnedMob, 1.3));
             mobGoals.addGoal(preSpawnedMob, 3, new AlwaysJumpGoal(preSpawnedMob));
 
             AttributeInstance movementAttribute = Objects.requireNonNull(preSpawnedMob.getAttribute(Attribute.MOVEMENT_SPEED));
@@ -152,75 +151,6 @@ public class HallucinationSpell extends SpellDefinition implements CastableSpell
         @Override
         public EnumSet<GoalType> getTypes() {
             return EnumSet.of(GoalType.JUMP);
-        }
-    }
-
-    private static class AvoidEverythingGoal implements Goal<Mob> {
-        private final Mob mob;
-        private final RadiusSelector<LivingEntity> selector;
-
-        private AvoidEverythingGoal(Mob mob) {
-            this.mob = mob;
-            this.selector = new RadiusSelector<>(LivingEntity.class)
-                    .setRange(25)
-                    .setMaxSelections(1)
-                    .setPredicate(check -> StatusEffectManager.getInstance(check, StatusEffectManager.INVISIBLE) == null)
-                    .exclude(mob);
-        }
-
-        @Override
-        public boolean shouldActivate() {
-            List<LivingEntity> nearbyEntities = selector.select(mob);
-
-            return !nearbyEntities.isEmpty();
-        }
-
-        @Override
-        public void tick() {
-            List<LivingEntity> nearbyEntities = selector.select(mob);
-            if (nearbyEntities.isEmpty()) {
-                return;
-            }
-
-            LivingEntity nearest = nearbyEntities.getFirst();
-
-            Location nearestLocation = nearest.getLocation();
-
-            Vector offset = mob.getLocation().subtract(nearestLocation).toVector();
-
-            Location targetLocation = mob.getLocation().add(offset);
-
-            boolean inWater = WbsEntityUtil.isInWater(mob);
-            DisguiseAPI.getDisguise(mob).getWatcher().setSwimming(inWater);
-
-            double speed = 1.3;
-
-            if (inWater) {
-                targetLocation.setY(mob.getY());
-                mob.lookAt(targetLocation.clone().add(0, 1, 0));
-            } else {
-                Block safeLocation = WbsEntityUtil.getSafeLocation(mob, targetLocation, 5, new Vector(0, -1, 0));
-                if (safeLocation == null) {
-                    safeLocation = WbsEntityUtil.getSafeLocation(mob, targetLocation, 5, new Vector(0, 1, 0));
-                }
-
-                if (safeLocation != null) {
-                    targetLocation = safeLocation.getLocation();
-                }
-                mob.lookAt(targetLocation);
-            }
-
-            mob.getPathfinder().moveTo(targetLocation, speed);
-        }
-
-        @Override
-        public GoalKey<Mob> getKey() {
-            return GoalKey.of(Mob.class, WbsWandcraft.getKey("avoid_everything"));
-        }
-
-        @Override
-        public EnumSet<GoalType> getTypes() {
-            return EnumSet.of(GoalType.MOVE);
         }
     }
 }

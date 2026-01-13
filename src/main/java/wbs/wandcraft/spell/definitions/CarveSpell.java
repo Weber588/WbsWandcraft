@@ -53,8 +53,8 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
     public CarveSpell() {
         super("carve");
 
-        addSpellType(SpellType.ARCANE);
         addSpellType(SpellType.NETHER);
+        addSpellType(SpellType.ARCANE);
 
         setAttribute(COST, 50);
         setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);

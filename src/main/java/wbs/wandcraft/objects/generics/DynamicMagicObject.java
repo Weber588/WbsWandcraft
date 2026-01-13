@@ -69,8 +69,8 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     }
 
     @Override
-    protected void onRun() {
-        super.onRun();
+    protected void onSpawn() {
+        super.onSpawn();
     }
 
     @Override

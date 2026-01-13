@@ -84,7 +84,7 @@ public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
         }
     }
 
-    private boolean isValid(T entity) {
+    default boolean isValid(T entity) {
         if (entity instanceof LivingEntity livingEntity) {
             return livingEntity.hasAI();
         }

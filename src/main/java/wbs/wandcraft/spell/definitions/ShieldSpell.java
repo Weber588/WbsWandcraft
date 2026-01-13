@@ -43,7 +43,7 @@ public class ShieldSpell extends SpellDefinition implements ContinuousCastableSp
         setAttribute(MAX_DURATION, 30 * Ticks.TICKS_PER_SECOND);
         setAttribute(FIXED_DURATION, 5 * Ticks.TICKS_PER_SECOND);
         setAttribute(RADIUS, 4d);
-        setAttribute(COST_PER_TICK, 5);
+        setAttribute(COST_PER_TICK, 2);
         setAttribute(IMPRECISION, 0d);
         setAttribute(FOLLOWS_PLAYER, true);
 
@@ -146,6 +146,6 @@ public class ShieldSpell extends SpellDefinition implements ContinuousCastableSp
 
     @Override
     public Material getDefaultMaterial() {
-        return Material.PURPLE_STAINED_GLASS;
+        return Material.YELLOW_STAINED_GLASS;
     }
 }
