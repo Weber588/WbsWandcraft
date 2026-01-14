@@ -32,6 +32,10 @@ import java.util.Set;
 public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public static final NamespacedKey SPELL_INSTANCE_KEY = WbsWandcraft.getKey("spell_instance");
 
+    public static boolean isSpellInstance(ItemStack itemStack) {
+        return fromItem(itemStack) != null;
+    }
+
     @Contract("null -> null")
     @Nullable
     public static SpellInstance fromItem(@Nullable ItemStack itemStack){

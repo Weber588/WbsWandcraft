@@ -22,6 +22,10 @@ import java.util.List;
 public class SpellModifier implements WandEntry<SpellModifier> {
     public static final NamespacedKey SPELL_MODIFIER_KEY = WbsWandcraft.getKey("spell_modifier");
 
+    public static boolean isSpellModifier(ItemStack itemStack) {
+        return fromItem(itemStack) != null;
+    }
+
     public static SpellModifier fromItem(ItemStack itemStack) {
         if (itemStack == null) {
             return null;

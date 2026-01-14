@@ -5,59 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Continued expanding sculk spells">
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/ai/CustomAvoidGoal.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/ai/TemporaryGoal.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/BarteringMethod.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/LootTableMethod.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ControlWeatherSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/EmergencyTeleportSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/GrowSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/HealSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/HealingCircle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/TurnUndeadSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/HealthSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/RaySpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/TargetedHealthSpell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/EffectUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftSettings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/context/CastingManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/context/CastingManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/PacifiedEffect.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/SpellEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/SpellEvents.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/SpellbookEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/SpellbookEvents.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/DynamicMagicObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/DynamicMagicObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MagicObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/objects/generics/MagicObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/NativeSpellLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/NativeSpellLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/AntiMagicShellSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/AntiMagicShellSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/CarveSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/CarveSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/HallucinationSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/HallucinationSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/NegateMagicSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/NegateMagicSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PrismaticRaySpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/PrismaticRaySpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ShieldSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/ShieldSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WalkOfTranquilitySpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/WalkOfTranquilitySpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DirectionalSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DirectionalSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/SpellExtensionManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/SpellExtensionManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/TargetedSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/TargetedSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/generation.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/generation.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandSpellInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/commands/CommandSpellInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/events/WandEvents.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/generation/SpellInstanceGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/generation/SpellInstanceGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/BarteringMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/BarteringMethod.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/DealDamageLearningTrigger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/DealDamageLearningTrigger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/LootTableMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/LootTableMethod.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/RegistrableLearningMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/RegistrableLearningMethod.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/TakeDamageLearningTrigger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/TakeDamageLearningTrigger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/TradingMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/learning/TradingMethod.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellInstance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/modifier/SpellModifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spellbook/Spellbook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spellbook/Spellbook.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/learning.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/learning.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_heart.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/modifier_heart.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_anti_magic_shell.pdn" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_anti_magic_shell.pdn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_anti_magic_shell.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_anti_magic_shell.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_arcane_burst.pdn" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_arcane_burst.pdn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_arcane_burst.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_arcane_burst.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_arcane_surge.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_arcane_surge.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_charm.pdn" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_charm.pdn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_charm.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_charm.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_death_walk.pdn" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_death_walk.pdn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_death_walk.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_death_walk.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_eldritch_blast.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_eldritch_blast.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_fire_breath.pdn" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_fire_breath.pdn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_fireball.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_fireball.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_prismatic_ray.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_prismatic_ray.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_warp.pdn" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_warp.pdn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_warp.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spell_warp.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,34 +105,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build WbsWandcraft.executor": "Run",
-    "Gradle.C:/IdeaProjects/WbsWandcraft [unlink].executor": "Run",
-    "Gradle.C:/IdeaProjects/WbsWandcraft.executor": "Run",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.WbsWandcraft [assemble].executor": "Run",
-    "Gradle.WbsWandcraft [buildDependents].executor": "Run",
-    "Gradle.WbsWandcraft [build].executor": "Run",
-    "Gradle.WbsWandcraft [clean].executor": "Run",
-    "Maven.WbsWandcraft [compile].executor": "Run",
-    "Maven.WbsWandcraft [install].executor": "Run",
-    "Maven.WbsWandcraft [package].executor": "Run",
-    "Maven.WbsWandcraft [test].executor": "Run",
-    "Maven.WbsWandcraft [verify].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/IdeaProjects/WbsWandcraft/src/main/resources",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build WbsWandcraft.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.C:/IdeaProjects/WbsWandcraft [unlink].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.C:/IdeaProjects/WbsWandcraft.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.WbsWandcraft [assemble].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.WbsWandcraft [buildDependents].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.WbsWandcraft [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.WbsWandcraft [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.WbsWandcraft [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.WbsWandcraft [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.WbsWandcraft [package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.WbsWandcraft [test].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.WbsWandcraft [verify].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/IdeaProjects/WbsWandcraft/src/main/resources&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="wbs.wandcraft.effects" />

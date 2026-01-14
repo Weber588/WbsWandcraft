@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.exceptions.InvalidConfigurationException;
+import wbs.utils.util.WbsKeyed;
 
 import java.util.List;
 
@@ -106,7 +107,7 @@ public class TakeDamageLearningTrigger extends LearningTrigger<EntityDamageEvent
                             .separator(joiner)
                             .build(),
                     damageTypes.stream()
-                            .map(damageType -> Component.translatable(damageType.getTranslationKey()).color(NamedTextColor.AQUA))
+                            .map(damageType -> Component.text(WbsKeyed.toPrettyString(damageType)).color(NamedTextColor.AQUA))
                             .toList()
             );
 
@@ -116,7 +117,7 @@ public class TakeDamageLearningTrigger extends LearningTrigger<EntityDamageEvent
             for (DamageType damageType : damageTypes) {
                 message = message
                         .append(joiner)
-                        .append(Component.translatable(damageType.getTranslationKey()).color(NamedTextColor.AQUA));
+                        .append(Component.text(WbsKeyed.toPrettyString(damageType)).color(NamedTextColor.AQUA));
             }
 
             return message;

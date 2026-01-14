@@ -3,6 +3,7 @@ package wbs.wandcraft.learning;
 import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -19,15 +20,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.exceptions.InvalidConfigurationException;
-import wbs.utils.util.WbsEnums;
 import wbs.utils.util.WbsEventUtils;
 import wbs.utils.util.WbsKeyed;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.configuration.WbsConfigReader;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.generation.ItemGenerator;
-import wbs.wandcraft.generation.ItemGenerator.ItemGeneratorType;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 @NullMarked
@@ -37,8 +36,7 @@ public class TradingMethod extends RegistrableLearningMethod {
     private Integer villagerLevel = null;
     @Nullable
     private final Villager.Profession villagerProfession;
-    private final boolean isWanderingTrader;
-    private final ItemGenerator resultGenerator;
+    private final boolean requireWanderingTrader;
     private int paymentMin = 1;
     private int paymentMax = 64;
     private ItemType paymentMaterial = ItemType.EMERALD;
@@ -80,48 +78,11 @@ public class TradingMethod extends RegistrableLearningMethod {
         String villagerProfessionString = section.getString("villager-profession");
         if (villagerProfessionString != null && villagerProfessionString.toLowerCase().matches("wandering.?trader")) {
             villagerProfession = null;
-            isWanderingTrader = true;
+            requireWanderingTrader = true;
         } else {
             villagerProfession = WbsConfigReader.getRegistryEntry(section, "villager-profession", RegistryKey.VILLAGER_PROFESSION, null);
-            isWanderingTrader = false;
+            requireWanderingTrader = false;
         }
-
-        String itemTypeString = section.getString("item-type");
-        if (itemTypeString == null) {
-            throw new InvalidConfigurationException("item-type is a required field. Pick from the following: " +
-                    String.join(", ", WbsEnums.toStringList(ItemGeneratorType.class)), directory + "/item-type");
-        }
-
-        ItemGeneratorType checkType = WbsEnums.getEnumFromString(ItemGeneratorType.class, itemTypeString);
-        if (checkType == null) {
-            throw new InvalidConfigurationException("Invalid item-type. Pick from the following: " +
-                    String.join(", ", WbsEnums.toStringList(ItemGeneratorType.class)), directory + "/item-type");
-        }
-
-        String generatorPath = "item-generator";
-        ConfigurationSection generatorSection = section.getConfigurationSection(generatorPath);
-        if (generatorSection != null) {
-            resultGenerator = checkType.construct(generatorSection, WbsWandcraft.getInstance().getSettings(), directory + "/" + generatorPath);
-        } else {
-            String resultGeneratorKeyString = section.getString(generatorPath);
-            if (resultGeneratorKeyString == null) {
-                throw new InvalidConfigurationException(generatorPath + " is a required field.", directory + "/" + generatorPath);
-            }
-
-            NamespacedKey generatorKey = NamespacedKey.fromString(resultGeneratorKeyString, WbsWandcraft.getInstance());
-            if (generatorKey == null) {
-                throw new InvalidConfigurationException("Invalid key: " + resultGeneratorKeyString, directory + "/" + generatorPath);
-            }
-
-            ItemGenerator checkGenerator = checkType.registry().get(generatorKey);
-            if (checkGenerator == null) {
-                throw new InvalidConfigurationException("Invalid result key for " + generatorPath + " " + generatorKey + ". Pick from the following: " +
-                        String.join(", ", WbsEnums.toStringList(ItemGeneratorType.class)), directory + "/" + generatorPath);
-            }
-
-            resultGenerator = checkGenerator;
-        }
-
 
         ConfigurationSection paymentSection = section.getConfigurationSection("payment");
         if (paymentSection != null) {
@@ -165,6 +126,12 @@ public class TradingMethod extends RegistrableLearningMethod {
             return;
         }
 
+        boolean isWanderingTrader = abstractVillager instanceof WanderingTrader;
+
+        if (isWanderingTrader && (villagerLevel != null || villagerProfession != null)) {
+            return;
+        }
+
         if (abstractVillager instanceof Villager villager) {
             // nms Villager#increaseMerchantCareer increases level BEFORE acquiring trades -- reliable
             if (villagerLevel != null && villager.getVillagerLevel() != villagerLevel) {
@@ -174,7 +141,7 @@ public class TradingMethod extends RegistrableLearningMethod {
             if (villagerProfession != null && villager.getProfession() != villagerProfession) {
                 return;
             }
-        } else if (isWanderingTrader && !(abstractVillager instanceof WanderingTrader)) {
+        } else if (requireWanderingTrader && !isWanderingTrader) {
             return;
         }
 
@@ -254,7 +221,17 @@ public class TradingMethod extends RegistrableLearningMethod {
             description = description.append(Component.text(" " + WbsKeyed.toPrettyString(villagerProfession)));
         }
 
-        description = description.append(Component.text(" villager trades: " + chance + "%"));
+        String type = "villager";
+        if (requireWanderingTrader) {
+            type = "wandering trader";
+        }
+
+        description = description.append(
+                Component.text(" " + type + " trades: ")
+                        .append(Component.text(new DecimalFormat("#.##").format(chance) + "%")
+                                .color(NamedTextColor.AQUA)
+                        )
+        );
 
         return description;
     }

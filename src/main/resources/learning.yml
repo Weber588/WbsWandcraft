@@ -39,7 +39,7 @@ spells:
       min-amount: 10
       # Damage types that will grant this spell when taken by a player
       damage-types:
-        - ".*fall.*"
+        - "minecraft:fall"
   death_walk:
     advancements:
       - "minecraft:nether/get_wither_skull"

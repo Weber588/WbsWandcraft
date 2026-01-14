@@ -17,10 +17,13 @@ import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.learning.LearningMethod;
+import wbs.wandcraft.learning.RegistrableLearningMethod;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -82,6 +85,20 @@ public class CommandSpellInfo extends WbsSubcommand {
             methodList.forEach(criteria ->
                     builder.append(Component.newline().append(indent).append(criteria.describe(indent).color(NamedTextColor.GOLD)))
             );
+        }
+
+        List<RegistrableLearningMethod> generationMethods = WbsWandcraft.getInstance().getSettings().getGenerationMethods();
+
+        if (!generationMethods.isEmpty()) {
+            builder.append("\nGeneration:");
+            Component indent = Component.text("  ");
+            generationMethods.forEach(method -> {
+                if (method.getResultGenerator() instanceof SpellInstanceGenerator generator) {
+                    if (generator.getSpells().contains(spell)) {
+                        builder.append(Component.newline().append(indent).append(method.describe(indent).color(NamedTextColor.GOLD)));
+                    }
+                }
+            });
         }
 
         builder

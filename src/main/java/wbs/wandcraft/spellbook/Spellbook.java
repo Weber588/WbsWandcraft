@@ -33,15 +33,17 @@ import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.pluginhooks.PacketEventsWrapper;
 import wbs.utils.util.string.WbsStrings;
-import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
+import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.learning.LearningMethod;
+import wbs.wandcraft.learning.RegistrableLearningMethod;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.types.WandType;
@@ -309,22 +311,58 @@ public class Spellbook implements ItemDecorator {
             page = page.append(description);
 
             if (!isKnown) {
+                boolean isObtainable = false;
+                Component hoverText = Component.empty();
+
                 Multimap<SpellDefinition, LearningMethod> learningMap = WbsWandcraft.getInstance().getSettings().getLearningMap();
 
                 Collection<LearningMethod> methodList = learningMap.get(definition);
+                Component indent = Component.text("  ");
                 if (!methodList.isEmpty()) {
-                    Component indent = Component.text("  ");
-                    Component hoverText = Component.join(
+                    isObtainable = true;
+                    hoverText = hoverText.append(Component.join(
                             JoinConfiguration.builder()
                                     .separator(Component.newline())
                                     .build(),
                             methodList.stream().map(method ->
                                             method.describe(indent, false).color(NamedTextColor.GOLD)
                                     ).toList()
-                            );
-
-                    page = page.hoverEvent(HoverEvent.showText(hoverText));
+                            ));
                 }
+
+                List<RegistrableLearningMethod> generationMethods = WbsWandcraft.getInstance().getSettings().getGenerationMethods();
+
+                if (!generationMethods.isEmpty()) {
+                    List<Component> registrableMethods = new LinkedList<>();
+                    for (RegistrableLearningMethod method : generationMethods) {
+                        if (method.getResultGenerator() instanceof SpellInstanceGenerator generator) {
+                            if (generator.getSpells().contains(definition)) {
+                                registrableMethods.add(method.describe(indent).color(NamedTextColor.GOLD));
+                            }
+                        }
+                    }
+
+                    if (!registrableMethods.isEmpty()) {
+                        if (isObtainable) {
+                            hoverText = hoverText.appendNewline();
+                        }
+
+                        isObtainable = true;
+
+                        hoverText = hoverText.append(
+                                Component.join(
+                                        JoinConfiguration.builder().separator(Component.newline()).build(),
+                                        registrableMethods
+                                )
+                        );
+                    }
+                }
+
+                if (!isObtainable) {
+                    hoverText = Component.text("Unknown...").decorate(TextDecoration.ITALIC).color(DESCRIPTION_COLOR);
+                }
+                page = page.hoverEvent(HoverEvent.showText(hoverText))
+                        .clickEvent(ClickEvent.runCommand("wbswandcraft:wbswandcraft spell info " + definition.key().asString()));
             }
             spellPages.add(page);
         }

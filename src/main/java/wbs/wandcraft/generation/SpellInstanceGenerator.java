@@ -124,6 +124,10 @@ public class SpellInstanceGenerator implements Keyed, ItemGenerator {
         return this;
     }
 
+    public List<SpellDefinition> getSpells() {
+        return new LinkedList<>(definitions);
+    }
+
     public SpellInstanceGenerator addAttributeGenerator(AttributeModifierGenerator<?> generator) {
         modifierGenerators.add(generator);
         return this;

@@ -63,8 +63,15 @@ public abstract class Wand implements Attributable {
             .displayName(Component.text("Recharge Time"))
             .polarity(SpellAttribute.Polarity.NEGATIVE);
 
+    public static boolean isWand(ItemStack item) {
+        return fromItem(item) != null;
+    }
+
     @Nullable
-    public static Wand fromItem(ItemStack item) {
+    public static Wand fromItem(@Nullable ItemStack item) {
+        if (item == null) {
+            return null;
+        }
         PersistentDataContainerView container = item.getPersistentDataContainer();
         NamespacedKey key = container.get(WAND_TYPE, WbsPersistentDataType.NAMESPACED_KEY);
 

@@ -9,8 +9,11 @@ import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -19,6 +22,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.crafting.ArtificingConfig;
+import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.Wand;
 
 import java.util.HashSet;
@@ -30,6 +35,25 @@ public class WandEvents implements Listener {
     private static void debug(String message) {
         if (DEBUG) {
             WbsWandcraft.getInstance().getLogger().info(message);
+        }
+    }
+
+    // TODO: Make both these events return the relevant items to the player's inventory.
+    @EventHandler(ignoreCancelled = true)
+    public void onCraft(CraftItemEvent event) {
+        for (ItemStack itemIngredient : event.getInventory().getMatrix()) {
+            if (Wand.isWand(itemIngredient) || SpellInstance.isSpellInstance(itemIngredient) || SpellModifier.isSpellModifier(itemIngredient)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onCraft(PrepareItemCraftEvent event) {
+        for (ItemStack itemIngredient : event.getInventory().getMatrix()) {
+            if (Wand.isWand(itemIngredient) || SpellInstance.isSpellInstance(itemIngredient) || SpellModifier.isSpellModifier(itemIngredient)) {
+                event.getInventory().setResult(ItemStack.empty());
+            }
         }
     }
 
@@ -68,7 +92,7 @@ public class WandEvents implements Listener {
     private final Set<Player> droppedItemsThisTick = new HashSet<>();
 
     // Can't ignore cancelled for interacting with air :(
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onWandClick(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) {
             return;
@@ -80,11 +104,16 @@ public class WandEvents implements Listener {
             return;
         }
 
-        if (event.getClickedBlock() != null && event.useInteractedBlock() == Event.Result.DENY) {
-            return;
+        Player player = event.getPlayer();
+
+        Block clickedBlock = event.getClickedBlock();
+        if (!player.isSneaking() && clickedBlock != null && event.useInteractedBlock() != Event.Result.DENY) {
+            //noinspection deprecation
+            if (clickedBlock.getType().isInteractable()) {
+                return;
+            }
         }
 
-        Player player = event.getPlayer();
 
         if (droppedItemsThisTick.contains(player)) {
             return;
@@ -101,8 +130,7 @@ public class WandEvents implements Listener {
             return;
         }
 
-        Block clicked = event.getClickedBlock();
-        if (clicked != null && ArtificingConfig.isInstance(clicked)) {
+        if (clickedBlock != null && ArtificingConfig.isInstance(clickedBlock)) {
             event.setCancelled(true);
         } else {
             // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
