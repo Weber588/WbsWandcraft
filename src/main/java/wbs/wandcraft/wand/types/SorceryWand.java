@@ -55,6 +55,7 @@ public class SorceryWand extends Wand {
     @Override
     protected void setCooldown(@NotNull Player player, ItemStack itemForCooldown, PlayerEvent event, int additionalCooldown) {
         ItemStack itemInSlot = getItemFor(event);
+        // TODO: Figure out why last used isnt being saved for shift + drop item
         super.setCooldown(player, itemInSlot, event, additionalCooldown);
         toItem(itemForCooldown);
     }
@@ -101,10 +102,10 @@ public class SorceryWand extends Wand {
         if (instance == null) {
             return spellList;
         }
-
-        spellList.add(applyModifiers(instance));
         tier = 0;
         toItem(wandItem);
+
+        spellList.add(applyModifiers(instance));
 
         return spellList;
     }

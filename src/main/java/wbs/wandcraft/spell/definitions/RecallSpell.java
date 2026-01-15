@@ -104,7 +104,7 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
 
         int duration = instance.getAttribute(DURATION);
 
-        RecallPoint newPoint = new RecallPoint(spawnLoc, player, context, duration);
+        RecallPoint newPoint = new RecallPoint(spawnLoc, context, duration);
         newPoint.spawn();
 
         if (duration > 0) {
@@ -119,8 +119,8 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
         private final NormalParticleEffect effect;
         private final RingParticleEffect ringEffect;
 
-        public RecallPoint(Location location, Player player, CastContext castContext, int duration) {
-            super(location, player, castContext);
+        public RecallPoint(Location location, CastContext castContext, int duration) {
+            super(location, castContext);
             this.duration = duration;
 
             effect = new NormalParticleEffect().setXYZ(0.05);

@@ -26,7 +26,7 @@ public class GrowSpell extends SpellDefinition implements RaySpell {
         addSpellType(SpellType.NATURE);
 
         setAttribute(COST, 75);
-        setAttribute(COOLDOWN, (int) (0.5 * Ticks.TICKS_PER_SECOND));
+        setAttribute(COOLDOWN, 0.5 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(RANGE, 20d);
         setAttribute(RADIUS, 0.4d);

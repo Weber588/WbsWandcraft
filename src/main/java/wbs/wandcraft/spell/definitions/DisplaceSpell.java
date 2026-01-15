@@ -31,7 +31,7 @@ public class DisplaceSpell extends SpellDefinition implements CastableSpell, Tar
         super("displace");
 
         setAttribute(COST, 150);
-        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
 
         addSpellType(ENDER);
         addSpellType(SCULK);

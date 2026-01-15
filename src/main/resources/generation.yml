@@ -38,6 +38,7 @@ trading:
     item-generator:
       spells:
         - wbswandcraft:discover_item
+        - wbswandcraft:mage_light
     payment:
       min: 10
       max: 20
@@ -124,6 +125,7 @@ loot-tables:
     item-generator:
       spells:
         - wbswandcraft:healing_circle
+        - wbswandcraft:amorphous_earth
         - wbswandcraft:grow
     loot-table: '.*chest.*jungle_temple.*' # Supports regex across the whole key.
     chance: 75 # Chance to add to the loot table

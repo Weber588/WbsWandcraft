@@ -46,7 +46,7 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
         addSpellType(VOID);
 
         setAttribute(COST, 200);
-        setAttribute(COOLDOWN, 15 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 8 * Ticks.TICKS_PER_SECOND);
     }
 
     @Override

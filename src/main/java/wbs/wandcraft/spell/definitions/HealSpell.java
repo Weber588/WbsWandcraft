@@ -15,8 +15,8 @@ public class HealSpell extends SpellDefinition implements CastableSpell, Targete
 
         addSpellType(SpellType.NATURE);
 
-        setAttribute(COST, 350);
-        setAttribute(COOLDOWN, 60 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COST, 300);
+        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(HEALTH, 2d);
 

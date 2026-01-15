@@ -25,12 +25,12 @@ public abstract class MagicObject {
 	public Location spawnLocation; // The spawn location; should never change. To move, use DynamicMagicObject
 	public Player caster;
 	@NotNull
-	public CastContext castContext;
+	public CastContext context;
 	
-	public MagicObject(Location location, Player caster, @NotNull CastContext castContext) {
+	public MagicObject(Location location, @NotNull CastContext context) {
 		this.spawnLocation = location;
-		this.caster = caster;
-		this.castContext = castContext;
+		this.caster = context.player();
+		this.context = context;
 		world = Objects.requireNonNull(location.getWorld());
 
 		MagicObjectManager.registerMagicObject(this);
@@ -92,7 +92,7 @@ public abstract class MagicObject {
 				}
 
 				if (!cancel) {
-					castContext.runEffects(SpellTriggeredEvents.OBJECT_TICK_TRIGGER, getLocation());
+					context.runEffects(SpellTriggeredEvents.OBJECT_TICK_TRIGGER, getLocation());
 				}
 
 				age++;
@@ -156,7 +156,7 @@ public abstract class MagicObject {
 			Bukkit.getScheduler().cancelTask(timerID);
 		}
 
-		castContext.runEffects(SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER, getLocation());
+		context.runEffects(SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER, getLocation());
 		
 		if (endEffects != null) {
 			endEffects.play(getLocation());
@@ -253,7 +253,7 @@ public abstract class MagicObject {
 
 	@NotNull
 	public CastContext getContext() {
-		return castContext;
+		return context;
 	}
 
 	public Player getCaster() {
@@ -297,7 +297,7 @@ public abstract class MagicObject {
 	public String toString() {
 		return "spawnLocation=" + spawnLocation +
 				", casterUUID=" + caster +
-				", castContext=" + castContext +
+				", castContext=" + context +
 				", world=" + world +
 				", active=" + active +
 				", isPersistent=" + isPersistent +

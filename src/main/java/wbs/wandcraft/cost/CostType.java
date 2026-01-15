@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jspecify.annotations.NullMarked;
-import wbs.utils.util.WbsMath;
 import wbs.wandcraft.WbsWandcraft;
 
 import java.util.Collections;
@@ -106,8 +105,10 @@ public class CostType implements Keyed {
                 // when they have more of the effects, so it becomes more likely to go to the next level.
                 for (PotionEffect fatigueEffect : FATIGUE_EFFECTS) {
                     if (!player.hasPotionEffect(fatigueEffect.getType())) {
-                        if (WbsMath.chance(2 * 100.0 / FATIGUE_EFFECTS.size())) {
-                            player.addPotionEffect(fatigueEffect);
+                        player.addPotionEffect(fatigueEffect);
+                        cost -= 1;
+
+                        if (cost <= 0) {
                             return 0;
                         }
                     }
@@ -115,7 +116,7 @@ public class CostType implements Keyed {
 
                 return cost;
             }
-    ).manaEquivalent(50);
+    ).manaEquivalent(100);
     public static final CostType HEALTH = new CostType(
             "health",
             Component.text("Health").color(NamedTextColor.DARK_RED),
@@ -125,12 +126,9 @@ public class CostType implements Keyed {
                 }
 
                 double health = player.getHealth();
-                if (health >= cost + 1) {
-                    player.damage(cost, DamageSource.builder(DamageType.MAGIC).withDirectEntity(player).build());
-                    return 0;
-                }
+                player.damage(cost, DamageSource.builder(DamageType.MAGIC).withDirectEntity(player).build());
 
-                return cost;
+                return (int) (cost - health);
             }
     ).manaEquivalent(50);
 

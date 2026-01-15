@@ -18,9 +18,9 @@ public class CharmSpell extends SpellDefinition implements StatusEffectSpell<Mob
         addSpellType(SCULK);
 
         setAttribute(COST, 300);
-        setAttribute(COOLDOWN, 15 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
 
-        setAttribute(DURATION, 15 * Ticks.TICKS_PER_SECOND);
+        setAttribute(DURATION, 10 * Ticks.TICKS_PER_SECOND);
         setAttribute(TARGET, TargeterType.RADIUS);
         setAttribute(TARGET_RANGE, 5d);
         setAttribute(MAX_TARGETS, 3);

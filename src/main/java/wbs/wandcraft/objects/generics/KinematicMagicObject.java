@@ -14,7 +14,7 @@ public abstract class KinematicMagicObject extends MagicObject {
 	public Location location;
 
 	public KinematicMagicObject(Location location, Player caster, CastContext context) {
-		super(location, caster, context);
+		super(location, context);
 		this.location = location;
 	}
 	

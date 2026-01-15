@@ -24,7 +24,7 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
         addSpellType(ENDER);
 
         setAttribute(COST, 500);
-        setAttribute(COOLDOWN, 3 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 2.5 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(RANGE, 10.0);
         setAttribute(IMPRECISION, 5d);

@@ -52,7 +52,7 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
         addSpellType(VOID);
 
         setAttribute(COST, 350);
-        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 7 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(SPEED, 5d);
         setAttribute(FORCE, 1.5);

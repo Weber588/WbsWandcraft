@@ -22,8 +22,8 @@ public class PlayerMana {
     private static final Map<UUID, ManaContext> CURRENT_MANA_BARS = new HashMap<>();
 
     public static final int DEFAULT_MAX_MANA = 1000;
-    public static final int DEFAULT_MANA_REGENERATION = 20; // In mana/tick
-    public static final int DEFAULT_MANA_REGEN_COOLOFF = 20; // In ticks
+    public static final int DEFAULT_MANA_REGENERATION = 5; // In mana/tick
+    public static final int DEFAULT_MANA_REGEN_COOLOFF = 30; // In ticks
 
     public static final NamespacedKey MAX_MANA_KEY = WbsWandcraft.getKey("max_mana");
     public static final NamespacedKey MANA_KEY = WbsWandcraft.getKey("mana");
@@ -45,8 +45,10 @@ public class PlayerMana {
     public PlayerMana(Player player) {
         this.mana = getOrDefault(player, MANA_KEY, PersistentDataType.INTEGER, DEFAULT_MAX_MANA);
         this.maxMana = getOrDefault(player, MAX_MANA_KEY, PersistentDataType.INTEGER, DEFAULT_MAX_MANA);
-        this.manaRegenerationRate = getOrDefault(player, MANA_REGENERATION_KEY, PersistentDataType.INTEGER, DEFAULT_MANA_REGENERATION);
         this.lastUsedMana = getOrDefault(player, LAST_USED_MANA_KEY, PersistentDataType.LONG, 0L);
+
+        //this.manaRegenerationRate = getOrDefault(player, MANA_REGENERATION_KEY, PersistentDataType.INTEGER, DEFAULT_MANA_REGENERATION);
+        this.manaRegenerationRate = DEFAULT_MANA_REGENERATION;
     }
 
     public void saveTo(Player player) {

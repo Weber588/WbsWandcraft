@@ -7,6 +7,9 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +28,7 @@ import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class HeatRaySpell extends SpellDefinition implements ContinuousCastableSpell, CastableSpell, BurnDamageSpell, RangedSpell {
     public static final int WATER_PER_TICK = 3;
@@ -137,12 +141,29 @@ public class HeatRaySpell extends SpellDefinition implements ContinuousCastableS
                 HIT_EFFECT.play(Particle.SMALL_FLAME, endLocation);
             }
             Block hitBlock = result.getHitBlock();
-            if (hitBlock != null && hitBlock.getType() == Material.WATER) {
+            if (hitBlock != null) {
                 if (WbsRegionUtils.canBuildAt(hitBlock.getLocation(), player)) {
-                    hitBlock.setType(Material.AIR);
-                    HIT_EFFECT.play(Particle.CLOUD, endLocation);
-                    player.getWorld().playSound(endLocation, Sound.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 1, 1);
-                    evaporated = true;
+                    Material material = hitBlock.getType();
+                    if (material == Material.WATER) {
+                        hitBlock.setType(Material.AIR);
+                        HIT_EFFECT.play(Particle.CLOUD, endLocation);
+                        player.getWorld().playSound(endLocation, Sound.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 1, 1);
+                        evaporated = true;
+                    } else {
+                        for (@NotNull Iterator<Recipe> it = Bukkit.recipeIterator(); it.hasNext(); ) {
+                            Recipe recipe = it.next();
+
+                            if (recipe instanceof FurnaceRecipe furnaceRecipe) {
+                                Material resultMaterial = furnaceRecipe.getResult().getType();
+                                if (resultMaterial.isBlock()) {
+                                    if (furnaceRecipe.getInputChoice().test(ItemStack.of(material))) {
+                                        hitBlock.setType(resultMaterial);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

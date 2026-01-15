@@ -19,6 +19,7 @@ public class StatusEffectManager {
     public static final TranquilizedEffect TRANQUILIZED = new TranquilizedEffect();
     public static final DisguisedEffect DISGUISED = new DisguisedEffect();
     public static final InvisibleEffect INVISIBLE = new InvisibleEffect();
+    public static final NaturePhasingEffect NATURE_PHASING = new NaturePhasingEffect();
 
     private static final Table<NamespacedKey, UUID, StatusEffectInstance> EFFECT_INSTANCES = HashBasedTable.create();
 

@@ -55,12 +55,12 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
         addSpellType(ARCANE);
 
         setAttribute(COST, 150);
-        setAttribute(COOLDOWN, 3 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 1 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(SPEED, 3d);
         setAttribute(DAMAGE, 6.0);
         setAttribute(RANGE, 50.0);
-        setAttribute(IMPRECISION, 2.5d);
+        setAttribute(IMPRECISION, 0d);
         setAttribute(GRAVITY, 0d);
     }
 

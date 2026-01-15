@@ -3,7 +3,6 @@ package wbs.wandcraft.objects.colliders;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.persistent.BlockChunkStorageUtil;
@@ -14,8 +13,8 @@ import wbs.wandcraft.objects.generics.MagicObject;
 public class MagicSpawnedBlock extends MagicObject {
     public static final NamespacedKey MAGIC_BLOCK = WbsWandcraft.getKey("magic_block");
 
-    public MagicSpawnedBlock(Block block, Player caster, @NotNull CastContext castContext) {
-        super(block.getLocation(), caster, castContext);
+    public MagicSpawnedBlock(Block block, @NotNull CastContext castContext) {
+        super(block.getLocation(), castContext);
 
         this.block = block;
         material = block.getType();

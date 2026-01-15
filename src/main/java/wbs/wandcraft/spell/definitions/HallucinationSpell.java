@@ -43,7 +43,7 @@ public class HallucinationSpell extends SpellDefinition implements CastableSpell
         addSpellType(SpellType.NATURE);
 
         setAttribute(COST, 350);
-        setAttribute(COOLDOWN, 60 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(DURATION, 15 * Ticks.TICKS_PER_SECOND);
     }

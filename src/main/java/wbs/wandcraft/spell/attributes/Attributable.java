@@ -39,6 +39,10 @@ public interface Attributable extends ItemDecorator {
         setAttribute(attribute.getInstance(value));
     }
 
+    default void setAttribute(SpellAttribute<Integer> attribute, double value) {
+        setAttribute(attribute.getInstance((int) value));
+    }
+
     default void setAttribute(@Nullable SpellAttributeInstance<?> instance) {
         if (instance == null) {
             return;

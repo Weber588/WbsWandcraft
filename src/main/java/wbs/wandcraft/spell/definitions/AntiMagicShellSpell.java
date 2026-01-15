@@ -38,7 +38,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
         addSpellType(SCULK);
 
         setAttribute(COST, 250);
-        setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 15 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(FOLLOWS_PLAYER, false);
         addAttribute(IS_REFLECTIVE);
@@ -64,7 +64,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
         public AntiMagicShellObject(Location location, Player caster, CastContext context) {
             super(location, caster, context);
 
-            SpellInstance instance = castContext.instance();
+            SpellInstance instance = this.context.instance();
 
             Double radius = instance.getAttribute(RADIUS);
 
@@ -95,7 +95,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
             effect.build();
 
             // Fizzle objects already in the shell
-            List<MagicObject> insideShell = MagicObjectManager.getNearbyActive(getLocation(), castContext.instance().getAttribute(RADIUS));
+            List<MagicObject> insideShell = MagicObjectManager.getNearbyActive(getLocation(), context.instance().getAttribute(RADIUS));
             for (MagicObject object : insideShell) {
                 if (object != this) object.remove(false);
             }
@@ -103,7 +103,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
 
         @Override
         protected boolean tick() {
-            SpellInstance instance = castContext.instance();
+            SpellInstance instance = context.instance();
 
             if (getAge() % 5 == 0) {
                 playEffectSafely(effect, instance, getLocation());

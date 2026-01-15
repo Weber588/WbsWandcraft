@@ -8,11 +8,13 @@ import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.resourcepack.TextureLayer;
 import wbs.wandcraft.resourcepack.TextureProvider;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.SpellExtensionManager;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spell.event.SpellTriggeredEvent;
@@ -145,5 +147,9 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
                         )
                         .toList()
         );
+    }
+
+    public int getEchoShardCost() {
+        return Math.max(1, 64 * getDefault(CastableSpell.COST) / PlayerMana.DEFAULT_MAX_MANA);
     }
 }

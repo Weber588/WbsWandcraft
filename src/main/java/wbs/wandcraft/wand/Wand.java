@@ -342,14 +342,17 @@ public abstract class Wand implements Attributable {
 
     public abstract @NotNull WandType<?> getWandType();
 
-    @Contract("!null -> !null")
+    @Contract("!null -> !null;_ -> new")
     @Nullable
     public SpellInstance applyModifiers(SpellInstance spellInstance) {
-        attributeModifiers.forEach(modifier ->
-                modifier.modify(spellInstance)
-        );
+        spellInstance = new SpellInstance(spellInstance);
+        for (SpellAttributeModifier<?, ?> attributeModifier : attributeModifiers) {
+            attributeModifier.modify(spellInstance);
+        }
 
-        getUpgradeModifiers().forEach(modifier -> modifier.modify(spellInstance));
+        for (SpellModifier modifier : getUpgradeModifiers()) {
+            modifier.modify(spellInstance);
+        }
 
         return spellInstance;
     }

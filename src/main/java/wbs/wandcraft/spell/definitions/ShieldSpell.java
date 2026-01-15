@@ -128,7 +128,7 @@ public class ShieldSpell extends SpellDefinition implements ContinuousCastableSp
                     Collection<MagicSpawnedBlock> allActive = MagicObjectManager.getAllActive(block);
 
                     if (allActive.isEmpty()) {
-                        MagicSpawnedBlock object = new MagicSpawnedBlock(block, player, context);
+                        MagicSpawnedBlock object = new MagicSpawnedBlock(block, context);
 
                         object.setRemoveBlockOnExpire(true);
                         object.setDuration(DURATION);

@@ -15,6 +15,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.Ticks;
@@ -58,6 +59,10 @@ public class Spellbook implements ItemDecorator {
     private static final NamespacedKey SPELL_BOOK = WbsWandcraft.getKey("spellbook");
     public static final @NotNull NamespacedKey KNOWN_SPELLS = WbsWandcraft.getKey("known_spells");
     public static final @NotNull TextColor DESCRIPTION_COLOR = TextColor.color(0x6F47A3);
+    public static final @NotNull Style COST_STYLE = Style.style()
+            .color(TextColor.color(0x006661))
+            .decorate(TextDecoration.ITALIC)
+            .build();
 
     private static final TextComponent LINE_BREAK = Component.newline().append(Component.text("                            ").decorate(TextDecoration.STRIKETHROUGH)).appendNewline();
 
@@ -283,6 +288,7 @@ public class Spellbook implements ItemDecorator {
         List<Component> wandPages = new LinkedList<>();
         for (WandType<?> type : wandDefinitions) {
             Component page = Component.empty().append(type.getItemName().color(NamedTextColor.GOLD))
+                    .append(Component.text(" (" + type.getEchoShardCost() + ")").style(COST_STYLE))
                     .append(LINE_BREAK)
                     .append(type.getDescription().color(DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC));
 
@@ -300,6 +306,9 @@ public class Spellbook implements ItemDecorator {
             boolean isKnown = knowsSpell(player, definition);
 
             page = page.append(displayName);
+            if (isKnown) {
+                page = page.append(Component.text(" (" + definition.getEchoShardCost() + ")").style(COST_STYLE));
+            }
             page = page.appendNewline().append(definition.getTypesDisplay());
 
             page = page.append(LINE_BREAK.color(NamedTextColor.GOLD));

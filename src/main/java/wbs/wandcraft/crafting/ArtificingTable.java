@@ -26,9 +26,7 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.persistent.BlockChunkStorageUtil;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.ItemUtils;
@@ -192,8 +190,7 @@ public class ArtificingTable implements InventoryHolder {
                 }
             }
 
-            // TODO: Get this from spell definition somehow
-            int cost = Math.max(1, 64 * currentSpell.getDefault(CastableSpell.COST) / PlayerMana.DEFAULT_MAX_MANA);
+            int cost = currentSpell.getEchoShardCost();
 
             if (shardsAvailable >= cost) {
                 getInventory().removeItem(ItemStack.of(Material.ECHO_SHARD, cost));

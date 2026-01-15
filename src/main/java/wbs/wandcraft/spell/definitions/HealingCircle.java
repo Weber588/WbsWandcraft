@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +37,7 @@ public class HealingCircle extends SpellDefinition implements CastableSpell, Hea
         addSpellType(SpellType.ARCANE);
 
         setAttribute(COST, 350);
-        setAttribute(COOLDOWN, 60 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(HEALTH, 2d);
         setAttribute(RADIUS, 2d);
@@ -47,7 +46,7 @@ public class HealingCircle extends SpellDefinition implements CastableSpell, Hea
 
     @Override
     public void cast(CastContext context) {
-        HealingCircleObject object = new HealingCircleObject(context.player().getLocation(), context.player(), context);
+        HealingCircleObject object = new HealingCircleObject(context.player().getLocation(), context);
 
         CastingManager.setConcentrating(context.player(), context);
         object.spawn();
@@ -63,8 +62,8 @@ public class HealingCircle extends SpellDefinition implements CastableSpell, Hea
         private final double radius;
         private final RadiusSelector<LivingEntity> selector;
 
-        public HealingCircleObject(Location location, Player caster, @NotNull CastContext context) {
-            super(location.setRotation(0, 0), caster, context);
+        public HealingCircleObject(Location location, @NotNull CastContext context) {
+            super(location.setRotation(0, 0), context);
 
             radius = context.instance().getAttribute(RADIUS);
             setMaxAge(context.instance().getAttribute(DURATION));
@@ -120,11 +119,11 @@ public class HealingCircle extends SpellDefinition implements CastableSpell, Hea
                 List<LivingEntity> inCircle = selector.select(getLocation());
 
                 inCircle.forEach(target -> {
-                    healWithParticles(castContext, target);
+                    healWithParticles(context, target);
                 });
             }
 
-            return !CastingManager.isConcentratingOn(castContext.player(), castContext);
+            return !CastingManager.isConcentratingOn(context.player(), context);
         }
 
         @Override
@@ -138,8 +137,8 @@ public class HealingCircle extends SpellDefinition implements CastableSpell, Hea
                 });
             });
 
-            if (CastingManager.isConcentratingOn(castContext.player(), castContext)) {
-                CastingManager.stopConcentrating(castContext.player());
+            if (CastingManager.isConcentratingOn(context.player(), context)) {
+                CastingManager.stopConcentrating(context.player());
             }
         }
     }

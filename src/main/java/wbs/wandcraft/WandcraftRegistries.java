@@ -61,7 +61,8 @@ public class WandcraftRegistries {
             LearningMethodType.build("deal-damage", DealDamageLearningTrigger::new),
             LearningMethodType.build("enter-structure", EnterStructureLearningTrigger::new),
             LearningMethodType.build("kill", KillLearningTrigger::new),
-            LearningMethodType.build("take-damage", TakeDamageLearningTrigger::new)
+            LearningMethodType.build("take-damage", TakeDamageLearningTrigger::new),
+            LearningMethodType.build("place-blocks", PlaceBlockLearningTrigger::new)
     );
     public static final WbsRegistry<StatusEffect> STATUS_EFFECTS = new WbsRegistry<>(
             StatusEffectManager.GLIDING,
@@ -73,7 +74,8 @@ public class WandcraftRegistries {
             StatusEffectManager.HOLD,
             StatusEffectManager.TRANQUILIZED,
             StatusEffectManager.DISGUISED,
-            StatusEffectManager.INVISIBLE
+            StatusEffectManager.INVISIBLE,
+            StatusEffectManager.NATURE_PHASING
     );
     public static final WbsRegistry<SpellEffectDefinition<?>> EFFECTS = new WbsRegistry<>(
             new ForcePullEffect(),
