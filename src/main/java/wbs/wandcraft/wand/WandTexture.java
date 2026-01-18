@@ -6,10 +6,10 @@ import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.resourcepack.ResourcePackObjects;
-import wbs.wandcraft.resourcepack.ResourcePackObjects.ModelDefinition;
+import wbs.wandcraft.resourcepack.ResourcePackObjects.ItemModelDefinition;
 import wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModel;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.resourcepack.TextureProvider;
+import wbs.wandcraft.resourcepack.FlatItemProvider;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.DisplayTransform;
 
-public final class WandTexture implements Keyed, TextureProvider {
+public final class WandTexture implements Keyed, FlatItemProvider {
     public static final WandTexture BASIC = new WandTexture("basic")
             .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_LEFTHAND, new DisplayTransform()
                     .scale(0.68, 0.68, 0.68)
@@ -82,10 +82,10 @@ public final class WandTexture implements Keyed, TextureProvider {
     }
 
     @Override
-    public Map<String, ModelDefinition> getModelDefinitions() {
-        Map<String, ModelDefinition> namedModelDefinitions = new HashMap<>();
+    public Map<String, ItemModelDefinition> getModelDefinitions() {
+        Map<String, ItemModelDefinition> namedModelDefinitions = new HashMap<>();
 
-        ModelDefinition modelDefinition = new ModelDefinition(
+        ItemModelDefinition modelDefinition = new ItemModelDefinition(
                 getModelParent(),
                 getLayerResourceLocations()
         );
@@ -94,16 +94,16 @@ public final class WandTexture implements Keyed, TextureProvider {
             modelDefinition.setDisplays(displays);
         }
 
-        namedModelDefinitions.put(textureName(), modelDefinition);
+        namedModelDefinitions.put(value(), modelDefinition);
 
         if (inUseDisplay != null) {
-            ModelDefinition inUseDefinition = new ModelDefinition(
+            ItemModelDefinition inUseDefinition = new ItemModelDefinition(
                     getModelParent(),
                     getLayerResourceLocations()
             );
 
             inUseDefinition.setDisplays(inUseDisplay);
-            namedModelDefinitions.put(textureName() + "_active", inUseDefinition);
+            namedModelDefinitions.put(value() + "_active", inUseDefinition);
         }
 
 
@@ -138,12 +138,12 @@ public final class WandTexture implements Keyed, TextureProvider {
 
     @Override
     public ResourcePackObjects.Model buildBaseModel() {
-        ResourcePackObjects.Model defaultModel = TextureProvider.super.buildBaseModel();
+        ResourcePackObjects.Model defaultModel = FlatItemProvider.super.buildBaseModel();
 
         if (inUseDisplay != null) {
             return new ResourcePackObjects.ConditionModel(
                     "using_item",
-                    new StaticModel(namespace() + ":item/" + textureName() + "_active", getTints()),
+                    new StaticModel(namespace() + ":item/" + value() + "_active", getTints()),
                     defaultModel
             );
         }

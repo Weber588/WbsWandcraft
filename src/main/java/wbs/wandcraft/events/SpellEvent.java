@@ -8,11 +8,11 @@ public abstract class SpellEvent extends Event {
 	private final Player caster;
 	private final CastContext spell;
 
-	protected SpellEvent(Player caster, CastContext spell) {
+	protected SpellEvent(Player caster, CastContext context) {
 		this.caster = caster;
-		this.spell = spell;
+		this.spell = context;
 	}
-	
+
 	public CastContext getSpell() {
 		return spell;
 	}

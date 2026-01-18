@@ -5,6 +5,7 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.TextDecorationAndState;
 import net.kyori.adventure.util.TriState;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,4 +38,10 @@ public interface ItemDecorator {
 
     @NotNull
     List<Component> getLore();
+
+    default void toItem(ItemStack item) {
+        item.editMeta(meta -> {
+            ItemDecorator.decorate(this, meta);
+        });
+    }
 }

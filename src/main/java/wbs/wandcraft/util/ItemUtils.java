@@ -1,10 +1,7 @@
 package wbs.wandcraft.util;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.Consumable;
-import io.papermc.paper.datacomponent.item.CustomModelData;
-import io.papermc.paper.datacomponent.item.Tool;
-import io.papermc.paper.datacomponent.item.UseCooldown;
+import io.papermc.paper.datacomponent.item.*;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -18,10 +15,14 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.BlockType;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.equipment.MagicEquipmentType;
+import wbs.wandcraft.equipment.hat.MagicHat;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
@@ -36,6 +37,7 @@ import wbs.wandcraft.wand.types.WandType;
 import java.util.List;
 import java.util.UUID;
 
+@NullMarked
 @SuppressWarnings("UnstableApiUsage")
 public class ItemUtils {
     public static final Material BASE_MATERIAL_WAND = Material.STICK;
@@ -43,9 +45,11 @@ public class ItemUtils {
     public static final Material BASE_MATERIAL_MODIFIER = Material.GLOBE_BANNER_PATTERN;
     public static final Material BASE_MATERIAL_SPELLBOOK = Material.BOOK;
     public static final Material DISPLAY_MATERIAL_SPELLBOOK = Material.KNOWLEDGE_BOOK;
+    public static final Material BASE_MATERIAL_HAT = Material.LEATHER_HELMET;
+    public static final Material DISPLAY_MATERIAL_HAT = Material.BLACK_WOOL;
     public static final Material BASE_MATERIAL_BLANK_SCROLL = Material.PAPER;
 
-    public static @NotNull ItemStack buildBlankScroll() {
+    public static ItemStack buildBlankScroll() {
         ItemStack blankScroll = ItemStack.of(BASE_MATERIAL_BLANK_SCROLL);
         blankScroll.getDataTypes().forEach(blankScroll::unsetData);
         blankScroll.setData(DataComponentTypes.ITEM_NAME, Component.text("Blank Scroll"));
@@ -62,7 +66,28 @@ public class ItemUtils {
         return blankScroll;
     }
 
-    public static @NotNull ItemStack buildWand(WandType<?> type) {
+    public static ItemStack buildHat(MagicHat hatType) {
+        ItemStack hatItem = ItemStack.of(BASE_MATERIAL_HAT);
+        hatItem.getDataTypes().forEach(hatItem::unsetData);
+
+        hatItem.setData(
+                DataComponentTypes.CUSTOM_MODEL_DATA,
+                CustomModelData.customModelData()
+                        .addString(hatType.getModel().getKey().asString())
+                        .build()
+        );
+        hatItem.setData(DataComponentTypes.ITEM_MODEL, DISPLAY_MATERIAL_HAT.getKey());
+        hatItem.setData(DataComponentTypes.EQUIPPABLE, Equippable.equippable(EquipmentSlot.HEAD)
+                .damageOnHurt(false)
+                .build()
+        );
+
+        hatType.toItem(hatItem);
+
+        return hatItem;
+    }
+
+    public static ItemStack buildWand(WandType<?> type) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_WAND);
 
         Wand wand = type.newWand();
@@ -116,7 +141,7 @@ public class ItemUtils {
         return item;
     }
 
-    public static @NotNull ItemStack buildSpellbook() {
+    public static ItemStack buildSpellbook() {
         ItemStack item = ItemStack.of(BASE_MATERIAL_SPELLBOOK);
 
         Spellbook spellbook = new Spellbook();
@@ -152,7 +177,7 @@ public class ItemUtils {
         return item;
     }
     
-    public static @NotNull ItemStack buildSpell(SpellDefinition spell) {
+    public static ItemStack buildSpell(SpellDefinition spell) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_SPELL);
         SpellInstance spellInstance = new SpellInstance(spell);
 
@@ -192,10 +217,10 @@ public class ItemUtils {
         return item;
     }
 
-    public static @NotNull ItemStack buildModifier() {
+    public static ItemStack buildModifier() {
         return buildModifier(null);
     }
-    public static @NotNull ItemStack buildModifier(@Nullable SpellAttributeModifier<?, ?> attributeModifier) {
+    public static ItemStack buildModifier(@Nullable SpellAttributeModifier<?, ?> attributeModifier) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_MODIFIER);
         SpellModifier modifier = new SpellModifier();
         if (attributeModifier != null) {
@@ -282,6 +307,13 @@ public class ItemUtils {
         spellModifier.addModifier(modifierInstance);
 
         spellModifier.toItem(item);
+    }
+
+    public static ItemStack buildEquipment(MagicEquipmentType magicEquipmentType) {
+        return switch (magicEquipmentType) {
+            case MagicHat hat -> buildHat(hat);
+            default -> throw new IllegalStateException("Unexpected value: " + magicEquipmentType);
+        };
     }
 
     public enum AttributeModificationResult {

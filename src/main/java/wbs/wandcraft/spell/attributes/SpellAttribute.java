@@ -20,7 +20,7 @@ import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.resourcepack.TextureProvider;
+import wbs.wandcraft.resourcepack.FlatItemProvider;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModificationOperator;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
@@ -31,7 +31,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @NullMarked
-public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, TextureProvider {
+public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, FlatItemProvider {
     @NotNull
     private final NamespacedKey key;
     @NotNull
@@ -198,7 +198,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return "FORMATTER_ERROR -- " + value + " (" + value.getClass().getName() + ")";
     }
 
-    public <M> SpellAttributeModifier<T, M> createModifier(PersistentDataContainerView container, RegisteredPersistentDataType<M> modifierType) {
+        public <M> SpellAttributeModifier<T, M> createModifier(PersistentDataContainerView container, RegisteredPersistentDataType<M> modifierType) {
         M value =  container.get(SpellAttributeModifier.MODIFIER_VALUE, modifierType.dataType());
 
         NamespacedKey operationTypeKey = container.get(SpellAttributeModifier.MODIFIER_OPERATION, WbsPersistentDataType.NAMESPACED_KEY);

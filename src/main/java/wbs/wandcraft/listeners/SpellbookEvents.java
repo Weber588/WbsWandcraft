@@ -1,4 +1,4 @@
-package wbs.wandcraft.events;
+package wbs.wandcraft.listeners;
 
 import io.papermc.paper.event.player.PlayerLecternPageChangeEvent;
 import net.kyori.adventure.key.Key;

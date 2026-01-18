@@ -1,0 +1,98 @@
+package wbs.wandcraft.commands;
+
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.context.CommandContext;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.Keyed;
+import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.commands.brigadier.WbsSubcommand;
+import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
+import wbs.utils.util.plugin.WbsPlugin;
+import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.equipment.MagicEquipmentType;
+import wbs.wandcraft.util.ItemUtils;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@SuppressWarnings("UnstableApiUsage")
+public class CommandEquipmentBuild extends WbsSubcommand {
+    private static final WbsSimpleArgument.KeyedSimpleArgument EQUIPMENT_TYPE = new WbsSimpleArgument.KeyedSimpleArgument(
+            "equipment_type",
+            ArgumentTypes.namespacedKey(),
+            null
+    ).addKeyedSuggestions(WandcraftRegistries.MAGIC_EQUIPMENT_TYPES.values());
+
+    public CommandEquipmentBuild(@NotNull WbsPlugin plugin, @NotNull String label) {
+        super(plugin, label);
+        addSimpleArgument(EQUIPMENT_TYPE);
+    }
+
+    @Override
+    protected int onSimpleArgumentCallback(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
+        CommandSender sender = context.getSource().getSender();
+        if (!(sender instanceof Player player)) {
+            plugin.sendMessage("This command is only usable by players.", sender);
+            return 1;
+        }
+
+        NamespacedKey equipmentTypeKey = configuredArgumentMap.get(EQUIPMENT_TYPE);
+        if (equipmentTypeKey == null) {
+            List<MagicEquipmentType> list = WandcraftRegistries.MAGIC_EQUIPMENT_TYPES.stream()
+                    .sorted(Comparator.comparing(MagicEquipmentType::getKey))
+                    .toList();
+            if (list.size() > 54) {
+                plugin.sendMessage("&wWarning! Not all equipment in menu.", context.getSource().getSender());
+                plugin.sendMessage("Choose an equipment type: "
+                                + WandcraftRegistries.MAGIC_EQUIPMENT_TYPES.stream()
+                                .map(Keyed::key)
+                                .map(Key::asString)
+                                .collect(Collectors.joining(", ")),
+                        context.getSource().getSender());
+            }
+
+            Inventory inventory = Bukkit.createInventory(null, 6 * 9, Component.text("Equipment"));
+
+            for (int i = 0; i < Math.min(inventory.getSize(), list.size()); i++) {
+                MagicEquipmentType magicEquipmentType = list.get(i);
+                inventory.setItem(i, ItemUtils.buildEquipment(magicEquipmentType));
+            }
+
+            player.openInventory(inventory);
+            return Command.SINGLE_SUCCESS;
+        }
+
+        MagicEquipmentType magicEquipmentType = WandcraftRegistries.MAGIC_EQUIPMENT_TYPES.get(equipmentTypeKey);
+
+        if (magicEquipmentType == null) {
+            plugin.sendMessage("Invalid equipment type \"" + equipmentTypeKey.asString() + "\"!", sender);
+            return 1;
+        }
+
+        ItemStack equipmentItem = ItemUtils.buildEquipment(magicEquipmentType);
+
+        player.getInventory().addItem(equipmentItem);
+        WbsWandcraft.getInstance().buildMessage("Got 1 ")
+                .append(equipmentItem.effectiveName())
+                .build()
+                .send(sender);
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    @Override
+    protected int executeNoArgs(CommandContext<CommandSourceStack> context) {
+        return sendSimpleArgumentUsage(context);
+    }
+}

@@ -1,6 +1,5 @@
 package wbs.wandcraft.resourcepack;
 
-import org.bukkit.Keyed;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.resourcepack.ResourcePackObjects.Model;
 import wbs.wandcraft.resourcepack.ResourcePackObjects.ModelTint;
@@ -10,17 +9,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static wbs.wandcraft.resourcepack.ResourcePackObjects.ModelDefinition;
+import static wbs.wandcraft.resourcepack.ResourcePackObjects.ItemModelDefinition;
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModel;
 
-public interface TextureProvider extends Keyed {
-    default String namespace() {
-        return key().namespace();
-    }
-    default String textureName() {
-        return key().value();
-    }
-
+public interface FlatItemProvider extends ItemModelProvider {
     @NotNull
     List<TextureLayer> getTextures();
     @NotNull
@@ -45,19 +37,20 @@ public interface TextureProvider extends Keyed {
                 .toList();
     }
 
+    @Override
     default Model buildBaseModel() {
-        return new StaticModel(namespace() + ":item/" + textureName(), getTints());
+        return new StaticModel(namespace() + ":item/" + value(), getTints());
     }
 
-    default Map<String, ModelDefinition> getModelDefinitions() {
-        Map<String, ModelDefinition> namedModelDefinitions = new HashMap<>();
+    default Map<String, ItemModelDefinition> getModelDefinitions() {
+        Map<String, ItemModelDefinition> namedModelDefinitions = new HashMap<>();
 
-        ModelDefinition modelDefinition = new ModelDefinition(
+        ItemModelDefinition modelDefinition = new ItemModelDefinition(
                 getModelParent(),
                 getLayerResourceLocations()
         );
 
-        namedModelDefinitions.put(textureName(), modelDefinition);
+        namedModelDefinitions.put(value(), modelDefinition);
 
         return namedModelDefinitions;
     }

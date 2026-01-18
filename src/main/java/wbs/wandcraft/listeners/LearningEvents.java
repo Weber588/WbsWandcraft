@@ -1,4 +1,4 @@
-package wbs.wandcraft.events;
+package wbs.wandcraft.listeners;
 
 import com.google.common.collect.Multimap;
 import org.bukkit.entity.Player;

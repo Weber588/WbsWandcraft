@@ -8,30 +8,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SpellbookTextureProvider implements TextureProvider {
+public class SpellbookItemTextureProvider implements FlatItemProvider {
     @Override
     public ResourcePackObjects.Model buildBaseModel() {
         return new ResourcePackObjects.ConditionModel(
                 "using_item",
-                new ResourcePackObjects.StaticModel(namespace() + ":item/" + textureName() + "_active", getTints()),
-                TextureProvider.super.buildBaseModel()
+                new ResourcePackObjects.StaticModel(namespace() + ":item/" + value() + "_active", getTints()),
+                FlatItemProvider.super.buildBaseModel()
         );
     }
 
     @Override
-    public Map<String, ResourcePackObjects.ModelDefinition> getModelDefinitions() {
-        Map<String, ResourcePackObjects.ModelDefinition> namedModelDefinitions = new HashMap<>();
+    public Map<String, ResourcePackObjects.ItemModelDefinition> getModelDefinitions() {
+        Map<String, ResourcePackObjects.ItemModelDefinition> namedModelDefinitions = new HashMap<>();
 
-        ResourcePackObjects.ModelDefinition baseModelDefinition = new ResourcePackObjects.ModelDefinition(
+        ResourcePackObjects.ItemModelDefinition baseModelDefinition = new ResourcePackObjects.ItemModelDefinition(
                 "minecraft:item/generated",
-                namespace() + ":item/" + textureName()
+                namespace() + ":item/" + value()
         );
 
-        namedModelDefinitions.put(textureName(), baseModelDefinition);
+        namedModelDefinitions.put(value(), baseModelDefinition);
 
-        ResourcePackObjects.ModelDefinition activeModelDefinition = new ResourcePackObjects.ModelDefinition(
+        ResourcePackObjects.ItemModelDefinition activeModelDefinition = new ResourcePackObjects.ItemModelDefinition(
                 "minecraft:item/generated",
-                namespace() + ":item/" + textureName() + "_active"
+                namespace() + ":item/" + value() + "_active"
         );
 
         ResourcePackObjects.DisplayTransform rightTransform = new ResourcePackObjects.DisplayTransform()
@@ -57,7 +57,7 @@ public class SpellbookTextureProvider implements TextureProvider {
         activeModelDefinition.addDisplay(ItemDisplay.ItemDisplayTransform.THIRDPERSON_RIGHTHAND, right3rdTransform);
         activeModelDefinition.addDisplay(ItemDisplay.ItemDisplayTransform.THIRDPERSON_LEFTHAND, left3rdTransform);
 
-        namedModelDefinitions.put(textureName() + "_active", activeModelDefinition);
+        namedModelDefinitions.put(value() + "_active", activeModelDefinition);
 
         return namedModelDefinitions;
     }

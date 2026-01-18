@@ -1,9 +1,10 @@
 package wbs.wandcraft.spell.attributes;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.RegisteredPersistentDataType;
 
+@NullMarked
 public class BooleanSpellAttribute extends SpellAttribute<Boolean> {
     public BooleanSpellAttribute(String key, boolean defaultValue) {
         super(key, RegisteredPersistentDataType.BOOLEAN, defaultValue, Boolean::parseBoolean);
@@ -15,7 +16,7 @@ public class BooleanSpellAttribute extends SpellAttribute<Boolean> {
     }
 
     @Override
-    public @Nullable Polarity getPolarity(@NotNull Boolean value) {
+    public Polarity getPolarity(@NotNull Boolean value) {
         if (value) {
             return polarity();
         } else {

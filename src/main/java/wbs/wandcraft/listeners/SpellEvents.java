@@ -1,4 +1,4 @@
-package wbs.wandcraft.events;
+package wbs.wandcraft.listeners;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package wbs.wandcraft.events;
+package wbs.wandcraft.listeners;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;

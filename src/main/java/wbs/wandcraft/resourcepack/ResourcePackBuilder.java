@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +32,9 @@ public class ResourcePackBuilder {
 
     public static final String ITEMS_FOLDER = "resourcepack/assets/minecraft/items/";
     public static final String ITEM_MODELS_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/models/item/";
-    public static final String TEXTURES_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/textures/item/";
+    public static final String BLOCK_MODELS_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/models/block/";
+    public static final String ITEM_TEXTURES_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/textures/item/";
+    public static final String BLOCK_TEXTURES_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/textures/block/";
 
     public static void loadResourcePack(WandcraftSettings settings, YamlConfiguration config) {
         createResourcePack(settings, config);
@@ -97,8 +98,10 @@ public class ResourcePackBuilder {
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.SPELLS.stream().toList(), ItemUtils.BASE_MATERIAL_SPELL));
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.ATTRIBUTES.stream().toList(), ItemUtils.BASE_MATERIAL_MODIFIER));
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.WAND_TEXTURES.stream().toList(), ItemUtils.BASE_MATERIAL_WAND));
-            resourcesToLoad.addAll(writeProviders(gson, List.of(new SpellbookTextureProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
+            resourcesToLoad.addAll(writeProviders(gson, List.of(new SpellbookItemTextureProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
             resourcesToLoad.addAll(writeProviders(gson, List.of(getSimpleProvider("blank_scroll")), ItemUtils.BASE_MATERIAL_BLANK_SCROLL));
+
+            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.HAT_TEXTURES.stream().toList(), ItemUtils.DISPLAY_MATERIAL_HAT, true));
 
             resourcesToLoad.forEach(path -> {
                 if (plugin.getResource(path) != null) {
@@ -119,33 +122,50 @@ public class ResourcePackBuilder {
         }
     }
 
-    private static <T extends TextureProvider> Set<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial) {
+    private static <T extends ItemModelProvider> Set<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial) {
+        return writeProviders(gson, providers, baseMaterial, false);
+    }
+    private static <T extends ItemModelProvider> Set<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial, boolean isBlock) {
         Set<String> resourcesToLoad = new HashSet<>();
 
         WbsWandcraft plugin = WbsWandcraft.getInstance();
 
         Set<T> valid = new HashSet<>();
         providers.forEach(provider -> {
-            provider.getModelDefinitions().forEach((name, definition) -> {
-                writeJSONToFile(
-                        plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH),
-                        name,
-                        gson,
-                        definition
-                );
-            });
+            if (provider instanceof BlockItemProvider) {
+                String modelPath = BLOCK_MODELS_PATH + provider.value() + ".json";
+                resourcesToLoad.add(modelPath);
 
-            for (TextureLayer texture : provider.getTextures()) {
-                String imagePath = TEXTURES_PATH + texture.name() + ".png";
+                String texturePath = BLOCK_TEXTURES_PATH + provider.value() + ".png";
+                resourcesToLoad.add(texturePath);
 
-                if (plugin.getResource(imagePath) != null) {
+                if (plugin.getResource(modelPath) != null && plugin.getResource(texturePath) != null) {
                     valid.add(provider);
                 }
+            }
 
-                resourcesToLoad.add(imagePath);
-                if (texture.isAnimated()) {
-                    String metaPath = TEXTURES_PATH + texture.name() + ".png.mcmeta";
-                    resourcesToLoad.add(metaPath);
+            if (provider instanceof FlatItemProvider itemProvider) {
+                itemProvider.getModelDefinitions().forEach((name, definition) -> {
+                    writeJSONToFile(
+                            plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH),
+                            name,
+                            gson,
+                            definition
+                    );
+                });
+
+                for (TextureLayer texture : itemProvider.getTextures()) {
+                    String imagePath = ITEM_TEXTURES_PATH + texture.name() + ".png";
+
+                    if (plugin.getResource(imagePath) != null) {
+                        valid.add(provider);
+                    }
+
+                    resourcesToLoad.add(imagePath);
+                    if (texture.isAnimated()) {
+                        String metaPath = ITEM_TEXTURES_PATH + texture.name() + ".png.mcmeta";
+                        resourcesToLoad.add(metaPath);
+                    }
                 }
             }
         });
@@ -156,7 +176,8 @@ public class ResourcePackBuilder {
                 gson,
                 new ItemSelectorDefinition(
                         baseMaterial,
-                        valid.stream().toList()
+                        valid.stream().toList(),
+                        isBlock
                 )
         );
 
@@ -181,8 +202,8 @@ public class ResourcePackBuilder {
         }
     }
 
-    private static TextureProvider getSimpleProvider(String name) {
-        return new TextureProvider() {
+    private static FlatItemProvider getSimpleProvider(String name) {
+        return new FlatItemProvider() {
             @Override
             public @NotNull List<TextureLayer> getTextures() {
                 return List.of(

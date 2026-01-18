@@ -26,6 +26,8 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
+import wbs.wandcraft.events.EnqueueSpellsEvent;
+import wbs.wandcraft.events.SpendManaEvent;
 import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
@@ -134,6 +136,14 @@ public abstract class Wand implements Attributable {
 
         int additionalCooldown = getAdditionalCooldown(spellList);
 
+        EnqueueSpellsEvent enqueueSpellsEvent = new EnqueueSpellsEvent(player, spellList, additionalCooldown);
+
+        if (!enqueueSpellsEvent.callEvent()) {
+            return;
+        }
+
+        additionalCooldown = enqueueSpellsEvent.getAdditionalCooldown();
+
         if (!checkCooldown(player, wandContainer, event, additionalCooldown)) {
             return;
         }
@@ -145,15 +155,34 @@ public abstract class Wand implements Attributable {
             cost += instanceCost;
         }
 
-        if (cost > 0) {
-            int remainder = CostUtils.takeCost(player, cost);
+        SpendManaEvent spendManaEvent = new SpendManaEvent(player, spellList, cost, wandItem);
+        spendManaEvent.callEvent();
 
-            if (remainder > 0) {
+        cost = spendManaEvent.getCost();
+
+        switch (spendManaEvent.getResult()) {
+            case BYPASS -> {
+                onSucceedCost(player, cost, wandItem);
+            }
+            case CONTINUE -> {
+                if (cost > 0) {
+                    int remainder = CostUtils.takeCost(player, cost);
+
+                    if (remainder > 0) {
+                        onFailCost(player, wandItem, event, additionalCooldown);
+                        return;
+                    }
+                }
+                onSucceedCost(player, cost, wandItem);
+            }
+            case CANCEL -> {
+                return;
+            }
+            case FAIL -> {
                 onFailCost(player, wandItem, event, additionalCooldown);
                 return;
             }
         }
-        onSucceedCost(player, cost, wandItem);
 
         CastingQueue queue = new CastingQueue(spellList, this);
 

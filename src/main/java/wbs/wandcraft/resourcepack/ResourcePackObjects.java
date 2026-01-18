@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Material;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -15,15 +16,17 @@ import java.util.*;
 public final class ResourcePackObjects {
     private ResourcePackObjects() {}
 
-    public static final class ModelDefinition {
+    public interface ModelDefinition {}
+
+    public static final class ItemModelDefinition implements ModelDefinition {
         private final String parent;
         private final Map<String, String> textures = new HashMap<>();
         private Map<String, DisplayTransform> display;
 
-        public ModelDefinition(String parent, String ... textures) {
+        public ItemModelDefinition(String parent, String ... textures) {
             this(parent, Arrays.asList(textures));
         }
-        public ModelDefinition(String parent, List<String> textures) {
+        public ItemModelDefinition(String parent, List<String> textures) {
             this.parent = parent;
             for (int i = 0; i < textures.size(); i++) {
                 this.textures.put("layer" + i, textures.get(i));
@@ -59,15 +62,21 @@ public final class ResourcePackObjects {
         }
     }
 
-    public static final class ItemSelectorDefinition {
+    public interface ItemDefinition {}
+
+    public static final class ItemSelectorDefinition implements ItemDefinition {
         private final Model model;
 
-        public ItemSelectorDefinition(Material baseMaterial, List<? extends TextureProvider> definitions) {
-            StaticModel fallback = new StaticModel("minecraft:item/" + baseMaterial.key().value(), null);
+        public ItemSelectorDefinition(Material baseMaterial, List<? extends ItemModelProvider> definitions, boolean isBlock) {
+            String fallbackType = "item";
+            if (isBlock) {
+                fallbackType = "block";
+            }
+            StaticModel fallback = new StaticModel("minecraft:" + fallbackType + "/" + baseMaterial.key().value(), null);
 
             SelectModel model = new SelectModel("custom_model_data", 0, fallback);
 
-            for (TextureProvider definition : definitions) {
+            for (ItemModelProvider definition : definitions) {
                 Key key = definition.key();
                 model.addCase(new ModelCase(
                         key.asString(),
@@ -124,9 +133,13 @@ public final class ResourcePackObjects {
 
     public static class StaticModel extends Model {
         private final String model;
+        @Nullable
         private final List<ModelTint> tints;
 
-        public StaticModel(String model, List<ModelTint> tints) {
+        public StaticModel(String model) {
+            this(model, null);
+        }
+        public StaticModel(String model, @Nullable List<ModelTint> tints) {
             super("minecraft:model");
             this.model = model;
             this.tints = tints;

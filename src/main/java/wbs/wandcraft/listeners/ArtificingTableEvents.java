@@ -1,4 +1,4 @@
-package wbs.wandcraft.events;
+package wbs.wandcraft.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;

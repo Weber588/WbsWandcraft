@@ -3,6 +3,8 @@ package wbs.wandcraft;
 import wbs.utils.util.WbsRegistry;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
+import wbs.wandcraft.equipment.MagicEquipmentType;
+import wbs.wandcraft.equipment.hat.*;
 import wbs.wandcraft.generation.AttributeModifierGenerator;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.generation.WandGenerator;
@@ -54,6 +56,33 @@ public class WandcraftRegistries {
             WandTexture.FIRE,
             WandTexture.OVERGROWN
     );
+
+    public static final WbsRegistry<HatModel> HAT_TEXTURES = new WbsRegistry<>(
+            HatModel.WITCH,
+            HatModel.APPRENTICE,
+            HatModel.ARCANIST,
+            HatModel.SPEEDSTER,
+            HatModel.DRUID,
+            HatModel.FIREMANCER,
+            HatModel.HEALER,
+            HatModel.MARKSMAN,
+            HatModel.OLD,
+            HatModel.SORCERER,
+            HatModel.SPELLSLINGER,
+            HatModel.WARLOCK
+    );
+
+    public static final WbsRegistry<MagicEquipmentType> MAGIC_EQUIPMENT_TYPES = new WbsRegistry<>(
+            new WitchHat(),
+            new ApprenticeHat(),
+            new ArcanistHat(),
+            new DruidHat(),
+            new FiremancerHat(),
+            new HealerHat(),
+            new MarksmanHat(),
+            new SpeedsterHat()
+    );
+
     public static final WbsRegistry<SpellType> SPELL_TYPES = new WbsRegistry<>();
     public static final WbsRegistry<SpellDefinition> SPELLS = new WbsRegistry<>(SpellLoader.loadSpells(new NativeSpellLoader()));
     public static final WbsRegistry<LearningMethodType<?>> LEARNING_PROVIDERS = new WbsRegistry<>(

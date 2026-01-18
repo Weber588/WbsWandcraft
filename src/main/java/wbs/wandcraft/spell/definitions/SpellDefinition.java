@@ -11,7 +11,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.resourcepack.TextureProvider;
+import wbs.wandcraft.resourcepack.FlatItemProvider;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -23,7 +23,7 @@ import java.util.*;
 
 import static wbs.wandcraft.spellbook.Spellbook.DESCRIPTION_COLOR;
 
-public abstract class SpellDefinition implements ISpellDefinition, TextureProvider {
+public abstract class SpellDefinition implements ISpellDefinition, FlatItemProvider {
     protected final Map<Key, SpellTriggeredEvent<?>> events = new HashMap<>();
 
     protected final Set<SpellAttributeInstance<?>> defaultAttributes = new HashSet<>();
@@ -100,7 +100,7 @@ public abstract class SpellDefinition implements ISpellDefinition, TextureProvid
         if (textureLayers == null) {
             String texture = "spell_" + key().value();
 
-            String path = ResourcePackBuilder.TEXTURES_PATH + texture + ".png";
+            String path = ResourcePackBuilder.ITEM_TEXTURES_PATH + texture + ".png";
             if (WbsWandcraft.getInstance().getResource(path) == null) {
                 WbsWandcraft.getInstance().getLogger().severe("The resource at path \"" + path + "\" was not found! A default texture will be used.");
 

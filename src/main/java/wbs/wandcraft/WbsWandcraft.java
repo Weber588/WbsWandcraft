@@ -11,8 +11,9 @@ import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.commands.*;
 import wbs.wandcraft.effects.StatusEffect;
-import wbs.wandcraft.events.*;
+import wbs.wandcraft.equipment.MagicEquipmentType;
 import wbs.wandcraft.learning.RegistrableLearningMethod;
+import wbs.wandcraft.listeners.*;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
@@ -82,6 +83,7 @@ public class WbsWandcraft extends WbsPlugin {
                         WbsCommand.getStatic(this, "item").addSubcommands(
                                 new CommandWandBuild(this, "wand"),
                                 new CommandSpellBuild(this, "spell"),
+                                new CommandEquipmentBuild(this, "equipment"),
                                 new CommandSpellbookBuild(this, "spellbook"),
                                 WbsSubcommand.simpleSubcommand(this, "artificer", context -> {
                                     Player sender = (Player) context.getSource().getSender();
@@ -94,7 +96,6 @@ public class WbsWandcraft extends WbsPlugin {
                                     sender.getInventory().addItem(ItemUtils.buildBlankScroll());
                                 })
                         ).inferSubPermissions(),
-                        new CommandPlayerModify(this, "player"),
                         new CommandSpellCast(this, "cast"),
                         WbsReloadSubcommand.getStatic(this, settings),
                         WbsErrorsSubcommand.getStatic(this, settings)
@@ -117,6 +118,7 @@ public class WbsWandcraft extends WbsPlugin {
         runSync(() -> {
             WandcraftRegistries.SPELLS.stream().forEach(SpellDefinition::registerEvents);
             WandcraftRegistries.STATUS_EFFECTS.stream().forEach(StatusEffect::registerEvents);
+            WandcraftRegistries.MAGIC_EQUIPMENT_TYPES.stream().forEach(MagicEquipmentType::registerEvents);
             settings.getGenerationMethods().forEach(RegistrableLearningMethod::registerEvents);
         });
     }
