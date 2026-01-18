@@ -80,7 +80,11 @@ public class WandcraftRegistries {
             new FiremancerHat(),
             new HealerHat(),
             new MarksmanHat(),
-            new SpeedsterHat()
+            new OldHat(),
+            new SorcererHat(),
+            new SpeedsterHat(),
+            new SpellslingerHat(),
+            new WarlockHat()
     );
 
     public static final WbsRegistry<SpellType> SPELL_TYPES = new WbsRegistry<>();
