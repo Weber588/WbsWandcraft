@@ -4,9 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Fixed enchanting issues with hats">
+    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Fixed several misaligned UV mappings">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_apprentice.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_apprentice.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_druid.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_druid.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_healer.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_healer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_marksman.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_marksman.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_old.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_old.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_sorcerer.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_sorcerer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_speedster.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_speedster.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_spellslinger.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_spellslinger.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_warlock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_warlock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -289,14 +296,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1739596499407</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Tweaked cast context fields to allow for more complex spells">
-      <option name="closed" value="true" />
-      <created>1742283721220</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1742283721220</updated>
     </task>
     <task id="LOCAL-00008" summary="Expanded effect functionality &amp; several new spells">
       <option name="closed" value="true" />
@@ -682,7 +681,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768887190479</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="Fixed several misaligned UV mappings">
+      <option name="closed" value="true" />
+      <created>1768889101082</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1768889101082</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -701,7 +708,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Made chain lightning work differently in water and near lightning rods" />
     <MESSAGE value="Improved Status Effect serialization" />
     <MESSAGE value="Added targeter system" />
     <MESSAGE value="Began implementing multiple wand types" />
@@ -726,6 +732,7 @@
     <MESSAGE value="Began implementing Equipment system" />
     <MESSAGE value="Added remaining hats and fixed Firemancer model" />
     <MESSAGE value="Fixed enchanting issues with hats" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed enchanting issues with hats" />
+    <MESSAGE value="Fixed several misaligned UV mappings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed several misaligned UV mappings" />
   </component>
 </project>
