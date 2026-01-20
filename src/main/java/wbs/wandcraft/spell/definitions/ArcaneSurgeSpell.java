@@ -4,8 +4,6 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.damage.DamageSource;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -55,7 +53,6 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
         Player player = context.player();
 
         int duration = instance.getAttribute(DURATION);
-        double damage = instance.getAttribute(DAMAGE);
         double speed = instance.getAttribute(SPEED);
 
         Vector velocity = WbsEntityUtil.getFacingVector(player, speed);
@@ -92,12 +89,8 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
                         .exclude(player)
                         .select(WbsEntityUtil.getMiddleLocation(player));
 
-                DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                        .withDirectEntity(context.player())
-                        .build();
-
                 for (LivingEntity e : entities) {
-                    e.damage(damage, source);
+                    damage(context, e);
                 }
 
                 sound.play(playerLoc);

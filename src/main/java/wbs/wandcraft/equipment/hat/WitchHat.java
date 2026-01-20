@@ -1,7 +1,5 @@
 package wbs.wandcraft.equipment.hat;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,14 +26,15 @@ public class WitchHat extends MagicHat {
     }
 
     @Override
-    public @NotNull List<Component> getEffectsLore() {
+    public List<String> getEffectsLore() {
         return List.of(
-                Component.text("-75% Mana Cooloff").color(TextColor.color(NamedTextColor.AQUA))
+                "-75% Mana Regen Cooloff"
         );
     }
 
     @Override
     public void registerEvents() {
+        super.registerEvents();
         WbsEventUtils.register(WbsWandcraft.getInstance(), CalculateManaRegenCooloffEvent.class, this::onCalculateCooloff);
     }
 

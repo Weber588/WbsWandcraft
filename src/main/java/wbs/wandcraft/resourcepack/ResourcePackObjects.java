@@ -113,7 +113,7 @@ public final class ResourcePackObjects {
             this.fallback = fallback;
         }
 
-        private void addCase(ModelCase modelCase) {
+        public void addCase(ModelCase modelCase) {
             cases.add(modelCase);
         }
     }

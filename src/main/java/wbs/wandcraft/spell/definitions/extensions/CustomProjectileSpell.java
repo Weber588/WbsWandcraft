@@ -90,15 +90,13 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
         projectile.setOnHit(result -> {
             context.runEffects(SpellTriggeredEvents.ON_HIT_TRIGGER, result);
 
-            if (this instanceof DamageSpell && result.getHitEntity() instanceof Damageable hitEntity) {
+            if (this instanceof DamageSpell damageSpell && result.getHitEntity() instanceof Damageable hitEntity) {
                 double damage = context.instance().getAttribute(DamageSpell.DAMAGE);
 
-                DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                        .withDirectEntity(context.player())
-                        .withDamageLocation(projectile.location)
-                        .build();
+                DamageSource.Builder damageSource = damageSpell.buildDamageSource(context, DamageType.INDIRECT_MAGIC);
+                damageSource.withDamageLocation(projectile.location);
 
-                hitEntity.damage(damage, source);
+                hitEntity.damage(damage, damageSource.build());
             }
             return true;
         });

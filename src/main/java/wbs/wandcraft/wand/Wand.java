@@ -134,7 +134,7 @@ public abstract class Wand implements Attributable {
             return;
         }
 
-        int additionalCooldown = getAdditionalCooldown(spellList);
+        int additionalCooldown = getAdditionalCooldownTicks(spellList);
 
         EnqueueSpellsEvent enqueueSpellsEvent = new EnqueueSpellsEvent(player, spellList, additionalCooldown);
 
@@ -201,9 +201,9 @@ public abstract class Wand implements Attributable {
         }
     }
 
-    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, PlayerEvent event, int additionalCooldown) {
-        long lastUsed = getLastUsed(cooldownContainer);
-        long usableTick = lastUsed + getAttribute(COOLDOWN) * 1000 / Ticks.TICKS_PER_SECOND + additionalCooldown;
+    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, PlayerEvent event, int additionalCooldownTicks) {
+        long lastUsedMilli = getLastUsed(cooldownContainer);
+        long usableTick = lastUsedMilli + (getAttribute(COOLDOWN) + additionalCooldownTicks) * Ticks.SINGLE_TICK_DURATION_MS;
         long timestamp = getTimestamp();
         if (timestamp <= usableTick) {
             Duration timeLeft = Duration.ofMillis(usableTick - timestamp);
@@ -249,12 +249,12 @@ public abstract class Wand implements Attributable {
         // TODO: Drop all spells
     }
 
-    protected int getAdditionalCooldown(Queue<SpellInstance> spellList) {
+    protected int getAdditionalCooldownTicks(Queue<SpellInstance> spellList) {
         int additionalCooldown = 0;
 
         for (SpellInstance spell : spellList) {
-            additionalCooldown += (int) (spell.getAttribute(CastableSpell.COOLDOWN) * Ticks.SINGLE_TICK_DURATION_MS);
-            additionalCooldown += (int) (spell.getAttribute(CastableSpell.DELAY) * Ticks.SINGLE_TICK_DURATION_MS);
+            additionalCooldown += spell.getAttribute(CastableSpell.COOLDOWN);
+            additionalCooldown += spell.getAttribute(CastableSpell.DELAY);
         }
 
         return additionalCooldown;

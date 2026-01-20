@@ -48,18 +48,18 @@ public class CastingQueue {
 
     private void enqueueCast(@NotNull Player player) {
         EquipmentSlot slot = EquipmentSlot.HAND;
-        if (wand != null) {
-            Wand check = Wand.fromItem(player.getInventory().getItemInMainHand());
-            if (check == null || !check.getUUID().equals(wand.getUUID())) {
-                check = Wand.fromItem(player.getInventory().getItemInOffHand());
-                slot = EquipmentSlot.OFF_HAND;
-            }
-
-            if (check == null || !check.getUUID().equals(wand.getUUID())) {
-                CastingManager.stopCasting(player);
-                return;
-            }
-        }
+//        if (wand != null) {
+//            Wand check = Wand.fromItem(player.getInventory().getItemInMainHand());
+//            if (check == null || !check.getUUID().equals(wand.getUUID())) {
+//                check = Wand.fromItem(player.getInventory().getItemInOffHand());
+//                slot = EquipmentSlot.OFF_HAND;
+//            }
+//
+//            if (check == null || !check.getUUID().equals(wand.getUUID())) {
+//                CastingManager.stopCasting(player);
+//                return;
+//            }
+//        }
 
         if (player.isDead() || !player.isOnline()) {
             CastingManager.stopCasting(player);

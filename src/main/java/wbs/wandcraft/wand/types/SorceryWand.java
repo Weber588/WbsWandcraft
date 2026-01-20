@@ -36,7 +36,7 @@ public class SorceryWand extends Wand {
     }
 
     @Override
-    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, PlayerEvent event, int additionalCooldown) {
+    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, PlayerEvent event, int additionalCooldownTicks) {
         boolean canUseWand = super.checkCooldown(player, cooldownContainer, event, 0);
 
         if (!canUseWand) {
@@ -49,7 +49,7 @@ public class SorceryWand extends Wand {
             throw new IllegalStateException("Item in slot was null when checking cooldown on Sorcery Wand");
         }
 
-        return super.checkCooldown(player, itemInSlot.getPersistentDataContainer(), event, additionalCooldown);
+        return super.checkCooldown(player, itemInSlot.getPersistentDataContainer(), event, additionalCooldownTicks);
     }
 
     @Override
@@ -119,8 +119,7 @@ public class SorceryWand extends Wand {
     private ItemStack getItemFor(PlayerEvent event) {
         WandControl control = getWandControl(event);
 
-        ItemStack item = getTieredItems().get(control);
-        return item;
+        return getTieredItems().get(control);
     }
 
     private static @NotNull WandControl getWandControl(PlayerEvent event) {
@@ -285,8 +284,7 @@ public class SorceryWand extends Wand {
     public void handleDrop(PlayerDropItemEvent event, Player player, ItemStack item) {
         event.setCancelled(true);
         if (player.isSneaking()) {
-            // Run next tick, or it'll look in the players inventory and say "oh, they're not holding the wand!"
-            WbsWandcraft.getInstance().runLater(() -> tryCasting(player, item, event), 1);
+            tryCasting(player, item, event);
         } else {
             changeTier(player, item);
         }

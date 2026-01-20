@@ -1,7 +1,5 @@
 package wbs.wandcraft.equipment.hat;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
@@ -14,16 +12,24 @@ import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.definitions.extensions.ForceSpell;
 import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
 
 import java.util.List;
 import java.util.Map;
 
 public class SpeedsterHat extends MagicHat {
+    public static final double SPEED_MULTIPLIER = 1.5;
+
     private static final SpellAttributeModifier<Double, Double> SPEED_MODIFIER = SpeedSpell.SPEED.createModifier(
             AttributeModifierType.MULTIPLY,
             RegisteredPersistentDataType.DOUBLE,
-            1.5
+            SPEED_MULTIPLIER
+    );
+    private static final SpellAttributeModifier<Double, Double> FORCE_MODIFIER = ForceSpell.FORCE.createModifier(
+            AttributeModifierType.MULTIPLY,
+            RegisteredPersistentDataType.DOUBLE,
+            SPEED_MULTIPLIER
     );
     private static final double COOLDOWN_REDUCTION = 0.25;
 
@@ -37,18 +43,20 @@ public class SpeedsterHat extends MagicHat {
     }
 
     @Override
-    public @NotNull List<Component> getEffectsLore() {
+    public List<String> getEffectsLore() {
         return List.of(
-                Component.text("+50% Speed").color(TextColor.color(NamedTextColor.AQUA)),
-                Component.text("-25% Cooldown").color(TextColor.color(NamedTextColor.AQUA))
+                "+50% Spell Speed",
+                "-25% Spell Cooldown"
         );
     }
 
     @Override
     public void registerEvents() {
+        super.registerEvents();
         WbsEventUtils.register(WbsWandcraft.getInstance(), EnqueueSpellsEvent.class, this::onEnqueueSpells);
     }
-
+    // TODO: Modify vex flying speed
+    // TODO: Speed up spell casting goal maybe?
     private void onEnqueueSpells(EnqueueSpellsEvent event) {
         Map<MagicEquipmentSlot, MagicEquipmentType> magicEquipment = EquipmentManager.getMagicEquipment(event.getPlayer());
         for (MagicEquipmentType magicEquipmentType : magicEquipment.values()) {
@@ -57,6 +65,7 @@ public class SpeedsterHat extends MagicHat {
 
                 for (SpellInstance instance : event.getSpellList()) {
                     instance.applyModifier(SPEED_MODIFIER);
+                    instance.applyModifier(FORCE_MODIFIER);
                 }
             }
         }

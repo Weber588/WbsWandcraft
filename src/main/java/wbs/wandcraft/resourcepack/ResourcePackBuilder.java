@@ -132,12 +132,20 @@ public class ResourcePackBuilder {
 
         Set<T> valid = new HashSet<>();
         providers.forEach(provider -> {
-            if (provider instanceof BlockItemProvider) {
+            if (provider instanceof BlockItemProvider blockProvider) {
                 String modelPath = BLOCK_MODELS_PATH + provider.value() + ".json";
                 resourcesToLoad.add(modelPath);
 
+                for (String additionalModel : blockProvider.getAdditionalModels()) {
+                    resourcesToLoad.add(BLOCK_MODELS_PATH + additionalModel + ".json");
+                }
+
                 String texturePath = BLOCK_TEXTURES_PATH + provider.value() + ".png";
                 resourcesToLoad.add(texturePath);
+
+                for (String additionalTexture : blockProvider.getAdditionalTextures()) {
+                    resourcesToLoad.add(BLOCK_TEXTURES_PATH + additionalTexture + ".png");
+                }
 
                 if (plugin.getResource(modelPath) != null && plugin.getResource(texturePath) != null) {
                     valid.add(provider);

@@ -11,7 +11,7 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 
     private boolean isCancelled = false;
 
-    protected SpellCastEvent(Player caster, CastContext context) {
+    public SpellCastEvent(Player caster, CastContext context) {
         super(caster, context);
     }
 

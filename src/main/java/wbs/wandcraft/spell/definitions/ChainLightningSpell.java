@@ -68,7 +68,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
         double damage = context.instance().getAttribute(DAMAGE);
 
         if (player.isInWater() || player.isInRain()) {
-            player.damage(damage, DamageSource.builder(DamageType.INDIRECT_MAGIC).build());
+            damage(context, player, DamageType.LIGHTNING_BOLT);
             ElectricParticleEffect sparkingEffect = new ElectricParticleEffect()
                     .setTicks(2 * Ticks.TICKS_PER_SECOND);
 
@@ -105,8 +105,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
 
             if (!hits.isEmpty()) {
                 hits.forEach(entity -> {
-                    DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                            .withDirectEntity(context.player())
+                    DamageSource source = buildDamageSource(context, DamageType.INDIRECT_MAGIC)
                             .withDamageLocation(next.point)
                             .build();
 

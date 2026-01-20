@@ -2,8 +2,6 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.Particle;
-import org.bukkit.damage.DamageSource;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 import wbs.utils.util.entities.selector.RadiusSelector;
@@ -86,15 +84,11 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
                     .exclude(context.player())
                     .select(result);
 
-            DamageSource source = DamageSource.builder(DamageType.INDIRECT_MAGIC)
-                    .withDirectEntity(context.player())
-                    .build();
-
             Vector pushVector = new Vector(0, instance.getAttribute(FORCE), 0);
             for (LivingEntity target : hit) {
                 if (WbsRegionUtils.canDealDamage(context.player(), target)) {
                     target.setVelocity(pushVector);
-                    target.damage(instance.getAttribute(DAMAGE), source);
+                    damage(context, target);
                     target.setVelocity(pushVector);
                 }
             }

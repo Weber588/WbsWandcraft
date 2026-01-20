@@ -61,13 +61,14 @@ public class WandcraftRegistries {
             HatModel.WITCH,
             HatModel.APPRENTICE,
             HatModel.ARCANIST,
-            HatModel.SPEEDSTER,
             HatModel.DRUID,
             HatModel.FIREMANCER,
             HatModel.HEALER,
             HatModel.MARKSMAN,
             HatModel.OLD,
+            HatModel.SEER,
             HatModel.SORCERER,
+            HatModel.SPEEDSTER,
             HatModel.SPELLSLINGER,
             HatModel.WARLOCK
     );
@@ -81,6 +82,7 @@ public class WandcraftRegistries {
             new HealerHat(),
             new MarksmanHat(),
             new OldHat(),
+            new SeerHat(),
             new SorcererHat(),
             new SpeedsterHat(),
             new SpellslingerHat(),

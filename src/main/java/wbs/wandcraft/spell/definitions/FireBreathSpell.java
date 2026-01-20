@@ -1,15 +1,15 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.util.Ticks;
-import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.*;
@@ -88,6 +88,16 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
                 Entity hitEntity = result.getHitEntity();
                 if (hitEntity != null) {
                     hitEntities.add(hitEntity);
+                }
+                Block hitBlock = result.getHitBlock();
+                BlockFace hitBlockFace = result.getHitBlockFace();
+                if (hitBlock != null && hitBlockFace != null) {
+                    if (WbsMath.chance(5)) {
+                        Block relative = hitBlock.getRelative(hitBlockFace);
+                        if (relative.isEmpty()) {
+                            relative.setType(Material.FIRE);
+                        }
+                    }
                 }
             }
         } while (result != null && result.getHitEntity() != null);

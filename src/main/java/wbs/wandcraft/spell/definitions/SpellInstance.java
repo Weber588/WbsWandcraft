@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.events.SpellCastEvent;
 import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
@@ -85,6 +86,10 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public CastContext cast(Player player, @Nullable Wand wand, EquipmentSlot slot, Runnable callback) {
         if (definition instanceof CastableSpell castable) {
             CastContext context = new CastContext(player, this, wand, slot, player.getEyeLocation(), null, callback);
+            SpellCastEvent castEvent = new SpellCastEvent(player, context);
+            if (!castEvent.callEvent()) {
+                return null;
+            }
             castable.cast(context);
 
             // If a spell has completeAfterCast = false, then it will handle the callback itself at a later time.

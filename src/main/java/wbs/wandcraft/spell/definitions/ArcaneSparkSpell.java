@@ -15,8 +15,9 @@ import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell {
     private static final WbsParticleEffect EFFECT = new NormalParticleEffect()
             .setXYZ(0.1)
-            .setData(new Particle.DustTransition(ARCANE.color(), ARCANE.mulColor(0.8), 1f))
+            .setData(new Particle.DustTransition(ARCANE.wandColor(), ARCANE.mulColor(0.8), 1f))
             .setAmount(2);
+    private static final WbsParticleEffect EFFECT2 = EFFECT.clone().setData(null);
     private static final WbsParticleEffect END_EFFECT = new NormalParticleEffect()
             .setXYZ(0.1)
             .setSpeed(0.3)
@@ -56,7 +57,7 @@ public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectil
         SpellInstance instance = context.instance();
         projectile.setParticle(new WbsParticleGroup()
                 .addEffect(EFFECT, getParticle(instance))
-                .addEffect(EFFECT, Particle.WAX_OFF)
+                .addEffect(EFFECT2, Particle.WAX_OFF)
         );
         projectile.setEndEffects(new WbsParticleGroup().addEffect(END_EFFECT, Particle.FIREWORK));
     }

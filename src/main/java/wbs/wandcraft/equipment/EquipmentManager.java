@@ -1,7 +1,7 @@
 package wbs.wandcraft.equipment;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -31,11 +31,11 @@ public class EquipmentManager {
         return WandcraftRegistries.MAGIC_EQUIPMENT_TYPES.get(typeKey);
     }
 
-    public static Map<MagicEquipmentSlot, MagicEquipmentType> getMagicEquipment(Player player) {
+    public static Map<MagicEquipmentSlot, MagicEquipmentType> getMagicEquipment(LivingEntity livingEntity) {
         Map<MagicEquipmentSlot, MagicEquipmentType> magicEquipment = new HashMap<>();
 
         for (MagicEquipmentSlot slot : MagicEquipmentSlot.values()) {
-            ItemStack itemInSlot = getItemInSlot(player, slot);
+            ItemStack itemInSlot = getItemInSlot(livingEntity, slot);
 
             if (itemInSlot != null && !itemInSlot.isEmpty()) {
                 MagicEquipmentType type = getType(itemInSlot);
@@ -50,12 +50,15 @@ public class EquipmentManager {
     }
 
     @Nullable
-    public static ItemStack getItemInSlot(Player player, MagicEquipmentSlot slot) {
+    public static ItemStack getItemInSlot(LivingEntity entity, MagicEquipmentSlot slot) {
         EquipmentSlot bukkitSlot = slot.getBukkitSlot();
         if (bukkitSlot != null) {
-            EntityEquipment equipment = player.getEquipment();
+            EntityEquipment equipment = entity.getEquipment();
+            if (equipment == null) {
+                return null;
+            }
 
-            if (player.canUseEquipmentSlot(bukkitSlot)) {
+            if (entity.canUseEquipmentSlot(bukkitSlot)) {
                 return equipment.getItem(bukkitSlot);
             } else {
                 return null;

@@ -3,8 +3,6 @@ package wbs.wandcraft.spell.definitions;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.damage.DamageSource;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -40,7 +38,7 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
         double damage = context.instance().getAttribute(DAMAGE);
 
         if (damage > 0) {
-            target.damage(damage, DamageSource.builder(DamageType.MAGIC).withDirectEntity(context.player()).build());
+            damage(context, target, damage);
         }
     }
 

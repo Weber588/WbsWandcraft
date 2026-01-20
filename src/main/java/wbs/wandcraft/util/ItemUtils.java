@@ -81,6 +81,8 @@ public class ItemUtils {
                 .damageOnHurt(false)
                 .build()
         );
+        hatItem.setData(DataComponentTypes.ENCHANTABLE, Enchantable.enchantable(25));
+        hatItem.setData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments().build());
 
         hatType.toItem(hatItem);
 

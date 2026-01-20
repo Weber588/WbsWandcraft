@@ -1,8 +1,9 @@
 package wbs.wandcraft.equipment.hat;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.entity.Mob;
+import org.bukkit.entity.Vex;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
 import wbs.wandcraft.RegisteredPersistentDataType;
@@ -42,16 +43,32 @@ public class SorcererHat extends MagicHat {
     }
 
     @Override
-    public @NotNull List<Component> getEffectsLore() {
+    public List<String> getEffectsLore() {
         return List.of(
-                Component.text("+75% Spell Duration").color(TextColor.color(NamedTextColor.AQUA)),
-                Component.text("+50% Range").color(TextColor.color(NamedTextColor.AQUA))
+                "+75% Spell Duration",
+                "+50% Spell Range"
         );
     }
 
     @Override
     public void registerEvents() {
+        super.registerEvents();
         WbsEventUtils.register(WbsWandcraft.getInstance(), EnqueueSpellsEvent.class, this::onEnqueueSpells);
+        WbsEventUtils.register(WbsWandcraft.getInstance(), CreatureSpawnEvent.class, this::onVexSpawn);
+    }
+
+    // TODO: Provide overrideable methods so all hats can detect vanilla spells
+    private void onVexSpawn(CreatureSpawnEvent event) {
+        if (event.getEntity() instanceof Vex vex) {
+            if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.SPELL) {
+                return;
+            }
+
+            Mob summoner = vex.getSummoner();
+            ifEquipped(summoner, () -> {
+                vex.setLimitedLifetimeTicks(DURATION_MODIFIER.modify(vex.getLimitedLifetimeTicks()));
+            });
+        }
     }
 
     private void onEnqueueSpells(EnqueueSpellsEvent event) {

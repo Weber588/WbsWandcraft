@@ -4,12 +4,19 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Evoker;
+import org.bukkit.entity.Witch;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import wbs.utils.util.WbsEventUtils;
+import wbs.utils.util.WbsMath;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.equipment.MagicEquipmentType;
 import wbs.wandcraft.spellbook.Spellbook;
+import wbs.wandcraft.util.ItemUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,12 +33,54 @@ public abstract class MagicHat implements MagicEquipmentType {
     }
 
     @Override
-    public @Nullable final Component getItemName() {
+    public final Component getItemName() {
         return Component.text(getName()).color(getNameColour());
     }
 
     protected @NotNull String getName() {
         return WbsStrings.capitalizeAll(hatName) + "'s Hat";
+    }
+
+    @Override
+    public void registerEvents() {
+        MagicEquipmentType.super.registerEvents();
+
+        WbsEventUtils.register(WbsWandcraft.getInstance(), CreatureSpawnEvent.class, this::onMobSpawn);
+    }
+
+    // TODO: Remove testing method and properly implement equipment generation system
+    private void onMobSpawn(CreatureSpawnEvent event) {
+        CreatureSpawnEvent.SpawnReason spawnReason = event.getSpawnReason();
+        if (spawnReason == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+            return;
+        }
+
+        if (this instanceof WitchHat) {
+            if (event.getEntity() instanceof Witch witch) {
+                EntityEquipment equipment = witch.getEquipment();
+
+                equipment.setHelmet(ItemUtils.buildEquipment(this));
+                equipment.setHelmetDropChance(100);
+            }
+        } else if (event.getEntity() instanceof Evoker evoker) {
+            if (WbsMath.chance(10)) {
+                EntityEquipment equipment = evoker.getEquipment();
+
+                equipment.setHelmet(ItemUtils.buildEquipment(this));
+
+                switch (spawnReason) {
+                    case RAID -> {
+                        equipment.setHelmetDropChance(20);
+                    }
+                    case PATROL, NATURAL -> {
+                        equipment.setHelmetDropChance(100);
+                    }
+                    default -> {
+                        equipment.setHelmetDropChance(50);
+                    }
+                }
+            }
+        }
     }
 
     protected abstract @NotNull TextColor getNameColour();
@@ -47,7 +96,15 @@ public abstract class MagicHat implements MagicEquipmentType {
 
     @Override
     public final @NotNull List<Component> getLore() {
-        List<Component> lore = new LinkedList<>(getEffectsLore());
+        List<Component> lore = new LinkedList<>();
+
+        getEffectsLore().stream()
+                .map(effectLine -> WbsStrings.wrapText(effectLine, 140))
+                .forEach(lines -> {
+                    for (String line : lines) {
+                        lore.add(Component.text(line).color(TextColor.color(0x487ba3)));
+                    }
+                });
 
         String credit = getCredit();
 
@@ -63,7 +120,7 @@ public abstract class MagicHat implements MagicEquipmentType {
         return "SolariumYT";
     }
 
-    public abstract List<Component> getEffectsLore();
+    public abstract List<String> getEffectsLore();
 
     // TODO: Add passive particle effects
 }

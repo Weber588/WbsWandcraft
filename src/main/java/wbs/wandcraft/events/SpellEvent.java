@@ -13,7 +13,7 @@ public abstract class SpellEvent extends Event {
 		this.spell = context;
 	}
 
-	public CastContext getSpell() {
+	public CastContext getContext() {
 		return spell;
 	}
 
