@@ -1,39 +1,39 @@
 package wbs.wandcraft.equipment.hat;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.resourcepack.BlockItemProvider;
 import wbs.wandcraft.resourcepack.ResourcePackObjects;
 
 import java.util.List;
-import java.util.Map;
-
-import static wbs.wandcraft.resourcepack.ResourcePackObjects.DisplayTransform;
 
 public final class HatModel implements BlockItemProvider {
     public static final HatModel WITCH = new HatModel("witch");
-    public static final HatModel APPRENTICE = new HatModel("apprentice");
-    public static final HatModel ARCANIST = new HatModel("arcanist");
-    public static final HatModel DRUID = new HatModel("druid");
-    public static final HatModel FIREMANCER = new HatModel("firemancer");
-    public static final HatModel HEALER = new HatModel("healer");
-    public static final HatModel MARKSMAN = new HatModel("marksman");
-    public static final HatModel OLD = new HatModel("old");
-    public static final HatModel SEER = new HatModel("seer");
-    public static final HatModel SORCERER = new HatModel("sorcerer");
-    public static final HatModel SPEEDSTER = new HatModel("speedster");
-    public static final HatModel SPELLSLINGER = new HatModel("spellslinger");
-    public static final HatModel WARLOCK = new HatModel("warlock");
+    public static final HatModel APPRENTICE = new HatModel("apprentice", "SolariumYT");
+    public static final HatModel ARCANIST = new HatModel("arcanist", "SolariumYT");
+    public static final HatModel DRUID = new HatModel("druid", "SolariumYT");
+    public static final HatModel FIREMANCER = new HatModel("firemancer", "SolariumYT");
+    public static final HatModel HEALER = new HatModel("healer", "SolariumYT");
+    public static final HatModel MARKSMAN = new HatModel("marksman", "SolariumYT");
+    public static final HatModel OLD = new HatModel("old", "SolariumYT");
+    public static final HatModel SEER = new HatModel("seer", "SolariumYT");
+    public static final HatModel SORCERER = new HatModel("sorcerer", "SolariumYT");
+    public static final HatModel SPEEDSTER = new HatModel("speedster", "SolariumYT");
+    public static final HatModel SPELLSLINGER = new HatModel("spellslinger", "SolariumYT");
+    public static final HatModel WARLOCK = new HatModel("warlock", "SolariumYT");
 
     private final NamespacedKey key;
-
-    private Map<ItemDisplayTransform, DisplayTransform> displays;
-    private Map<ItemDisplayTransform, DisplayTransform> inUseDisplay;
+    @Nullable
+    private final String credit;
 
     public HatModel(String textureKey) {
+        this(textureKey, null);
+    }
+    public HatModel(String textureKey, @Nullable String credit) {
         this.key = WbsWandcraft.getKey("hat_" + textureKey);
+        this.credit = credit;
     }
 
     @Override
@@ -60,5 +60,10 @@ public final class HatModel implements BlockItemProvider {
     @Override
     public List<String> getAdditionalModels() {
         return List.of(value() + "_evoker");
+    }
+
+    @Override
+    public @Nullable String credit() {
+        return credit;
     }
 }

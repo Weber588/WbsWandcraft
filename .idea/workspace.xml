@@ -4,17 +4,45 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Fixed several misaligned UV mappings">
+    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Fixed 0-width UV mappings">
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/SpellbookItemModelProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/spellbook.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/spellbook_open.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/spellbook_open_overlay.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/block/hat_seer.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/block/spellbook.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/HatModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/HatModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/MagicHat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/MagicHat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/SeerHat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/SeerHat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ItemModelProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ItemModelProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_apprentice.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_apprentice.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_apprentice_evoker.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_apprentice_evoker.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_arcanist.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_arcanist.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_arcanist_evoker.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_druid.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_druid.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_druid_evoker.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_firemancer.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_firemancer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_firemancer_evoker.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_healer.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_healer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_healer_evoker.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_marksman.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_marksman.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_marksman_evoker.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_old.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_old.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_old_evoker.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_seer.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_seer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_seer_evoker.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_sorcerer.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_sorcerer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_sorcerer_evoker.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_speedster.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_speedster.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_speedster_evoker.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_spellslinger.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_spellslinger.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_spellslinger_evoker.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_warlock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_warlock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_warlock_evoker.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_witch.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_witch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/hat_witch_evoker.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,10 +184,10 @@
       <recent name="wbs.wandcraft.spells" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="wbs.wandcraft.resourcepack" />
       <recent name="wbs.wandcraft.equipment.hat" />
       <recent name="wbs.wandcraft.commands" />
       <recent name="wbs.wandcraft.events" />
-      <recent name="wbs.wandcraft.resourcepack" />
       <recent name="wbs.wandcraft.learning" />
     </key>
   </component>
@@ -281,8 +309,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.WbsWandcraft [build]" />
-        <item itemvalue="Gradle.WbsWandcraft [buildDependents]" />
         <item itemvalue="Gradle.WbsWandcraft [assemble]" />
+        <item itemvalue="Gradle.WbsWandcraft [buildDependents]" />
         <item itemvalue="Gradle.WbsWandcraft [clean]" />
         <item itemvalue="Gradle.C:/IdeaProjects/WbsWandcraft" />
       </list>
@@ -296,14 +324,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1739596499407</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Expanded effect functionality &amp; several new spells">
-      <option name="closed" value="true" />
-      <created>1743291383282</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1743291383282</updated>
     </task>
     <task id="LOCAL-00009" summary="Renamed &quot;abstract&quot; interfaces to more normal convention">
       <option name="closed" value="true" />
@@ -689,7 +709,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768889101082</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="Fixed 0-width UV mappings">
+      <option name="closed" value="true" />
+      <created>1768890814718</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1768890814718</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -708,7 +736,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Improved Status Effect serialization" />
     <MESSAGE value="Added targeter system" />
     <MESSAGE value="Began implementing multiple wand types" />
     <MESSAGE value="Began migrating to generic spell modifiers" />
@@ -733,6 +760,7 @@
     <MESSAGE value="Added remaining hats and fixed Firemancer model" />
     <MESSAGE value="Fixed enchanting issues with hats" />
     <MESSAGE value="Fixed several misaligned UV mappings" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed several misaligned UV mappings" />
+    <MESSAGE value="Fixed 0-width UV mappings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed 0-width UV mappings" />
   </component>
 </project>

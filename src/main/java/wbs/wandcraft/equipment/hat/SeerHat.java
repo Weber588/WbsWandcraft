@@ -2,7 +2,6 @@ package wbs.wandcraft.equipment.hat;
 
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,6 @@ import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.equipment.EquipmentManager;
 import wbs.wandcraft.equipment.MagicEquipmentSlot;
 import wbs.wandcraft.equipment.MagicEquipmentType;
-import wbs.wandcraft.util.DamageUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -49,12 +47,9 @@ public class SeerHat extends MagicHat {
     private void onEntityDeath(EntityDeathEvent event) {
         Player killer = event.getEntity().getKiller();
         if (killer != null) {
-            DamageType damageType = event.getDamageSource().getDamageType();
-            if (DamageUtils.isMagicDamage(damageType)) {
-                ifEquipped(killer, () -> {
-                    event.setDroppedExp((int) (event.getDroppedExp() * (1 + XP_INCREASE)));
-                });
-            }
+            ifEquipped(killer, () -> {
+                event.setDroppedExp((int) (event.getDroppedExp() * (1 + XP_INCREASE)));
+            });
         }
     }
 

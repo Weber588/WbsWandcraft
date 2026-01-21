@@ -1,6 +1,7 @@
 package wbs.wandcraft.resourcepack;
 
 import org.bukkit.Keyed;
+import org.jetbrains.annotations.Nullable;
 
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.*;
 
@@ -13,4 +14,9 @@ public interface ItemModelProvider extends Keyed {
     }
 
     Model buildBaseModel();
+
+    @Nullable
+    default String credit() {
+        return null;
+    }
 }

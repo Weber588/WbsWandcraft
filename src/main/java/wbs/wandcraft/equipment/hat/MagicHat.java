@@ -117,7 +117,7 @@ public abstract class MagicHat implements MagicEquipmentType {
     }
 
     protected @Nullable String getCredit() {
-        return "SolariumYT";
+        return model.credit();
     }
 
     public abstract List<String> getEffectsLore();
