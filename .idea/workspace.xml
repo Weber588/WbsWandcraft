@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Added Spellbook Model &amp; fixed evoker hats">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Excluded workspace.xml from git">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/spellbook_open.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/spellbook_open.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -288,14 +288,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1739596499407</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Improvements to commands and spell callback/failure">
-      <option name="closed" value="true" />
-      <created>1743313687778</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1743313687778</updated>
     </task>
     <task id="LOCAL-00011" summary="Fixed settings not being initialised">
       <option name="closed" value="true" />
@@ -681,7 +673,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768965386841</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="Excluded workspace.xml from git">
+      <option name="closed" value="true" />
+      <created>1768965697009</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1768965697009</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -700,7 +700,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Began implementing multiple wand types" />
     <MESSAGE value="Began migrating to generic spell modifiers" />
     <MESSAGE value="Wand Holder fixes" />
     <MESSAGE value="Added Sorcery Wand&#10;Fixed numeric attribute modifiers" />
@@ -725,6 +724,7 @@
     <MESSAGE value="Fixed several misaligned UV mappings" />
     <MESSAGE value="Fixed 0-width UV mappings" />
     <MESSAGE value="Added Spellbook Model &amp; fixed evoker hats" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Spellbook Model &amp; fixed evoker hats" />
+    <MESSAGE value="Excluded workspace.xml from git" />
+    <option name="LAST_COMMIT_MESSAGE" value="Excluded workspace.xml from git" />
   </component>
 </project>
