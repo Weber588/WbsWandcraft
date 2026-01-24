@@ -82,22 +82,50 @@ public class SpellbookEvents implements Listener {
 
         ItemStack item = event.getItem();
 
+        Block clickedBlock = event.getClickedBlock();
+        if (!player.isSneaking() && clickedBlock != null && event.useInteractedBlock() != Event.Result.DENY) {
+            //noinspection deprecation
+            if (clickedBlock.getType().isInteractable()) {
+                return;
+            }
+        }
+
         Spellbook spellbook = Spellbook.fromItem(item);
         if (spellbook != null) {
-            if (player.isSneaking()) {
+            SpellDefinition currentSpell = spellbook.getCurrentSpell();
+            if (currentSpell != null && player.isSneaking()) {
+                boolean knowsSpell = Spellbook.knowsSpell(player, currentSpell);
+
                 WbsWandcraft.getInstance().runLater(() -> {
                     ItemStack activeItem = player.getActiveItem();
                     if (!activeItem.isEmpty()) {
                         int activeItemUsedTime = player.getActiveItemUsedTime();
                         WbsWandcraft.getInstance().runTimer(runnable -> {
                             Player updatedPlayer = Bukkit.getPlayer(player.getUniqueId());
-                            if (updatedPlayer != null && updatedPlayer.getActiveItem().equals(activeItem) &&  activeItemUsedTime <= updatedPlayer.getActiveItemUsedTime()) {
-                                SpellDefinition currentSpell = spellbook.getCurrentSpell();
-
-                                spawnParticleWord(updatedPlayer, currentSpell);
-                            } else {
+                            if (updatedPlayer == null) {
                                 runnable.cancel();
+                                return;
                             }
+
+                            if (knowsSpell) {
+
+                                int remainingTicks = updatedPlayer.getActiveItemRemainingTime();
+                                int remainingSeconds = (int) Math.ceil(((double) remainingTicks) / Ticks.TICKS_PER_SECOND);
+                                if (remainingSeconds > 0) {
+                                    Component remainingTimeMessage = Component.empty().append(Component.text(remainingSeconds)).append(Component.text("..."))
+                                            .color(Spellbook.DESCRIPTION_COLOR)
+                                            .decorate(TextDecoration.ITALIC);
+
+                                    updatedPlayer.sendActionBar(remainingTimeMessage);
+                                }
+                            }
+
+                            if (!updatedPlayer.getActiveItem().equals(activeItem) || activeItemUsedTime > updatedPlayer.getActiveItemUsedTime()) {
+                                runnable.cancel();
+                                return;
+                            }
+
+                            spawnParticleWord(updatedPlayer, currentSpell);
                         }, 1, 5);
                     }}, 1);
                 return;
@@ -112,12 +140,9 @@ public class SpellbookEvents implements Listener {
 
             event.setUseItemInHand(Event.Result.DENY);
 
-            Block clickedBlock = event.getClickedBlock();
             if (clickedBlock != null) {
                 ArtificingTable table = ArtificingConfig.getTable(clickedBlock);
                 if (table != null) {
-                    SpellDefinition currentSpell = spellbook.getCurrentSpell();
-
                     if (currentSpell != null) {
                         return;
                     }

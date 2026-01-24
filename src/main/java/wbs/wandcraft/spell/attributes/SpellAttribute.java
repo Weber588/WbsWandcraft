@@ -20,7 +20,7 @@ import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.resourcepack.FlatItemProvider;
+import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModificationOperator;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
@@ -31,7 +31,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @NullMarked
-public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, FlatItemProvider {
+public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, DynamicItemTextureProvider {
     @NotNull
     private final NamespacedKey key;
     @NotNull
@@ -122,7 +122,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     }
 
     public SpellAttribute<T> setShowAttribute(Function<@NotNull T, @NotNull Boolean> shouldShow) {
-        return setShowAttribute((value, attributable) -> shouldShow.apply(value));
+        return setShowAttribute((value, ignored) -> shouldShow.apply(value));
     }
     public SpellAttribute<T> setShowAttribute(BiFunction<@NotNull T, Attributable, @NotNull Boolean> shouldShow) {
         this.shouldShow = shouldShow;
@@ -152,7 +152,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return setNumericFormatter(1, numericFormatter);
     }
     public SpellAttribute<T> setNumericFormatter(double multiplicationFactor, Function<String, String> numericFormatter) {
-        DecimalFormat decimalFormat = new DecimalFormat("0.#");
+        DecimalFormat decimalFormat = new DecimalFormat("0.##");
 
         addTypedFormatter(RegisteredPersistentDataType.INTEGER,
                 value -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * value))

@@ -88,7 +88,18 @@ trading:
       max: 16
       material: minecraft:amethyst_shard
     replace-existing: false
-    chance: 1
+    chance: 5
+    allow-multiple: false
+  cooldown_librarian_any:
+    villager-profession: librarian
+    item-type: modifier
+    item-generator: buff_cooldown
+    payment:
+      min: 5
+      max: 16
+      material: minecraft:amethyst_shard
+    replace-existing: false
+    chance: 5
     allow-multiple: false
 
   speed_fletcher_any:

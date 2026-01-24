@@ -8,27 +8,27 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.wand.WandHolder;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public final class MageWandHolder extends WandHolder<MageWand> {
-    private static final int WAND_DISPLAY_SLOT = slot(2, 4);
-    private static final int UPGRADE_DISPLAY_SLOT = slot(0, 4);
+public final class WildenWandHolder extends WandHolder<WildenWand> {
+    private static final int WAND_DISPLAY_SLOT = slot(0, 5);
+    private static final int UPGRADE_DISPLAY_SLOT = slot(0, 1);
     private static final List<Integer> UPGRADE_SLOTS = List.of(
-            slot(1, 2),
-            slot(1, 3),
-            slot(1, 4),
-            slot(1, 5),
-            slot(1, 6)
+            slot(2, 1),
+            slot(3, 1)
     );
-    private static final int ITEM_COLUMN_START = 1;
-    private static final int ITEM_COLUMN_END = 7;
-    private static final int ITEM_ROW_START = 3;
-    private static final int ITEM_ROW_END = 4;
 
-    public MageWandHolder(MageWand wand, ItemStack item) {
+    private static final int ITEM_COLUMN_START = 5;
+    private static final int ITEM_COLUMN_END = 7;
+    private static final int ITEM_ROW_START = 1;
+    private static final int ITEM_ROW_END = 3;
+    public static final int ROWS = 6;
+
+    public WildenWandHolder(WildenWand wand, ItemStack item) {
         super(wand, item);
     }
 
@@ -50,28 +50,30 @@ public final class MageWandHolder extends WandHolder<MageWand> {
         ItemStack fakeWand = super.getFakeWand();
 
         Style style = Style.style(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false);
-        Style keybindStyle = Style.style(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false);
 
         // TODO: Make this configurable
-        fakeWand.lore(List.of(
-                Component.text("Place spell scrolls in the below slots!").style(style),
-                Component.text("You can cycle between spells to cast with").style(style),
-                Component.keybind("key.drop").style(keybindStyle).append(Component.text(" and ")).append(Component.keybind("key.sneak").style(keybindStyle)).append(Component.text("+").style(style)).append(Component.keybind("key.drop").style(keybindStyle))
-        ));
+        String description = "Place spell scrolls in the below slots!\nWhen used, a random one will be cast.";
+
+        List<Component> lore = new LinkedList<>(WbsStrings.wrapText(description, 141).stream()
+                .map(Component::text)
+                .map(component -> component.style(style))
+                .toList());
+
+        fakeWand.lore(lore);
 
         return fakeWand;
     }
 
     @Override
     protected Inventory instantiateInventory() {
-        return Bukkit.createInventory(this, 6 * 9, wandItem.effectiveName().color(NamedTextColor.DARK_GRAY));
+        return Bukkit.createInventory(this, ROWS * 9, wandItem.effectiveName().color(NamedTextColor.DARK_GRAY));
     }
 
     @Override
     protected void reload() {
         List<ItemStack> items = wand.getItems();
         int itemIndex = 0;
-        for (int row = 0; row < 6; row++) {
+        for (int row = 0; row < ROWS; row++) {
             for (int column = 0; column < 9; column++) {
                 int slot = row * 9 + column;
                 if (isItemSlot(slot)) {
@@ -80,7 +82,7 @@ public final class MageWandHolder extends WandHolder<MageWand> {
                     }
 
                     itemIndex++;
-                } else if (row == 0 || row == 2 || row == 5) {
+                } else if (column == 0 || column == 2 || column == 8) {
                     inventory.setItem(slot, SECONDARY_OUTLINE);
                 } else {
                     inventory.setItem(slot, MAIN_OUTLINE);

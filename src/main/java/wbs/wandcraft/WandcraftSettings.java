@@ -266,13 +266,17 @@ public class WandcraftSettings extends WbsSettings {
             for (String attributeName : modifierConfig.getKeys(false)) {
                 ConfigurationSection modifierSection = modifierConfig.getConfigurationSection(attributeName);
 
-                AttributeModifierGenerator<?> generator = AttributeModifierGenerator.fromConfig(
-                        Objects.requireNonNull(modifierSection),
-                        this,
-                        path + "/modifiers"
-                );
+                try {
+                    AttributeModifierGenerator<?> generator = AttributeModifierGenerator.fromConfig(
+                            Objects.requireNonNull(modifierSection),
+                            this,
+                            path + "/modifiers"
+                    );
 
-                WandcraftRegistries.MODIFIER_GENERATORS.register(generator);
+                    WandcraftRegistries.MODIFIER_GENERATORS.register(generator);
+                } catch (InvalidConfigurationException ex) {
+                    logError(ex.getMessage(), ex.getDirectory());
+                }
             }
         }
     }

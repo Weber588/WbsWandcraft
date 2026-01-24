@@ -58,7 +58,7 @@ public class SpellslingerHat extends MagicHat {
             int cooldownToRemove = 0;
             for (SpellInstance instance : event.getSpellList()) {
                 if (instance.getDefinition() instanceof IProjectileSpell) {
-                    int cooldown = instance.getAttribute(IProjectileSpell.COOLDOWN, 0) + instance.getAttribute(IProjectileSpell.DELAY, 0);
+                    int cooldown = instance.getAttribute(IProjectileSpell.COOLDOWN, 0);
                     cooldownToRemove += (int) (PROJECTILE_COOLDOWN_REDUCTION * cooldown);
                     instance.applyModifier(SPEED_MODIFIER);
                     instance.applyModifier(RANGE_MODIFIER);

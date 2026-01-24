@@ -19,6 +19,16 @@ modifiers:
       - 0.9
       - 0.9
       - 0.9
+  buff_cooldown:
+    attribute: cooldown
+    operator: multiply
+    values:
+      - 0.6
+      - 0.75
+      - 0.75
+      - 0.9
+      - 0.9
+      - 0.9
   buff_damage:
     attribute: damage
     operator: multiply

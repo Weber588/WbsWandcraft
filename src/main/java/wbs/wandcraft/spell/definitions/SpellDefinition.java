@@ -11,7 +11,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.resourcepack.FlatItemProvider;
+import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -23,7 +23,7 @@ import java.util.*;
 
 import static wbs.wandcraft.spellbook.Spellbook.DESCRIPTION_COLOR;
 
-public abstract class SpellDefinition implements ISpellDefinition, FlatItemProvider {
+public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTextureProvider {
     protected final Map<Key, SpellTriggeredEvent<?>> events = new HashMap<>();
 
     protected final Set<SpellAttributeInstance<?>> defaultAttributes = new HashSet<>();

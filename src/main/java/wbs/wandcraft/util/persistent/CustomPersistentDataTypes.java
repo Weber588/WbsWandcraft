@@ -33,6 +33,8 @@ public class CustomPersistentDataTypes {
     public static final PersistentWizardryWandType WIZARDRY_WAND_TYPE = new PersistentWizardryWandType();
     public static final PersistentSorceryWandType SORCERY_WAND_TYPE = new PersistentSorceryWandType();
     public static final PersistentMageWandType MAGE_WAND_TYPE = new PersistentMageWandType();
+    public static final PersistentWildenWandType WILDEN_WAND_TYPE = new PersistentWildenWandType();
+    public static final PersistentBarbarianWandType BARBARIAN_WAND_TYPE = new PersistentBarbarianWandType();
 
     public static final PersistentSpellbookType SPELLBOOK_TYPE = new PersistentSpellbookType();
 

@@ -11,6 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -21,6 +22,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
@@ -76,9 +78,7 @@ public class WandEvents implements Listener {
             return;
         }
 
-        // TODO: Add field to Wand "being_edited" that allows stateful tracking of when casting is possible, to
-        //  avoid lag issues allowing players to cast while in the wand's menu.
-        wand.tryCasting(player, item, event);
+        wand.handleConsume(player, item, event);
     }
 
     // Drop is called before interact, so track it so we can distinguish punch from drop when arm swings
@@ -86,7 +86,7 @@ public class WandEvents implements Listener {
     public void onDrop(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         droppedItemsThisTick.add(player);
-        WbsWandcraft.getInstance().runLater(() -> droppedItemsThisTick.remove(player), 1);
+        WbsWandcraft.getInstance().runAtEndOfTick(() -> droppedItemsThisTick.remove(player));
     }
 
     private final Set<Player> droppedItemsThisTick = new HashSet<>();
@@ -114,7 +114,6 @@ public class WandEvents implements Listener {
             }
         }
 
-
         if (droppedItemsThisTick.contains(player)) {
             return;
         }
@@ -136,7 +135,11 @@ public class WandEvents implements Listener {
             // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
             Consumable consumable = item.getData(DataComponentTypes.CONSUMABLE);
             if (consumable == null || consumable.consumeSeconds() < 1 / (float) Ticks.TICKS_PER_SECOND) {
-                wand.tryCasting(player, item, event);
+                if (event.getAction().isLeftClick()) {
+                    wand.handleLeftClick(player, item, event);
+                } else if (event.getAction().isRightClick()) {
+                    wand.handleRightClick(player, item, event);
+                }
                 event.setCancelled(true);
             }
         }
@@ -165,10 +168,37 @@ public class WandEvents implements Listener {
 
         Entity clicked = event.getRightClicked();
         if (clicked instanceof Interaction interaction && ArtificingConfig.getTable(interaction) != null) {
-            player.swingMainHand();
             wand.startEditing(player, item);
             event.setCancelled(true);
+        } else {
+            wand.handleRightClickEntity(player, item, event);
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onWandDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamageSource().getDirectEntity() instanceof Player player)) {
+            return;
+        }
+
+        if (CastingManager.isCasting(player)) {
+            return;
+        }
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        // Crafting, not crafter or workbench -- represents the internal player inventory. Returned when nothing open.
+        InventoryType inventoryType = player.getOpenInventory().getType();
+        if (inventoryType != InventoryType.CRAFTING && inventoryType != InventoryType.CREATIVE) {
+            return;
+        }
+
+        Wand wand = Wand.fromItem(item);
+        if (wand == null) {
+            return;
+        }
+
+        wand.handleDamageEntity(player, item, event);
     }
 
     @EventHandler(ignoreCancelled = true)

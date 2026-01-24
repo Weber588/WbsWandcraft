@@ -133,6 +133,12 @@ public class ResourcePackBuilder {
 
         Set<T> valid = new HashSet<>();
         providers.forEach(provider -> {
+            if (provider instanceof ExternalModelProvider externalProvider) {
+                resourcesToLoad.addAll(externalProvider.getResources());
+
+                valid.add(provider);
+            }
+
             if (provider instanceof BlockItemProvider blockProvider) {
                 String modelPath = BLOCK_MODELS_PATH + provider.value() + ".json";
                 resourcesToLoad.add(modelPath);
@@ -153,7 +159,7 @@ public class ResourcePackBuilder {
                 }
             }
 
-            if (provider instanceof FlatItemProvider itemProvider) {
+            if (provider instanceof DynamicItemTextureProvider itemProvider) {
                 itemProvider.getModelDefinitions().forEach((name, definition) -> {
                     writeJSONToFile(
                             plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH),
@@ -211,8 +217,8 @@ public class ResourcePackBuilder {
         }
     }
 
-    private static FlatItemProvider getSimpleProvider(String name) {
-        return new FlatItemProvider() {
+    private static DynamicItemTextureProvider getSimpleProvider(String name) {
+        return new DynamicItemTextureProvider() {
             @Override
             public @NotNull List<TextureLayer> getTextures() {
                 return List.of(

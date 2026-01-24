@@ -131,6 +131,18 @@ public final class ResourcePackObjects {
         }
     }
 
+    public static class CompositeModel extends Model {
+        private final List<Model> models;
+
+        public CompositeModel(List<Model> models) {
+            super("composite");
+            this.models = models;
+        }
+        public CompositeModel(Model ... models) {
+            this(Arrays.asList(models));
+        }
+    }
+
     public static class StaticModel extends Model {
         private final String model;
         @Nullable

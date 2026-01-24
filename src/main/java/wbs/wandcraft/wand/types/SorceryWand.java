@@ -3,9 +3,11 @@ package wbs.wandcraft.wand.types;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +20,7 @@ import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
@@ -36,14 +39,14 @@ public class SorceryWand extends Wand {
     }
 
     @Override
-    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, PlayerEvent event, int additionalCooldownTicks) {
+    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, Event event, int additionalCooldownTicks) {
         boolean canUseWand = super.checkCooldown(player, cooldownContainer, event, 0);
 
         if (!canUseWand) {
             return false;
         }
 
-        ItemStack itemInSlot = getItemFor(event);
+        ItemStack itemInSlot = getItemFor(player, event);
 
         if (itemInSlot == null) {
             throw new IllegalStateException("Item in slot was null when checking cooldown on Sorcery Wand");
@@ -53,10 +56,10 @@ public class SorceryWand extends Wand {
     }
 
     @Override
-    protected void setCooldown(@NotNull Player player, ItemStack itemForCooldown, PlayerEvent event, int additionalCooldown) {
-        ItemStack itemInSlot = getItemFor(event);
+    protected void setCooldown(@NotNull Player player, ItemStack itemForCooldown, Event event, int additionalCooldownTicks) {
+        ItemStack itemInSlot = getItemFor(player, event);
         // TODO: Figure out why last used isnt being saved for shift + drop item
-        super.setCooldown(player, itemInSlot, event, additionalCooldown);
+        super.setCooldown(player, itemInSlot, event, additionalCooldownTicks);
         toItem(itemForCooldown);
     }
 
@@ -66,17 +69,17 @@ public class SorceryWand extends Wand {
         this.tier = tier;
 
         setAttribute(TIERS.defaultInstance());
-        setAttribute(COOLDOWN, 5);
+        setAttribute(CastableSpell.COOLDOWN, Ticks.TICKS_PER_SECOND / 4d);
     }
 
     @Override
-    protected void handleNoSpellAvailable(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
+    protected void handleNoSpellAvailable(@NotNull Player player, ItemStack wandItem, Event event) {
         if (isEmpty()) {
             WbsWandcraft.getInstance().sendActionBar("&wThis wand is empty...", player);
         } else if (getTieredItems().isEmpty()) {
             WbsWandcraft.getInstance().sendActionBar("&wNo spells on tier" + (tier + 1) + "!", player);
         } else {
-            WandControl control = getWandControl(event);
+            WandControl control = getWandControl(player, event);
             if (getTierCount() > 1) {
                 WbsWandcraft.getInstance().sendActionBar("&wNo spell bound to " + WbsEnums.toPrettyString(control) + " on tier " + (tier + 1) + "!", player);
             } else {
@@ -95,10 +98,10 @@ public class SorceryWand extends Wand {
     }
 
     @Override
-    protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
+    protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, Event event) {
         LinkedList<SpellInstance> spellList = new LinkedList<>();
 
-        SpellInstance instance = getSpellInstance(event);
+        SpellInstance instance = getSpellInstance(player, event);
         if (instance == null) {
             return spellList;
         }
@@ -110,21 +113,19 @@ public class SorceryWand extends Wand {
         return spellList;
     }
 
-    private @Nullable SpellInstance getSpellInstance(PlayerEvent event) {
-        ItemStack item = getItemFor(event);
+    private @Nullable SpellInstance getSpellInstance(Player player, Event event) {
+        ItemStack item = getItemFor(player, event);
 
         return SpellInstance.fromItem(item);
     }
 
-    private ItemStack getItemFor(PlayerEvent event) {
-        WandControl control = getWandControl(event);
+    private ItemStack getItemFor(Player player, Event event) {
+        WandControl control = getWandControl(player, event);
 
         return getTieredItems().get(control);
     }
 
-    private static @NotNull WandControl getWandControl(PlayerEvent event) {
-        final Player player = event.getPlayer();
-
+    private static @NotNull WandControl getWandControl(Player player, Event event) {
         return switch (event) {
             case PlayerInteractEvent interactEvent -> {
                 Action action = interactEvent.getAction();

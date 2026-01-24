@@ -44,7 +44,9 @@ public class WandcraftRegistries {
         WandType.BASIC,
         WandType.WIZARDRY,
         WandType.SORCERY,
-        WandType.MAGE
+        WandType.MAGE,
+        WandType.WILDEN,
+        WandType.BARBARIAN
     );
 
     public static final WbsRegistry<WandTexture> WAND_TEXTURES = new WbsRegistry<>(
@@ -54,7 +56,9 @@ public class WandcraftRegistries {
             WandTexture.SORCERY,
             WandTexture.TRIDENT,
             WandTexture.FIRE,
-            WandTexture.OVERGROWN
+            WandTexture.WILDEN,
+            WandTexture.BARBARIAN,
+            WandTexture.MIMIC
     );
 
     public static final WbsRegistry<HatModel> HAT_TEXTURES = new WbsRegistry<>(

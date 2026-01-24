@@ -9,7 +9,7 @@ import wbs.wandcraft.resourcepack.ResourcePackObjects;
 import wbs.wandcraft.resourcepack.ResourcePackObjects.ItemModelDefinition;
 import wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModel;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.resourcepack.FlatItemProvider;
+import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.DisplayTransform;
 
-public final class WandTexture implements Keyed, FlatItemProvider {
+public final class WandTexture implements Keyed, DynamicItemTextureProvider {
     public static final WandTexture BASIC = new WandTexture("basic")
             .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_LEFTHAND, new DisplayTransform()
                     .scale(0.68, 0.68, 0.68)
@@ -44,7 +44,9 @@ public final class WandTexture implements Keyed, FlatItemProvider {
     public static final WandTexture SORCERY = new WandTexture("sorcery");
     public static final WandTexture TRIDENT = new WandTexture("trident", "wizardry");
     public static final WandTexture FIRE = new WandTexture("fire").setAnimated(true);
-    public static final WandTexture OVERGROWN = new WandTexture(WbsWandcraft.getKey("overgrown"), "mage", "overgrown");
+    public static final WandTexture WILDEN = new WandTexture("wilden");
+    public static final WandTexture BARBARIAN = new WandTexture("barbarian");
+    public static final WandTexture MIMIC = new WandTexture("mimic");
 
     private final NamespacedKey key;
     private final String textureKey;
@@ -138,7 +140,7 @@ public final class WandTexture implements Keyed, FlatItemProvider {
 
     @Override
     public ResourcePackObjects.Model buildBaseModel() {
-        ResourcePackObjects.Model defaultModel = FlatItemProvider.super.buildBaseModel();
+        ResourcePackObjects.Model defaultModel = DynamicItemTextureProvider.super.buildBaseModel();
 
         if (inUseDisplay != null) {
             return new ResourcePackObjects.ConditionModel(

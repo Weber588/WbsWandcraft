@@ -15,12 +15,11 @@ import wbs.wandcraft.wand.WandHolder;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class BasicWandHolder extends WandHolder<BasicWand> {
-
+public final class BarbarianWandHolder extends WandHolder<BarbarianWand> {
     public static final int WAND_DISPLAY_SLOT = 1;
     public static final int ITEM_SLOT = 4;
 
-    public BasicWandHolder(BasicWand wand, ItemStack item) {
+    public BarbarianWandHolder(BarbarianWand wand, ItemStack item) {
         super(wand, item);
     }
 

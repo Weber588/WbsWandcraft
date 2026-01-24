@@ -2,26 +2,28 @@
 	"format_version": "1.21.11",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "wbswandcraft:block/spellbook",
-		"particle": "wbswandcraft:block/spellbook"
+		"0": "wbswandcraft:item/spellbook",
+		"particle": "wbswandcraft:item/spellbook"
 	},
 	"elements": [
 		{
 			"name": "hover_left",
 			"from": [-2.19224, 3.3, 1],
 			"to": [7.80776, 3.35, 15],
+			"light_emission": 8,
 			"rotation": {"angle": -22.5, "axis": "z", "origin": [3.30776, 1.70133, 8]},
 			"faces": {
-				"up": {"uv": [8.75, 4, 11.25, 8], "texture": "#0"}
+				"up": {"uv": [8.75, 4, 11.25, 8], "texture": "#0", "tintindex": 0}
 			}
 		},
 		{
 			"name": "hover_right",
 			"from": [8.10776, 3.20133, 1],
 			"to": [18.10776, 3.25133, 15],
+			"light_emission": 8,
 			"rotation": {"angle": 22.5, "axis": "z", "origin": [12.60776, 1.70133, 8]},
 			"faces": {
-				"up": {"uv": [11.25, 4, 13.75, 8], "texture": "#0"}
+				"up": {"uv": [11.25, 4, 13.75, 8], "texture": "#0", "tintindex": 0}
 			}
 		}
 	],

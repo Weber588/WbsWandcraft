@@ -14,11 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public final class WizardryWandHolder extends WandHolder<WizardryWand> {
-
-    private static int slot(int row, int column) {
-        return row * 9 + column;
-    }
-
     private static final int WAND_DISPLAY_SLOT = slot(0, 5);
     private static final int UPGRADE_DISPLAY_SLOT = slot(1, 1);
     private static final List<Integer> UPGRADE_SLOTS = List.of(

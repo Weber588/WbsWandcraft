@@ -12,16 +12,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEnums;
+import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.wand.WandHolder;
 
 import java.util.*;
 
 public final class SorceryWandHolder extends WandHolder<SorceryWand> {
-    private static int slot(int row, int column) {
-        return row * 9 + column;
-    }
-
     private static final int PREV_TIER_SLOT = slot(0, 3);
     private static final int NEXT_TIER_SLOT = slot(0, 7);
     private static final ItemStack PREV_TIER_ITEM = new ItemStack(Material.RED_STAINED_GLASS_PANE);
@@ -67,11 +64,14 @@ public final class SorceryWandHolder extends WandHolder<SorceryWand> {
         Style style = Style.style(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false);
 
         // TODO: Make this configurable
-        fakeWand.lore(List.of(
-                Component.text("Place spell scrolls in the below slots!").style(style),
-                Component.text("Each one uses a different control, as").style(style),
-                Component.text("labelled above.").style(style)
-        ));
+        String description = "Place spell scrolls in the below slots!\nEach one uses a different control, as labelled above each slot.";
+
+        List<Component> lore = new LinkedList<>(WbsStrings.wrapText(description, 141).stream()
+                .map(Component::text)
+                .map(component -> component.style(style))
+                .toList());
+
+        fakeWand.lore(lore);
 
         return fakeWand;
     }

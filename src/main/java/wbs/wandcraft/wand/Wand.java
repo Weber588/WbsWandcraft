@@ -11,9 +11,10 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.entity.*;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -26,22 +27,20 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStringify;
-import wbs.wandcraft.events.EnqueueSpellsEvent;
-import wbs.wandcraft.events.SpendManaEvent;
-import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.cost.CostUtils;
+import wbs.wandcraft.events.EnqueueSpellsEvent;
+import wbs.wandcraft.events.SpendManaEvent;
 import wbs.wandcraft.spell.attributes.Attributable;
-import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
-import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.modifier.SpellModifier;
+import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.wand.types.WandType;
 
 import java.time.Duration;
@@ -59,11 +58,6 @@ public abstract class Wand implements Attributable {
             .setY(0.75)
             .setSpeed(0.01)
             .setAmount(20);
-
-    public static final SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("wand_cooldown", 10)
-            .setTicksToSecondsFormatter()
-            .displayName(Component.text("Recharge Time"))
-            .polarity(SpellAttribute.Polarity.NEGATIVE);
 
     public static boolean isWand(ItemStack item) {
         return fromItem(item) != null;
@@ -91,8 +85,8 @@ public abstract class Wand implements Attributable {
     }
 
     public static void updateLastUsed(PersistentDataContainer container) {
-        long currentTick = getTimestamp();
-        container.set(LAST_USED, PersistentDataType.LONG, currentTick);
+        long currentMillis = getTimestamp();
+        container.set(LAST_USED, PersistentDataType.LONG, currentMillis);
     }
 
     protected static long getTimestamp() {
@@ -111,10 +105,10 @@ public abstract class Wand implements Attributable {
 
     protected Wand(@NotNull String uuid) {
         this.uuid = uuid;
-        setAttribute(COOLDOWN.defaultInstance());
+        setAttribute(CastableSpell.COOLDOWN.defaultInstance());
     }
 
-    public void tryCasting(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
+    public void tryCasting(@NotNull Player player, ItemStack wandItem, Event event) {
         if (player.getCooldown(wandItem) > 0) {
             return;
         }
@@ -134,17 +128,17 @@ public abstract class Wand implements Attributable {
             return;
         }
 
-        int additionalCooldown = getAdditionalCooldownTicks(spellList);
+        int additionalCooldownTicks = getAdditionalCooldownTicks(spellList);
 
-        EnqueueSpellsEvent enqueueSpellsEvent = new EnqueueSpellsEvent(player, spellList, additionalCooldown);
+        EnqueueSpellsEvent enqueueSpellsEvent = new EnqueueSpellsEvent(player, spellList, additionalCooldownTicks);
 
         if (!enqueueSpellsEvent.callEvent()) {
             return;
         }
 
-        additionalCooldown = enqueueSpellsEvent.getAdditionalCooldown();
+        additionalCooldownTicks = enqueueSpellsEvent.getAdditionalCooldown();
 
-        if (!checkCooldown(player, wandContainer, event, additionalCooldown)) {
+        if (!checkCooldown(player, wandContainer, event, additionalCooldownTicks)) {
             return;
         }
 
@@ -169,7 +163,7 @@ public abstract class Wand implements Attributable {
                     int remainder = CostUtils.takeCost(player, cost);
 
                     if (remainder > 0) {
-                        onFailCost(player, wandItem, event, additionalCooldown);
+                        onFailCost(player, wandItem, event, additionalCooldownTicks);
                         return;
                     }
                 }
@@ -179,7 +173,7 @@ public abstract class Wand implements Attributable {
                 return;
             }
             case FAIL -> {
-                onFailCost(player, wandItem, event, additionalCooldown);
+                onFailCost(player, wandItem, event, additionalCooldownTicks);
                 return;
             }
         }
@@ -188,7 +182,7 @@ public abstract class Wand implements Attributable {
 
         queue.startCasting(player);
 
-        setCooldown(player, wandItem, event, additionalCooldown);
+        setCooldown(player, wandItem, event, additionalCooldownTicks);
 
         Integer maxDamage = wandItem.getData(DataComponentTypes.MAX_DAMAGE);
         if (maxDamage != null && maxDamage > 0) {
@@ -201,12 +195,12 @@ public abstract class Wand implements Attributable {
         }
     }
 
-    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, PlayerEvent event, int additionalCooldownTicks) {
+    protected boolean checkCooldown(@NotNull Player player, PersistentDataContainerView cooldownContainer, Event event, int additionalCooldownTicks) {
         long lastUsedMilli = getLastUsed(cooldownContainer);
-        long usableTick = lastUsedMilli + (getAttribute(COOLDOWN) + additionalCooldownTicks) * Ticks.SINGLE_TICK_DURATION_MS;
+        long usableMilli = lastUsedMilli + (getAttribute(CastableSpell.COOLDOWN) + additionalCooldownTicks) * Ticks.SINGLE_TICK_DURATION_MS;
         long timestamp = getTimestamp();
-        if (timestamp <= usableTick) {
-            Duration timeLeft = Duration.ofMillis(usableTick - timestamp);
+        if (timestamp <= usableMilli) {
+            Duration timeLeft = Duration.ofMillis(usableMilli - timestamp);
             String timeLeftString = WbsStringify.toString(timeLeft, false);
 
             WbsWandcraft.getInstance().sendActionBar("You can use that again in " + timeLeftString, player);
@@ -215,9 +209,9 @@ public abstract class Wand implements Attributable {
         return true;
     }
 
-    protected void setCooldown(@NotNull Player player, ItemStack itemForCooldown, PlayerEvent event, int additionalCooldown) {
+    protected void setCooldown(@NotNull Player player, ItemStack itemForCooldown, Event event, int additionalCooldownTicks) {
         itemForCooldown.editMeta(meta -> {
-            int cooldownTicks = additionalCooldown * 20 / 1000 + getAttribute(COOLDOWN);
+            int cooldownTicks = additionalCooldownTicks + this.getAttribute(CastableSpell.COOLDOWN);
 
             updateLastUsed(meta.getPersistentDataContainer());
             UseCooldown useCooldown = itemForCooldown.getData(DataComponentTypes.USE_COOLDOWN);
@@ -231,7 +225,7 @@ public abstract class Wand implements Attributable {
         });
     }
 
-    protected void onFailCost(@NotNull Player player, ItemStack wandItem, PlayerEvent event, int additionalCooldown) {
+    protected void onFailCost(@NotNull Player player, ItemStack wandItem, Event event, int additionalCooldown) {
         WbsWandcraft.getInstance().sendActionBar("&wNot enough mana!", player);
         setCooldown(player, wandItem, event, additionalCooldown);
     }
@@ -240,7 +234,7 @@ public abstract class Wand implements Attributable {
 
     }
 
-    protected void handleNoSpellAvailable(@NotNull Player player, ItemStack wandItem, PlayerEvent event) {
+    protected void handleNoSpellAvailable(@NotNull Player player, ItemStack wandItem, Event event) {
         WbsWandcraft.getInstance().sendActionBar("&wThis wand is empty...", player);
         FAIL_EFFECT.play(Particle.SMOKE, WbsEntityUtil.getMiddleLocation(player));
     }
@@ -254,13 +248,12 @@ public abstract class Wand implements Attributable {
 
         for (SpellInstance spell : spellList) {
             additionalCooldown += spell.getAttribute(CastableSpell.COOLDOWN);
-            additionalCooldown += spell.getAttribute(CastableSpell.DELAY);
         }
 
         return additionalCooldown;
     }
 
-    protected abstract @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, PlayerEvent event);
+    protected abstract @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, Event event);
 
     public Set<SpellAttributeInstance<?>> getAttributeInstances() {
         return attributeInstances;
@@ -371,8 +364,7 @@ public abstract class Wand implements Attributable {
 
     public abstract @NotNull WandType<?> getWandType();
 
-    @Contract("!null -> !null;_ -> new")
-    @Nullable
+    @Contract("_ -> new")
     public SpellInstance applyModifiers(SpellInstance spellInstance) {
         spellInstance = new SpellInstance(spellInstance);
         for (SpellAttributeModifier<?, ?> attributeModifier : attributeModifiers) {
@@ -388,5 +380,47 @@ public abstract class Wand implements Attributable {
 
     public void handleDrop(PlayerDropItemEvent event, Player player, ItemStack item) {
 
+    }
+
+    public void handleLeftClick(Player player, ItemStack item, PlayerInteractEvent event) {
+        tryCasting(player, item, event);
+    }
+
+    public void handleRightClick(Player player, ItemStack item, PlayerInteractEvent event) {
+        tryCasting(player, item, event);
+    }
+
+    public void handleConsume(Player player, ItemStack item, PlayerItemConsumeEvent event) {
+        tryCasting(player, item, event);
+    }
+
+    public void handleRightClickEntity(Player player, ItemStack item, PlayerInteractEntityEvent event) {
+        switch (event.getRightClicked()) {
+            case AbstractVillager ignored -> {
+                return;
+            }
+            case Vehicle vehicle -> {
+                if (vehicle.getPassengers().isEmpty()) {
+                    if (vehicle instanceof AbstractHorse horse) {
+                        if (horse.getInventory().getSaddle() != null) {
+                            return;
+                        }
+                    } else if (vehicle instanceof Pig pig) {
+                        if (pig.hasSaddle()) {
+                            return;
+                        }
+                    } else {
+                        return;
+                    }
+                }
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + event.getRightClicked());
+        }
+
+        tryCasting(player, item, event);
+    }
+
+    public void handleDamageEntity(Player player, ItemStack item, EntityDamageByEntityEvent event) {
+        tryCasting(player, item, event);
     }
 }

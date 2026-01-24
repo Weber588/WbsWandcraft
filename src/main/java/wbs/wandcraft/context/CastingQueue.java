@@ -1,18 +1,21 @@
 package wbs.wandcraft.context;
 
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.wand.Wand;
+import wbs.wandcraft.wand.types.WizardryWand;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class CastingQueue {
+    public static final int DEFAULT_CAST_DELAY = Ticks.TICKS_PER_SECOND;
+
     private static <T> Queue<T> singletonQueue(T value) {
         LinkedList<T> queue = new LinkedList<>();
         queue.add(value);
@@ -73,7 +76,12 @@ public class CastingQueue {
             return;
         }
 
-        int delay = Math.max(0, toCast.getAttribute(CastableSpell.DELAY));
+        int delay;
+        if (wand != null) {
+            delay = Math.max(0, wand.getAttribute(WizardryWand.DELAY));
+        } else {
+            delay = DEFAULT_CAST_DELAY;
+        }
 
         current = toCast.cast(player, wand, slot, () ->
                 WbsWandcraft.getInstance().runLater(() -> enqueueCast(player), delay)

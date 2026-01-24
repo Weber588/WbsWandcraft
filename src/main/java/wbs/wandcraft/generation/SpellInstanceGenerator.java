@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
+import wbs.utils.exceptions.InvalidConfigurationException;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WandcraftSettings;
@@ -83,13 +84,17 @@ public class SpellInstanceGenerator implements Keyed, ItemGenerator {
             Set<String> keys = attributesSection.getKeys(false);
 
             for (String key : keys) {
-                AttributeModifierGenerator<?> modifier = AttributeModifierGenerator.fromConfig(
-                        Objects.requireNonNull(attributesSection.getConfigurationSection(key)),
-                        settings,
-                        directory + "/" + key
-                );
+                try {
+                    AttributeModifierGenerator<?> modifier = AttributeModifierGenerator.fromConfig(
+                            Objects.requireNonNull(attributesSection.getConfigurationSection(key)),
+                            settings,
+                            directory + "/" + key
+                    );
 
-                modifierGenerators.add(modifier);
+                    modifierGenerators.add(modifier);
+                } catch (InvalidConfigurationException ex) {
+                    settings.logError(ex.getMessage(), ex.getDirectory());
+                }
             }
         }
     }

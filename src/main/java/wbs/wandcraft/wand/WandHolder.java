@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class WandHolder<T extends Wand> implements InventoryHolder {
+    protected static int slot(int row, int column) {
+        return row * 9 + column;
+    }
     protected static final ItemStack MAIN_OUTLINE = new ItemStack(Material.PURPLE_STAINED_GLASS_PANE);
     protected static final ItemStack SECONDARY_OUTLINE = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
     protected static final ItemStack UPGRADE_DISPLAY = new ItemStack(Material.STRUCTURE_VOID);

@@ -6,13 +6,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class SpellbookItemModelProvider implements BlockItemProvider {
+public class SpellbookItemModelProvider implements ExternalModelProvider {
     @Override
     public ResourcePackObjects.Model buildBaseModel() {
         return new ResourcePackObjects.ConditionModel(
                 "using_item",
-                new ResourcePackObjects.StaticModel(namespace() + ":block/" + value() + "_open"),
-                BlockItemProvider.super.buildBaseModel()
+                new ResourcePackObjects.CompositeModel(
+                        new ResourcePackObjects.StaticModel(namespace() + ":item/" + value() + "_open"),
+                        new ResourcePackObjects.StaticModel(namespace() + ":item/" + value() + "_open_overlay", List.of(
+                                new ResourcePackObjects.ModelTint(0, 0)
+                        )),
+                        new ResourcePackObjects.StaticModel(namespace() + ":item/" + value() + "_open_overlay_highlight", List.of(
+                                new ResourcePackObjects.ModelTint(1, 0)
+                        ))
+                ),
+                new ResourcePackObjects.StaticModel(namespace() + ":item/" + value())
         );
     }
 
@@ -22,8 +30,14 @@ public class SpellbookItemModelProvider implements BlockItemProvider {
     }
 
     @Override
-    public List<String> getAdditionalModels() {
-        return List.of(value() + "_open");
+    public List<String> getResources() {
+        return List.of(
+                ResourcePackBuilder.ITEM_TEXTURES_PATH + value() + ".png",
+                ResourcePackBuilder.ITEM_MODELS_PATH + value() + ".json",
+                ResourcePackBuilder.ITEM_MODELS_PATH + value() + "_open.json",
+                ResourcePackBuilder.ITEM_MODELS_PATH + value() + "_open_overlay.json",
+                ResourcePackBuilder.ITEM_MODELS_PATH + value() + "_open_overlay_highlight.json"
+        );
     }
 
     @Override

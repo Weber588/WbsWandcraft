@@ -16,7 +16,7 @@ public class AttributeSetOperator<T> extends AttributeModificationOperator<T, T>
 
     @Override
     public Component asComponent(SpellAttribute<T> attribute, T modifierValue) {
-        return attribute.displayName().append(Component.text(" = " + attribute.formatValue(modifierValue)));
+        return Component.text(" = " + attribute.formatValue(modifierValue));
     }
 
     @Override

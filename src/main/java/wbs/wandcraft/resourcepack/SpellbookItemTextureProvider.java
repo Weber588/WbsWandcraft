@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SpellbookItemTextureProvider implements FlatItemProvider {
+public class SpellbookItemTextureProvider implements DynamicItemTextureProvider {
     @Override
     public ResourcePackObjects.Model buildBaseModel() {
         return new ResourcePackObjects.ConditionModel(
                 "using_item",
                 new ResourcePackObjects.StaticModel(namespace() + ":item/" + value() + "_active", getTints()),
-                FlatItemProvider.super.buildBaseModel()
+                DynamicItemTextureProvider.super.buildBaseModel()
         );
     }
 

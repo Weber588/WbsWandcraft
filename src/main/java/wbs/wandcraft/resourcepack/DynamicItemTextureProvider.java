@@ -12,7 +12,7 @@ import java.util.Map;
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.ItemModelDefinition;
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModel;
 
-public interface FlatItemProvider extends ItemModelProvider {
+public interface DynamicItemTextureProvider extends ItemModelProvider {
     @NotNull
     List<TextureLayer> getTextures();
     @NotNull

@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.CustomModelData;
 import io.papermc.paper.datacomponent.item.WrittenBookContent;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import io.papermc.paper.persistence.PersistentDataContainerView;
@@ -44,6 +45,7 @@ import wbs.wandcraft.learning.RegistrableLearningMethod;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
@@ -65,6 +67,7 @@ public class Spellbook implements ItemDecorator {
             .build();
 
     private static final TextComponent LINE_BREAK = Component.newline().append(Component.text("                            ").decorate(TextDecoration.STRIKETHROUGH)).appendNewline();
+    public static final NamedTextColor WAND_COLOR = NamedTextColor.GOLD;
 
     public static List<SpellDefinition> getKnownSpells(PersistentDataViewHolder holder) {
         return getKnownSpells(holder.getPersistentDataContainer());
@@ -287,7 +290,7 @@ public class Spellbook implements ItemDecorator {
     private static @NotNull List<Component> getWandPages(List<WandType<?>> wandDefinitions) {
         List<Component> wandPages = new LinkedList<>();
         for (WandType<?> type : wandDefinitions) {
-            Component page = Component.empty().append(type.getItemName().color(NamedTextColor.GOLD))
+            Component page = Component.empty().append(type.getItemName().color(WAND_COLOR))
                     .append(Component.text(" (" + type.getEchoShardCost() + ")").style(COST_STYLE))
                     .append(LINE_BREAK)
                     .append(type.getDescription().color(DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC));
@@ -319,9 +322,9 @@ public class Spellbook implements ItemDecorator {
             }
             page = page.append(description);
 
+            Component hoverText = Component.empty();
             if (!isKnown) {
                 boolean isObtainable = false;
-                Component hoverText = Component.empty();
 
                 Multimap<SpellDefinition, LearningMethod> learningMap = WbsWandcraft.getInstance().getSettings().getLearningMap();
 
@@ -370,9 +373,9 @@ public class Spellbook implements ItemDecorator {
                 if (!isObtainable) {
                     hoverText = Component.text("Unknown...").decorate(TextDecoration.ITALIC).color(DESCRIPTION_COLOR);
                 }
-                page = page.hoverEvent(HoverEvent.showText(hoverText))
-                        .clickEvent(ClickEvent.runCommand("wbswandcraft:wbswandcraft spell info " + definition.key().asString()));
             }
+            page = page.hoverEvent(HoverEvent.showText(hoverText))
+                    .clickEvent(ClickEvent.runCommand("wbswandcraft:wbswandcraft spell info " + definition.key().asString()));
             spellPages.add(page);
         }
         return spellPages;
@@ -394,12 +397,27 @@ public class Spellbook implements ItemDecorator {
         return Component.text(page + ". " + title).clickEvent(ClickEvent.changePage(page)).appendNewline();
     }
 
+    @Override
     public void toItem(ItemStack item) {
         double consumeTicks = 2 * Ticks.TICKS_PER_SECOND;
         SpellDefinition currentSpell = getCurrentSpell();
+
+        CustomModelData.Builder modelData = CustomModelData.customModelData()
+                .addString(WbsWandcraft.getKey("spellbook").asString());
         if (currentSpell != null) {
             consumeTicks = currentSpell.getAttribute(CastableSpell.COOLDOWN);
+
+            List<SpellType> types = currentSpell.getTypes();
+
+            modelData.addColor(currentSpell.getPrimarySpellType().color());
+
+            if (types.size() > 1) {
+                modelData.addColor(types.get(1).color());
+            } else {
+                modelData.addColor(currentSpell.getPrimarySpellType().color());
+            }
         }
+        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, modelData);
 
         consumeTicks = Math.min(consumeTicks, 5 * Ticks.TICKS_PER_SECOND);
 
@@ -425,13 +443,36 @@ public class Spellbook implements ItemDecorator {
 
     @Override
     public @NotNull List<Component> getLore() {
-
-        return new LinkedList<>(
+        List<Component> components = new LinkedList<>(
                 WbsStrings.wrapText("Sneak + hold Right Click to Cast", 140).stream()
                         .map(Component::text)
                         .map(component -> component.color(NamedTextColor.AQUA))
                         .toList()
         );
+
+        components.add(Component.empty());
+
+        Component pageName = getCurrentPageName();
+        components.add(Component.text("Page " + (currentPage + 1) + ": ").color(DESCRIPTION_COLOR).append(pageName));
+
+        return components;
+    }
+
+    private @NotNull Component getCurrentPageName() {
+        Component pageName = null;
+        WandType<?> currentWandType = getCurrentWandType();
+        if (currentWandType != null) {
+            pageName = currentWandType.getItemName().color(WAND_COLOR);
+        } else {
+            SpellDefinition currentSpell = getCurrentSpell();
+            if (currentSpell != null) {
+                pageName = currentSpell.displayName();
+            }
+        }
+        if (pageName == null) {
+            pageName = Component.text("Contents");
+        }
+        return pageName;
     }
 
     public void tryCasting(Player player, ItemStack item) {
