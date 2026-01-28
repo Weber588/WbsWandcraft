@@ -60,8 +60,8 @@ public class AttributeMultiplyOperator<T extends Number, M extends Number> exten
     }
 
     @Override
-    public SpellAttribute.Polarity getPolarity(M modifierValue) {
-        return modifierValue.doubleValue() < 1 ? SpellAttribute.Polarity.NEGATIVE : SpellAttribute.Polarity.POSITIVE;
+    public SpellAttribute.Sentiment getSentiment(M modifierValue) {
+        return modifierValue.doubleValue() < 1 ? SpellAttribute.Sentiment.NEGATIVE : SpellAttribute.Sentiment.POSITIVE;
     }
 
     @Override

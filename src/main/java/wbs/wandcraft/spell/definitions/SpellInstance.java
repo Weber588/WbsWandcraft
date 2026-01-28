@@ -13,6 +13,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.events.SpellCastEvent;
@@ -32,6 +33,7 @@ import java.util.Set;
 
 public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     public static final NamespacedKey SPELL_INSTANCE_KEY = WbsWandcraft.getKey("spell_instance");
+    public static final NamespacedKey LAST_CAST_KEY = WbsWandcraft.getKey("last_cast_spell");
 
     public static boolean isSpellInstance(ItemStack itemStack) {
         return fromItem(itemStack) != null;
@@ -91,6 +93,8 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
                 return null;
             }
             castable.cast(context);
+            PersistentDataContainer container = player.getPersistentDataContainer();
+            container.set(LAST_CAST_KEY, WbsPersistentDataType.NAMESPACED_KEY, castable.getKey());
 
             // If a spell has completeAfterCast = false, then it will handle the callback itself at a later time.
             if (castable.completeAfterCast()) {

@@ -281,7 +281,11 @@ public class ArtificingTable implements InventoryHolder {
         }
 
         inventory.forEach(inventoryStack -> {
-            if (item != null) block.getWorld().dropItemNaturally(block.getLocation().toCenterLocation(), inventoryStack);
+            if (inventoryStack != null) block.getWorld().dropItemNaturally(block.getLocation().toCenterLocation(), inventoryStack);
+        });
+
+        BlockChunkStorageUtil.modifyContainer(block, container -> {
+            container.remove(ARTIFICING_INVENTORY);
         });
 
         block.getWorld().dropItemNaturally(

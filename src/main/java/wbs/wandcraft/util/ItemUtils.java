@@ -5,8 +5,7 @@ import io.papermc.paper.datacomponent.item.*;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
-import io.papermc.paper.registry.TypedKey;
-import io.papermc.paper.registry.set.RegistrySet;
+import io.papermc.paper.registry.tag.Tag;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.Ticks;
@@ -21,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.WbsWandcraftBootstrap;
 import wbs.wandcraft.equipment.MagicEquipmentType;
 import wbs.wandcraft.equipment.hat.MagicHat;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -97,14 +97,12 @@ public class ItemUtils {
         item.getDataTypes().forEach(item::unsetData);
         item.setData(DataComponentTypes.ITEM_NAME, Component.text("Wand"));
 
-        List<TypedKey<BlockType>> allBlockTypes = RegistryAccess.registryAccess().getRegistry(RegistryKey.BLOCK).keyStream()
-                .map(RegistryKey.BLOCK::typedKey)
-                .toList();
+        Tag<BlockType> tag = RegistryAccess.registryAccess().getRegistry(RegistryKey.BLOCK).getTag(WbsWandcraftBootstrap.ALL_BLOCKS);
 
         // Allow spells to break block with correct tool
         item.setData(DataComponentTypes.TOOL,
                 Tool.tool()
-                        .addRule(Tool.rule(RegistrySet.keySet(RegistryKey.BLOCK, allBlockTypes), Float.MIN_VALUE, TriState.TRUE))
+                        .addRule(Tool.rule(tag, Float.MIN_VALUE, TriState.TRUE))
                         .build()
         );
         item.setData(DataComponentTypes.USE_COOLDOWN, UseCooldown.useCooldown(0.0001f)
@@ -247,7 +245,7 @@ public class ItemUtils {
             cloneBuilder.addString(first.attribute().getKey().asString());
             item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
 
-            cloneBuilder.addColor(first.getPolarity().getScrollColor());
+            cloneBuilder.addColor(first.getSentiment().getScrollColor());
         }
 
         item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);

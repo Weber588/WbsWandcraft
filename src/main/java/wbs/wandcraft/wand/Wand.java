@@ -1,6 +1,7 @@
 package wbs.wandcraft.wand;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.CustomModelData;
 import io.papermc.paper.datacomponent.item.UseCooldown;
 import io.papermc.paper.persistence.PersistentDataContainerView;
@@ -337,8 +338,7 @@ public abstract class Wand implements Attributable {
         );
     }
 
-    @Nullable
-    protected abstract Color getWandColour();
+    protected abstract @Nullable Color getWandColour();
 
     public @NotNull String getUUID() {
         return uuid;
@@ -383,11 +383,21 @@ public abstract class Wand implements Attributable {
     }
 
     public void handleLeftClick(Player player, ItemStack item, PlayerInteractEvent event) {
-        tryCasting(player, item, event);
+        // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
+        Consumable consumable = item.getData(DataComponentTypes.CONSUMABLE);
+        if (consumable == null || consumable.consumeSeconds() < (1 / (float) Ticks.TICKS_PER_SECOND)) {
+            tryCasting(player, item, event);
+            event.setCancelled(true);
+        }
     }
 
     public void handleRightClick(Player player, ItemStack item, PlayerInteractEvent event) {
-        tryCasting(player, item, event);
+        // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
+        Consumable consumable = item.getData(DataComponentTypes.CONSUMABLE);
+        if (consumable == null || consumable.consumeSeconds() < (1 / (float) Ticks.TICKS_PER_SECOND)) {
+            tryCasting(player, item, event);
+            event.setCancelled(true);
+        }
     }
 
     public void handleConsume(Player player, ItemStack item, PlayerItemConsumeEvent event) {
@@ -414,7 +424,7 @@ public abstract class Wand implements Attributable {
                     }
                 }
             }
-            default -> throw new IllegalStateException("Unexpected value: " + event.getRightClicked());
+            default -> {}
         }
 
         tryCasting(player, item, event);

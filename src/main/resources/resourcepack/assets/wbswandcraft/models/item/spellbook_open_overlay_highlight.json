@@ -1,0 +1,68 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "wbswandcraft:item/spellbook",
+		"particle": "wbswandcraft:item/spellbook"
+	},
+	"elements": [
+		{
+			"name": "hover_left",
+			"from": [-2.19224, 3.3, 1],
+			"to": [7.80776, 3.35, 15],
+			"light_emission": 8,
+			"rotation": {"angle": -22.5, "axis": "z", "origin": [3.30776, 1.70133, 8]},
+			"faces": {
+				"up": {"uv": [8.75, 8, 11.25, 12], "texture": "#0", "tintindex": 0}
+			}
+		},
+		{
+			"name": "hover_right",
+			"from": [8.10776, 3.20133, 1],
+			"to": [18.10776, 3.25133, 15],
+			"light_emission": 8,
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [12.60776, 1.70133, 8]},
+			"faces": {
+				"up": {"uv": [11.25, 8, 13.75, 12], "texture": "#0", "tintindex": 0}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [105, 1, 32],
+			"translation": [0, 2.75, 4.75],
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [105, 1, 32],
+			"translation": [0, 2.75, 4.75],
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"firstperson_righthand": {
+			"rotation": [-10, 30, 74],
+			"translation": [2, 1, 4.5],
+			"scale": [0.45, 0.45, 0.45]
+		},
+		"firstperson_lefthand": {
+			"rotation": [-10, 30, 74],
+			"translation": [2, 1, 4.5],
+			"scale": [0.45, 0.45, 0.45]
+		},
+		"ground": {
+			"translation": [0, 2, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"gui": {
+			"rotation": [45, 0, 0],
+			"translation": [0, 2.75, 0],
+			"scale": [0.6, 0.75, 0.75]
+		},
+		"head": {
+			"rotation": [-180, 0, 0]
+		},
+		"fixed": {
+			"rotation": [-90, 0, 0],
+			"translation": [0, 0, -6.75]
+		}
+	}
+}

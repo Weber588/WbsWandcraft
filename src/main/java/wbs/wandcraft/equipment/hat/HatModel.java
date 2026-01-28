@@ -4,12 +4,12 @@ import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.resourcepack.BlockItemProvider;
+import wbs.wandcraft.resourcepack.ExternalItemProvider;
 import wbs.wandcraft.resourcepack.ResourcePackObjects;
 
 import java.util.List;
 
-public final class HatModel implements BlockItemProvider {
+public final class HatModel implements ExternalItemProvider {
     public static final HatModel WITCH = new HatModel("witch");
     public static final HatModel APPRENTICE = new HatModel("apprentice", "SolariumYT");
     public static final HatModel ARCANIST = new HatModel("arcanist", "SolariumYT");
@@ -45,16 +45,20 @@ public final class HatModel implements BlockItemProvider {
     public ResourcePackObjects.Model buildBaseModel() {
         ResourcePackObjects.SelectModel selectModel = new ResourcePackObjects.SelectModel(
                 "minecraft:context_entity_type",
-                -1,
-                BlockItemProvider.super.buildBaseModel()
+                ExternalItemProvider.super.buildBaseModel()
         );
 
         selectModel.addCase(new ResourcePackObjects.ModelCase(
                 "minecraft:evoker",
-                new ResourcePackObjects.StaticModel(namespace() + ":block/" + value() + "_evoker")
+                new ResourcePackObjects.StaticModel(namespace() + ":" + getModelType() + "/" + value() + "_evoker")
         ));
 
         return selectModel;
+    }
+
+    @Override
+    public @NotNull String getModelType() {
+        return "block";
     }
 
     @Override

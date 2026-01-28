@@ -49,7 +49,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     private final List<TypedFormatter<?>> typedFormatters = new LinkedList<>();
     private boolean isWritable = false;
     private String textureValue;
-    private Polarity polarity = Polarity.POSITIVE;
+    private Sentiment sentiment = Sentiment.POSITIVE;
 
     public SpellAttribute(@NotNull NamespacedKey key, @NotNull RegisteredPersistentDataType<T> type, @Nullable T defaultValue, @NotNull Function<String, T> parse) {
         this.key = key;
@@ -292,25 +292,25 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return this;
     }
 
-    public Polarity polarity() {
-        return polarity;
+    public Sentiment sentiment() {
+        return sentiment;
     }
 
     @Nullable
-    public TextColor getPolarityColor(boolean isPositive) {
+    public TextColor getSentimentColour(boolean isPositive) {
         if (isPositive) {
-            return polarity.color();
+            return sentiment.color();
         } else {
-            return polarity.invert().color();
+            return sentiment.invert().color();
         }
     }
 
-    public Polarity getPolarity(T value) {
-        return polarity;
+    public Sentiment getSentiment(T value) {
+        return sentiment;
     }
 
-    public SpellAttribute<T> polarity(Polarity polarity) {
-        this.polarity = polarity;
+    public SpellAttribute<T> sentiment(Sentiment sentiment) {
+        this.sentiment = sentiment;
         return this;
     }
 
@@ -328,7 +328,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         }
     }
 
-    public enum Polarity {
+    public enum Sentiment {
         POSITIVE(NamedTextColor.AQUA, WbsColours.fromHSB(0.675, 0.5, 0.6)),
         NEGATIVE(NamedTextColor.RED, WbsColours.fromHSB(0.958, 0.85, 1)),
         NEUTRAL(WbsColours.fromHSB(0.025, 0.6, 0.75));
@@ -337,11 +337,11 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         private NamedTextColor color;
         private final Color scrollColor;
 
-        Polarity(Color scrollColor) {
+        Sentiment(Color scrollColor) {
 
             this.scrollColor = scrollColor;
         }
-        Polarity(NamedTextColor color, Color scrollColor) {
+        Sentiment(NamedTextColor color, Color scrollColor) {
             this.color = color;
             this.scrollColor = scrollColor;
         }
@@ -354,7 +354,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
             return scrollColor;
         }
 
-        public Polarity invert() {
+        public Sentiment invert() {
             return switch (this) {
                 case POSITIVE -> NEGATIVE;
                 case NEGATIVE -> POSITIVE;
@@ -362,7 +362,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
             };
         }
 
-        public Polarity multiply(Polarity other) {
+        public Sentiment multiply(Sentiment other) {
             return switch (this) {
                 case POSITIVE -> other;
                 case NEGATIVE -> other.invert();

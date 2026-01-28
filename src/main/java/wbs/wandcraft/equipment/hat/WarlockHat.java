@@ -1,10 +1,6 @@
 package wbs.wandcraft.equipment.hat;
 
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.damage.DamageSource;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
 import wbs.wandcraft.RegisteredPersistentDataType;
@@ -17,7 +13,6 @@ import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
-import wbs.wandcraft.util.DamageUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -49,22 +44,6 @@ public class WarlockHat extends MagicHat {
     public void registerEvents() {
         super.registerEvents();
         WbsEventUtils.register(WbsWandcraft.getInstance(), EnqueueSpellsEvent.class, this::onEnqueueSpells);
-        WbsEventUtils.register(WbsWandcraft.getInstance(), EntityDamageByEntityEvent.class, this::onEntityDamage);
-    }
-
-    private void onEntityDamage(EntityDamageByEntityEvent event) {
-        DamageSource damageSource = event.getDamageSource();
-        if (DamageUtils.isMagicDamage(damageSource.getDamageType())) {
-            Entity damager = damageSource.getCausingEntity();
-            if (damager == null) {
-                damager = damageSource.getDirectEntity();
-            }
-            if (damager instanceof LivingEntity entity) {
-                ifEquipped(entity, () -> {
-                    event.setDamage(DAMAGE_MODIFIER.modify(event.getDamage()));
-                });
-            }
-        }
     }
 
     private void onEnqueueSpells(EnqueueSpellsEvent event) {

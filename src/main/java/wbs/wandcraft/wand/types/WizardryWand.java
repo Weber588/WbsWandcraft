@@ -26,7 +26,7 @@ public class WizardryWand extends Wand {
             .setShowAttribute(delay -> delay > 0 && delay != CastingQueue.DEFAULT_CAST_DELAY)
             .setTicksToSecondsFormatter()
             .overrideTextureValue("duration")
-            .polarity(SpellAttribute.Polarity.NEGATIVE);
+            .sentiment(SpellAttribute.Sentiment.NEGATIVE);
     public static final SpellAttribute<Boolean> SHUFFLE = new BooleanSpellAttribute("shuffle", false)
             .setShowAttribute(shuffle -> shuffle);
     public static final SpellAttribute<Integer> SLOTS = new IntegerSpellAttribute("slots", 10);

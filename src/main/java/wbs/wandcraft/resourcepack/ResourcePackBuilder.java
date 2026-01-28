@@ -29,12 +29,15 @@ import java.util.Set;
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.ItemSelectorDefinition;
 
 public class ResourcePackBuilder {
-
-    public static final String ITEMS_FOLDER = "resourcepack/assets/minecraft/items/";
-    public static final String ITEM_MODELS_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/models/item/";
-    public static final String BLOCK_MODELS_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/models/block/";
-    public static final String ITEM_TEXTURES_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/textures/item/";
-    public static final String BLOCK_TEXTURES_PATH = "resourcepack/assets/" + WbsWandcraft.getInstance().namespace() + "/textures/block/";
+    public static final String ASSETS_FOLDER = "resourcepack/assets/";
+    public static final @NotNull String NAMESPACE_ASSETS_FOLDER = ASSETS_FOLDER + WbsWandcraft.getInstance().namespace() + "/";
+    public static final String ITEMS_FOLDER = ASSETS_FOLDER + "minecraft/items/";
+    public static final @NotNull String MODELS_FOLDER = NAMESPACE_ASSETS_FOLDER + "models/";
+    public static final String ITEM_MODELS_PATH = MODELS_FOLDER + "item/";
+    public static final String BLOCK_MODELS_PATH = MODELS_FOLDER + "block/";
+    public static final @NotNull String TEXTURES_FOLDER = NAMESPACE_ASSETS_FOLDER + "textures/";
+    public static final String ITEM_TEXTURES_PATH = TEXTURES_FOLDER + "item/";
+    public static final String BLOCK_TEXTURES_PATH = TEXTURES_FOLDER + "block/";
 
     public static void loadResourcePack(WandcraftSettings settings, YamlConfiguration config) {
         createResourcePack(settings, config);
@@ -97,7 +100,7 @@ public class ResourcePackBuilder {
 
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.SPELLS.stream().toList(), ItemUtils.BASE_MATERIAL_SPELL));
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.ATTRIBUTES.stream().toList(), ItemUtils.BASE_MATERIAL_MODIFIER));
-            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.WAND_TEXTURES.stream().toList(), ItemUtils.BASE_MATERIAL_WAND));
+            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.WAND_MODELS.stream().toList(), ItemUtils.BASE_MATERIAL_WAND));
             //resourcesToLoad.addAll(writeProviders(gson, List.of(new SpellbookItemTextureProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
             resourcesToLoad.addAll(writeProviders(gson, List.of(new SpellbookItemModelProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
             resourcesToLoad.addAll(writeProviders(gson, List.of(getSimpleProvider("blank_scroll")), ItemUtils.BASE_MATERIAL_BLANK_SCROLL));
@@ -133,25 +136,23 @@ public class ResourcePackBuilder {
 
         Set<T> valid = new HashSet<>();
         providers.forEach(provider -> {
-            if (provider instanceof ExternalModelProvider externalProvider) {
-                resourcesToLoad.addAll(externalProvider.getResources());
+            if (provider instanceof ExternalItemProvider externalProvider) {
+                String folder = externalProvider.getModelType();
+                String modelsFolder = MODELS_FOLDER + folder + "/";
 
-                valid.add(provider);
-            }
-
-            if (provider instanceof BlockItemProvider blockProvider) {
-                String modelPath = BLOCK_MODELS_PATH + provider.value() + ".json";
+                String modelPath = modelsFolder + provider.value() + ".json";
                 resourcesToLoad.add(modelPath);
 
-                for (String additionalModel : blockProvider.getAdditionalModels()) {
-                    resourcesToLoad.add(BLOCK_MODELS_PATH + additionalModel + ".json");
+                for (String additionalModel : externalProvider.getAdditionalModels()) {
+                    resourcesToLoad.add(modelsFolder + additionalModel + ".json");
                 }
 
-                String texturePath = BLOCK_TEXTURES_PATH + provider.value() + ".png";
+                String texturesFolder = TEXTURES_FOLDER + folder + "/";
+                String texturePath = texturesFolder + provider.value() + ".png";
                 resourcesToLoad.add(texturePath);
 
-                for (String additionalTexture : blockProvider.getAdditionalTextures()) {
-                    resourcesToLoad.add(BLOCK_TEXTURES_PATH + additionalTexture + ".png");
+                for (String additionalTexture : externalProvider.getAdditionalTextures()) {
+                    resourcesToLoad.add(texturesFolder + additionalTexture + ".png");
                 }
 
                 if (plugin.getResource(modelPath) != null && plugin.getResource(texturePath) != null) {

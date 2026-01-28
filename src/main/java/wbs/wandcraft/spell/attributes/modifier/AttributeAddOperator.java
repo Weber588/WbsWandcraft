@@ -22,8 +22,8 @@ public class AttributeAddOperator<T extends Number, M extends Number> extends At
     }
 
     @Override
-    public SpellAttribute.Polarity getPolarity(M modifierValue) {
-        return modifierValue.doubleValue() < 0 ? SpellAttribute.Polarity.NEGATIVE : SpellAttribute.Polarity.POSITIVE;
+    public SpellAttribute.Sentiment getSentiment(M modifierValue) {
+        return modifierValue.doubleValue() < 0 ? SpellAttribute.Sentiment.NEGATIVE : SpellAttribute.Sentiment.POSITIVE;
     }
 
     @Override

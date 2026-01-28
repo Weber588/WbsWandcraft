@@ -12,7 +12,9 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.util.persistent.AbstractPersistentWandType;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
+import wbs.wandcraft.wand.ExternalWandModel;
 import wbs.wandcraft.wand.Wand;
+import wbs.wandcraft.wand.WandModelProvider;
 import wbs.wandcraft.wand.WandTexture;
 
 import java.util.UUID;
@@ -52,7 +54,7 @@ public class WandType<T extends Wand> implements Keyed {
             () -> new WizardryWand(UUID.randomUUID().toString()));
     public static final WandType<SorceryWand> SORCERY = new WandType<>(
             WbsWandcraft.getKey("sorcery"),
-            Component.text("Sorcery Wand").color(TextColor.color(0x173B08)),
+            Component.text("Sorcery Wand").color(TextColor.color(0x9e9e15)),
             "A wand with a slot for various controls, allowing a different spell for punch, right click, and a few others.",
             32,
             CustomPersistentDataTypes.SORCERY_WAND_TYPE,
@@ -80,19 +82,29 @@ public class WandType<T extends Wand> implements Keyed {
             null,
             0,
             () -> new BarbarianWand(UUID.randomUUID().toString()));
+    public static final WandType<BroomstickWand> BROOMSTICK = new WandType<>(
+            WbsWandcraft.getKey("broomstick"),
+            Component.text("Broomstick").color(TextColor.color(0x674D1E)),
+            "A \"wand\" that can be placed and ridden, or used to re-cast the last spell you cast!",
+            24,
+            CustomPersistentDataTypes.BROOMSTICK_WAND_TYPE,
+            ExternalWandModel.BROOMSTICK,
+            ItemUseAnimation.BRUSH,
+            20,
+            () -> new BroomstickWand(UUID.randomUUID().toString()));
 
     private final NamespacedKey key;
     private final @NotNull Component itemName;
     private final @NotNull String rawDescription;
     private final int echoShardCost;
     private final AbstractPersistentWandType<T> persistentDataType;
-    private final WandTexture wandTexture;
+    private final WandModelProvider wandTexture;
     @Nullable
     private final ItemUseAnimation animation;
     private final int animationTicks;
     private final Supplier<T> supplier;
 
-    public WandType(NamespacedKey key, @NotNull Component itemName, @NotNull String rawDescription, int echoShardCost, AbstractPersistentWandType<T> persistentDataType, WandTexture wandTexture, ItemUseAnimation animation, int animationTicks, Supplier<T> supplier) {
+    public WandType(NamespacedKey key, @NotNull Component itemName, @NotNull String rawDescription, int echoShardCost, AbstractPersistentWandType<T> persistentDataType, WandModelProvider wandTexture, ItemUseAnimation animation, int animationTicks, Supplier<T> supplier) {
         this.key = key;
         this.itemName = itemName;
         this.rawDescription = rawDescription;
@@ -117,7 +129,7 @@ public class WandType<T extends Wand> implements Keyed {
         return supplier.get();
     }
 
-    public WandTexture getWandTexture() {
+    public WandModelProvider getWandTexture() {
         return wandTexture;
     }
 

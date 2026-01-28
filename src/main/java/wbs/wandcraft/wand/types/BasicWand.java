@@ -45,7 +45,7 @@ public class BasicWand extends Wand {
         return new BasicWandHolder(this, item);
     }
 
-    public ItemStack getItem() {
+    public @Nullable ItemStack getItem() {
         return item;
     }
 

@@ -9,6 +9,7 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -127,6 +128,7 @@ public class SorceryWand extends Wand {
 
     private static @NotNull WandControl getWandControl(Player player, Event event) {
         return switch (event) {
+            case EntityDamageByEntityEvent ignored -> player.isSneaking() ? WandControl.SHIFT_PUNCH : WandControl.PUNCH;
             case PlayerInteractEvent interactEvent -> {
                 Action action = interactEvent.getAction();
                 if (action.isRightClick()) {

@@ -4,59 +4,65 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Added Wilden and Barbarian wands">
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ExternalModelProvider.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentBarbarianWandType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentWildenWandType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BarbarianWand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BarbarianWandHolder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WildenWand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WildenWandHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="8e71bfef-9c57-4ef0-b34e-f60654d8aa7e" name="Changes" comment="Added Broomstick wand &amp; various fixes">
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/listeners/BroomstickEvents.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/PersistentBroomstickWandType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/ExternalWandModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandModelProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BroomstickWand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BroomstickWandHolder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/item/spellbook_open_overlay_highlight.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/item/wand_broomstick.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/item/wand_broomstick_backwards.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_barbarian.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_barbarian_base.pdn" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_barbarian_base.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_broomstick.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_mimic.pdn" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_mimic.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_mimic_base.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_wilden.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_wilden_base.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftRegistries.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftRegistries.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WandcraftSettings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/context/CastingQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/context/CastingQueue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/SpellslingerHat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/SpellslingerHat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/generation/SpellInstanceGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/generation/SpellInstanceGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/listeners/SpellbookEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/listeners/SpellbookEvents.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraft.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraft.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraftBootstrap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/WbsWandcraftBootstrap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/crafting/ArtificingTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/crafting/ArtificingTable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StatusEffectInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/effects/StatusEffectInstance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/HatModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/HatModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/WarlockHat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/equipment/hat/WarlockHat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/listeners/ArtificingTableEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/listeners/ArtificingTableEvents.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/listeners/WandEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/listeners/WandEvents.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/FlatItemProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/DynamicItemTextureProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/BlockItemProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ExternalItemProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ExternalModelProvider.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackObjects.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/ResourcePackObjects.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/SpellbookItemModelProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/SpellbookItemModelProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/SpellbookItemTextureProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/resourcepack/SpellbookItemTextureProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/BooleanSpellAttribute.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/BooleanSpellAttribute.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/DoubleSpellAttribute.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/DoubleSpellAttribute.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/EnumSpellAttribute.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/EnumSpellAttribute.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/IntegerSpellAttribute.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/IntegerSpellAttribute.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/LongSpellAttribute.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/LongSpellAttribute.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/SpellAttribute.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/SpellAttribute.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeAddOperator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeAddOperator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeModificationOperator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeModificationOperator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeMultiplyOperator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeMultiplyOperator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeSetOperator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/AttributeSetOperator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellDefinition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/SpellAttributeModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/attributes/modifier/SpellAttributeModifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/SpellInstance.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/CastableSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/CastableSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/RangedSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/RangedSpell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spellbook/Spellbook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spellbook/Spellbook.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/CustomProjectileSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/CustomProjectileSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DamageSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DamageSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DirectionalSpell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/spell/definitions/extensions/DirectionalSpell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/ItemUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/CustomPersistentDataTypes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/util/persistent/CustomPersistentDataTypes.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/Wand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandHolder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandTexture.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/WandTexture.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BasicWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BasicWand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BasicWandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/BasicWandHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/MageWandHolder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/SorceryWandHolder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WandType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WandType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWandHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/wbs/wandcraft/wand/types/WizardryWandHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/generation.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/generation.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/item-generators.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/item-generators.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/spellbook.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/item/spellbook.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/spellbook_open.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/item/spellbook_open.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/block/spellbook_open_overlay.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/item/spellbook_open_overlay.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/item/blank_scroll.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/item/wand_gem.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/models/item/wand_trident.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/block/spellbook.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spellbook.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/spellbook.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_mage.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_mage.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_overgrown.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/resourcepack/assets/wbswandcraft/textures/item/wand_overgrown.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,8 +113,8 @@
       <list>
         <option value="Enum" />
         <option value="AnnotationType" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -190,6 +196,9 @@
       <recent name="C:\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\wbswandcraft\models\item" />
       <recent name="C:\Users\idont\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\wbswandcraft\textures" />
       <recent name="C:\Users\idont\IdeaProjects\WbsWandcraft\src\main\resources\resourcepack\assets\wbswandcraft" />
+    </key>
+    <key name="IntroduceConstantDialog.RECENTS_KEY">
+      <recent name="wbs.wandcraft.resourcepack.ResourcePackBuilder" />
     </key>
     <key name="MoveInnerDialog.RECENTS_KEY">
       <recent name="wbs.wandcraft.definitions.extensions" />
@@ -325,9 +334,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.WbsWandcraft [build]" />
+        <item itemvalue="Gradle.WbsWandcraft [assemble]" />
         <item itemvalue="Gradle.WbsWandcraft [buildDependents]" />
         <item itemvalue="Gradle.WbsWandcraft [clean]" />
-        <item itemvalue="Gradle.WbsWandcraft [assemble]" />
         <item itemvalue="Gradle.C:/IdeaProjects/WbsWandcraft" />
       </list>
     </recent_temporary>
@@ -340,14 +349,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1739596499407</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Fixed damage projectiles not doing damage">
-      <option name="closed" value="true" />
-      <created>1743315790674</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1743315790674</updated>
     </task>
     <task id="LOCAL-00013" summary="Made Blink directional to allow accuracy">
       <option name="closed" value="true" />
@@ -733,7 +734,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768968401648</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="Added Wilden and Barbarian wands">
+      <option name="closed" value="true" />
+      <created>1769215777259</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1769215777261</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -752,7 +761,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added Sorcery Wand&#10;Fixed numeric attribute modifiers" />
     <MESSAGE value="Tweaked default values for some spells" />
     <MESSAGE value="Added cost mechanics" />
     <MESSAGE value="Added Basic and Mage wands" />
@@ -777,6 +785,7 @@
     <MESSAGE value="Excluded workspace.xml from git" />
     <MESSAGE value="Tweaked spellbook displays" />
     <MESSAGE value="Added Wilden and Barbarian wands" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Wilden and Barbarian wands" />
+    <MESSAGE value="Added Broomstick wand &amp; various fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Broomstick wand &amp; various fixes" />
   </component>
 </project>

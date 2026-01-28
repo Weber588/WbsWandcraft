@@ -105,7 +105,7 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
 
     @Override
     public Component toComponent() {
-        NamedTextColor color = getPolarity().color();
+        NamedTextColor color = getSentiment().color();
 
         return attribute.displayName().append(
                 modifierOperation.asComponent(attribute, modifierValue)
@@ -126,7 +126,7 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
         value(modifierInstance.value());
     }
 
-    public SpellAttribute.Polarity getPolarity() {
-        return modifierOperation.getPolarity(modifierValue).multiply(attribute.polarity());
+    public SpellAttribute.Sentiment getSentiment() {
+        return modifierOperation.getSentiment(modifierValue).multiply(attribute.sentiment());
     }
 }

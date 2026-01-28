@@ -113,6 +113,7 @@ public class WbsWandcraft extends WbsPlugin {
         registerListener(new MagicBlockEvents());
         registerListener(new RecipeEvents());
         registerListener(new LearningEvents());
+        registerListener(new BroomstickEvents());
 
         // Run next tick, when the plugin is fully enabled
         runSync(() -> {

@@ -116,6 +116,7 @@ public class StatusEffectInstance {
                 timeLeft--;
                 if (effectsContainer.has(effect.getKey()) && timeLeft > 0) {
                     effectsContainer.set(effect.getKey(), CustomPersistentDataTypes.STATUS_EFFECT, StatusEffectInstance.this);
+                    container.set(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
 
                     boolean cancel = effect.tick(entity, StatusEffectInstance.this);
                     if (cancel) {
@@ -132,8 +133,6 @@ public class StatusEffectInstance {
                 } else {
                     StatusEffectInstance.this.cancel(true);
                 }
-
-                container.set(EFFECTS_KEY, PersistentDataType.TAG_CONTAINER, effectsContainer);
             }
         }.runTaskTimer(WbsWandcraft.getInstance(), 0L, 1L).getTaskId();
 

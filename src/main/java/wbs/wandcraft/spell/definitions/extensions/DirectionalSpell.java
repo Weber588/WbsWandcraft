@@ -13,7 +13,7 @@ public interface DirectionalSpell extends ISpellDefinition {
     SpellAttribute<Double> IMPRECISION = new DoubleSpellAttribute("imprecision", 15)
             .setShowAttribute(value -> value != 0)
             .setNumericFormatter(accuracy -> accuracy + " degrees")
-            .polarity(SpellAttribute.Polarity.NEGATIVE);
+            .sentiment(SpellAttribute.Sentiment.NEGATIVE);
 
     default Vector getDirection(CastContext context) {
         if (this instanceof RangedSpell) {

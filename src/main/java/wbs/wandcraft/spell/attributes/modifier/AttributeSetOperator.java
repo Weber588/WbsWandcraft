@@ -20,8 +20,8 @@ public class AttributeSetOperator<T> extends AttributeModificationOperator<T, T>
     }
 
     @Override
-    public SpellAttribute.Polarity getPolarity(T modifierValue) {
-        return SpellAttribute.Polarity.NEUTRAL;
+    public SpellAttribute.Sentiment getSentiment(T modifierValue) {
+        return SpellAttribute.Sentiment.NEUTRAL;
     }
 
     @Override

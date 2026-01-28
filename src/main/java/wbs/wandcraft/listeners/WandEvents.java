@@ -1,8 +1,5 @@
 package wbs.wandcraft.listeners;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.Consumable;
-import net.kyori.adventure.util.Ticks;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
@@ -132,15 +129,10 @@ public class WandEvents implements Listener {
         if (clickedBlock != null && ArtificingConfig.isInstance(clickedBlock)) {
             event.setCancelled(true);
         } else {
-            // Don't try casting if it's a wand with a consumable component -- it needs to complete an animation first.
-            Consumable consumable = item.getData(DataComponentTypes.CONSUMABLE);
-            if (consumable == null || consumable.consumeSeconds() < 1 / (float) Ticks.TICKS_PER_SECOND) {
-                if (event.getAction().isLeftClick()) {
-                    wand.handleLeftClick(player, item, event);
-                } else if (event.getAction().isRightClick()) {
-                    wand.handleRightClick(player, item, event);
-                }
-                event.setCancelled(true);
+            if (event.getAction().isLeftClick()) {
+                wand.handleLeftClick(player, item, event);
+            } else if (event.getAction().isRightClick()) {
+                wand.handleRightClick(player, item, event);
             }
         }
     }

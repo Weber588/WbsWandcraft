@@ -17,8 +17,8 @@ public class LongSpellAttribute extends SpellAttribute<Long> {
     }
 
     @Override
-    public Polarity getPolarity(@NotNull Long value) {
-        return value < 0 ? polarity().invert() : polarity();
+    public Sentiment getSentiment(@NotNull Long value) {
+        return value < 0 ? sentiment().invert() : sentiment();
     }
 
 }

@@ -6,22 +6,25 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class SpellbookItemModelProvider implements ExternalModelProvider {
+public class SpellbookItemModelProvider implements ExternalItemProvider {
     @Override
     public ResourcePackObjects.Model buildBaseModel() {
         return new ResourcePackObjects.ConditionModel(
                 "using_item",
                 new ResourcePackObjects.CompositeModel(
-                        new ResourcePackObjects.StaticModel(namespace() + ":item/" + value() + "_open"),
-                        new ResourcePackObjects.StaticModel(namespace() + ":item/" + value() + "_open_overlay", List.of(
-                                new ResourcePackObjects.ModelTint(0, 0)
-                        )),
-                        new ResourcePackObjects.StaticModel(namespace() + ":item/" + value() + "_open_overlay_highlight", List.of(
-                                new ResourcePackObjects.ModelTint(1, 0)
-                        ))
+                        buildAppendedModel("_open"),
+                        buildAppendedModel("_open_overlay")
+                                .addTint(new ResourcePackObjects.ModelTint(0, 0)),
+                        buildAppendedModel("_open_overlay_highlight")
+                                .addTint(new ResourcePackObjects.ModelTint(1, 0))
                 ),
-                new ResourcePackObjects.StaticModel(namespace() + ":item/" + value())
+                ExternalItemProvider.super.buildBaseModel()
         );
+    }
+
+    @Override
+    public @NotNull String getModelType() {
+        return "item";
     }
 
     @Override
@@ -30,13 +33,11 @@ public class SpellbookItemModelProvider implements ExternalModelProvider {
     }
 
     @Override
-    public List<String> getResources() {
+    public List<String> getAdditionalModels() {
         return List.of(
-                ResourcePackBuilder.ITEM_TEXTURES_PATH + value() + ".png",
-                ResourcePackBuilder.ITEM_MODELS_PATH + value() + ".json",
-                ResourcePackBuilder.ITEM_MODELS_PATH + value() + "_open.json",
-                ResourcePackBuilder.ITEM_MODELS_PATH + value() + "_open_overlay.json",
-                ResourcePackBuilder.ITEM_MODELS_PATH + value() + "_open_overlay_highlight.json"
+                value() + "_open",
+                value() + "_open_overlay",
+                value() + "_open_overlay_highlight"
         );
     }
 

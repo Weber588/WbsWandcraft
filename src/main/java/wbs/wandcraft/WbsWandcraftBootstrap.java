@@ -5,6 +5,7 @@ import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry;
@@ -12,6 +13,7 @@ import io.papermc.paper.registry.data.PaperEnchantmentRegistryEntry;
 import io.papermc.paper.registry.event.RegistryEvents;
 import io.papermc.paper.registry.keys.tags.BlockTypeTagKeys;
 import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys;
+import io.papermc.paper.registry.tag.TagKey;
 import net.kyori.adventure.text.Component;
 import net.minecraft.advancements.critereon.DamageSourcePredicate;
 import net.minecraft.advancements.critereon.TagPredicate;
@@ -31,11 +33,18 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static net.minecraft.tags.DamageTypeTags.WITCH_RESISTANT_TO;
 
 @SuppressWarnings("unused")
 public class WbsWandcraftBootstrap implements PluginBootstrap {
+    public static final TagKey<BlockType> ALL_BLOCKS = BlockTypeTagKeys.create(getKey("all"));
+
+    private static @NotNull NamespacedKey getKey(String value) {
+        return new NamespacedKey("wbswandcraft", value);
+    }
+
     @Override
     public @NotNull JavaPlugin createPlugin(@NotNull PluginProviderContext context) {
         return new WbsWandcraft();
@@ -44,13 +53,20 @@ public class WbsWandcraftBootstrap implements PluginBootstrap {
     @Override
     public void bootstrap(@NotNull BootstrapContext context) {
         LifecycleEventManager<@NotNull BootstrapContext> manager = context.getLifecycleManager();
-        manager.registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.BLOCK).newHandler(event -> {
-            event.registrar().addToTag(BlockTypeTagKeys.SCULK_REPLACEABLE, Set.of(TypedKey.create(RegistryKey.BLOCK, BlockType.AMETHYST_BLOCK.key())));
+        RegistryKey<BlockType> registryKey = RegistryKey.BLOCK;
+        manager.registerEventHandler(LifecycleEvents.TAGS.postFlatten(registryKey).newHandler(event -> {
+            event.registrar().addToTag(BlockTypeTagKeys.SCULK_REPLACEABLE, Set.of(TypedKey.create(registryKey, BlockType.AMETHYST_BLOCK.key())));
+
+            Set<TypedKey<BlockType>> allBlocks = RegistryAccess.registryAccess().getRegistry(registryKey).keyStream().map(registryKey::typedKey).collect(Collectors.toSet());
+            event.registrar().setTag(ALL_BLOCKS, allBlocks);
         }));
 
+        manager.registerEventHandler(RegistryEvents.DAMAGE_TYPE.compose().newHandler(event -> {
+
+        }));
         manager.registerEventHandler(RegistryEvents.ENCHANTMENT.compose().newHandler(event -> {
             event.registry().register(
-                    TypedKey.create(RegistryKey.ENCHANTMENT, new NamespacedKey("wbswandcraft", "magic_protection")),
+                    TypedKey.create(RegistryKey.ENCHANTMENT, getKey("magic_protection")),
                     builder -> {
                         // NMS start
                         DataComponentMap.Builder effects = DataComponentMap.builder();

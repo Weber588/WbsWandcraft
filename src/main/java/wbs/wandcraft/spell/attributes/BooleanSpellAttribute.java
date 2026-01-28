@@ -12,15 +12,15 @@ public class BooleanSpellAttribute extends SpellAttribute<Boolean> {
         setSuggestions(true, false);
         // TODO: Make this translatable, if minecraft has something for this in vanilla pack
         setFormatter(value -> value ? "true" : "false");
-        polarity(Polarity.NEUTRAL);
+        sentiment(Sentiment.NEUTRAL);
     }
 
     @Override
-    public Polarity getPolarity(@NotNull Boolean value) {
+    public Sentiment getSentiment(@NotNull Boolean value) {
         if (value) {
-            return polarity();
+            return sentiment();
         } else {
-            return polarity().invert();
+            return sentiment().invert();
         }
     }
 }

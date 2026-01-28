@@ -11,10 +11,10 @@ public interface CastableSpell extends ISpellDefinition {
             .setShowAttribute(cooldown -> cooldown > 0)
             .setTicksToSecondsFormatter()
             .overrideTextureValue("duration")
-            .polarity(SpellAttribute.Polarity.NEGATIVE);
+            .sentiment(SpellAttribute.Sentiment.NEGATIVE);
     SpellAttribute<Integer> COST = new IntegerSpellAttribute("cost", 100)
             .setShowAttribute(cost -> cost > 0)
-            .polarity(SpellAttribute.Polarity.NEGATIVE);
+            .sentiment(SpellAttribute.Sentiment.NEGATIVE);
 
     void cast(CastContext context);
 

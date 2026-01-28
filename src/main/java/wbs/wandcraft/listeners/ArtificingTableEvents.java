@@ -69,7 +69,11 @@ public class ArtificingTableEvents implements Listener {
         if (table != null) {
             EquipmentSlot hand = event.getHand();
             if (hand != null) {
-                table.interact(event.getPlayer(), hand);
+                if (event.getAction().isRightClick()) {
+                    table.interact(event.getPlayer(), hand);
+                } else {
+                    table.breakTable();
+                }
                 event.setCancelled(true);
             }
         }

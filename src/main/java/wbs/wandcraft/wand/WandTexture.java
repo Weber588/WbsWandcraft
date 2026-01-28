@@ -1,15 +1,14 @@
 package wbs.wandcraft.wand;
 
-import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.resourcepack.ResourcePackObjects;
 import wbs.wandcraft.resourcepack.ResourcePackObjects.ItemModelDefinition;
 import wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModel;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.Map;
 
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.DisplayTransform;
 
-public final class WandTexture implements Keyed, DynamicItemTextureProvider {
+public final class WandTexture extends WandModelProvider implements DynamicItemTextureProvider {
     public static final WandTexture BASIC = new WandTexture("basic")
             .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_LEFTHAND, new DisplayTransform()
                     .scale(0.68, 0.68, 0.68)
@@ -48,7 +47,6 @@ public final class WandTexture implements Keyed, DynamicItemTextureProvider {
     public static final WandTexture BARBARIAN = new WandTexture("barbarian");
     public static final WandTexture MIMIC = new WandTexture("mimic");
 
-    private final NamespacedKey key;
     private final String textureKey;
     private final String baseTexture;
 
@@ -65,14 +63,9 @@ public final class WandTexture implements Keyed, DynamicItemTextureProvider {
         this(WbsWandcraft.getKey(overlayTexture), overlayTexture, baseTexture);
     }
     public WandTexture(NamespacedKey key, String overlayTexture, String baseTexture) {
-        this.key = key;
+        super(key);
         this.textureKey = "wand_" + overlayTexture;
         this.baseTexture = "wand_" + baseTexture + "_base";
-    }
-
-    @Override
-    public @NotNull NamespacedKey getKey() {
-        return key;
     }
 
     @Override

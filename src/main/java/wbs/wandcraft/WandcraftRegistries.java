@@ -18,6 +18,8 @@ import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spell.event.CastSpellEffect;
 import wbs.wandcraft.spell.event.ForcePullEffect;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
+import wbs.wandcraft.wand.ExternalWandModel;
+import wbs.wandcraft.wand.WandModelProvider;
 import wbs.wandcraft.wand.WandTexture;
 import wbs.wandcraft.wand.types.WandType;
 
@@ -46,10 +48,11 @@ public class WandcraftRegistries {
         WandType.SORCERY,
         WandType.MAGE,
         WandType.WILDEN,
-        WandType.BARBARIAN
+        WandType.BARBARIAN,
+        WandType.BROOMSTICK
     );
 
-    public static final WbsRegistry<WandTexture> WAND_TEXTURES = new WbsRegistry<>(
+    public static final WbsRegistry<WandModelProvider> WAND_MODELS = new WbsRegistry<>(
             WandTexture.BASIC,
             WandTexture.MAGE,
             WandTexture.WIZARDRY,
@@ -58,7 +61,8 @@ public class WandcraftRegistries {
             WandTexture.FIRE,
             WandTexture.WILDEN,
             WandTexture.BARBARIAN,
-            WandTexture.MIMIC
+            WandTexture.MIMIC,
+            ExternalWandModel.BROOMSTICK
     );
 
     public static final WbsRegistry<HatModel> HAT_TEXTURES = new WbsRegistry<>(

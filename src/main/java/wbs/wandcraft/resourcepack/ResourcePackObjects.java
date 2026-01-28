@@ -106,6 +106,9 @@ public final class ResourcePackObjects {
         private final List<ModelCase> cases = new LinkedList<>();
         private final Model fallback;
 
+        public SelectModel(String property, Model fallback) {
+            this(property, -1, fallback);
+        }
         public SelectModel(String property, int index, Model fallback) {
             super("select");
             this.property = property;
@@ -146,7 +149,7 @@ public final class ResourcePackObjects {
     public static class StaticModel extends Model {
         private final String model;
         @Nullable
-        private final List<ModelTint> tints;
+        private List<ModelTint> tints;
 
         public StaticModel(String model) {
             this(model, null);
@@ -155,6 +158,15 @@ public final class ResourcePackObjects {
             super("minecraft:model");
             this.model = model;
             this.tints = tints;
+        }
+
+        public StaticModel addTint(ModelTint tint) {
+            if (tints == null) {
+                tints = new LinkedList<>();
+            }
+
+            tints.add(tint);
+            return this;
         }
     }
 

@@ -23,11 +23,11 @@ public class DoubleSpellAttribute extends SpellAttribute<Double> {
     }
 
     @Override
-    public Polarity getPolarity(@NotNull Double value) {
+    public Sentiment getSentiment(@NotNull Double value) {
         if (value > 1) {
-            return polarity();
+            return sentiment();
         } else {
-            return polarity().invert();
+            return sentiment().invert();
         }
     }
 }

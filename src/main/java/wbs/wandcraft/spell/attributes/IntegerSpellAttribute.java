@@ -17,7 +17,7 @@ public class IntegerSpellAttribute extends SpellAttribute<Integer> {
     }
 
     @Override
-    public Polarity getPolarity(@NotNull Integer value) {
-        return value < 0 ? polarity().invert() : polarity();
+    public Sentiment getSentiment(@NotNull Integer value) {
+        return value < 0 ? sentiment().invert() : sentiment();
     }
 }

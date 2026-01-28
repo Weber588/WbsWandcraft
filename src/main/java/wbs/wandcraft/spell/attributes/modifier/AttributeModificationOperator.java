@@ -32,5 +32,5 @@ public abstract class AttributeModificationOperator<T, M> {
         return definition;
     }
 
-    public abstract SpellAttribute.Polarity getPolarity(M modifierValue);
+    public abstract SpellAttribute.Sentiment getSentiment(M modifierValue);
 }
