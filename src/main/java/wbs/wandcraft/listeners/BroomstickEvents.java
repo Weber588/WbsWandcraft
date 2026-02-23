@@ -2,7 +2,6 @@ package wbs.wandcraft.listeners;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
-import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,68 +9,64 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.world.EntitiesLoadEvent;
+import wbs.wandcraft.entities.Broomstick;
 import wbs.wandcraft.wand.types.BroomstickWand;
 
 import java.util.List;
 
+import static wbs.wandcraft.entities.Broomstick.breakBroomstick;
+import static wbs.wandcraft.entities.Broomstick.getBroomstickWand;
+
 public class BroomstickEvents implements Listener {
     @EventHandler
     public void onBroomstickBreak(PlayerInteractEntityEvent event) {
-        Entity broomstick = event.getRightClicked();
-        if (broomstick instanceof Interaction) {
-            broomstick = broomstick.getVehicle();
-            if (broomstick == null) {
-                return;
-            }
-        }
+        Entity check = getRootVehicle(event.getRightClicked());
 
-        BroomstickWand wand = BroomstickWand.getBroomstickWand(broomstick);
+        BroomstickWand wand = getBroomstickWand(check);
         if (wand == null) {
             return;
         }
 
-        for (Entity passenger : broomstick.getPassengers()) {
-            if (passenger instanceof ItemDisplay display) {
-                display.addPassenger(event.getPlayer());
+        for (Entity passenger : check.getPassengers()) {
+            if (passenger instanceof Interaction toRide) {
+                if (toRide.getInteractionWidth() == 0) {
+                    toRide.addPassenger(event.getPlayer());
+                }
+                return;
             }
         }
     }
 
+    private static Entity getRootVehicle(Entity check) {
+        while (check instanceof Interaction && check.getVehicle() != null) {
+            check = check.getVehicle();
+        }
+        return check;
+    }
+
     @EventHandler
     public void onBroomstickBreak(EntityDeathEvent event) {
-        Entity entity = event.getEntity();
-        if (entity instanceof Interaction) {
-            entity = entity.getVehicle();
-            if (entity == null) {
-                return;
-            }
-        }
+        Entity check = getRootVehicle(event.getEntity());
 
-        BroomstickWand wand = BroomstickWand.getBroomstickWand(entity);
+        BroomstickWand wand = getBroomstickWand(check);
         if (wand == null) {
             return;
         }
 
-        BroomstickWand.breakBroomstick(entity, wand);
+        breakBroomstick(check, wand);
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onBroomstickBreak(EntityDamageByEntityEvent event) {
-        Entity entity = event.getEntity();
-        if (entity instanceof Interaction) {
-            entity = entity.getVehicle();
-            if (entity == null) {
-                return;
-            }
-        }
+        Entity check = getRootVehicle(event.getEntity());
 
-        BroomstickWand wand = BroomstickWand.getBroomstickWand(entity);
+        BroomstickWand wand = getBroomstickWand(check);
         if (wand == null) {
             return;
         }
 
-        BroomstickWand.breakBroomstick(entity, wand);
+        breakBroomstick(check, wand);
         event.setCancelled(true);
     }
 
@@ -81,12 +76,12 @@ public class BroomstickEvents implements Listener {
 
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity livingEntity) {
-                BroomstickWand wand = BroomstickWand.getBroomstickWand(livingEntity);
+                BroomstickWand wand = getBroomstickWand(livingEntity);
                 if (wand == null) {
                     continue;
                 }
 
-                BroomstickWand.startBroomstickTimer(livingEntity);
+                new Broomstick(livingEntity);
             }
         }
     }

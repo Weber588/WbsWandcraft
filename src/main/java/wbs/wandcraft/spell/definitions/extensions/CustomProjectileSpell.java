@@ -1,9 +1,11 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.Particle;
+import org.bukkit.block.Block;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.particles.NormalParticleEffect;
@@ -62,7 +64,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
         double hitboxSize = instance.getAttribute(SIZE);
         int bounces = instance.getAttribute(BOUNCES);
 
-        DynamicProjectileObject projectile = new DynamicProjectileObject(context.location(), player, context);
+        DynamicProjectileObject projectile = buildProjectile(context, player);
         WbsParticleGroup tickEffects = new WbsParticleGroup();
 
         projectile.setHitBoxSize(hitboxSize);
@@ -84,23 +86,47 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
         return projectile;
     }
 
+    default @NotNull DynamicProjectileObject buildProjectile(CastContext context, Player player) {
+        return new DynamicProjectileObject(context.location(), player, context);
+    }
+
     private void configureWithDefaultHitTrigger(DynamicProjectileObject projectile, CastContext context) {
         configure(projectile, context);
 
         projectile.setOnHit(result -> {
             context.runEffects(SpellTriggeredEvents.ON_HIT_TRIGGER, result);
 
-            if (this instanceof DamageSpell damageSpell && result.getHitEntity() instanceof Damageable hitEntity) {
-                double damage = context.instance().getAttribute(DamageSpell.DAMAGE);
+            boolean expire = false;
 
-                DamageSource.Builder damageSource = damageSpell.buildDamageSource(context, DamageType.INDIRECT_MAGIC);
-                damageSource.withDamageLocation(projectile.location);
+            Entity hitEntity = result.getHitEntity();
+            Block hitBlock = result.getHitBlock();
+            if (hitEntity != null) {
+                if (this instanceof DamageSpell damageSpell && hitEntity instanceof Damageable damageable) {
+                    double damage = context.instance().getAttribute(DamageSpell.DAMAGE);
 
-                hitEntity.damage(damage, damageSource.build());
+                    DamageSource.Builder damageSource = damageSpell.buildDamageSource(context, DamageType.INDIRECT_MAGIC);
+                    damageSource.withDamageLocation(projectile.location);
+
+                    damageable.damage(damage, damageSource.build());
+                }
+
+                expire |= expireOnHitEntity();
             }
-            return true;
+
+            if (hitBlock != null) {
+                expire |= expireOnHitBlock();
+            }
+
+            return expire;
         });
     }
 
     void configure(DynamicProjectileObject projectile, CastContext context);
+    default boolean expireOnHitBlock() {
+        return true;
+    }
+
+    default boolean expireOnHitEntity() {
+        return true;
+    }
 }

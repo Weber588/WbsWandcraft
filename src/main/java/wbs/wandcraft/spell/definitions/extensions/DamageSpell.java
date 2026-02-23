@@ -4,13 +4,17 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
+
+import java.util.function.Consumer;
 
 public interface DamageSpell extends ISpellDefinition {
     SpellAttribute<Double> DAMAGE = new DoubleSpellAttribute("damage", 1.0)
@@ -53,7 +57,7 @@ public interface DamageSpell extends ISpellDefinition {
     }
 
     default DamageSource.Builder buildDamageSource(CastContext context) {
-        return buildDamageSource(context, DamageType.MAGIC);
+        return buildDamageSource(context, getDamageType());
     }
     default DamageSource.Builder buildDamageSource(CastContext context, DamageType type) {
         DamageSource.Builder builder = DamageSource.builder(type);
@@ -66,17 +70,34 @@ public interface DamageSpell extends ISpellDefinition {
         return builder;
     }
 
-    default void damage(CastContext context, Damageable target) {
-        damage(context, target, DamageType.MAGIC);
+    default DamageType getDamageType() {
+        return DamageType.MAGIC;
     }
+
+    default void damage(CastContext context, Damageable target) {
+        damage(context, target, getDamageType());
+    }
+
     default void damage(CastContext context, Damageable target, double damage) {
-        damage(context, target, damage, DamageType.MAGIC);
+        damage(context, target, damage, getDamageType());
     }
     default void damage(CastContext context, Damageable target, DamageType type) {
         double damage = context.instance().getAttribute(DAMAGE);
         damage(context, target, damage, type);
     }
     default void damage(CastContext context, Damageable target, double damage, DamageType type) {
-        target.damage(damage, buildDamageSource(context, type).build());
+        if (WbsRegionUtils.canDealDamage(context.player(), target)) {
+            target.damage(damage, buildDamageSource(context, type).build());
+        }
+    }
+
+    default void damageThen(Entity entity, CastContext context, Consumer<Damageable> then) {
+        if (entity instanceof Damageable damageable) {
+            double health = damageable.getHealth();
+            damage(context, damageable, getDamageType());
+            if (health != damageable.getHealth()) {
+                then.accept(damageable);
+            }
+        }
     }
 }

@@ -43,7 +43,12 @@ public class WildenWand extends Wand {
     // Ignore the spell list actually cast, give them a random cooldown
     @Override
     protected int getAdditionalCooldownTicks(Queue<SpellInstance> spellList) {
-        SpellInstance random = WbsCollectionUtil.getRandom(getSpellInstances());
+        List<@NotNull SpellInstance> spellInstances = getSpellInstances();
+        if (spellInstances.isEmpty()) {
+            return 0;
+        }
+
+        SpellInstance random = WbsCollectionUtil.getRandom(spellInstances);
 
         return random.getAttribute(CastableSpell.COOLDOWN);
     }

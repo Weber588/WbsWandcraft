@@ -14,6 +14,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.BlockType;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +62,7 @@ public class ItemUtils {
                         .build()
         );
         blankScroll.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_BLANK_SCROLL.getKey());
+        addHiddenEnchant(blankScroll);
         blankScroll.setData(DataComponentTypes.MAX_STACK_SIZE, 64);
 
         return blankScroll;
@@ -115,7 +117,7 @@ public class ItemUtils {
         );
 
         item.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_WAND.getKey());
-
+        addHiddenEnchant(item);
 
         ItemUseAnimation animation = type.getAnimation();
         if (animation != null && type.getAnimationTicks() >= 1) {
@@ -171,12 +173,27 @@ public class ItemUtils {
 
         NamespacedKey finalItemModel = itemModel;
         item.editMeta(meta -> meta.setItemModel(finalItemModel));
+        addHiddenEnchant(item);
 
         spellbook.toItem(item);
 
         return item;
     }
-    
+
+    private static void addHiddenEnchant(ItemStack item) {
+        item.setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false);
+        item.setData(DataComponentTypes.ENCHANTMENTS,
+                ItemEnchantments.itemEnchantments()
+                        .add(Enchantment.BINDING_CURSE, 1)
+                        .build()
+        );
+        item.setData(DataComponentTypes.TOOLTIP_DISPLAY,
+                TooltipDisplay.tooltipDisplay()
+                        .addHiddenComponents(DataComponentTypes.ENCHANTMENTS)
+                        .build()
+        );
+    }
+
     public static ItemStack buildSpell(SpellDefinition spell) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_SPELL);
         SpellInstance spellInstance = new SpellInstance(spell);
@@ -200,6 +217,7 @@ public class ItemUtils {
         NamespacedKey itemModelKey = BASE_MATERIAL_SPELL.getKey();
 
         item.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);
+        addHiddenEnchant(item);
 
         item.setData(DataComponentTypes.USE_COOLDOWN, UseCooldown.useCooldown(0.0001f)
                 .cooldownGroup(WbsWandcraft.getKey(UUID.randomUUID().toString()))
@@ -253,6 +271,7 @@ public class ItemUtils {
         NamespacedKey itemModelKey = BASE_MATERIAL_MODIFIER.getKey();
         
         item.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);
+        addHiddenEnchant(item);
 
         modifier.toItem(item);
         return item;

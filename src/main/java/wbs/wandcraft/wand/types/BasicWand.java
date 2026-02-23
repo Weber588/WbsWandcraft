@@ -49,7 +49,6 @@ public class BasicWand extends Wand {
         return item;
     }
 
-
     @Override
     public @NotNull WandType<BasicWand> getWandType() {
         return WandType.BASIC;

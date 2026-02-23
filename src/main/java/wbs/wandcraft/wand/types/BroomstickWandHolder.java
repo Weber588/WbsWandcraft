@@ -60,6 +60,15 @@ public final class BroomstickWandHolder extends WandHolder<BroomstickWand> {
     }
 
     @Override
+    protected void reload() {
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            inventory.setItem(slot, MAIN_OUTLINE);
+        }
+
+        super.reload();
+    }
+
+    @Override
     public void saveItems() {
 
     }

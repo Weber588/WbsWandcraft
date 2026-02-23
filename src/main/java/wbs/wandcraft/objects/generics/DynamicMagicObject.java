@@ -69,11 +69,6 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     }
 
     @Override
-    protected void onSpawn() {
-        super.onSpawn();
-    }
-
-    @Override
     protected final boolean tick() {
         debug("Ticking dynamic magic object");
         error += errorPerStep;
