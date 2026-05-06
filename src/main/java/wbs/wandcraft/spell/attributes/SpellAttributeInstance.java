@@ -79,4 +79,8 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
     public SpellAttributeInstance<T> clone() {
         return new SpellAttributeInstance<>(attribute, value);
     }
+
+    public String rawStringValue() {
+        return attribute.toRawString(value());
+    }
 }

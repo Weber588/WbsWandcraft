@@ -15,8 +15,6 @@ import io.papermc.paper.registry.keys.tags.BlockTypeTagKeys;
 import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys;
 import io.papermc.paper.registry.tag.TagKey;
 import net.kyori.adventure.text.Component;
-import net.minecraft.advancements.critereon.DamageSourcePredicate;
-import net.minecraft.advancements.critereon.TagPredicate;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.item.enchantment.ConditionalEffect;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
@@ -34,8 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static net.minecraft.tags.DamageTypeTags.WITCH_RESISTANT_TO;
 
 @SuppressWarnings("unused")
 public class WbsWandcraftBootstrap implements PluginBootstrap {
@@ -71,12 +67,6 @@ public class WbsWandcraftBootstrap implements PluginBootstrap {
                         // NMS start
                         DataComponentMap.Builder effects = DataComponentMap.builder();
 
-                        DamageSourcePredicate damageSourcePredicate = new DamageSourcePredicate(
-                                List.of(TagPredicate.is(WITCH_RESISTANT_TO)),
-                                Optional.empty(),
-                                Optional.empty(),
-                                Optional.empty()
-                        );
                         EnchantmentValueEffect enchantmentValueEffect = new AddValue(LevelBasedValue.perLevel(2));
                         ConditionalEffect<EnchantmentValueEffect> conditionalEffect = new ConditionalEffect<>(
                                 enchantmentValueEffect,

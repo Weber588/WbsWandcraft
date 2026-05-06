@@ -1,5 +1,6 @@
 package wbs.wandcraft.wand.types;
 
+import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
@@ -29,6 +30,7 @@ import wbs.wandcraft.wand.Wand;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 @SuppressWarnings("UnstableApiUsage")
 public class BarbarianWand extends Wand {
@@ -148,12 +150,16 @@ public class BarbarianWand extends Wand {
                             .build()
             );
 
-            item.setData(
+            Set<DataComponentType> hiddenComponents = item.getDataOrDefault(
                     DataComponentTypes.TOOLTIP_DISPLAY,
-                    TooltipDisplay.tooltipDisplay()
-                            .addHiddenComponents(DataComponentTypes.ATTRIBUTE_MODIFIERS)
-                            .build()
-            );
+                            TooltipDisplay.tooltipDisplay().build()
+                    ).hiddenComponents();
+
+            TooltipDisplay.Builder builder = TooltipDisplay.tooltipDisplay()
+                    .hiddenComponents(hiddenComponents)
+                    .addHiddenComponents(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+
+            item.setData(DataComponentTypes.TOOLTIP_DISPLAY, builder);
         } else {
             item.unsetData(DataComponentTypes.ATTRIBUTE_MODIFIERS);
         }

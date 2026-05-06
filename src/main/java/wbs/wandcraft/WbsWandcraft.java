@@ -97,6 +97,7 @@ public class WbsWandcraft extends WbsPlugin {
                                 })
                         ).inferSubPermissions(),
                         new CommandSpellCast(this, "cast"),
+                        new CommandSpellbook(this, "spellbooktest"),
                         WbsReloadSubcommand.getStatic(this, settings),
                         WbsErrorsSubcommand.getStatic(this, settings)
                 )

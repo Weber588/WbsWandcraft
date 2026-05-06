@@ -27,6 +27,7 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
     private static final NormalParticleEffect TELEPORT_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
             .setXYZ(0)
             .setSpeed(0.02)
+            .setData(1f)
             .setAmount(120);
 
     public RecallSpell() {

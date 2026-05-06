@@ -37,7 +37,7 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
         Location loc = player.getLocation();
         World world = loc.getWorld();
 
-        world.spawnParticle(Particle.DRAGON_BREATH, loc.add(0, 1, 0), 25, 0.15, 0.15, 0.15, 0);
+        world.spawnParticle(Particle.DRAGON_BREATH, loc.add(0, 1, 0), 25, 0.15, 0.15, 0.15, 0, 1f);
         world.spawnParticle(Particle.WITCH, loc, 400, 0.6, 1, 0.6, 0);
 
         double range = context.instance().getAttribute(RANGE);
@@ -48,7 +48,7 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
             player.teleport(tpLocation.getLocation().setDirection(WbsEntityUtil.getFacingVector(player)));
             loc = player.getLocation();
 
-            world.spawnParticle(Particle.DRAGON_BREATH, loc.add(0, 1, 0), 25, 0.15, 0.15, 0.15, 0);
+            world.spawnParticle(Particle.DRAGON_BREATH, loc.add(0, 1, 0), 25, 0.15, 0.15, 0.15, 0, 1f);
             world.spawnParticle(Particle.WITCH, loc, 400, 0.6, 1, 0.6, 0);
 
             // TODO: Add cast sounds to SpellDefinition

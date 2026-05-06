@@ -10,12 +10,14 @@ public class EnumSpellAttribute<T extends Enum<T>> extends SpellAttribute<T> {
     public EnumSpellAttribute(NamespacedKey key, @Nullable T defaultValue, RegisteredPersistentDataType<T> type, Class<T> enumClass) {
         super(key, type, defaultValue, stringValue -> WbsEnums.getEnumFromString(enumClass, stringValue));
         setFormatter(WbsEnums::toPrettyString);
+        setRawFormatter(Enum::name);
         sentiment(Sentiment.NEUTRAL);
     }
 
     public EnumSpellAttribute(String nativeKey, @Nullable T defaultValue, RegisteredPersistentDataType<T> type, Class<T> enumClass) {
         super(nativeKey, type, defaultValue, stringValue -> WbsEnums.getEnumFromString(enumClass, stringValue));
         setFormatter(WbsEnums::toPrettyString);
+        setRawFormatter(Enum::name);
         sentiment(Sentiment.NEUTRAL);
     }
 }

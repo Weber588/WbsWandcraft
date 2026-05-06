@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -20,12 +21,19 @@ import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.generation.WandGenerator;
 import wbs.wandcraft.learning.*;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
+import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.util.ItemUtils;
 
 import java.util.*;
 
 public class WandcraftSettings extends WbsSettings {
+
+    public static final String SPELL_CONFIG_COST = "echo-shard-cost";
+    public static final String SPELL_CONFIG_ATTRIBUTES = "attributes";
+    private boolean debugMode = false;
+
     protected WandcraftSettings(WbsWandcraft plugin) {
         super(plugin);
     }
@@ -66,11 +74,77 @@ public class WandcraftSettings extends WbsSettings {
             artificingConfig = new ArtificingConfig(artificingTableSection, this, "config.yml/artificing-table");
         }
 
+        this.debugMode = config.getBoolean("debug", false);
+
+        loadSpellConfigs();
         loadRecipes();
         loadGenerators();
         loadLearning();
         loadGeneration();
         loadCredits();
+    }
+
+    public boolean debugMode() {
+        return debugMode;
+    }
+
+    private void loadSpellConfigs() {
+        Collection<SpellDefinition> definitions = WandcraftRegistries.SPELLS.values();
+
+        String path = "spells.yml";
+        YamlConfiguration config = loadConfigSafely(genConfig(path));
+
+        boolean requiresUpdate = false;
+        for (SpellDefinition definition : definitions) {
+            String sectionKey = definition.key().asMinimalString();
+            ConfigurationSection section = config.getConfigurationSection(sectionKey);
+
+            if (section == null) {
+                requiresUpdate = true;
+                section = config.createSection(sectionKey);
+                section.set(SPELL_CONFIG_COST, -1); // Fallback to calculation
+            }
+
+            int cost = section.getInt(SPELL_CONFIG_COST, -1);
+            definition.setEchoShardCost(cost);
+
+            ConfigurationSection attributesSection = section.getConfigurationSection(SPELL_CONFIG_ATTRIBUTES);
+            if (attributesSection == null) {
+                requiresUpdate = true;
+                attributesSection = section.createSection(SPELL_CONFIG_ATTRIBUTES);
+            }
+
+            Set<SpellAttributeInstance<?>> attributeInstances = new HashSet<>(definition.getAttributeInstances());
+            for (SpellAttributeInstance<?> attributeInstance : attributeInstances) {
+                SpellAttribute<?> attribute = attributeInstance.attribute();
+                String attributeKey = attribute.key().asMinimalString();
+
+                if (attributesSection.isString(attributeKey)) {
+                    String asString = attributesSection.getString(attributeKey, String.valueOf(attributesSection.get(attributeKey)));
+
+                    SpellAttributeInstance<?> parsed = attribute.getParsedInstance(asString);
+                    definition.setAttribute(parsed);
+                } else {
+                    requiresUpdate = true;
+                    if (attributeInstance.value() instanceof Number number) {
+                        attributesSection.set(attributeKey, number);
+                    } else {
+                        attributesSection.set(attributeKey, attributeInstance.rawStringValue());
+                        if (attributeInstance.value() instanceof Particle) {
+                            // TODO: Allow attributes to dynamically decide what to put here
+                            attributesSection.setComments(attributeKey, List.of(
+                                    "Warning: Not all particles are supported for all spells.",
+                                    "Be cautious when changing to or from particles that require data."
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+
+        if (requiresUpdate) {
+            saveYamlData(config, path, "spell", ignored -> {});
+        }
     }
 
     private final Multimap<SpellDefinition, LearningMethod> learningMap = HashMultimap.create();
@@ -196,7 +270,7 @@ public class WandcraftSettings extends WbsSettings {
 
         spellbook.addIngredient(ItemStack.of(Material.FEATHER));
         spellbook.addIngredient(ItemStack.of(Material.BOOK));
-        spellbook.addIngredient(ItemStack.of(Material.AMETHYST_SHARD));
+        spellbook.addIngredient(ItemStack.of(Material.DRAGON_BREATH));
 
         Bukkit.removeRecipe(spellbook.getKey());
         Bukkit.addRecipe(spellbook);
@@ -214,11 +288,12 @@ public class WandcraftSettings extends WbsSettings {
         ShapedRecipe artificingTable = new ShapedRecipe(WbsWandcraft.getKey("artificing_table"), getArtificingConfig().getItem());
 
         artificingTable.shape(
-                "ddd",
+                "dsd",
                 "ebe",
                 "bbb"
         );
         artificingTable.setIngredient('d', Material.DEEPSLATE);
+        artificingTable.setIngredient('s', Material.NETHER_STAR);
         artificingTable.setIngredient('e', Material.ECHO_SHARD);
         artificingTable.setIngredient('b', Material.BLACKSTONE);
 

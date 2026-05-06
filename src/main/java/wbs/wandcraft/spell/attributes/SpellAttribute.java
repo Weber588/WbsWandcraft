@@ -44,8 +44,9 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     private final Function<String, T> parse;
     @NotNull
     private final Collection<T> suggestions = new HashSet<>();
-    private BiFunction<@NotNull T, Attributable, @NotNull Boolean> shouldShow = (value, attributable) -> true;
+    private BiFunction<@NotNull T, Attributable, @NotNull Boolean> shouldShow = (val, attributable) -> true;
     private Function<@NotNull T, @NotNull String> formatter = Objects::toString;
+    private Function<@NotNull T, @NotNull String> rawFormatter = Objects::toString;
     private final List<TypedFormatter<?>> typedFormatters = new LinkedList<>();
     private boolean isWritable = false;
     private String textureValue;
@@ -122,7 +123,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     }
 
     public SpellAttribute<T> setShowAttribute(Function<@NotNull T, @NotNull Boolean> shouldShow) {
-        return setShowAttribute((value, ignored) -> shouldShow.apply(value));
+        return setShowAttribute((val, ignored) -> shouldShow.apply(val));
     }
     public SpellAttribute<T> setShowAttribute(BiFunction<@NotNull T, Attributable, @NotNull Boolean> shouldShow) {
         this.shouldShow = shouldShow;
@@ -136,6 +137,11 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     public SpellAttribute<T> setFormatter(Function<T, String> formatter) {
         this.formatter = formatter;
         this.typedFormatters.add(new TypedFormatter<>(type, formatter));
+        return this;
+    }
+
+    public SpellAttribute<T> setRawFormatter(Function<T, String> rawFormatter) {
+        this.rawFormatter = rawFormatter;
         return this;
     }
 
@@ -155,25 +161,25 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         DecimalFormat decimalFormat = new DecimalFormat("0.##");
 
         addTypedFormatter(RegisteredPersistentDataType.INTEGER,
-                value -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * value))
+                val -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * val))
         );
         addTypedFormatter(RegisteredPersistentDataType.DOUBLE,
-                value -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * value))
+                val -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * val))
         );
         addTypedFormatter(RegisteredPersistentDataType.LONG,
-                value -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * value))
+                val -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * val))
         );
 
         return this;
     }
 
     public SpellAttribute<T> setTicksToSecondsFormatter() {
-        return setNumericFormatter(1d / Ticks.TICKS_PER_SECOND, value -> {
-            if (value.equals("1")) {
+        return setNumericFormatter(1d / Ticks.TICKS_PER_SECOND, val -> {
+            if (val.equals("1")) {
                 return "1 second";
             }
 
-            return value + " seconds";
+            return val + " seconds";
         });
     }
 
@@ -198,7 +204,11 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return "FORMATTER_ERROR -- " + value + " (" + value.getClass().getName() + ")";
     }
 
-        public <M> SpellAttributeModifier<T, M> createModifier(PersistentDataContainerView container, RegisteredPersistentDataType<M> modifierType) {
+    public String toRawString(T value) {
+        return rawFormatter.apply(value);
+    }
+
+    public <M> SpellAttributeModifier<T, M> createModifier(PersistentDataContainerView container, RegisteredPersistentDataType<M> modifierType) {
         M value =  container.get(SpellAttributeModifier.MODIFIER_VALUE, modifierType.dataType());
 
         NamespacedKey operationTypeKey = container.get(SpellAttributeModifier.MODIFIER_OPERATION, WbsPersistentDataType.NAMESPACED_KEY);

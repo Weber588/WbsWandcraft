@@ -55,7 +55,7 @@ public interface Attributable extends ItemDecorator {
         //noinspection unchecked
         SpellAttributeInstance<T> instance =
                 (SpellAttributeInstance<T>) deriveAttributeValues().stream()
-                        .filter(value -> value.attribute().equals(attribute))
+                        .filter(val -> val.attribute().equals(attribute))
                         .findFirst()
                         .orElse(null);
 

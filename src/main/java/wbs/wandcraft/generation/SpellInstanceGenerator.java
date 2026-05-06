@@ -25,7 +25,7 @@ public class SpellInstanceGenerator implements Keyed, ItemGenerator {
     private final NamespacedKey key;
 
     public SpellInstanceGenerator(ConfigurationSection section, WandcraftSettings settings, String directory) {
-        readSpellDefinitions(section, settings, directory + "/spells");
+        readSpellDefinitions(section, directory + "/spells");
 
         readAttributes(section, settings, directory + "/attributes");
 
@@ -47,7 +47,7 @@ public class SpellInstanceGenerator implements Keyed, ItemGenerator {
         key = tempKey;
     }
 
-    private void readSpellDefinitions(ConfigurationSection section, WandcraftSettings settings, String directory) {
+    private void readSpellDefinitions(ConfigurationSection section, String directory) {
         List<String> spellStrings = section.getStringList("spells");
 
         List<SpellDefinition> definitions = new LinkedList<>();
@@ -60,13 +60,12 @@ public class SpellInstanceGenerator implements Keyed, ItemGenerator {
                     throw new IllegalArgumentException();
                 }
             } catch (IllegalArgumentException ex) {
-                settings.logError("Invalid spell definition key \"" + spellString + "\".", directory + "/" + spellString);
-                continue;
+                throw new InvalidConfigurationException("Invalid spell definition key \"" + spellString + "\".", directory + "/" + spellString);
             }
 
             SpellDefinition spellDef = WandcraftRegistries.SPELLS.get(key);
             if (spellDef == null) {
-                settings.logError("Spell definition not found for key \"" + key.asString() + "\".", directory + "/" + spellString);
+                throw new InvalidConfigurationException("Spell definition not found for key \"" + key.asString() + "\".", directory + "/" + spellString);
             } else {
                 definitions.add(spellDef);
             }

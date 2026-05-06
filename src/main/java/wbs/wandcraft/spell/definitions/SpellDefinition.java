@@ -31,6 +31,7 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
     protected final List<SpellType> spellTypes = new LinkedList<>();
 
     private final NamespacedKey key;
+    protected int echoShardCost = -1;
     private List<TextureLayer> textureLayers;
 
     SpellDefinition(String nativeKey) {
@@ -102,7 +103,9 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
 
             String path = ResourcePackBuilder.ITEM_TEXTURES_PATH + texture + ".png";
             if (WbsWandcraft.getInstance().getResource(path) == null) {
-                WbsWandcraft.getInstance().getLogger().severe("The resource at path \"" + path + "\" was not found! A default texture will be used.");
+                if (WbsWandcraft.getInstance().getSettings().debugMode()) {
+                    WbsWandcraft.getInstance().getLogger().severe("The resource at path \"" + path + "\" was not found! A default texture will be used.");
+                }
 
                 textureLayers = List.of(
                         new TextureLayer("default_spell_text_overlay", false, 0x008000),
@@ -149,7 +152,16 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
         );
     }
 
+    public SpellDefinition setEchoShardCost(int echoShardCost) {
+        this.echoShardCost = echoShardCost;
+        return this;
+    }
+
     public int getEchoShardCost() {
-        return Math.max(1, 64 * getDefault(CastableSpell.COST) / PlayerMana.DEFAULT_MAX_MANA);
+        if (echoShardCost < 0) {
+            return Math.max(1, 64 * getDefault(CastableSpell.COST) / PlayerMana.DEFAULT_MAX_MANA);
+        }
+
+        return echoShardCost;
     }
 }

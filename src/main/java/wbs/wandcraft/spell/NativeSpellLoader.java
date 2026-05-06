@@ -2,54 +2,54 @@ package wbs.wandcraft.spell;
 
 import wbs.wandcraft.spell.definitions.*;
 
-import java.util.Set;
+import java.util.List;
 
 public class NativeSpellLoader extends SpellLoader {
-    public static final Set<Loader<?>> LOADERS = Set.of(
-            new Loader<>(FireballSpell.class, FireballSpell::new),
-            new Loader<>(LeapSpell.class, LeapSpell::new),
-            new Loader<>(BlinkSpell.class, BlinkSpell::new),
-            new Loader<>(PrismaticRaySpell.class, PrismaticRaySpell::new),
-            new Loader<>(EldritchBlastSpell.class, EldritchBlastSpell::new),
-            new Loader<>(WarpSpell.class, WarpSpell::new),
-            new Loader<>(RecallSpell.class, RecallSpell::new),
-            new Loader<>(AntiMagicShellSpell.class, AntiMagicShellSpell::new),
-            new Loader<>(ArcaneSurgeSpell.class, ArcaneSurgeSpell::new),
-            new Loader<>(ConflagrationSpell.class, ConflagrationSpell::new),
-            new Loader<>(WindWalkSpell.class, WindWalkSpell::new),
-            new Loader<>(CrowsCallSpell.class, CrowsCallSpell::new),
-            new Loader<>(StunSpell.class, StunSpell::new),
-            new Loader<>(FireBreathSpell.class, FireBreathSpell::new),
-            new Loader<>(ArcaneSparkSpell.class, ArcaneSparkSpell::new),
-            new Loader<>(PlanarBindingSpell.class, PlanarBindingSpell::new),
-            new Loader<>(DiscoverItemSpell.class, DiscoverItemSpell::new),
-            new Loader<>(ChainLightningSpell.class, ChainLightningSpell::new),
-            new Loader<>(CharmSpell.class, CharmSpell::new),
-            new Loader<>(DisplaceSpell.class, DisplaceSpell::new),
-            new Loader<>(ArcaneBurstSpell.class, ArcaneBurstSpell::new),
-            new Loader<>(ShieldSpell.class, ShieldSpell::new),
-            new Loader<>(CarveSpell.class, CarveSpell::new),
-            new Loader<>(PolymorphSpell.class, PolymorphSpell::new),
-            new Loader<>(HoldSpell.class, HoldSpell::new),
-            new Loader<>(MassIllusionSpell.class, MassIllusionSpell::new),
-            new Loader<>(HeatRaySpell.class, HeatRaySpell::new),
-            new Loader<>(InterruptSpell.class, InterruptSpell::new),
-            new Loader<>(HallucinationSpell.class, HallucinationSpell::new),
-            new Loader<>(NegateMagicSpell.class, NegateMagicSpell::new),
-            new Loader<>(TurnUndeadSpell.class, TurnUndeadSpell::new),
-            new Loader<>(GrowSpell.class, GrowSpell::new),
-            new Loader<>(HealSpell.class, HealSpell::new),
-            new Loader<>(HealingCircle.class, HealingCircle::new),
-            new Loader<>(EmergencyTeleportSpell.class, EmergencyTeleportSpell::new),
-            new Loader<>(MageLightSpell.class, MageLightSpell::new),
-            new Loader<>(AmorphousEarthSpell.class, AmorphousEarthSpell::new),
-            new Loader<>(BlackHoleSpell.class, BlackHoleSpell::new),
-            new Loader<>(AcidBombSpell.class, AcidBombSpell::new),
-            new Loader<>(VoidStepSpell.class, VoidStepSpell::new),
-            new Loader<>(DeathWalkSpell.class, DeathWalkSpell::new)
+    public static final List<Loader> LOADERS = List.of(
+            new ConcreteLoader<>(FireballSpell::new),
+            new ConcreteLoader<>(LeapSpell::new),
+            new ConcreteLoader<>(BlinkSpell::new),
+            new ConcreteLoader<>(PrismaticRaySpell::new),
+            new ConcreteLoader<>(EldritchBlastSpell::new),
+            new ConcreteLoader<>(WarpSpell::new),
+            new ConcreteLoader<>(RecallSpell::new),
+            new ConcreteLoader<>(AntiMagicShellSpell::new),
+            new ConcreteLoader<>(ArcaneSurgeSpell::new),
+            new ConcreteLoader<>(ConflagrationSpell::new),
+            new ConcreteLoader<>(WindWalkSpell::new),
+            new ConcreteLoader<>(CrowsCallSpell::new),
+            new ConcreteLoader<>(StunSpell::new),
+            new ConcreteLoader<>(FireBreathSpell::new),
+            new ConcreteLoader<>(ArcaneSparkSpell::new),
+            new ConcreteLoader<>(PlanarBindingSpell::new),
+            new ConcreteLoader<>(DiscoverItemSpell::new),
+            new ConcreteLoader<>(ChainLightningSpell::new),
+            new ConcreteLoader<>(CharmSpell::new),
+            new ConcreteLoader<>(DisplaceSpell::new),
+            new ConcreteLoader<>(ArcaneBurstSpell::new),
+            new ConcreteLoader<>(ShieldSpell::new),
+            new ConcreteLoader<>(CarveSpell::new),
+            new PluginDependentLoader("wbs.wandcraft.spell.definitions.PolymorphSpell", "LibsDisguises"),
+            new ConcreteLoader<>(HoldSpell::new),
+            new PluginDependentLoader("wbs.wandcraft.spell.definitions.MassIllusionSpell", "LibsDisguises"),
+            new ConcreteLoader<>(HeatRaySpell::new),
+            new ConcreteLoader<>(InterruptSpell::new),
+            new PluginDependentLoader("wbs.wandcraft.spell.definitions.HallucinationSpell", "LibsDisguises"),
+            new ConcreteLoader<>(NegateMagicSpell::new),
+            new ConcreteLoader<>(TurnUndeadSpell::new),
+            new ConcreteLoader<>(GrowSpell::new),
+            new ConcreteLoader<>(HealSpell::new),
+            new ConcreteLoader<>(HealingCircleSpell::new),
+            new ConcreteLoader<>(EmergencyTeleportSpell::new),
+            new ConcreteLoader<>(MageLightSpell::new),
+            new ConcreteLoader<>(AmorphousEarthSpell::new),
+            new ConcreteLoader<>(BlackHoleSpell::new),
+            new ConcreteLoader<>(AcidBombSpell::new),
+            new ConcreteLoader<>(VoidStepSpell::new),
+            new ConcreteLoader<>(DeathWalkSpell::new)
     );
 
-    public Set<Loader<?>> getEntries() {
+    public List<Loader> getEntries() {
         return LOADERS;
     }
 }

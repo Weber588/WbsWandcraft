@@ -136,7 +136,7 @@ public class SpellbookEvents implements Listener {
                 hand = EquipmentSlot.HAND;
             }
 
-            player.swingHand(hand);
+            // player.swingHand(hand);
 
             event.setUseItemInHand(Event.Result.DENY);
 

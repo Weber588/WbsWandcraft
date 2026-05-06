@@ -5,6 +5,7 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.RingParticleEffect;
+import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.utils.util.providers.NumProvider;
 import wbs.utils.util.providers.VectorProvider;
@@ -18,6 +19,9 @@ import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
 
 public class WarpSpell extends SpellDefinition implements CustomProjectileSpell {
+
+    public static final WbsParticleEffect END_EFFECT = new NormalParticleEffect().setXYZ(0).setSpeed(0.18).setAmount(50).setData(1f);
+
     public WarpSpell() {
         super("warp");
 
@@ -44,11 +48,12 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
         CycleGenerator cycleGenerator = new CycleGenerator(0, 360, instance.getAttribute(SPEED) * 30, 0);
         effect.setRotation(new NumProvider(cycleGenerator));
         effect.setAbout(new VectorProvider(VectorGenerator.buildAnonymous(projectile::getVelocity)));
+        effect.setData(1f);
 
         Particle particle = getParticle(instance);
 
         projectile.setParticle(new WbsParticleGroup().addEffect(effect, particle));
-        projectile.setEndEffects(new WbsParticleGroup().addEffect(new NormalParticleEffect().setXYZ(0).setSpeed(0.18).setAmount(50), particle));
+        projectile.setEndEffects(new WbsParticleGroup().addEffect(END_EFFECT, particle));
 
         Player player = context.player();
 

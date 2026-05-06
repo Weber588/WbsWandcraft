@@ -27,10 +27,10 @@ import wbs.wandcraft.util.EffectUtils;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HealingCircle extends SpellDefinition implements CastableSpell, HealthSpell, RadiusedSpell, DurationalSpell {
+public class HealingCircleSpell extends SpellDefinition implements CastableSpell, HealthSpell, RadiusedSpell, DurationalSpell {
     private static final int GLYPHS_PER_BLOCK = 3;
 
-    public HealingCircle() {
+    public HealingCircleSpell() {
         super("healing_circle");
 
         addSpellType(SpellType.NATURE);

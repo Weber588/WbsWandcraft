@@ -24,9 +24,9 @@ public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
             TargeterType.class
     );
     SpellAttribute<Integer> MAX_TARGETS = new IntegerSpellAttribute("max_targets", 1)
-            .setShowAttribute((value, attributable) -> value > 1 && attributable.getAttribute(TARGET) != TargeterType.SELF);
+            .setShowAttribute((val, attributable) -> val > 1 && attributable.getAttribute(TARGET) != TargeterType.SELF);
     SpellAttribute<Double> TARGET_RANGE = new DoubleSpellAttribute("target_range", 20)
-            .setShowAttribute((value, attributable) -> attributable.getAttribute(TARGET) != TargeterType.SELF)
+            .setShowAttribute((val, attributable) -> attributable.getAttribute(TARGET) != TargeterType.SELF)
             .overrideTextureValue("range");
 
     default void setupTargeted() {

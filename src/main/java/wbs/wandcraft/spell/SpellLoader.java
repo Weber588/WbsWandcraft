@@ -8,38 +8,40 @@ import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public abstract class SpellLoader {
     public static Iterable<SpellDefinition> loadSpells(SpellLoader loader) {
         List<SpellDefinition> loaded = new ArrayList<>();
 
-        Multimap<String, Loader<?>> requiredPlugins = LinkedHashMultimap.create();
-        Set<Loader<?>> entries = loader.getEntries();
-        for (Loader<?> entry : entries) {
-            String requiredPlugin = entry.getRequiredPlugin();
-            if (requiredPlugin == null) {
-                SpellDefinition constructed = entry.construct();
-                loaded.add(constructed);
+        Multimap<String, PluginDependentLoader> requiredPlugins = LinkedHashMultimap.create();
+        List<Loader> entries = loader.getEntries();
+        for (Loader entry : entries) {
+            if (entry instanceof PluginDependentLoader pdLoader) {
+                requiredPlugins.put(pdLoader.requiredPlugin(), pdLoader);
             } else {
-                requiredPlugins.put(requiredPlugin, entry);
+                if (entry.canLoad()) {
+                    loaded.add(entry.construct());
+                }
             }
         }
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         for (String pluginName : requiredPlugins.keySet()) {
             if (pluginManager.getPlugin(pluginName) != null) {
-                requiredPlugins.get(pluginName).forEach(entry -> {
-                    SpellDefinition constructed = entry.construct();
-                    loaded.add(constructed);
-                });
+                for (PluginDependentLoader entry : requiredPlugins.get(pluginName)) {
+                    if (entry.canLoad()) {
+                        loaded.add(entry.construct());
+                    }
+                }
             } else {
                 WbsWandcraft.getInstance().getLogger().warning("The following spells require the " + pluginName + " plugin:");
-                for (Loader<?> entry : requiredPlugins.get(pluginName)) {
-                    WbsWandcraft.getInstance().getLogger().warning("\t- " + entry.spellClass().getCanonicalName());
+                for (PluginDependentLoader entry : requiredPlugins.get(pluginName)) {
+                    WbsWandcraft.getInstance().getLogger().warning("\t- " + entry.className());
                 }
             }
         }
@@ -50,21 +52,65 @@ public abstract class SpellLoader {
         return loaded;
     }
 
-    protected abstract Set<Loader<?>> getEntries();
+    protected abstract List<Loader> getEntries();
 
-    public record Loader<T extends SpellDefinition>(Class<T> spellClass, Supplier<T> constructor) {
-        public @Nullable String getRequiredPlugin() {
-            RequiresPlugin requiresPlugin = spellClass.getAnnotation(RequiresPlugin.class);
+    public interface Loader {
+        boolean canLoad();
 
-            if (requiresPlugin != null) {
-                return requiresPlugin.value();
-            }
+        Supplier<? extends SpellDefinition> constructor();
+        default SpellDefinition construct() {
+            return constructor().get();
+        }
+    }
 
-            return null;
+    public record ConcreteLoader<T extends SpellDefinition>(Supplier<T> constructor) implements Loader {
+        @Override
+        public boolean canLoad() {
+            return true;
         }
 
         public T construct() {
             return constructor.get();
+        }
+    }
+
+    public record PluginDependentLoader(String className, String requiredPlugin) implements Loader {
+        @Override
+        public boolean canLoad() {
+            Class<?> spellClass = getSpellClass();
+
+            return spellClass == null;
+        }
+
+        private @Nullable Class<?> getSpellClass() {
+            Class<?> spellClass;
+            try {
+                spellClass = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                spellClass = null;
+            }
+
+            if (spellClass != null) {
+                if (!SpellDefinition.class.isAssignableFrom(spellClass)) {
+                    throw new IllegalStateException("Class " + spellClass + " must extend SpellDefinition");
+                }
+            }
+
+            return spellClass;
+        }
+
+        @Override
+        public Supplier<? extends SpellDefinition> constructor() {
+            return () -> {
+                try {
+                    return (SpellDefinition) Objects.requireNonNull(getSpellClass(), "Spell class was null in constructor!")
+                            .getConstructor()
+                            .newInstance();
+                } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+                         IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            };
         }
     }
 }

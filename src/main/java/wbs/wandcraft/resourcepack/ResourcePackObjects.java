@@ -56,8 +56,8 @@ public final class ResourcePackObjects {
             }
 
             display.clear();
-            transforms.forEach((value, transform) -> {
-                display.put(value.name().toLowerCase(), transform);
+            transforms.forEach((val, transform) -> {
+                display.put(val.name().toLowerCase(), transform);
             });
         }
     }

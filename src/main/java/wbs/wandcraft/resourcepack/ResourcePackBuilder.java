@@ -17,14 +17,15 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.util.ItemUtils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.ItemSelectorDefinition;
 
@@ -40,8 +41,10 @@ public class ResourcePackBuilder {
     public static final String BLOCK_TEXTURES_PATH = TEXTURES_FOLDER + "block/";
 
     public static void loadResourcePack(WandcraftSettings settings, YamlConfiguration config) {
-        createResourcePack(settings, config);
-        writeToExternalPlugins();
+        boolean updatedPack = createResourcePack(settings, config);
+        if (updatedPack) {
+            writeToExternalPlugins();
+        }
     }
 
     private static void writeToExternalPlugins() {
@@ -77,7 +80,9 @@ public class ResourcePackBuilder {
         }
     }
 
-    private static void createResourcePack(WandcraftSettings settings, YamlConfiguration config) {
+    private static boolean createResourcePack(WandcraftSettings settings, YamlConfiguration config) {
+        long startTimestamp = System.currentTimeMillis();
+
         WbsWandcraft plugin = WbsWandcraft.getInstance();
 
         String name = plugin.getName();
@@ -107,34 +112,53 @@ public class ResourcePackBuilder {
 
             resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.HAT_TEXTURES.stream().toList(), ItemUtils.DISPLAY_MATERIAL_HAT, true));
 
+            boolean debugMode = WbsWandcraft.getInstance().getSettings().debugMode();
+
+            List<String> missingPaths = new LinkedList<>();
             resourcesToLoad.forEach(path -> {
                 if (plugin.getResource(path) != null) {
-                    plugin.saveResource(path, true);
+                    plugin.saveResource(path, debugMode);
                 } else {
-                    plugin.getLogger().severe("The resource at path \"" + path + "\" was not found! The vanilla texture will be used.");
+                    missingPaths.add(path);
                 }
             });
 
-            try {
-                WbsFileUtil.zipFolder(
-                        plugin.getDataFolder().toPath().resolve("resourcepack").toFile(),
-                        plugin.getDataFolder().toPath().resolve(namespace + "_resource_pack.zip").toString()
-                );
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (!missingPaths.isEmpty() && debugMode) {
+                plugin.getLogger().severe("The following resources were not found! Default textures will be used.\n" +
+                        String.join("\n\t- ", missingPaths));
+            }
+
+            File folderPath = plugin.getDataFolder().toPath().resolve("resourcepack").toFile();
+
+            long lastModified = WbsFileUtil.getLastModifiedRecursive(folderPath);
+
+            if (lastModified >= startTimestamp) {
+                plugin.getLogger().info("Detected changes to resource pack -- updating! (%s >= %s)".formatted(lastModified, startTimestamp));
+
+                try {
+                    WbsFileUtil.zipFolder(
+                            folderPath,
+                            plugin.getDataFolder().toPath().resolve(namespace + "_resource_pack.zip").toString()
+                    );
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                return true;
             }
         }
+        return false;
     }
 
-    private static <T extends ItemModelProvider> Set<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial) {
+    private static <T extends ItemModelProvider> List<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial) {
         return writeProviders(gson, providers, baseMaterial, false);
     }
-    private static <T extends ItemModelProvider> Set<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial, boolean isBlock) {
-        Set<String> resourcesToLoad = new HashSet<>();
+    private static <T extends ItemModelProvider> List<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial, boolean isBlock) {
+        List<String> resourcesToLoad = new LinkedList<>();
 
         WbsWandcraft plugin = WbsWandcraft.getInstance();
 
-        Set<T> valid = new HashSet<>();
+        List<T> valid = new LinkedList<>();
         providers.forEach(provider -> {
             if (provider instanceof ExternalItemProvider externalProvider) {
                 String folder = externalProvider.getModelType();
@@ -162,10 +186,9 @@ public class ResourcePackBuilder {
 
             if (provider instanceof DynamicItemTextureProvider itemProvider) {
                 itemProvider.getModelDefinitions().forEach((name, definition) -> {
-                    writeJSONToFile(
-                            plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH),
-                            name,
-                            gson,
+                    Path modelPath = plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH);
+                    WbsFileUtil.writeJSONToFile(
+                            modelPath.resolve(name).toFile(),
                             definition
                     );
                 });
@@ -186,10 +209,9 @@ public class ResourcePackBuilder {
             }
         });
 
-        writeJSONToFile(
-                plugin.getDataPath().resolve(ResourcePackBuilder.ITEMS_FOLDER),
-                baseMaterial.key().value(),
-                gson,
+        Path externalItemFolder = plugin.getDataPath().resolve(ResourcePackBuilder.ITEMS_FOLDER);
+        WbsFileUtil.writeJSONToFile(
+                externalItemFolder.resolve(baseMaterial.key().value()).toFile(),
                 new ItemSelectorDefinition(
                         baseMaterial,
                         valid.stream().toList(),
@@ -197,25 +219,7 @@ public class ResourcePackBuilder {
                 )
         );
 
-        return resourcesToLoad;
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void writeJSONToFile(Path folder, String key, Gson gson, Object object) {
-        try {
-            File file = folder.resolve(key + ".json").toFile();
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            try (FileWriter writer = new FileWriter(file)) {
-                gson.toJson(object, writer);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return resourcesToLoad.stream().distinct().collect(Collectors.toCollection(LinkedList::new));
     }
 
     private static DynamicItemTextureProvider getSimpleProvider(String name) {

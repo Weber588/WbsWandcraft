@@ -19,9 +19,9 @@ public interface ParticleSpell extends ISpellDefinition {
             RegisteredPersistentDataType.PARTICLE,
             Particle.class
     ).addSuggestions(Particle.values())
-            .setShowAttribute((value, attributable) -> {
+            .setShowAttribute((val, attributable) -> {
                 if (attributable instanceof ParticleSpell spell) {
-                    return value != spell.getDefaultParticle();
+                    return val != spell.getDefaultParticle();
                 }
 
                 return true;
