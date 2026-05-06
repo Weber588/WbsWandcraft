@@ -35,7 +35,10 @@ public class WildenWand extends Wand {
     protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, Event event) {
         LinkedList<SpellInstance> spellList = new LinkedList<>();
 
-        spellList.add(WbsCollectionUtil.getRandom(getSpellInstances()));
+        List<@NotNull SpellInstance> spellInstances = getSpellInstances();
+        if (!spellInstances.isEmpty()) {
+            spellList.add(WbsCollectionUtil.getRandom(spellInstances));
+        }
 
         return spellList;
     }

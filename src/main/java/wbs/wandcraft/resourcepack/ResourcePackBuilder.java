@@ -1,6 +1,5 @@
 package wbs.wandcraft.resourcepack;
 
-import com.google.gson.Gson;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -101,16 +100,14 @@ public class ResourcePackBuilder {
 
             resourcesToLoad.add("resourcepack/pack.mcmeta");
 
-            Gson gson = new Gson();
-
-            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.SPELLS.stream().toList(), ItemUtils.BASE_MATERIAL_SPELL));
-            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.ATTRIBUTES.stream().toList(), ItemUtils.BASE_MATERIAL_MODIFIER));
-            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.WAND_MODELS.stream().toList(), ItemUtils.BASE_MATERIAL_WAND));
+            resourcesToLoad.addAll(writeProviders(WandcraftRegistries.SPELLS.stream().toList(), ItemUtils.BASE_MATERIAL_SPELL));
+            resourcesToLoad.addAll(writeProviders(WandcraftRegistries.ATTRIBUTES.stream().toList(), ItemUtils.BASE_MATERIAL_MODIFIER));
+            resourcesToLoad.addAll(writeProviders(WandcraftRegistries.WAND_MODELS.stream().toList(), ItemUtils.BASE_MATERIAL_WAND));
             //resourcesToLoad.addAll(writeProviders(gson, List.of(new SpellbookItemTextureProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
-            resourcesToLoad.addAll(writeProviders(gson, List.of(new SpellbookItemModelProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
-            resourcesToLoad.addAll(writeProviders(gson, List.of(getSimpleProvider("blank_scroll")), ItemUtils.BASE_MATERIAL_BLANK_SCROLL));
+            resourcesToLoad.addAll(writeProviders(List.of(new SpellbookItemModelProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
+            resourcesToLoad.addAll(writeProviders(List.of(getSimpleProvider("blank_scroll")), ItemUtils.BASE_MATERIAL_BLANK_SCROLL));
 
-            resourcesToLoad.addAll(writeProviders(gson, WandcraftRegistries.HAT_TEXTURES.stream().toList(), ItemUtils.DISPLAY_MATERIAL_HAT, true));
+            resourcesToLoad.addAll(writeProviders(WandcraftRegistries.HAT_TEXTURES.stream().toList(), ItemUtils.DISPLAY_MATERIAL_HAT, true));
 
             boolean debugMode = WbsWandcraft.getInstance().getSettings().debugMode();
 
@@ -150,64 +147,32 @@ public class ResourcePackBuilder {
         return false;
     }
 
-    private static <T extends ItemModelProvider> List<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial) {
-        return writeProviders(gson, providers, baseMaterial, false);
+    private static <T extends ItemModelProvider> List<String> writeProviders(List<T> providers, Material baseMaterial) {
+        return writeProviders(providers, baseMaterial, false);
     }
-    private static <T extends ItemModelProvider> List<String> writeProviders(Gson gson, List<T> providers, Material baseMaterial, boolean isBlock) {
+    private static <T extends ItemModelProvider> List<String> writeProviders(List<T> providers, Material baseMaterial, boolean isBlock) {
         List<String> resourcesToLoad = new LinkedList<>();
 
         WbsWandcraft plugin = WbsWandcraft.getInstance();
 
         List<T> valid = new LinkedList<>();
-        providers.forEach(provider -> {
+        for (T provider : providers) {
+            boolean isValid = false;
+
             if (provider instanceof ExternalItemProvider externalProvider) {
-                String folder = externalProvider.getModelType();
-                String modelsFolder = MODELS_FOLDER + folder + "/";
-
-                String modelPath = modelsFolder + provider.value() + ".json";
-                resourcesToLoad.add(modelPath);
-
-                for (String additionalModel : externalProvider.getAdditionalModels()) {
-                    resourcesToLoad.add(modelsFolder + additionalModel + ".json");
-                }
-
-                String texturesFolder = TEXTURES_FOLDER + folder + "/";
-                String texturePath = texturesFolder + provider.value() + ".png";
-                resourcesToLoad.add(texturePath);
-
-                for (String additionalTexture : externalProvider.getAdditionalTextures()) {
-                    resourcesToLoad.add(texturesFolder + additionalTexture + ".png");
-                }
-
-                if (plugin.getResource(modelPath) != null && plugin.getResource(texturePath) != null) {
-                    valid.add(provider);
-                }
+                isValid |= handleExternalItemProvider(externalProvider, resourcesToLoad);
             }
 
             if (provider instanceof DynamicItemTextureProvider itemProvider) {
-                itemProvider.getModelDefinitions().forEach((name, definition) -> {
-                    Path modelPath = plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH);
-                    WbsFileUtil.writeJSONToFile(
-                            modelPath.resolve(name).toFile(),
-                            definition
-                    );
-                });
-
-                for (TextureLayer texture : itemProvider.getTextures()) {
-                    String imagePath = ITEM_TEXTURES_PATH + texture.name() + ".png";
-
-                    if (plugin.getResource(imagePath) != null) {
-                        valid.add(provider);
-                    }
-
-                    resourcesToLoad.add(imagePath);
-                    if (texture.isAnimated()) {
-                        String metaPath = ITEM_TEXTURES_PATH + texture.name() + ".png.mcmeta";
-                        resourcesToLoad.add(metaPath);
-                    }
-                }
+                isValid |= handleDynamicItemProvider(itemProvider, resourcesToLoad);
             }
-        });
+
+            if (isValid) {
+                valid.add(provider);
+            }
+        }
+
+        valid = valid.stream().distinct().collect(Collectors.toCollection(LinkedList::new));
 
         Path externalItemFolder = plugin.getDataPath().resolve(ResourcePackBuilder.ITEMS_FOLDER);
         WbsFileUtil.writeJSONToFile(
@@ -220,6 +185,63 @@ public class ResourcePackBuilder {
         );
 
         return resourcesToLoad.stream().distinct().collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    private static boolean handleDynamicItemProvider(DynamicItemTextureProvider itemProvider, List<String> resourcesToLoad) {
+        WbsWandcraft plugin = WbsWandcraft.getInstance();
+
+        // TODO: Only save model file if valid
+        itemProvider.getModelDefinitions().forEach((name, definition) -> {
+            Path modelPath = plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH);
+            WbsFileUtil.writeJSONToFile(
+                    modelPath.resolve(name).toFile(),
+                    definition
+            );
+        });
+
+        boolean isValid = false;
+
+        for (TextureLayer texture : itemProvider.getTextures()) {
+            String imagePath = ITEM_TEXTURES_PATH + texture.name() + ".png";
+
+            if (plugin.getResource(imagePath) != null) {
+                isValid = true;
+            }
+
+            // TODO: Only add resources to load if these are true
+            resourcesToLoad.add(imagePath);
+            if (texture.isAnimated()) {
+                String metaPath = ITEM_TEXTURES_PATH + texture.name() + ".png.mcmeta";
+                resourcesToLoad.add(metaPath);
+            }
+        }
+
+        return isValid;
+    }
+
+    private static boolean handleExternalItemProvider(ExternalItemProvider externalProvider, List<String> resourcesToLoad) {
+        WbsWandcraft plugin = WbsWandcraft.getInstance();
+
+        String folder = externalProvider.getModelType();
+        String modelsFolder = MODELS_FOLDER + folder + "/";
+
+        String modelPath = modelsFolder + externalProvider.value() + ".json";
+        resourcesToLoad.add(modelPath);
+
+        for (String additionalModel : externalProvider.getAdditionalModels()) {
+            resourcesToLoad.add(modelsFolder + additionalModel + ".json");
+        }
+
+        String texturesFolder = TEXTURES_FOLDER + folder + "/";
+        String texturePath = texturesFolder + externalProvider.value() + ".png";
+        resourcesToLoad.add(texturePath);
+
+        for (String additionalTexture : externalProvider.getAdditionalTextures()) {
+            resourcesToLoad.add(texturesFolder + additionalTexture + ".png");
+        }
+
+        // TODO: Only add resources to load if these are true
+        return plugin.getResource(modelPath) != null && plugin.getResource(texturePath) != null;
     }
 
     private static DynamicItemTextureProvider getSimpleProvider(String name) {
