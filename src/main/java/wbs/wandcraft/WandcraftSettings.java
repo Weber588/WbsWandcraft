@@ -8,12 +8,16 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import wbs.utils.exceptions.InvalidConfigurationException;
+import wbs.utils.util.WbsEnums;
 import wbs.utils.util.plugin.WbsSettings;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.generation.AttributeModifierGenerator;
@@ -33,6 +37,7 @@ public class WandcraftSettings extends WbsSettings {
     public static final String SPELL_CONFIG_COST = "echo-shard-cost";
     public static final String SPELL_CONFIG_ATTRIBUTES = "attributes";
     private boolean debugMode = false;
+    private final Map<@NotNull EntityType, @NotNull Map<ItemStack, @NotNull Double>> customDrops = new HashMap<>();
 
     protected WandcraftSettings(WbsWandcraft plugin) {
         super(plugin);
@@ -63,25 +68,79 @@ public class WandcraftSettings extends WbsSettings {
         return defaultKey;
     }
 
+    @NullMarked
+    public Map<EntityType, Map<ItemStack, Double>> getCustomDrops() {
+        return this.customDrops;
+    }
+
     @Override
     public void reload() {
-        YamlConfiguration config = loadDefaultConfig("config.yml");
+        String directory = "config.yml";
+        YamlConfiguration config = this.loadDefaultConfig(directory);
+
+        ConfigurationSection artificingTableSection = config.getConfigurationSection("artificing-table");
+
+        if (artificingTableSection != null) {
+            this.artificingConfig = new ArtificingConfig(artificingTableSection, this, directory + "/artificing-table");
+        }
 
         ResourcePackBuilder.loadResourcePack(this, config);
 
-        ConfigurationSection artificingTableSection = config.getConfigurationSection("artificing-table");
-        if (artificingTableSection != null) {
-            artificingConfig = new ArtificingConfig(artificingTableSection, this, "config.yml/artificing-table");
-        }
-
         this.debugMode = config.getBoolean("debug", false);
 
-        loadSpellConfigs();
-        loadRecipes();
-        loadGenerators();
-        loadLearning();
-        loadGeneration();
-        loadCredits();
+        this.loadSpellConfigs();
+        this.loadRecipes();
+        this.loadGenerators();
+        this.loadLearning();
+        this.loadGeneration();
+        this.loadCredits();
+        this.loadCustomDrops(config, directory);
+    }
+
+    private void loadCustomDrops(YamlConfiguration config, String directory) {
+        ConfigurationSection customDropsSection = config.getConfigurationSection("custom-drops");
+        if (customDropsSection != null) {
+            String dropDirectory = directory + "/custom-drops";
+
+            for(String entityTypeKey : customDropsSection.getKeys(false)) {
+                EntityType type = WbsEnums.getEnumFromString(EntityType.class, entityTypeKey);
+                String entityDropsDir = dropDirectory + "/" + entityTypeKey;
+                if (type == null) {
+                    this.logError("Invalid entity type \"%s\"".formatted(entityTypeKey), entityDropsDir);
+                    continue;
+                }
+
+                ConfigurationSection entityDropsSection = customDropsSection.getConfigurationSection(entityTypeKey);
+                if (entityDropsSection == null) {
+                    this.logError("Entity type must have a section: %s".formatted(entityTypeKey), entityDropsDir);
+                    continue;
+                }
+
+                Set<String> itemTypeKeys = entityDropsSection.getKeys(false);
+                Map<ItemStack, Double> itemChances = new HashMap<>();
+
+                for(String itemTypeKey : itemTypeKeys) {
+                    Object chanceObj = entityDropsSection.get(itemTypeKey);
+                    if (!(chanceObj instanceof Number number)) {
+                        this.logError("Invalid number: %s".formatted(chanceObj), entityDropsDir);
+                        continue;
+                    }
+
+                    double chance = number.doubleValue();
+
+                    try {
+                        ItemStack stack = Bukkit.getItemFactory().createItemStack(itemTypeKey);
+                        itemChances.put(stack, chance);
+                    } catch (IllegalArgumentException var19) {
+                        this.logError("Invalid item stack: %s".formatted(itemTypeKey), entityDropsDir);
+                    }
+                }
+
+                if (!itemChances.isEmpty()) {
+                    this.customDrops.put(type, itemChances);
+                }
+            }
+        }
     }
 
     public boolean debugMode() {

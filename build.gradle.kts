@@ -3,7 +3,7 @@ import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 
 plugins {
     `java-library`
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
     id("xyz.jpenilla.run-paper") version "3.0.0-beta.1" // Adds runServer and runMojangMappedServer tasks for testing
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1" // Generates plugin.yml based on the Gradle config
 }
@@ -23,16 +23,17 @@ repositories {
         url = uri("https://repo.papermc.io/repository/maven-public/")
         url = uri("https://mvn.lib.co.nz/public")
     }
+    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
+    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
-    // paperweight.foliaDevBundle("1.21.8-R0.1-SNAPSHOT")
-    // paperweight.devBundle("com.example.paperfork", "1.21.8-R0.1-SNAPSHOT")
-    implementation("io.github.Weber588:WbsUtils:1.0-SNAPSHOT")
-    implementation("net.kyori:adventure-text-serializer-ansi:4.24.0")
-    implementation("me.libraryaddict.disguises:libsdisguises:11.0.13")
-    implementation("com.github.retrooper:packetevents-spigot:2.11.1")
+    paperweight.paperDevBundle(libs.versions.io.papermc.paper.paper.api)
+
+    api(libs.net.kyori.adventure.text.serializer.ansi)
+    compileOnly(libs.io.github.weber588.wbsutils)
+    compileOnly(libs.me.libraryaddict.disguises.libsdisguises)
+    compileOnly(libs.com.github.retrooper.packetevents.spigot)
 }
 
 tasks {
@@ -54,7 +55,7 @@ paperPluginYaml {
     main = "wbs.wandcraft.WbsWandcraft"
     bootstrapper = "wbs.wandcraft.WbsWandcraftBootstrap"
     authors.add("Weber588")
-    apiVersion = "1.21.11"
+    apiVersion = "26.2"
     dependencies {
         bootstrap.create("WbsUtils", {
             load = PaperPluginYaml.Load.BEFORE

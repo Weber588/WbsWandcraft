@@ -13,6 +13,14 @@ error-colour: 'c'
 # Error highlights
 error-highlight: '7'
 
+custom-drops:
+  illusioner:
+    minecraft:dragon_breath: 0.2 # 20% chance
+  evoker:
+    minecraft:dragon_breath: 0.05 # 5% chance
+  witch:
+    minecraft:dragon_breath: 0.001
+
 item-models:
   # Are you using the embedded resource pack? This will not update old models until they're updated in game!
   use-resource-pack: false

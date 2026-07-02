@@ -187,7 +187,7 @@ public class MageLightSpell extends SpellDefinition implements CustomProjectileS
                 .toList();
 
         for (ChunkPos chunkPos : chunksToUpdate) {
-            NewChunkHolder chunkHolder = chunkHolderManager.getChunkHolder(chunkPos.x, chunkPos.z);
+            NewChunkHolder chunkHolder = chunkHolderManager.getChunkHolder(chunkPos.x(), chunkPos.z());
             if (chunkHolder != null) {
                 Packet<?> relightPacket = new ClientboundLightUpdatePacket(chunkPos, lightEngine, null, null);
 

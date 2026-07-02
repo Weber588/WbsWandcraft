@@ -36,7 +36,7 @@ import org.joml.Vector3f;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.entities.WbsEntityUtil;
-import wbs.utils.util.pluginhooks.PacketEventsWrapper;
+import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.crafting.ArtificingTable;
@@ -222,10 +222,9 @@ public class SpellbookEvents implements Listener {
             TextDisplay reversed = getTextDisplay(spawnLoc, glyph, translation, startingRotationReversed, scale);
 
             for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
-                PacketEventsWrapper.showFakeEntity(player, entity);
-                PacketEventsWrapper.showFakeEntity(player, reversed);
+                PacketEventsWrapper.get().ifPresent(pe -> pe.showFakeEntity(entity, player));
+                PacketEventsWrapper.get().ifPresent(pe -> pe.showFakeEntity(reversed, player));
             }
-
 
             Vector3f finalTranslation = offset.clone().rotateAroundY(animationRotation).toVector3f();
             float finalAngleFromNorth = north.angle(Vector.fromJOML(finalTranslation));
@@ -259,15 +258,15 @@ public class SpellbookEvents implements Listener {
                 reversed.setTextOpacity(Byte.MIN_VALUE);
 
                 for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
-                    PacketEventsWrapper.updateEntity(player, entity);
-                    PacketEventsWrapper.updateEntity(player, reversed);
+                    PacketEventsWrapper.get().ifPresent(pe -> pe.updateEntity(entity, player));
+                    PacketEventsWrapper.get().ifPresent(pe -> pe.updateEntity(reversed, player));
                 }
             }, 1);
 
             WbsWandcraft.getInstance().runLater(() -> {
                 for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
-                    PacketEventsWrapper.removeEntity(player, entity);
-                    PacketEventsWrapper.removeEntity(player, reversed);
+                    PacketEventsWrapper.get().ifPresent(pe -> pe.removeEntity(entity, player));
+                    PacketEventsWrapper.get().ifPresent(pe -> pe.removeEntity(reversed, player));
                 }
 
             }, INTERPOLATION_DURATION - charIndex + characters - updatedPlayer.getPing() / Ticks.SINGLE_TICK_DURATION_MS);
@@ -389,7 +388,7 @@ public class SpellbookEvents implements Listener {
             ItemStack book = view.getTopInventory().getItem(0);
             if (Spellbook.isSpellbook(book)) {
                 Player player = (Player) event.getPlayer();
-                PacketEventsWrapper.sendGameModeChange(player, player.getGameMode());
+                PacketEventsWrapper.get().ifPresent(pe -> pe.sendGameModeChange(player.getGameMode(), player));
             }
         }
     }

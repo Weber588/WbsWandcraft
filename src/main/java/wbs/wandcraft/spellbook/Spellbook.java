@@ -29,11 +29,10 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
 import org.checkerframework.checker.index.qual.Positive;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.persistent.WbsPersistentDataType;
-import wbs.utils.util.pluginhooks.PacketEventsWrapper;
+import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
@@ -59,9 +58,9 @@ import java.util.List;
 @NullMarked
 public class Spellbook implements ItemDecorator {
     private static final NamespacedKey SPELL_BOOK = WbsWandcraft.getKey("spellbook");
-    public static final @NotNull NamespacedKey KNOWN_SPELLS = WbsWandcraft.getKey("known_spells");
-    public static final @NotNull TextColor DESCRIPTION_COLOR = TextColor.color(0x6F47A3);
-    public static final @NotNull Style COST_STYLE = Style.style()
+    public static final NamespacedKey KNOWN_SPELLS = WbsWandcraft.getKey("known_spells");
+    public static final TextColor DESCRIPTION_COLOR = TextColor.color(0x6F47A3);
+    public static final Style COST_STYLE = Style.style()
             .color(TextColor.color(0x006661))
             .decorate(TextDecoration.ITALIC)
             .build();
@@ -137,11 +136,10 @@ public class Spellbook implements ItemDecorator {
             if (WandcraftRegistries.SPELLS.stream().count() == knownSpells.size()) {
                 Component message = Component.text("Learnt all spells!");
                 ItemStack icon = ItemUtils.buildSpellbook();
-                boolean sentToast = PacketEventsWrapper.sendToast(icon, message, AdvancementDisplay.Frame.CHALLENGE, player);
-
-                if (!sentToast) {
-                    WbsWandcraft.getInstance().buildMessage(message).send(player);
-                }
+                PacketEventsWrapper.get().ifPresentOrElse(
+                        pe -> pe.sendToast(icon, message, AdvancementDisplay.Frame.CHALLENGE, player),
+                        () -> WbsWandcraft.getInstance().buildMessage(message).send(player)
+                );
             }
         }
 
@@ -190,11 +188,10 @@ public class Spellbook implements ItemDecorator {
             message = Component.text("Learnt ").append(Component.text(toLearn.size()).color(NamedTextColor.AQUA)).append(Component.text(" spells!"));
             icon = ItemUtils.buildSpellbook();
         }
-        boolean sentToast = PacketEventsWrapper.sendToast(icon, message, AdvancementDisplay.Frame.GOAL, player);
-
-        if (!sentToast) {
-            WbsWandcraft.getInstance().buildMessage(message).send(player);
-        }
+        PacketEventsWrapper.get().ifPresentOrElse(
+                pe -> pe.sendToast(icon, message, AdvancementDisplay.Frame.GOAL, player),
+                () -> WbsWandcraft.getInstance().buildMessage(message).send(player)
+        );
     }
 
     @Nullable
@@ -232,7 +229,7 @@ public class Spellbook implements ItemDecorator {
 
     public Spellbook openBook(Player player) {
         if (player.getGameMode() == GameMode.SURVIVAL) {
-            PacketEventsWrapper.sendGameModeChange(player, GameMode.ADVENTURE);
+            PacketEventsWrapper.get().ifPresent(pe -> pe.sendGameModeChange(GameMode.ADVENTURE, player));
         }
 
         List<WandType<?>> wandDefinitions = getOrderedWands();
@@ -287,7 +284,7 @@ public class Spellbook implements ItemDecorator {
         return this;
     }
 
-    private static @NotNull List<Component> getWandPages(List<WandType<?>> wandDefinitions) {
+    private static List<Component> getWandPages(List<WandType<?>> wandDefinitions) {
         List<Component> wandPages = new LinkedList<>();
         for (WandType<?> type : wandDefinitions) {
             Component page = Component.empty().append(type.getItemName().color(WAND_COLOR))
@@ -300,7 +297,7 @@ public class Spellbook implements ItemDecorator {
         return wandPages;
     }
 
-    private static @NotNull List<Component> getSpellPages(Player player, List<SpellDefinition> allDefinitions) {
+    private static List<Component> getSpellPages(Player player, List<SpellDefinition> allDefinitions) {
         List<Component> spellPages = new LinkedList<>();
         for (SpellDefinition definition : allDefinitions) {
             Component page = Component.empty();
@@ -387,13 +384,13 @@ public class Spellbook implements ItemDecorator {
                 .toList();
     }
 
-    private static @NotNull List<SpellDefinition> getOrderedSpells() {
+    private static List<SpellDefinition> getOrderedSpells() {
         return WandcraftRegistries.SPELLS.stream()
                 .sorted(Comparator.comparing(SpellDefinition::getKey))
                 .toList();
     }
 
-    private static @NotNull TextComponent getChapterLink(@Positive int page, String title) {
+    private static TextComponent getChapterLink(@Positive int page, String title) {
         return Component.text(page + ". " + title).clickEvent(ClickEvent.changePage(page)).appendNewline();
     }
 
@@ -442,7 +439,7 @@ public class Spellbook implements ItemDecorator {
     }
 
     @Override
-    public @NotNull List<Component> getLore() {
+    public List<Component> getLore() {
         List<Component> components = new LinkedList<>(
                 WbsStrings.wrapText("Sneak + hold Right Click to Cast", 140).stream()
                         .map(Component::text)
@@ -458,7 +455,7 @@ public class Spellbook implements ItemDecorator {
         return components;
     }
 
-    private @NotNull Component getCurrentPageName() {
+    private Component getCurrentPageName() {
         Component pageName = null;
         WandType<?> currentWandType = getCurrentWandType();
         if (currentWandType != null) {
@@ -498,7 +495,7 @@ public class Spellbook implements ItemDecorator {
         }
     }
 
-    public static @NotNull Component getErrorMessage(SpellDefinition definition) {
+    public static Component getErrorMessage(SpellDefinition definition) {
         Component errorMessage = definition.displayName().font(Key.key("illageralt")).color(NamedTextColor.DARK_PURPLE);
 
         errorMessage = errorMessage.append(Component.text("???").color(NamedTextColor.DARK_RED).font(Key.key("default")));

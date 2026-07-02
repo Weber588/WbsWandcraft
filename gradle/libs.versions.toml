@@ -1,0 +1,12 @@
+[versions]
+io-papermc-paper-paper-api = "26.2.build.+"
+io-github-weber588-wbsutils = "2.0-SNAPSHOT"
+net-kyori-adventure-text-serializer-ansi = "5.2.0"
+com-github-retrooper-packetevents-spigot = "2.13.0"
+me-libraryaddict-disguises-libsdisguises = "11.0.13"
+
+[libraries]
+net-kyori-adventure-text-serializer-ansi = { module = "net.kyori:adventure-text-serializer-ansi", version.ref = "net-kyori-adventure-text-serializer-ansi" }
+io-github-weber588-wbsutils = { module = "io.github.Weber588:WbsUtils", version.ref = "io-github-weber588-wbsutils" }
+com-github-retrooper-packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", version.ref = "com-github-retrooper-packetevents-spigot" }
+me-libraryaddict-disguises-libsdisguises = { module = "me.libraryaddict.disguises:libsdisguises", version.ref = "me-libraryaddict-disguises-libsdisguises" }

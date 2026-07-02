@@ -26,7 +26,7 @@ public abstract class TemporaryGoal<T extends Mob> implements Goal<T> {
 
     @Nullable
     private static <T extends Mob> WrappedGoal getWrappedGoal(T mob, GoalKey<T> key) {
-        for (WrappedGoal wrappedGoal : ((CraftMob) mob).getHandle().goalSelector.getAvailableGoals()) {
+        for (WrappedGoal wrappedGoal : ((CraftMob) mob).getHandle().getGoalSelector().getAvailableGoals()) {
             if (key.equals(wrappedGoal.getGoal().asPaperGoal().getKey())) {
                 return wrappedGoal;
             }

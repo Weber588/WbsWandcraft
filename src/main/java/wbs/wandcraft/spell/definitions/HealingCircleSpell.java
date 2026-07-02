@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 import wbs.utils.util.entities.selector.RadiusSelector;
-import wbs.utils.util.pluginhooks.PacketEventsWrapper;
+import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.objects.generics.MagicObject;
@@ -104,7 +104,7 @@ public class HealingCircleSpell extends SpellDefinition implements CastableSpell
 
             world.getPlayersSeeingChunk(location.getChunk()).forEach(player -> {
                 displays.forEach(display -> {
-                    PacketEventsWrapper.showFakeEntity(player, display);
+                    PacketEventsWrapper.get().ifPresent(pe -> pe.showFakeEntity(display, player));
                 });
             });
         }
@@ -131,9 +131,11 @@ public class HealingCircleSpell extends SpellDefinition implements CastableSpell
             Location location = getLocation();
             World world = location.getWorld();
 
-            world.getPlayersSeeingChunk(location.getChunk()).forEach(player -> {
-                displays.forEach(display -> {
-                    PacketEventsWrapper.removeEntity(player, display);
+            PacketEventsWrapper.get().ifPresent(pe -> {
+                world.getPlayersSeeingChunk(location.getChunk()).forEach(player -> {
+                    displays.forEach(display -> {
+                        pe.removeEntity(display, player);
+                    });
                 });
             });
 
