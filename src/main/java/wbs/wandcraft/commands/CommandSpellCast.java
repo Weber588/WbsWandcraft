@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +14,7 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleA
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
@@ -48,6 +50,13 @@ public class CommandSpellCast extends WbsSubcommand {
 
         if (spell == null) {
             plugin.sendMessage("Invalid spell definition: " + definitionKey.asString() + ".", context.getSource().getSender());
+            return Command.SINGLE_SUCCESS;
+        }
+
+        if (CastingManager.isCasting(player)) {
+            plugin.buildMessage(
+                    MiniMessage.miniMessage().deserialize("You are already casting a spell! Cancel it with ")
+            ).send(player);
             return Command.SINGLE_SUCCESS;
         }
 

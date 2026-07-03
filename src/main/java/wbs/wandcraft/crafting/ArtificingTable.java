@@ -173,7 +173,7 @@ public class ArtificingTable implements InventoryHolder {
 
             item.setItemStack(ItemUtils.buildWand(currentWandType));
             dropItem();
-            CONVERT_EFFECT.play(Particle.END_ROD, item.getLocation().add(0, 0.15, 0));
+            CONVERT_EFFECT.setData(null).play(Particle.END_ROD, item.getLocation().add(0, 0.15, 0));
         } else {
             WbsWandcraft.getInstance().sendActionBar("Not enough echo shards! (" + shardsAvailable + "/" + cost + ")", player);
         }

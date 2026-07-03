@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.spell.definitions.type.SpellType;
 
 @NullMarked
 public class StunnedEffect extends StatusEffect {
@@ -32,7 +33,7 @@ public class StunnedEffect extends StatusEffect {
 
     @Override
     public void onApply(LivingEntity entity, StatusEffectInstance instance) {
-        entity.getWorld().spawnParticle(Particle.FLASH, entity.getEyeLocation(), 0);
+        entity.getWorld().spawnParticle(Particle.FLASH, entity.getEyeLocation(), 0, SpellType.ARCANE.color());
     }
 
     @Override

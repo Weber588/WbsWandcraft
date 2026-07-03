@@ -1,9 +1,13 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.util.Ticks;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.WbsColour;
+import wbs.utils.util.WbsColours;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
@@ -14,6 +18,10 @@ import java.util.Set;
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 
 public class PrismaticRaySpell extends SpellDefinition implements CastableSpell, RaySpell, DamageSpell {
+
+    public static final @NotNull Color START_COLOR = Color.fromRGB(0xFF7575);
+    public static final @NotNull Color END_COLOR = Color.fromRGB(0xFF7578);
+
     public PrismaticRaySpell() {
         super("prismatic_ray");
 
@@ -45,7 +53,23 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
     @Override
     public boolean onStep(CastContext context, Location currentPos, Set<LivingEntity> alreadyHit, int currentStep, int maxSteps) {
         double particleRadius = context.instance().getAttribute(RADIUS) / 2;
-        currentPos.getWorld().spawnParticle(Particle.INSTANT_EFFECT, currentPos, 1, particleRadius, particleRadius, particleRadius, 0, null, true);
+
+        Color color;
+        double interval = (double) (currentStep) / maxSteps;
+        color = WbsColours.colourLerp(START_COLOR, END_COLOR, interval);
+
+        currentPos.getWorld().spawnParticle(
+                Particle.INSTANT_EFFECT,
+                currentPos,
+                1,
+                particleRadius,
+                particleRadius,
+                particleRadius,
+                0,
+                new Particle.Spell(color, 1f),
+                true
+        );
+
         return false;
     }
 

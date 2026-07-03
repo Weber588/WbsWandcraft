@@ -25,7 +25,8 @@ public class DisplaceSpell extends SpellDefinition implements CastableSpell, Tar
     private static final LineParticleEffect LINE_EFFECT = (LineParticleEffect) new LineParticleEffect()
             .setScaleAmount(true)
             .setRadius(0.1)
-            .setAmount(5);
+            .setAmount(5)
+            .setData(1f);
 
     public DisplaceSpell() {
         super("displace");
@@ -72,7 +73,7 @@ public class DisplaceSpell extends SpellDefinition implements CastableSpell, Tar
 
             LINE_EFFECT.play(Particle.DRAGON_BREATH, originalLocation, targetLocation);
 
-            world.spawnParticle(Particle.DRAGON_BREATH, targetLocation, 25, 0.15, 0.15, 0.15, 0);
+            world.spawnParticle(Particle.DRAGON_BREATH, targetLocation, 25, 0.15, 0.15, 0.15, 0, 1f);
             world.spawnParticle(Particle.WITCH, targetLocation, 400, 0.6, 1, 0.6, 0);
         }
     }

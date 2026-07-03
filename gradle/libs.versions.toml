@@ -1,6 +1,6 @@
 [versions]
 io-papermc-paper-paper-api = "26.2.build.+"
-io-github-weber588-wbsutils = "2.0-SNAPSHOT"
+io-github-weber588-wbsutils = "1.0-SNAPSHOT"
 net-kyori-adventure-text-serializer-ansi = "5.2.0"
 com-github-retrooper-packetevents-spigot = "2.13.0"
 me-libraryaddict-disguises-libsdisguises = "11.0.13"

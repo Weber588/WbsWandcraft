@@ -148,7 +148,7 @@ public class NaturePhasingEffect extends StatusEffect {
 
         Material material = block.getType();
         switch (material) {
-            case COBBLESTONE, END_STONE, COBBLED_DEEPSLATE -> {
+            case COBBLESTONE, END_STONE, COBBLED_DEEPSLATE, GRASS_BLOCK -> {
                 return true;
             }
         }

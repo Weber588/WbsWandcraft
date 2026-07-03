@@ -9,6 +9,7 @@ import wbs.utils.util.commands.brigadier.WbsErrorsSubcommand;
 import wbs.utils.util.commands.brigadier.WbsReloadSubcommand;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.plugin.WbsPlugin;
+import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.wandcraft.commands.*;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.equipment.MagicEquipmentType;
@@ -42,6 +43,8 @@ public class WbsWandcraft extends WbsPlugin {
 
         this.settings = new WandcraftSettings(this);
         this.settings.reload();
+
+        PacketEventsWrapper.get().ifPresent(pe -> pe.fullStackTrace(true));
 
         WbsCommand.getStatic(this, "wandcraft")
                 .setPermission("wbswandcraft.command")
@@ -97,6 +100,7 @@ public class WbsWandcraft extends WbsPlugin {
                                 })
                         ).inferSubPermissions(),
                         new CommandSpellCast(this, "cast"),
+                        new CommandSpellCancel(this, "cancel"),
                         new CommandSpellbook(this, "spellbooktest"),
                         WbsReloadSubcommand.getStatic(this, settings),
                         WbsErrorsSubcommand.getStatic(this, settings)

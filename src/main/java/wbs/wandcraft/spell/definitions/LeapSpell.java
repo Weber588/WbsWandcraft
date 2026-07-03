@@ -1,6 +1,7 @@
 package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.util.Ticks;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,7 +31,7 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
     @Override
     public void cast(CastContext context) {
         Player player = context.player();
-        player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation(), 160, 0, 0, 0, 0.5);
+        player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation(), 160, 0, 0, 0, 0.5, new Particle.Spell(Color.WHITE, 1.5f));
         player.setVelocity(getDirection(context, context.instance().getAttribute(SPEED)).add(player.getVelocity().multiply(0.5)));
 
         player.setFallDistance(0);
@@ -41,7 +42,7 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
                 int escape = 0;
                 @Override
                 public void run() {
-                    player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation().add(0, 1, 0), 10, 0.4, 1, 0.4, 0);
+                    player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation().add(0, 1, 0), 10, 0.4, 1, 0.4, 0, new Particle.Spell(Color.WHITE, 1.5f));
 
                     escape++;
 
