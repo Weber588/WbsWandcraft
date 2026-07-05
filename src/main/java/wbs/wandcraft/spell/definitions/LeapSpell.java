@@ -4,7 +4,12 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import wbs.utils.util.WbsEventUtils;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -45,6 +50,7 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
                     player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getLocation().add(0, 1, 0), 10, 0.4, 1, 0.4, 0, new Particle.Spell(Color.WHITE, 1.5f));
 
                     escape++;
+                    player.setFallDistance(0);
 
                     //noinspection deprecation
                     if (escape > 1000 || !player.isOnline() || player.isFlying() || (player.isOnGround() && escape >= 5)) {
