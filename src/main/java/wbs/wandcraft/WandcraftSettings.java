@@ -351,10 +351,10 @@ public class WandcraftSettings extends WbsSettings {
                 "ebe",
                 "bbb"
         );
-        artificingTable.setIngredient('d', Material.DEEPSLATE);
+        artificingTable.setIngredient('d', Material.POLISHED_DEEPSLATE);
         artificingTable.setIngredient('s', Material.NETHER_STAR);
         artificingTable.setIngredient('e', Material.ECHO_SHARD);
-        artificingTable.setIngredient('b', Material.BLACKSTONE);
+        artificingTable.setIngredient('b', Material.POLISHED_BLACKSTONE);
 
         Bukkit.removeRecipe(artificingTable.getKey());
         Bukkit.addRecipe(artificingTable);
