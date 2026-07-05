@@ -190,33 +190,38 @@ public class ResourcePackBuilder {
     private static boolean handleDynamicItemProvider(DynamicItemTextureProvider itemProvider, List<String> resourcesToLoad) {
         WbsWandcraft plugin = WbsWandcraft.getInstance();
 
-        // TODO: Only save model file if valid
-        itemProvider.getModelDefinitions().forEach((name, definition) -> {
-            Path modelPath = plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH);
-            WbsFileUtil.writeJSONToFile(
-                    modelPath.resolve(name).toFile(),
-                    definition
-            );
-        });
+        boolean missingTextures = false;
 
-        boolean isValid = false;
+        List<String> resources = new LinkedList<>();
 
         for (TextureLayer texture : itemProvider.getTextures()) {
             String imagePath = ITEM_TEXTURES_PATH + texture.name() + ".png";
 
-            if (plugin.getResource(imagePath) != null) {
-                isValid = true;
+            if (plugin.getResource(imagePath) == null) {
+                missingTextures = true;
+                break;
             }
 
-            // TODO: Only add resources to load if these are true
-            resourcesToLoad.add(imagePath);
+            resources.add(imagePath);
             if (texture.isAnimated()) {
                 String metaPath = ITEM_TEXTURES_PATH + texture.name() + ".png.mcmeta";
-                resourcesToLoad.add(metaPath);
+                resources.add(metaPath);
             }
         }
 
-        return isValid;
+        if (!missingTextures) {
+            itemProvider.getModelDefinitions().forEach((name, definition) -> {
+                Path modelPath = plugin.getDataPath().resolve(ResourcePackBuilder.ITEM_MODELS_PATH);
+                WbsFileUtil.writeJSONToFile(
+                        modelPath.resolve(name).toFile(),
+                        definition
+                );
+            });
+
+            resourcesToLoad.addAll(resources);
+        }
+
+        return !missingTextures;
     }
 
     private static boolean handleExternalItemProvider(ExternalItemProvider externalProvider, List<String> resourcesToLoad) {

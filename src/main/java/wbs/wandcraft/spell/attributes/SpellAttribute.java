@@ -10,7 +10,6 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsColours;
@@ -32,29 +31,24 @@ import java.util.function.Function;
 
 @NullMarked
 public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, DynamicItemTextureProvider {
-    @NotNull
     private final NamespacedKey key;
-    @NotNull
     private Component displayName;
-    @NotNull
     private final RegisteredPersistentDataType<T> type;
     @Nullable
     private final T defaultValue;
-    @NotNull
     private final Function<String, T> parse;
-    @NotNull
     private final Collection<T> suggestions = new HashSet<>();
-    private BiFunction<@NotNull T, Attributable, @NotNull Boolean> shouldShow = (val, attributable) -> true;
-    private Function<@NotNull T, @NotNull String> formatter = Objects::toString;
-    private Function<@NotNull T, @NotNull String> rawFormatter = Objects::toString;
+    private BiFunction<T, Attributable, Boolean> shouldShow = (val, attributable) -> true;
+    private Function<T, String> formatter = Objects::toString;
+    private Function<T, String> rawFormatter = Objects::toString;
     private final List<TypedFormatter<?>> typedFormatters = new LinkedList<>();
     private boolean isWritable = false;
     private String textureValue;
     private Sentiment sentiment = Sentiment.POSITIVE;
 
-    public SpellAttribute(@NotNull NamespacedKey key, @NotNull RegisteredPersistentDataType<T> type, @Nullable T defaultValue, @NotNull Function<String, T> parse) {
+    public SpellAttribute(NamespacedKey key, RegisteredPersistentDataType<T> type, @Nullable T defaultValue, Function<String, T> parse) {
         this.key = key;
-        this.displayName = Component.text(WbsStrings.capitalizeAll(key.value().replaceAll("_", " ")));
+        this.displayName = Component.text(WbsStrings.capitalizeAll(key.value().replace("_", " ")));
         this.type = type;
         this.defaultValue = defaultValue;
         this.parse = parse;
@@ -67,7 +61,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         WandcraftRegistries.ATTRIBUTES.register(this);
     }
 
-    public SpellAttribute(@Subst("key") String nativeKey, RegisteredPersistentDataType<T> type, @Nullable T defaultValue, @NotNull Function<String, T> parse) {
+    public SpellAttribute(@Subst("key") String nativeKey, RegisteredPersistentDataType<T> type, @Nullable T defaultValue, Function<String, T> parse) {
         this(WbsWandcraft.getKey(nativeKey), type, defaultValue, parse);
     }
 
@@ -98,7 +92,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
 
 
     @Override
-    public @NotNull NamespacedKey getKey() {
+    public NamespacedKey getKey() {
         return key;
     }
 
@@ -122,10 +116,10 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return defaultValue;
     }
 
-    public SpellAttribute<T> setShowAttribute(Function<@NotNull T, @NotNull Boolean> shouldShow) {
+    public SpellAttribute<T> setShowAttribute(Function<T, Boolean> shouldShow) {
         return setShowAttribute((val, ignored) -> shouldShow.apply(val));
     }
-    public SpellAttribute<T> setShowAttribute(BiFunction<@NotNull T, Attributable, @NotNull Boolean> shouldShow) {
+    public SpellAttribute<T> setShowAttribute(BiFunction<T, Attributable, Boolean> shouldShow) {
         this.shouldShow = shouldShow;
         return this;
     }
@@ -232,12 +226,11 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return new SpellAttributeModifier<>(this, operator, value);
     }
 
-    @NotNull
     public Component displayName() {
         return displayName;
     }
 
-    public SpellAttribute<T> displayName(@NotNull Component displayName) {
+    public SpellAttribute<T> displayName(Component displayName) {
         this.displayName = displayName;
         return this;
     }
@@ -250,7 +243,6 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return getInstance(parse(stringValue));
     }
 
-    @NotNull
     public Collection<T> getSuggestions() {
         return suggestions;
     }
@@ -259,7 +251,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return type.dataType().getComplexType();
     }
 
-    public int compareTo(@NotNull SpellAttribute<?> other) {
+    public int compareTo(SpellAttribute<?> other) {
         return other.getKey().compareTo(getKey());
     }
 
@@ -290,7 +282,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     }
 
     @Override
-    public @NotNull List<TextureLayer> getTextures() {
+    public List<TextureLayer> getTextures() {
         return List.of(
                 new TextureLayer("modifier_overlay", false, 0xEC273F),
                 new TextureLayer("modifier_" + textureValue)
