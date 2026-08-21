@@ -2,12 +2,9 @@ package wbs.wandcraft.equipment.hat;
 
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Mob;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Vex;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsEventUtils;
 import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
@@ -67,7 +64,7 @@ public class SorcererHat extends MagicHat {
                 return;
             }
 
-            LivingEntity summoner = vex.getSummoner();
+            LivingEntity summoner = vex.getOwner();
             ifEquipped(summoner, () -> {
                 vex.setLimitedLifetimeTicks(DURATION_MODIFIER.modify(vex.getLimitedLifetimeTicks()));
             });
