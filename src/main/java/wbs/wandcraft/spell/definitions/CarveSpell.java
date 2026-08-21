@@ -189,8 +189,11 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
             Wand wand = Wand.fromItem(heldItem);
 
             if (wand != null) {
-                hitBlock.breakNaturally(heldItem);
+                boolean broke = player.breakBlock(hitBlock);
                 if (hardness >= 1) {
+                    if (!broke) {
+                        player.sendMessage("Failed to break!");
+                    }
                     CostUtils.takeCost(player, (int) hardness);
                 }
             }
