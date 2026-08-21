@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
@@ -145,10 +146,14 @@ public class HeatRaySpell extends SpellDefinition implements ContinuousCastableS
                 if (WbsRegionUtils.canBuildAt(hitBlock.getLocation(), player)) {
                     Material material = hitBlock.getType();
                     if (material == Material.WATER) {
-                        hitBlock.setType(Material.AIR);
-                        HIT_EFFECT.play(Particle.CLOUD, endLocation);
-                        player.getWorld().playSound(endLocation, Sound.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 1, 1);
-                        evaporated = true;
+                        EntityChangeBlockEvent event = new EntityChangeBlockEvent(player, hitBlock, Material.AIR.createBlockData());
+
+                        if (!event.isCancelled()) {
+                            hitBlock.setType(Material.AIR);
+                            HIT_EFFECT.play(Particle.CLOUD, endLocation);
+                            player.getWorld().playSound(endLocation, Sound.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 1, 1);
+                            evaporated = true;
+                        }
                     } else {
                         for (@NotNull Iterator<Recipe> it = Bukkit.recipeIterator(); it.hasNext(); ) {
                             Recipe recipe = it.next();
@@ -157,7 +162,11 @@ public class HeatRaySpell extends SpellDefinition implements ContinuousCastableS
                                 Material resultMaterial = furnaceRecipe.getResult().getType();
                                 if (resultMaterial.isBlock()) {
                                     if (furnaceRecipe.getInputChoice().test(ItemStack.of(material))) {
-                                        hitBlock.setType(resultMaterial);
+                                        EntityChangeBlockEvent event = new EntityChangeBlockEvent(player, hitBlock, resultMaterial.createBlockData());
+
+                                        if (!event.isCancelled()) {
+                                            hitBlock.setType(resultMaterial);
+                                        }
                                         break;
                                     }
                                 }

@@ -123,7 +123,7 @@ public class StatusEffectInstance {
                         StatusEffectInstance.this.cancel(true);
                     }
 
-                    bar.progress(timeLeft / (float) initialTime);
+                    bar.progress(Math.clamp(timeLeft / (float) initialTime, 0, 1));
 
                     if (showBossBar) {
                         bar.addViewer(entity);
@@ -205,6 +205,9 @@ public class StatusEffectInstance {
 
     public void setTimeLeft(int timeLeft) {
         this.timeLeft = timeLeft;
+        if (initialTime > timeLeft) {
+            initialTime = timeLeft;
+        }
     }
 
     public @Nullable UUID getCause() {
