@@ -45,7 +45,11 @@ tasks {
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
     }
-
+    runServer {
+        pluginJars(
+            "..\\WbsUtils\\build\\libs\\WbsUtils-" + libs.versions.io.github.weber588.wbsutils.get() + ".jar"
+        )
+    }
 }
 
 // Configure plugin.yml generation
