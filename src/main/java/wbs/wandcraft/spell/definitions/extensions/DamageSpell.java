@@ -65,6 +65,7 @@ public interface DamageSpell extends ISpellDefinition {
         Player player = context.getOnlinePlayer();
         if (player != null) {
             builder = builder.withDirectEntity(player);
+            builder = builder.withCausingEntity(player);
         }
 
         return builder;

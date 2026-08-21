@@ -2,7 +2,6 @@ package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
-import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -102,12 +101,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
             Block hitBlock = result.getHitBlock();
             if (hitEntity != null) {
                 if (this instanceof DamageSpell damageSpell && hitEntity instanceof Damageable damageable) {
-                    double damage = context.instance().getAttribute(DamageSpell.DAMAGE);
-
-                    DamageSource.Builder damageSource = damageSpell.buildDamageSource(context, DamageType.INDIRECT_MAGIC);
-                    damageSource.withDamageLocation(projectile.location);
-
-                    damageable.damage(damage, damageSource.build());
+                    damageSpell.damage(context, damageable, DamageType.INDIRECT_MAGIC);
                 }
 
                 expire |= expireOnHitEntity();
