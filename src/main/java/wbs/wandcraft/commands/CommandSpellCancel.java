@@ -1,62 +1,62 @@
 package wbs.wandcraft.commands;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.EntitySelectorArgumentResolver;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
-import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
-import wbs.wandcraft.WandcraftRegistries;
-import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
-import wbs.wandcraft.context.CastingQueue;
-import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.definitions.SpellInstance;
 
 import java.util.List;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandSpellCancel extends WbsSubcommand {
-    private static final WbsSimpleArgument<EntitySelectorArgumentResolver> DEFINITION = new WbsSimpleArgument<>(
-            "entity",
-            ArgumentTypes.entities(),
-            source -> {
-                CommandSender sender = source.getSender();
-                if (sender instanceof Entity entity) {
-                    return List.of(entity);
-                }
-                return List.of();
-            },
-            EntitySelectorArgumentResolver.class
-    );
+
+    public static final String ARG_ENTITY = "entity";
 
     public CommandSpellCancel(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
-        addSimpleArgument(DEFINITION);
     }
 
     @Override
-    protected int onSimpleArgumentCallback(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
-        CommandSender sender = context.getSource().getSender();
+    protected void addThens(LiteralArgumentBuilder<CommandSourceStack> builder) {
+        builder.executes(context -> {
+            CommandSender sender = context.getSource().getSender();
 
-        EntitySelectorArgumentResolver entityResolver = configuredArgumentMap.get(DEFINITION);
+            if (sender instanceof Entity entity) {
+                return cancel(sender, List.of(entity));
+            }
 
-        List<Entity> entities;
-        try {
-            entities = entityResolver.resolve(context.getSource());
-        } catch (CommandSyntaxException e) {
-            throw new RuntimeException(e);
-        }
+            plugin.sendMessage("This command is only usable by entities.", sender);
+            return 0;
+        }).then(Commands.argument(ARG_ENTITY, ArgumentTypes.entities())
+                .requires(source -> permission != null ? source.getSender().hasPermission(permission + ".other") : source.getSender().isOp())
+                .executes(context -> {
+                    CommandSender sender = context.getSource().getSender();
 
+                    EntitySelectorArgumentResolver entityResolver = context.getArgument(ARG_ENTITY, EntitySelectorArgumentResolver.class);
+
+                    List<Entity> entities;
+                    try {
+                        entities = entityResolver.resolve(context.getSource());
+                    } catch (CommandSyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    return cancel(sender, entities);
+                })
+        );
+    }
+
+    private int cancel(CommandSender sender, List<Entity> entities) {
         List<LivingEntity> targets = entities.stream()
                 .filter(LivingEntity.class::isInstance)
                 .map(LivingEntity.class::cast)
@@ -83,7 +83,15 @@ public class CommandSpellCancel extends WbsSubcommand {
             }
         }
 
-        plugin.sendMessage("Interrupted %d entities casting/concentrating.".formatted(interrupted), sender);
+        if (interrupted == 0) {
+            plugin.sendMessage("Not casting/concentrating.", sender);
+        } else {
+            if (targets.size() == 1 && targets.getFirst().equals(sender)) {
+                plugin.sendMessage("Stopped casting/concentrating.", sender);
+            } else {
+                plugin.sendMessage("Stopped %d entities from casting/concentrating.".formatted(interrupted), sender);
+            }
+        }
 
         return Command.SINGLE_SUCCESS;
     }
