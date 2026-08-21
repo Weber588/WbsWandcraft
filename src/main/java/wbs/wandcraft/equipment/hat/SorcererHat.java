@@ -67,7 +67,7 @@ public class SorcererHat extends MagicHat {
                 return;
             }
 
-            LivingEntity summoner = vex.getOwner();
+            LivingEntity summoner = vex.getSummoner();
             ifEquipped(summoner, () -> {
                 vex.setLimitedLifetimeTicks(DURATION_MODIFIER.modify(vex.getLimitedLifetimeTicks()));
             });
