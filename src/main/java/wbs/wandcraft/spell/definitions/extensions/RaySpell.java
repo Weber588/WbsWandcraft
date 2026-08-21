@@ -34,7 +34,7 @@ public interface RaySpell extends ISpellDefinition, CastableSpell, RangedSpell, 
 
         double range = instance.getAttribute(RANGE);
 
-        RayTraceResult endResult = player.getWorld().rayTraceBlocks(player.getEyeLocation(), WbsMath.getFacingVector(player), range, getFluidCollisionMode(), true);
+        RayTraceResult endResult = player.getWorld().rayTraceBlocks(player.getEyeLocation(), WbsMath.getFacingVector(player), range, getFluidCollisionMode(), ignorePassableBlocks());
 
         Block hitBlock = null;
 
@@ -85,6 +85,10 @@ public interface RaySpell extends ISpellDefinition, CastableSpell, RangedSpell, 
         if (hitBlock != null) {
             onHitBlock(context, hitBlock, Objects.requireNonNull(endResult.getHitBlockFace()));
         }
+    }
+
+    default boolean ignorePassableBlocks() {
+        return true;
     }
 
     default void onHitBlock(CastContext context, @NotNull Block hitBlock, @NotNull BlockFace hitBlockFace) {

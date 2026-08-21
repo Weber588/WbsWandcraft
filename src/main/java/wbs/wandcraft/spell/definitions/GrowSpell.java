@@ -34,6 +34,11 @@ public class GrowSpell extends SpellDefinition implements RaySpell {
     }
 
     @Override
+    public boolean ignorePassableBlocks() {
+        return false;
+    }
+
+    @Override
     public void onHitBlock(CastContext context, @NotNull Block hitBlock, @NotNull BlockFace hitBlockFace) {
         hitBlock.applyBoneMeal(hitBlockFace);
     }
