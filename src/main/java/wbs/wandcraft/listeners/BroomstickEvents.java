@@ -9,7 +9,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.world.EntitiesLoadEvent;
+import org.bukkit.persistence.PersistentDataType;
 import wbs.wandcraft.entities.Broomstick;
+import wbs.wandcraft.entities.CustomEntity;
 import wbs.wandcraft.wand.types.BroomstickWand;
 
 import java.util.List;
@@ -82,6 +84,14 @@ public class BroomstickEvents implements Listener {
                 }
 
                 new Broomstick(livingEntity);
+            } else {
+                boolean isCustomEntityComponent = entity.getPersistentDataContainer().has(CustomEntity.CUSTOM_ENTITY_COMPONENT, PersistentDataType.BOOLEAN);
+                if (isCustomEntityComponent) {
+                    if (!entity.isInsideVehicle()) {
+                        CustomEntity.removeRiders(entity);
+                        entity.remove();
+                    }
+                }
             }
         }
     }

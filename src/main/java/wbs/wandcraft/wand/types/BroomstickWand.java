@@ -9,8 +9,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
@@ -19,29 +19,28 @@ import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.entities.Broomstick;
+import wbs.wandcraft.entities.CustomEntity;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Queue;
 
 @NullMarked
-@SuppressWarnings("UnstableApiUsage")
 public class BroomstickWand extends Wand {
     public static final NamespacedKey BROOMSTICK_ITEM = WbsWandcraft.getKey("broomstick_item");
 
     private transient @Nullable ItemStack wandItem;
 
-    public BroomstickWand(@NotNull String uuid) {
+    public BroomstickWand(String uuid) {
         super(uuid);
     }
 
     @Override
-    protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, Event event) {
-        LinkedList<@NotNull SpellInstance> spellList = new LinkedList<>();
+    protected Queue<SpellInstance> getSpellQueue(Player player, ItemStack wandItem, Event event) {
+        LinkedList<SpellInstance> spellList = new LinkedList<>();
 
         SpellInstance spellInstance = getSpellInstance(player);
 
@@ -53,7 +52,7 @@ public class BroomstickWand extends Wand {
     }
 
     @Nullable
-    private static SpellInstance getSpellInstance(@NotNull Player player) {
+    private static SpellInstance getSpellInstance(Player player) {
         NamespacedKey lastCastKey = player.getPersistentDataContainer().get(SpellInstance.LAST_CAST_KEY, WbsPersistentDataType.NAMESPACED_KEY);
         if (lastCastKey != null) {
             SpellDefinition spellDefinition = WandcraftRegistries.SPELLS.get(lastCastKey);
@@ -67,7 +66,7 @@ public class BroomstickWand extends Wand {
     }
 
     @Override
-    public @NotNull BroomstickWandHolder getMenu(ItemStack item) {
+    public BroomstickWandHolder getMenu(ItemStack item) {
         return new BroomstickWandHolder(this, item);
     }
 
@@ -77,7 +76,7 @@ public class BroomstickWand extends Wand {
 
 
     @Override
-    public @NotNull WandType<BroomstickWand> getWandType() {
+    public WandType<BroomstickWand> getWandType() {
         return WandType.BROOMSTICK;
     }
 
@@ -121,6 +120,7 @@ public class BroomstickWand extends Wand {
         float totalHeight = (float) broomstickEntity.getHeight();
 
         ItemDisplay itemDisplay = player.getWorld().spawn(point, ItemDisplay.class, CreatureSpawnEvent.SpawnReason.CUSTOM, display -> {
+            display.getPersistentDataContainer().set(CustomEntity.CUSTOM_ENTITY_COMPONENT, PersistentDataType.BOOLEAN, true);
             display.setItemStack(item);
             display.setInterpolationDuration(20);
 
@@ -136,16 +136,19 @@ public class BroomstickWand extends Wand {
 
         // Create a 2nd interaction with negative height so we can ride below the top of the armour stand. It's weird lol
         Interaction rideInteraction = player.getWorld().spawn(point, Interaction.class, CreatureSpawnEvent.SpawnReason.CUSTOM, toSpawn -> {
+            toSpawn.getPersistentDataContainer().set(CustomEntity.CUSTOM_ENTITY_COMPONENT, PersistentDataType.BOOLEAN, true);
             toSpawn.setInteractionHeight(-totalHeight / 2);
             toSpawn.setInteractionWidth(0);
         });
 
         Interaction interactionTop = player.getWorld().spawn(point, Interaction.class, CreatureSpawnEvent.SpawnReason.CUSTOM, toSpawn -> {
+            toSpawn.getPersistentDataContainer().set(CustomEntity.CUSTOM_ENTITY_COMPONENT, PersistentDataType.BOOLEAN, true);
             toSpawn.setInteractionHeight(-hitboxHeight / 2);
             toSpawn.setInteractionWidth(1.5f);
         });
 
         Interaction interactionBottom = player.getWorld().spawn(point, Interaction.class, CreatureSpawnEvent.SpawnReason.CUSTOM, toSpawn -> {
+            toSpawn.getPersistentDataContainer().set(CustomEntity.CUSTOM_ENTITY_COMPONENT, PersistentDataType.BOOLEAN, true);
             toSpawn.setInteractionHeight(hitboxHeight / 2);
             toSpawn.setInteractionWidth(1.5f);
         });

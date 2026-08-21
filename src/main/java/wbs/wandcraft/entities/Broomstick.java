@@ -189,13 +189,4 @@ public class Broomstick extends CustomEntity {
         removeRiders(entity);
         entity.remove();
     }
-
-    private static void removeRiders(Entity entity) {
-        entity.getPassengers().forEach(passenger -> {
-            if (passenger instanceof Display || passenger instanceof Interaction) {
-                removeRiders(passenger);
-                passenger.remove();
-            }
-        });
-    }
 }

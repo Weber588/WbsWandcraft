@@ -1,7 +1,10 @@
 package wbs.wandcraft.entities;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Interaction;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import wbs.wandcraft.WbsWandcraft;
@@ -11,6 +14,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public abstract class CustomEntity {
+    public static final NamespacedKey CUSTOM_ENTITY_COMPONENT = WbsWandcraft.getKey("custom_entity_component");
+
     private static final Map<UUID, Integer> TIMERS = new HashMap<>();
 
     public CustomEntity(LivingEntity wrapped) {
@@ -50,4 +55,13 @@ public abstract class CustomEntity {
     }
 
     protected abstract void tick(LivingEntity updatedEntity, BukkitRunnable runnable);
+
+    public static void removeRiders(Entity entity) {
+        entity.getPassengers().forEach(passenger -> {
+            if (passenger instanceof Display || passenger instanceof Interaction) {
+                removeRiders(passenger);
+                passenger.remove();
+            }
+        });
+    }
 }
