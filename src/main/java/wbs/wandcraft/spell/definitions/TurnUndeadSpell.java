@@ -63,7 +63,7 @@ public class TurnUndeadSpell extends SpellDefinition implements CastableSpell, D
 
     @Override
     public String rawDescription() {
-        return "Makes all undead in a radius flee from you.";
+        return "Makes all undead in range (at the moment you cast) be scared of you for 15 seconds.";
     }
 
     @Override

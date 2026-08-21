@@ -55,7 +55,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
 
     @Override
     public String rawDescription() {
-        return "Continuously throws lightning out, sparking until it hits a ";
+        return "Continuously throws lightning out, sparking until it hits a mob or lightning rod.";
     }
 
     @Override
