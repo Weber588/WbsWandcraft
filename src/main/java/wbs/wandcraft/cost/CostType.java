@@ -10,6 +10,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jspecify.annotations.NullMarked;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+@SuppressWarnings("unused")
 @NullMarked
 public class CostType implements Keyed {
     private static final List<CostType> COST_TYPE_ORDER = new LinkedList<>();
@@ -29,62 +31,62 @@ public class CostType implements Keyed {
         return Collections.unmodifiableList(COST_TYPE_ORDER);
     }
 
-    // TODO: Make these configurable for order, mana equivalent, and whether or not it's active
-    public static final CostType MANA = new CostType(
-            "mana",
-            Component.text("Mana").color(NamedTextColor.AQUA),
-            (player, cost) -> {
-                PlayerMana playerMana = new PlayerMana(player);
-
-                return playerMana.applyCost(player, cost);
-            }
-    );
     public static final CostType EXPERIENCE = new CostType(
             "experience",
             Component.text("Levels").color(TextColor.color(0x7efc20)),
             (player, cost) -> {
                 if (player.getGameMode() == GameMode.CREATIVE) {
-                    return 0;
+                    return cost;
                 }
 
                 int level = player.getLevel();
 
                 if (level >= cost) {
                     player.setLevel(level - cost);
-                    return 0;
+                    return cost;
                 } else {
                     player.setLevel(0);
-                    return cost - level;
+                    return level;
                 }
             }
     ).manaEquivalent(50);
+
+    public static final CostType SATURATION = new CostType(
+            "saturation",
+            Component.text("Saturation").color(TextColor.color(0xffab53)),
+            (player, cost) -> {
+                if (player.getGameMode() == GameMode.CREATIVE) {
+                    return cost;
+                }
+
+                float saturation = (float) Math.ceil(player.getSaturation());
+
+                if (saturation >= cost) {
+                    player.setSaturation(saturation - cost);
+                    return cost;
+                } else {
+                    player.setSaturation(0);
+                    return (int) saturation;
+                }
+            }
+    ).manaEquivalent(50);
+
     public static final CostType HUNGER = new CostType(
             "hunger",
             Component.text("Hunger").color(TextColor.color(0xffab53)),
             (player, cost) -> {
                 if (player.getGameMode() == GameMode.CREATIVE) {
-                    return 0;
-                }
-
-                float floatCost = (float) cost;
-                float saturation = player.getSaturation();
-
-                if (saturation >= Math.ceil(floatCost)) {
-                    player.setSaturation(saturation - floatCost);
-                    return 0;
-                } else {
-                    player.setSaturation(0);
-                    floatCost -= saturation;
+                    return cost;
                 }
 
                 int foodLevel = player.getFoodLevel();
 
-                if (foodLevel >= Math.ceil(floatCost)) {
-                    player.setFoodLevel(foodLevel - (int) Math.ceil(floatCost));
-                    return 0;
+                if (foodLevel >= cost) {
+                    player.setFoodLevel(foodLevel - cost);
+                    return cost;
                 } else {
                     player.setFoodLevel(0);
-                    return (int) Math.ceil(floatCost) - foodLevel;
+                    return foodLevel;
                 }
             }
     ).manaEquivalent(50);
@@ -101,34 +103,39 @@ public class CostType implements Keyed {
             "fatigue",
             Component.text("Fatigue").color(NamedTextColor.RED),
             (player, cost) -> {
+                int applied = 0;
+
                 // Randomly give the player fatigue effects and forgive the entire cost. Chance gets worse to forgive
                 // when they have more of the effects, so it becomes more likely to go to the next level.
                 for (PotionEffect fatigueEffect : FATIGUE_EFFECTS) {
                     if (!player.hasPotionEffect(fatigueEffect.getType())) {
                         player.addPotionEffect(fatigueEffect);
-                        cost -= 1;
+                        applied += 1;
 
-                        if (cost <= 0) {
-                            return 0;
+                        if (cost <= applied) {
+                            return cost;
                         }
                     }
                 }
 
-                return cost;
+                return applied;
             }
     ).manaEquivalent(100);
+    public static final NamespacedKey DAMAGED_BY_COST = WbsWandcraft.getKey("damaged_by_cost");
     public static final CostType HEALTH = new CostType(
             "health",
             Component.text("Health").color(NamedTextColor.DARK_RED),
             (player, cost) -> {
                 if (player.getGameMode() == GameMode.CREATIVE) {
-                    return 0;
+                    return cost;
                 }
 
                 double health = player.getHealth();
-                player.damage(cost, DamageSource.builder(DamageType.MAGIC).withDirectEntity(player).build());
+                player.getPersistentDataContainer().set(DAMAGED_BY_COST, PersistentDataType.BOOLEAN, true);
+                player.damage(cost, DamageSource.builder(DamageType.MAGIC).build());
+                player.getPersistentDataContainer().remove(DAMAGED_BY_COST);
 
-                return (int) (cost - health);
+                return cost;
             }
     ).manaEquivalent(50);
 
@@ -165,6 +172,9 @@ public class CostType implements Keyed {
         return this;
     }
 
+    /**
+     * @return How much mana equivalent was provided
+     */
     public int apply(Player player, int cost) {
         int modifiedCost = (int) Math.ceil((double) cost / manaEquivalent);
 

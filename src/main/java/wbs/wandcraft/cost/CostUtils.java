@@ -1,9 +1,8 @@
 package wbs.wandcraft.cost;
 
 import org.bukkit.entity.Player;
-import wbs.utils.util.plugin.WbsMessageBuilder;
-import wbs.wandcraft.WbsWandcraft;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class CostUtils {
@@ -16,31 +15,22 @@ public class CostUtils {
      */
     public static int takeCost(Player player, int cost) {
         List<CostType> costTypes = CostType.getCostTypes();
-        for (int index = 0; index < costTypes.size(); index++) {
-            CostType costType = costTypes.get(index);
 
-            cost = costType.apply(player, cost);
+        PlayerMana mana = new PlayerMana(player);
+        int available = mana.getMana();
 
-            if (cost > 0) {
-                WbsMessageBuilder builder = WbsWandcraft.getInstance().buildMessageNoPrefix("Out of ")
-                        .append(costType.display());
+        Iterator<CostType> iterator = costTypes.iterator();
+        while (available < cost && iterator.hasNext()) {
+            CostType type = iterator.next();
 
-                if (costTypes.size() > index + 1) {
-                    CostType nextCostType = costTypes.get(index + 1);
-                    builder.append(" - taking ")
-                            .append(nextCostType.display());
-                }
+            int manaGiven = type.apply(player, cost);
 
-                builder.append("!");
-
-                builder.build().sendActionBar(player);
-            }
-
-            if (cost <= 0) {
-                return 0;
-            }
+            available += manaGiven;
         }
 
-        return cost;
+        // Set directly, not add -- while getting mana equivalent, can exceed max mana (just can't retain it).
+        mana.setMana(available);
+
+        return mana.applyCost(player, cost);
     }
 }

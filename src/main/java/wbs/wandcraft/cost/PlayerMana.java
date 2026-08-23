@@ -44,7 +44,9 @@ public class PlayerMana {
 
         this.maxMana = calculateMaxManaEvent.getMaxMana();
 
-        this.mana = Math.clamp(getOrDefault(player, MANA_KEY, PersistentDataType.INTEGER, DEFAULT_MAX_MANA), 0, maxMana);
+        this.mana = getOrDefault(player, MANA_KEY, PersistentDataType.INTEGER, DEFAULT_MAX_MANA);
+        clampMana();
+
         this.lastUsedMana = getOrDefault(player, LAST_USED_MANA_KEY, PersistentDataType.LONG, 0L);
 
         CalculateManaRegenRateEvent calculateManaRegenRateEvent = new CalculateManaRegenRateEvent(player, DEFAULT_MANA_REGENERATION);
@@ -100,8 +102,9 @@ public class PlayerMana {
 
     public int applyCost(Player player, int cost) {
         int remainder = 0;
-        if (mana - cost >= 0) {
+        if (mana >= cost) {
             mana -= cost;
+            clampMana();
         } else {
             remainder = cost - mana;
             mana = 0;
@@ -124,6 +127,15 @@ public class PlayerMana {
         }
 
         manaBar.resetTimeLeftOnScreen();
+    }
+
+    public void addMana(int manaGiven) {
+        mana = mana + manaGiven;
+        clampMana();
+    }
+
+    private void clampMana() {
+        setMana(Math.clamp(mana, 0, maxMana));
     }
 
     private static class ManaContext {

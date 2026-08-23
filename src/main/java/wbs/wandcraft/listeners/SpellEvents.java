@@ -9,6 +9,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
+import wbs.wandcraft.cost.CostType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
 
@@ -24,6 +25,12 @@ public class SpellEvents implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player victim = event.getPlayer();
+
+        if (victim.getPersistentDataContainer().has(CostType.DAMAGED_BY_COST)) {
+            // TODO: Make this configurable
+            event.deathMessage(Component.text("%s died of mana sickness".formatted(victim.getName())));
+            return;
+        }
 
         Player killer = event.getPlayer().getKiller();
         if (killer != null) {
