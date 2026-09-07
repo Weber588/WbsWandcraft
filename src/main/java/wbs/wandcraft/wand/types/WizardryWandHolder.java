@@ -23,8 +23,8 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
 
     private static final int ITEM_COLUMN_START = 3;
     private static final int ITEM_COLUMN_END = 7;
+    private static final int ITEM_ROW_START = 3;
     private static final int ITEM_ROW_END = 4;
-    private static final int ITEM_ROW_START = 1;
 
     public WizardryWandHolder(WizardryWand wand, ItemStack item) {
         super(wand, item);
@@ -61,12 +61,12 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
 
     @Override
     protected Inventory instantiateInventory() {
-        return Bukkit.createInventory(this, 6 * 9, wandItem.effectiveName().color(NamedTextColor.DARK_GRAY));
+        return Bukkit.createInventory(this, 6 * 9, getInventoryName());
     }
 
     @Override
     protected void reload() {
-        int slots = wand.getAttribute(WizardryWand.SLOTS, Integer.MAX_VALUE);
+        int slots = WizardryWand.SLOTS;
 
         List<ItemStack> items = wand.getItems();
         int itemIndex = 0;

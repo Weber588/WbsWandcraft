@@ -170,7 +170,7 @@ public class BarbarianWand extends Wand {
     }
 
     @Override
-    protected Color getWandColour() {
+    protected @Nullable Color getWandColour() {
         SpellInstance spellInstance = getSpellInstance();
         if (spellInstance != null) {
             return spellInstance.getDefinition().getPrimarySpellType().wandColor();

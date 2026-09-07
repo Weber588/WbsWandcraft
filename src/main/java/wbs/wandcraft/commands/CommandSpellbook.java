@@ -11,7 +11,6 @@ import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.spellbook.DialogSpellbook;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandSpellbook extends WbsSubcommand {
     public CommandSpellbook(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);

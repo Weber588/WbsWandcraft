@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsCollectionUtil;
+import wbs.utils.util.WbsColours;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -131,7 +132,7 @@ public class WildenWand extends Wand {
             return null;
         }
 
-        return colors.removeFirst().mixColors(colors.toArray(Color[]::new));
+        return WbsColours.mixBukkit(colors);
     }
 
     public void setItems(List<ItemStack> newItems) {

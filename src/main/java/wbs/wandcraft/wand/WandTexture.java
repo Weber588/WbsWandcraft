@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.resourcepack.ResourcePackObjects;
-import wbs.wandcraft.resourcepack.ResourcePackObjects.ItemModelDefinition;
-import wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModel;
+import wbs.wandcraft.resourcepack.ResourcePackObjects.ItemModel;
+import wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModelReference;
 import wbs.wandcraft.resourcepack.TextureLayer;
 
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import java.util.Map;
 import static wbs.wandcraft.resourcepack.ResourcePackObjects.DisplayTransform;
 
 public final class WandTexture extends WandModelProvider implements DynamicItemTextureProvider {
-    public static final WandTexture BASIC = new WandTexture("basic")
+    public static final WandTexture BASIC = new WandTexture("basic", '\uE777')
             .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_LEFTHAND, new DisplayTransform()
                     .scale(0.68, 0.68, 0.68)
                     .translation(0.5, 3.2, 1.13)
@@ -28,8 +28,19 @@ public final class WandTexture extends WandModelProvider implements DynamicItemT
                     .translation(0.5, 3.2, 1.13)
                     .rotation(0, -80, -30)
             );
-    public static final WandTexture MAGE = new WandTexture("mage");
-    public static final WandTexture WIZARDRY = new WandTexture("wizardry")
+    public static final WandTexture APPRENTICE = new WandTexture("apprentice", '\uE777')
+            .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_LEFTHAND, new DisplayTransform()
+                    .scale(0.68, 0.68, 0.68)
+                    .translation(0.5, 3.2, 1.13)
+                    .rotation(0, 80, 30)
+            )
+            .addInUseDisplay(ItemDisplayTransform.FIRSTPERSON_RIGHTHAND, new DisplayTransform()
+                    .scale(0.68, 0.68, 0.68)
+                    .translation(0.5, 3.2, 1.13)
+                    .rotation(0, -80, -30)
+            );
+    public static final WandTexture MAGE = new WandTexture("mage", '\uE778');
+    public static final WandTexture WIZARDRY = new WandTexture("wizardry", '\uE779')
             .addDisplay(ItemDisplayTransform.THIRDPERSON_LEFTHAND, new DisplayTransform()
                     .scale(1, 1, 1)
                     .translation(0, 3.0, 0.5)
@@ -40,12 +51,12 @@ public final class WandTexture extends WandModelProvider implements DynamicItemT
                     .translation(0, 3.0, 0.5)
                     .rotation(0, -90, 55)
             );
-    public static final WandTexture SORCERY = new WandTexture("sorcery");
-    public static final WandTexture TRIDENT = new WandTexture("trident", "wizardry");
-    public static final WandTexture FIRE = new WandTexture("fire").setAnimated(true);
-    public static final WandTexture WILDEN = new WandTexture("wilden");
-    public static final WandTexture BARBARIAN = new WandTexture("barbarian");
-    public static final WandTexture MIMIC = new WandTexture("mimic");
+    public static final WandTexture SORCERY = new WandTexture("sorcery", '\uE77A');
+    public static final WandTexture TRIDENT = new WandTexture("trident", "wizardry", '\uE77B');
+    public static final WandTexture FIRE = new WandTexture("fire", '\uE77C').setAnimated(true);
+    public static final WandTexture WILDEN = new WandTexture("wilden", '\uE77D');
+    public static final WandTexture BARBARIAN = new WandTexture("barbarian", '\uE77E');
+    public static final WandTexture MIMIC = new WandTexture("mimic",'\uE77F');
 
     private final String textureKey;
     private final String baseTexture;
@@ -56,14 +67,14 @@ public final class WandTexture extends WandModelProvider implements DynamicItemT
     private boolean isAnimated;
     private boolean isBaseAnimated;
 
-    public WandTexture(String textureKey) {
-        this(textureKey, textureKey);
+    public WandTexture(String textureKey, char backgroundChar) {
+        this(textureKey, textureKey, backgroundChar);
     }
-    public WandTexture(String overlayTexture, String baseTexture) {
-        this(WbsWandcraft.getKey(overlayTexture), overlayTexture, baseTexture);
+    public WandTexture(String overlayTexture, String baseTexture, char backgroundChar) {
+        this(WbsWandcraft.getKey(overlayTexture), overlayTexture, baseTexture, backgroundChar);
     }
-    public WandTexture(NamespacedKey key, String overlayTexture, String baseTexture) {
-        super(key);
+    public WandTexture(NamespacedKey key, String overlayTexture, String baseTexture, char backgroundChar) {
+        super(key, backgroundChar);
         this.textureKey = "wand_" + overlayTexture;
         this.baseTexture = "wand_" + baseTexture + "_base";
     }
@@ -71,16 +82,16 @@ public final class WandTexture extends WandModelProvider implements DynamicItemT
     @Override
     public @NotNull List<TextureLayer> getTextures() {
         return List.of(
-                new TextureLayer(textureKey, isAnimated, 0x008000),
-                new TextureLayer(baseTexture, isBaseAnimated)
+                new TextureLayer(textureKey).isAnimated(isAnimated).defaultTint(0x008000),
+                new TextureLayer(baseTexture).isAnimated(isBaseAnimated)
         );
     }
 
     @Override
-    public Map<String, ItemModelDefinition> getModelDefinitions() {
-        Map<String, ItemModelDefinition> namedModelDefinitions = new HashMap<>();
+    public Map<String, ItemModel> getModelDefinitions() {
+        Map<String, ItemModel> namedModelDefinitions = new HashMap<>();
 
-        ItemModelDefinition modelDefinition = new ItemModelDefinition(
+        ItemModel modelDefinition = new ItemModel(
                 getModelParent(),
                 getLayerResourceLocations()
         );
@@ -92,7 +103,7 @@ public final class WandTexture extends WandModelProvider implements DynamicItemT
         namedModelDefinitions.put(value(), modelDefinition);
 
         if (inUseDisplay != null) {
-            ItemModelDefinition inUseDefinition = new ItemModelDefinition(
+            ItemModel inUseDefinition = new ItemModel(
                     getModelParent(),
                     getLayerResourceLocations()
             );
@@ -132,13 +143,13 @@ public final class WandTexture extends WandModelProvider implements DynamicItemT
     }
 
     @Override
-    public ResourcePackObjects.Model buildBaseModel() {
-        ResourcePackObjects.Model defaultModel = DynamicItemTextureProvider.super.buildBaseModel();
+    public ResourcePackObjects.ModelReference buildBaseModel() {
+        ResourcePackObjects.ModelReference defaultModel = DynamicItemTextureProvider.super.buildBaseModel();
 
         if (inUseDisplay != null) {
-            return new ResourcePackObjects.ConditionModel(
+            return new ResourcePackObjects.ConditionModelReference(
                     "using_item",
-                    new StaticModel(namespace() + ":item/" + value() + "_active", getTints()),
+                    new StaticModelReference(namespace() + ":item/" + value() + "_active", getTints()),
                     defaultModel
             );
         }

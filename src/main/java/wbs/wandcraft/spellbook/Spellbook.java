@@ -429,6 +429,8 @@ public class Spellbook implements ItemDecorator {
             PersistentDataContainer container = meta.getPersistentDataContainer();
 
             container.set(SPELL_BOOK, CustomPersistentDataTypes.SPELLBOOK_TYPE, this);
+            container.set(ItemUtils.WANDCRAFT_ITEM_NAME, PersistentDataType.STRING, "Spellbook");
+            container.set(ItemUtils.WANDCRAFT_ITEM_KEY, WbsPersistentDataType.NAMESPACED_KEY, SPELL_BOOK);
             ItemDecorator.decorate(this, meta);
         });
     }

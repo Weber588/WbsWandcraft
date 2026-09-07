@@ -1,7 +1,7 @@
 package wbs.wandcraft.resourcepack;
 
 import org.jetbrains.annotations.NotNull;
-import wbs.wandcraft.resourcepack.ResourcePackObjects.Model;
+import wbs.wandcraft.resourcepack.ResourcePackObjects.ModelReference;
 import wbs.wandcraft.resourcepack.ResourcePackObjects.ModelTint;
 
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static wbs.wandcraft.resourcepack.ResourcePackObjects.ItemModelDefinition;
-import static wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModel;
+import static wbs.wandcraft.resourcepack.ResourcePackObjects.ItemModel;
+import static wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModelReference;
 
 public interface DynamicItemTextureProvider extends ItemModelProvider {
     @NotNull
@@ -33,19 +33,19 @@ public interface DynamicItemTextureProvider extends ItemModelProvider {
     @NotNull
     default List<String> getLayerResourceLocations() {
         return getTextures().stream()
-                .map(layer -> namespace() + ":item/" + layer.name())
+                .map(layer -> namespace() + ":" + layer.folder() + "/" + layer.name())
                 .toList();
     }
 
     @Override
-    default Model buildBaseModel() {
-        return new StaticModel(namespace() + ":item/" + value(), getTints());
+    default ModelReference buildBaseModel() {
+        return new StaticModelReference(namespace() + ":item/" + modelResourceLocation(), getTints());
     }
 
-    default Map<String, ItemModelDefinition> getModelDefinitions() {
-        Map<String, ItemModelDefinition> namedModelDefinitions = new HashMap<>();
+    default Map<String, ItemModel> getModelDefinitions() {
+        Map<String, ItemModel> namedModelDefinitions = new HashMap<>();
 
-        ItemModelDefinition modelDefinition = new ItemModelDefinition(
+        ItemModel modelDefinition = new ItemModel(
                 getModelParent(),
                 getLayerResourceLocations()
         );

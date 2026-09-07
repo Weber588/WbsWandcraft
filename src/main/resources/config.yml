@@ -21,6 +21,24 @@ custom-drops:
   witch:
     minecraft:dragon_breath: 0.001
 
+amethyst-conversion:
+  sculk-spread:
+    enabled: true
+    shards-per-block: # Number Provider & Generator support: https://github.com/Weber588/WbsUtils/wiki/Providers
+      random:
+        min: 2
+        max: 4
+  monster-death:
+    enabled: false
+    xp-per-shard: 5
+
+# How should backgrounds be added to wand inventories?
+# 'item' = Use an item in the top left corner. This is the most reliable if the resource pack is optional,
+#          but players will be able to move the background briefly before it autocorrects.
+# 'title' = Embed the image in the title of the inventory. This is the most reliable if the resource pack is required.
+#           If a player doesn't have the resource pack, they will see several squares at the start of wand inventory titles.
+wand-backgrounds: 'item'
+
 item-models:
   # Are you using the embedded resource pack? This will not update old models until they're updated in game!
   use-resource-pack: false

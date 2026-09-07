@@ -56,7 +56,15 @@ public final class MageWandHolder extends WandHolder<MageWand> {
         fakeWand.lore(List.of(
                 Component.text("Place spell scrolls in the below slots!").style(style),
                 Component.text("You can cycle between spells to cast with").style(style),
-                Component.keybind("key.drop").style(keybindStyle).append(Component.text(" and ")).append(Component.keybind("key.sneak").style(keybindStyle)).append(Component.text("+").style(style)).append(Component.keybind("key.drop").style(keybindStyle))
+                Component.keybind("key.drop").style(keybindStyle).append(
+                        Component.text(" and ").style(style)
+                ).append(
+                        Component.keybind("key.sneak").style(keybindStyle)
+                ).append(
+                        Component.text("+").style(style)
+                ).append(
+                        Component.keybind("key.drop").style(keybindStyle)
+                )
         ));
 
         return fakeWand;
@@ -64,7 +72,7 @@ public final class MageWandHolder extends WandHolder<MageWand> {
 
     @Override
     protected Inventory instantiateInventory() {
-        return Bukkit.createInventory(this, 6 * 9, wandItem.effectiveName().color(NamedTextColor.DARK_GRAY));
+        return Bukkit.createInventory(this, 6 * 9, getInventoryName());
     }
 
     @Override

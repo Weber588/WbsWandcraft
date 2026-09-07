@@ -25,7 +25,7 @@ public class OldHat extends MagicHat {
     }
 
     @Override
-    protected @NotNull String getName() {
+    public @NotNull String getName() {
         return "Old Hat";
     }
 

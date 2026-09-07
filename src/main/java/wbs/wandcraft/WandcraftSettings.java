@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.jetbrains.annotations.Contract;
@@ -18,8 +19,12 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.exceptions.InvalidConfigurationException;
 import wbs.utils.util.WbsEnums;
+import wbs.utils.util.configuration.WbsValueReader;
 import wbs.utils.util.plugin.WbsSettings;
+import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
+import wbs.utils.util.providers.NumProvider;
 import wbs.wandcraft.crafting.ArtificingConfig;
+import wbs.wandcraft.crafting.ArtificingRecipe;
 import wbs.wandcraft.generation.AttributeModifierGenerator;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.generation.WandGenerator;
@@ -28,6 +33,7 @@ import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
+import wbs.wandcraft.util.ItemBuildableRegistry;
 import wbs.wandcraft.util.ItemUtils;
 
 import java.util.*;
@@ -73,10 +79,39 @@ public class WandcraftSettings extends WbsSettings {
         return this.customDrops;
     }
 
+    private boolean doSculkSpreadGeneration = true;
+    public boolean doSculkSpreadGeneration() {
+        return doSculkSpreadGeneration;
+    }
+    private NumProvider shardsPerBlock = new NumProvider(3);
+    public NumProvider shardsPerBlock() {
+        return shardsPerBlock;
+    }
+
+    private boolean doMonsterDeathGeneration = false;
+    public boolean doMonsterDeathGeneration() {
+        return doMonsterDeathGeneration;
+    }
+    private int monsterDeathXpPerShard = 5;
+    public int monsterDeathXpPerShard() {
+        return monsterDeathXpPerShard;
+    }
+
+    private BackgroundMode backgroundMode = BackgroundMode.ITEM;
+    public BackgroundMode getBackgroundMode() {
+        return backgroundMode;
+    }
+
     @Override
     public void reload() {
         String directory = "config.yml";
         YamlConfiguration config = this.loadDefaultConfig(directory);
+
+        WbsValueReader reader = new WbsValueReader(config, "wand-backgrounds", directory);
+        backgroundMode = reader.readEnum(BackgroundMode.class, backgroundMode);
+        this.debugMode = config.getBoolean("debug", false);
+
+        PacketEventsWrapper.get().ifPresent(pe -> pe.fullStackTrace(debugMode));
 
         ConfigurationSection artificingTableSection = config.getConfigurationSection("artificing-table");
 
@@ -84,9 +119,28 @@ public class WandcraftSettings extends WbsSettings {
             this.artificingConfig = new ArtificingConfig(artificingTableSection, this, directory + "/artificing-table");
         }
 
-        ResourcePackBuilder.loadResourcePack(this, config);
+        ConfigurationSection amethystConversionSection = config.getConfigurationSection("amethyst-conversion");
+        if (amethystConversionSection != null) {
+            ConfigurationSection spreadSection = amethystConversionSection.getConfigurationSection("sculk-spread");
+            if (spreadSection != null) {
+                doSculkSpreadGeneration = spreadSection.getBoolean("enabled", true);
 
-        this.debugMode = config.getBoolean("debug", false);
+                shardsPerBlock = new NumProvider(
+                        spreadSection,
+                        "shards-per-block",
+                        this,
+                        Objects.requireNonNull(spreadSection.getCurrentPath()).replaceAll("\\.", "/"),
+                        3
+                );
+            }
+            ConfigurationSection monsterDeathSection = amethystConversionSection.getConfigurationSection("monster-death");
+            if (monsterDeathSection != null) {
+                doMonsterDeathGeneration = monsterDeathSection.getBoolean("enabled", false);
+                monsterDeathXpPerShard = monsterDeathSection.getInt("xp-per-shard", 5);
+            }
+        }
+
+        ResourcePackBuilder.loadResourcePack(this, config);
 
         this.loadSpellConfigs();
         this.loadRecipes();
@@ -325,6 +379,122 @@ public class WandcraftSettings extends WbsSettings {
 
     // TODO: Make these configurable
     private void loadRecipes() {
+        loadCraftingRecipes();
+        loadArtificingRecipes();
+    }
+
+    private List<ArtificingRecipe> artificingRecipes = new LinkedList<>();
+    public List<ArtificingRecipe> getArtificingRecipes() {
+        return artificingRecipes;
+    }
+
+    private void loadArtificingRecipes() {
+        artificingRecipes.clear();
+
+        String path = "artificing-recipes.yml";
+        YamlConfiguration config = loadConfigSafely(genConfig(path));
+
+        buildArtificingRecipes(
+                config,
+                "wand",
+                WandcraftRegistries.WAND_TYPES,
+                null
+        );
+        buildArtificingRecipes(
+                config,
+                "spell",
+                WandcraftRegistries.SPELLS,
+                RecipeChoice.exactChoice(ItemUtils.buildBlankScroll())
+        );
+    }
+
+    private void buildArtificingRecipes(YamlConfiguration config, String pathKey, ItemBuildableRegistry<?> registry, RecipeChoice.ExactChoice defaultBase) {
+        ConfigurationSection registrySection = config.getConfigurationSection(pathKey);
+        if (registrySection != null) {
+            for (String key : registrySection.getKeys(false)) {
+
+                NamespacedKey entryKey = WbsWandcraft.getKey(key);
+
+                ItemStack result = registry.getDefaultItem(entryKey);
+                if (result == null) {
+                    logError("Unrecognised %s: %s".formatted(pathKey, entryKey), registrySection);
+                    continue;
+                }
+
+                NamespacedKey recipeKey = WbsWandcraft.getKey("%s/%s".formatted(pathKey, entryKey.value()));
+
+                ArtificingRecipe recipe = getArtificingRecipe(
+                        key,
+                        registrySection,
+                        result,
+                        recipeKey,
+                        defaultBase
+                );
+                if (recipe == null) continue;
+
+                artificingRecipes.add(recipe);
+            }
+        }
+    }
+
+    private @Nullable ArtificingRecipe getArtificingRecipe(String key, ConfigurationSection section, ItemStack result, NamespacedKey recipeKey, RecipeChoice defaultBase) {
+        ConfigurationSection typeSection = section.getConfigurationSection(key);
+        if (typeSection == null) {
+            logError("Must be a section: " + key, section);
+            return null;
+        }
+
+        RecipeChoice baseItemChoice = getRecipeChoice("base", typeSection, defaultBase == null);
+        if (baseItemChoice == null) {
+            if (defaultBase == null) {
+                return null;
+            }
+            baseItemChoice = defaultBase;
+        }
+
+        int cost = typeSection.getInt("cost", 1);
+        RecipeChoice ingredient = getRecipeChoice("ingredient", typeSection, false);
+        int ingredientAmount = typeSection.getInt("ingredient-amount", 1);
+
+        return new ArtificingRecipe(
+                recipeKey,
+                baseItemChoice,
+                cost,
+                ingredient,
+                ingredientAmount,
+                result
+        );
+    }
+
+    private @org.jspecify.annotations.Nullable RecipeChoice getRecipeChoice(String key, ConfigurationSection typeSection, boolean isRequired) {
+        String baseString = typeSection.getString(key);
+        if (baseString == null) {
+            if (isRequired) {
+                logError("%s is a required field.".formatted(key), typeSection, key);
+            }
+            return null;
+        }
+
+        boolean isExact = baseString.contains("[");
+        ItemStack baseItem = null;
+        try {
+            baseItem = Bukkit.getItemFactory().createItemStack(baseString);
+        } catch (IllegalArgumentException ex) {
+            NamespacedKey asKey = NamespacedKey.fromString(baseString, plugin);
+            if (asKey != null) {
+                baseItem = ItemUtils.buildItem(asKey);
+                isExact = true; // Custom items must be exact
+            }
+
+            if (baseItem == null) {
+                logError("Invalid %s item: %s".formatted(key, baseString), typeSection, key);
+                return null;
+            }
+        }
+        return isExact ? RecipeChoice.exactChoice(baseItem) : new RecipeChoice.MaterialChoice(baseItem.getType());
+    }
+
+    private void loadCraftingRecipes() {
         ShapelessRecipe spellbook = new ShapelessRecipe(WbsWandcraft.getKey("spellbook"), ItemUtils.buildSpellbook());
 
         spellbook.addIngredient(ItemStack.of(Material.FEATHER));
@@ -413,5 +583,11 @@ public class WandcraftSettings extends WbsSettings {
                 }
             }
         }
+    }
+
+    public enum BackgroundMode {
+        ITEM,
+        TITLE,
+        ;
     }
 }

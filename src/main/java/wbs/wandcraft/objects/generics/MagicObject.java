@@ -156,8 +156,10 @@ public abstract class MagicObject {
 			Bukkit.getScheduler().cancelTask(timerID);
 		}
 
+		debug("Object Expire Trigger start");
 		context.runEffects(SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER, getLocation());
-		
+		debug("Object Expire Trigger end");
+
 		if (endEffects != null) {
 			endEffects.play(getLocation());
 		}
@@ -179,6 +181,7 @@ public abstract class MagicObject {
 	}
 
 	public boolean dispel(PersistenceLevel persistenceLevel) {
+		debug("Attempting to dispel");
 		boolean remove = this.persistenceLevel.ordinal() <= persistenceLevel.ordinal();
 
 		boolean removed = false;
@@ -186,6 +189,7 @@ public abstract class MagicObject {
 			removed = remove(false);
 		}
 
+		debug("Dispelled? " + removed);
 		return removed;
 	}
 

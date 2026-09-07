@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
-import wbs.utils.util.WbsColour;
 import wbs.utils.util.WbsColours;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;

@@ -1,6 +1,8 @@
 package wbs.wandcraft.wand;
 
+import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -11,10 +13,15 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import wbs.utils.util.WbsEventUtils;
+import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.resourcepack.FontOffsets;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
+import wbs.wandcraft.wand.background.WandBackground;
+import wbs.wandcraft.wand.types.WandType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,23 +31,35 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     protected static int slot(int row, int column) {
         return row * 9 + column;
     }
-    protected static final ItemStack MAIN_OUTLINE = new ItemStack(Material.PURPLE_STAINED_GLASS_PANE);
-    protected static final ItemStack SECONDARY_OUTLINE = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+
+    // TODO: Move these being populated to WandBackground
+    public static final Material MATERIAL_MAIN_OUTLINE = Material.PURPLE_STAINED_GLASS_PANE;
+    public static final Material MATERIAL_SECONDARY_OUTLINE = Material.BLACK_STAINED_GLASS_PANE;
+    public static final Material MATERIAL_SLOT_LABEL = Material.PURPLE_BANNER;
+
+    protected static final ItemStack MAIN_OUTLINE = new ItemStack(MATERIAL_MAIN_OUTLINE);
+    protected static final ItemStack SECONDARY_OUTLINE = new ItemStack(MATERIAL_SECONDARY_OUTLINE);
     protected static final ItemStack UPGRADE_DISPLAY = new ItemStack(Material.STRUCTURE_VOID);
     protected static final ItemStack LOCKED_SLOT = new ItemStack(Material.STRUCTURE_VOID);
-    protected static final ItemStack SLOT_LABEL = new ItemStack(Material.PURPLE_BANNER);
+    protected static final ItemStack SLOT_LABEL = new ItemStack(MATERIAL_SLOT_LABEL);
 
     public static final int FULL_INV_COLUMNS = 9;
 
     static {
         MAIN_OUTLINE.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
+        setInvisibleInPack(MAIN_OUTLINE);
         SECONDARY_OUTLINE.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
+        setInvisibleInPack(SECONDARY_OUTLINE);
 
         UPGRADE_DISPLAY.setData(DataComponentTypes.ITEM_MODEL, Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE.getKey());
         UPGRADE_DISPLAY.setData(DataComponentTypes.ITEM_NAME, Component.text("Upgrades"));
 
         LOCKED_SLOT.setData(DataComponentTypes.ITEM_MODEL, Material.BARRIER.getKey());
         LOCKED_SLOT.setData(DataComponentTypes.ITEM_NAME, Component.text("Locked").color(NamedTextColor.RED));
+    }
+
+    protected static void setInvisibleInPack(ItemStack secondaryOutline) {
+        secondaryOutline.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addString("minecraft:air").build());
     }
 
     protected final T wand;
@@ -55,9 +74,43 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
         reload();
     }
 
+    @NonNull
+    protected Component getInventoryName() {
+        WandType<?> wandType = wand.getWandType();
+
+        Component inventoryName;
+        Component wandTitle = wandItem.effectiveName().color(NamedTextColor.DARK_GRAY);
+
+        if (WbsWandcraft.getInstance().getSettings().getBackgroundMode() == WandcraftSettings.BackgroundMode.TITLE) {
+            WandBackground wandBackground = wandType.getWandBackground();
+            FontOffsets fontOffsets = wandBackground.fontOffsets();
+
+            inventoryName = Component.empty().append(Component.text(fontOffsets.backgroundOffset()).font(WbsWandcraft.getKey("space")))
+                    .append(wandBackground.getGUIBackground().color(NamedTextColor.WHITE).font(WbsWandcraft.getKey("wand")))
+                    .append(Component.text(fontOffsets.textOffset()).font(WbsWandcraft.getKey("space")))
+                    .append(wandTitle);
+        } else {
+            inventoryName = wandTitle;
+        }
+
+        return inventoryName;
+    }
+
     protected void reload() {
         populateBonusSlots();
         populateUpgrades();
+
+        if (WbsWandcraft.getInstance().getSettings().getBackgroundMode() == WandcraftSettings.BackgroundMode.ITEM) {
+            ItemStack item = inventory.getItem(0);
+
+            if (item == null || (item.getType() != Material.PURPLE_STAINED_GLASS_PANE && item.getType() != Material.BLACK_STAINED_GLASS_PANE)) {
+                WbsWandcraft.getInstance().getLogger().severe("Wand type " + wand.getWandType().getKey().asString() + " does not support item backgrounds! Please report this.");
+                WbsWandcraft.getInstance().getLogger().severe("Item: " + item);
+                return;
+            }
+
+            wand.getWandType().getWandBackground().applyCustomModelData(item);
+        }
     }
 
     private void populateUpgrades() {
@@ -114,11 +167,12 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
             return false;
         }
 
-        return MAIN_OUTLINE.isSimilar(itemInSlot)
-                || SECONDARY_OUTLINE.isSimilar(itemInSlot)
-                || UPGRADE_DISPLAY.isSimilar(itemInSlot)
-                || LOCKED_SLOT.isSimilar(itemInSlot)
-                || SLOT_LABEL.matchesWithoutData(itemInSlot, Set.of(DataComponentTypes.ITEM_NAME))
+        Set<@NotNull DataComponentType> ignoredDataTypes = Set.of(DataComponentTypes.ITEM_NAME, DataComponentTypes.CUSTOM_MODEL_DATA);
+        return MAIN_OUTLINE.matchesWithoutData(itemInSlot, ignoredDataTypes, true)
+                || SECONDARY_OUTLINE.matchesWithoutData(itemInSlot, ignoredDataTypes, true)
+                || UPGRADE_DISPLAY.matchesWithoutData(itemInSlot, ignoredDataTypes, true)
+                || LOCKED_SLOT.matchesWithoutData(itemInSlot, ignoredDataTypes, true)
+                || SLOT_LABEL.matchesWithoutData(itemInSlot, ignoredDataTypes, true)
                 ;
     }
 

@@ -1,6 +1,7 @@
 package wbs.wandcraft;
 
 import wbs.utils.util.WbsRegistry;
+import wbs.wandcraft.crafting.ArtificingRecipe;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.equipment.MagicEquipmentType;
@@ -18,9 +19,12 @@ import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spell.event.CastSpellEffect;
 import wbs.wandcraft.spell.event.ForcePullEffect;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
+import wbs.wandcraft.util.ItemBuildableRegistry;
+import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.ExternalWandModel;
 import wbs.wandcraft.wand.WandModelProvider;
 import wbs.wandcraft.wand.WandTexture;
+import wbs.wandcraft.wand.background.WandBackground;
 import wbs.wandcraft.wand.types.WandType;
 
 public class WandcraftRegistries {
@@ -42,8 +46,10 @@ public class WandcraftRegistries {
             AttributeModifierType.MULTIPLY
     );
 
-    public static final WbsRegistry<WandType<?>> WAND_TYPES = new WbsRegistry<>(
+    public static final ItemBuildableRegistry<WandType<?>> WAND_TYPES = new ItemBuildableRegistry<>(
+        ItemUtils::buildWand,
         WandType.BASIC,
+        WandType.APPRENTICE,
         WandType.WIZARDRY,
         WandType.SORCERY,
         WandType.MAGE,
@@ -54,6 +60,7 @@ public class WandcraftRegistries {
 
     public static final WbsRegistry<WandModelProvider> WAND_MODELS = new WbsRegistry<>(
             WandTexture.BASIC,
+            WandTexture.APPRENTICE,
             WandTexture.MAGE,
             WandTexture.WIZARDRY,
             WandTexture.SORCERY,
@@ -63,6 +70,15 @@ public class WandcraftRegistries {
             WandTexture.BARBARIAN,
             WandTexture.MIMIC,
             ExternalWandModel.BROOMSTICK
+    );
+
+    public static final WbsRegistry<WandBackground> WAND_BACKGROUNDS = new WbsRegistry<>(
+            WandBackground.GENERIC_3X3,
+            WandBackground.APPRENTICE,
+            WandBackground.MAGE,
+            WandBackground.SORCERY,
+            WandBackground.WILDEN,
+            WandBackground.WIZARDRY
     );
 
     public static final WbsRegistry<HatModel> HAT_TEXTURES = new WbsRegistry<>(
@@ -81,7 +97,8 @@ public class WandcraftRegistries {
             HatModel.WARLOCK
     );
 
-    public static final WbsRegistry<MagicEquipmentType> MAGIC_EQUIPMENT_TYPES = new WbsRegistry<>(
+    public static final ItemBuildableRegistry<MagicEquipmentType> MAGIC_EQUIPMENT_TYPES = new ItemBuildableRegistry<>(
+            ItemUtils::buildEquipment,
             new WitchHat(),
             new ApprenticeHat(),
             new ArcanistHat(),
@@ -98,7 +115,10 @@ public class WandcraftRegistries {
     );
 
     public static final WbsRegistry<SpellType> SPELL_TYPES = new WbsRegistry<>();
-    public static final WbsRegistry<SpellDefinition> SPELLS = new WbsRegistry<>(SpellLoader.loadSpells(new NativeSpellLoader()));
+    public static final ItemBuildableRegistry<SpellDefinition> SPELLS = new ItemBuildableRegistry<>(
+            ItemUtils::buildSpell,
+            SpellLoader.loadSpells(new NativeSpellLoader())
+    );
     public static final WbsRegistry<LearningMethodType<?>> LEARNING_PROVIDERS = new WbsRegistry<>(
             LearningMethodType.build("advancements", AdvancementLearningTrigger::new),
             LearningMethodType.build("deal-damage", DealDamageLearningTrigger::new),
@@ -127,4 +147,5 @@ public class WandcraftRegistries {
     public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>();
     public static final WbsRegistry<SpellInstanceGenerator> SPELL_GENERATORS = new WbsRegistry<>();
     public static final WbsRegistry<AttributeModifierGenerator<?>> MODIFIER_GENERATORS = new WbsRegistry<>();
+    public static final WbsRegistry<ArtificingRecipe> ARTIFICING_RECIPES = new WbsRegistry<>();
 }

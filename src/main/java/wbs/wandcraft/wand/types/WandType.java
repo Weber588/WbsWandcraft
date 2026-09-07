@@ -16,6 +16,7 @@ import wbs.wandcraft.wand.ExternalWandModel;
 import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.WandModelProvider;
 import wbs.wandcraft.wand.WandTexture;
+import wbs.wandcraft.wand.background.WandBackground;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -31,7 +32,21 @@ public class WandType<T extends Wand> implements Keyed {
             WandTexture.BASIC,
             ItemUseAnimation.BLOCK,
             CastingQueue.DEFAULT_CAST_DELAY - 1,
-            () -> new BasicWand(UUID.randomUUID().toString()));
+            () -> new BasicWand(UUID.randomUUID().toString()),
+            WandBackground.GENERIC_3X3
+    );
+    public static final WandType<ApprenticeWand> APPRENTICE = new WandType<>(
+            WbsWandcraft.getKey("apprentice"),
+            Component.text("Apprentice Wand"),
+            "A wand with two slots.",
+            3,
+            CustomPersistentDataTypes.APPRENTICE_WAND_TYPE,
+            WandTexture.APPRENTICE,
+            ItemUseAnimation.BLOCK,
+            CastingQueue.DEFAULT_CAST_DELAY - 1,
+            () -> new ApprenticeWand(UUID.randomUUID().toString()),
+            WandBackground.APPRENTICE
+    );
     public static final WandType<MageWand> MAGE = new WandType<>(
             WbsWandcraft.getKey("mage"),
             Component.text("Mage Wand").color(TextColor.color(0x72159e)),
@@ -41,7 +56,9 @@ public class WandType<T extends Wand> implements Keyed {
             WandTexture.MAGE,
             null,
             0,
-            () -> new MageWand(UUID.randomUUID().toString()));
+            () -> new MageWand(UUID.randomUUID().toString()),
+            WandBackground.MAGE
+    );
     public static final WandType<WizardryWand> WIZARDRY = new WandType<>(
             WbsWandcraft.getKey("wizardry"),
             Component.text("Wizardry Wand").color(TextColor.color(0x15859e)),
@@ -51,7 +68,9 @@ public class WandType<T extends Wand> implements Keyed {
             WandTexture.WIZARDRY,
             ItemUseAnimation.BOW,
             10,
-            () -> new WizardryWand(UUID.randomUUID().toString()));
+            () -> new WizardryWand(UUID.randomUUID().toString()),
+            WandBackground.WIZARDRY
+    );
     public static final WandType<SorceryWand> SORCERY = new WandType<>(
             WbsWandcraft.getKey("sorcery"),
             Component.text("Sorcery Wand").color(TextColor.color(0x9e9e15)),
@@ -61,7 +80,9 @@ public class WandType<T extends Wand> implements Keyed {
             WandTexture.SORCERY,
             null,
             0,
-            () -> new SorceryWand(UUID.randomUUID().toString()));
+            () -> new SorceryWand(UUID.randomUUID().toString()),
+            WandBackground.SORCERY
+    );
     public static final WandType<WildenWand> WILDEN = new WandType<>(
             WbsWandcraft.getKey("wilden"),
             Component.text("Wilden Wand").color(TextColor.color(0x409e15)),
@@ -71,7 +92,9 @@ public class WandType<T extends Wand> implements Keyed {
             WandTexture.WILDEN,
             null,
             0,
-            () -> new WildenWand(UUID.randomUUID().toString()));
+            () -> new WildenWand(UUID.randomUUID().toString()),
+            WandBackground.WILDEN
+    );
     public static final WandType<BarbarianWand> BARBARIAN = new WandType<>(
             WbsWandcraft.getKey("barbarian"),
             Component.text("Barbarian Wand").color(TextColor.color(0x9e2e15)),
@@ -81,7 +104,9 @@ public class WandType<T extends Wand> implements Keyed {
             WandTexture.BARBARIAN,
             null,
             0,
-            () -> new BarbarianWand(UUID.randomUUID().toString()));
+            () -> new BarbarianWand(UUID.randomUUID().toString()),
+            WandBackground.GENERIC_3X3
+    );
     public static final WandType<BroomstickWand> BROOMSTICK = new WandType<>(
             WbsWandcraft.getKey("broomstick"),
             Component.text("Broomstick").color(TextColor.color(0x674D1E)),
@@ -91,7 +116,9 @@ public class WandType<T extends Wand> implements Keyed {
             ExternalWandModel.BROOMSTICK,
             ItemUseAnimation.BRUSH,
             20,
-            () -> new BroomstickWand(UUID.randomUUID().toString()));
+            () -> new BroomstickWand(UUID.randomUUID().toString()),
+            WandBackground.GENERIC_3X3
+    );
 
     private final NamespacedKey key;
     private final @NotNull Component itemName;
@@ -102,9 +129,20 @@ public class WandType<T extends Wand> implements Keyed {
     @Nullable
     private final ItemUseAnimation animation;
     private final int animationTicks;
-    private final Supplier<T> supplier;
+    private final Supplier<T> wandSupplier;
+    private final WandBackground wandBackground;
 
-    public WandType(NamespacedKey key, @NotNull Component itemName, @NotNull String rawDescription, int echoShardCost, AbstractPersistentWandType<T> persistentDataType, WandModelProvider wandTexture, ItemUseAnimation animation, int animationTicks, Supplier<T> supplier) {
+    public WandType(NamespacedKey key,
+                    @NotNull Component itemName,
+                    @NotNull String rawDescription,
+                    int echoShardCost,
+                    AbstractPersistentWandType<T> persistentDataType,
+                    WandModelProvider wandTexture,
+                    @Nullable ItemUseAnimation animation,
+                    int animationTicks,
+                    Supplier<T> wandSupplier,
+                    WandBackground wandBackground
+                    ) {
         this.key = key;
         this.itemName = itemName;
         this.rawDescription = rawDescription;
@@ -113,7 +151,8 @@ public class WandType<T extends Wand> implements Keyed {
         this.wandTexture = wandTexture;
         this.animation = animation;
         this.animationTicks = animationTicks;
-        this.supplier = supplier;
+        this.wandSupplier = wandSupplier;
+        this.wandBackground = wandBackground;
     }
 
     public T getWand(PersistentDataContainerView container) {
@@ -126,7 +165,7 @@ public class WandType<T extends Wand> implements Keyed {
     }
 
     public T newWand() {
-        return supplier.get();
+        return wandSupplier.get();
     }
 
     public WandModelProvider getWandTexture() {
@@ -155,5 +194,9 @@ public class WandType<T extends Wand> implements Keyed {
 
     public int getEchoShardCost() {
         return echoShardCost;
+    }
+
+    public WandBackground getWandBackground() {
+        return wandBackground;
     }
 }

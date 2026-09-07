@@ -11,13 +11,13 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import wbs.utils.util.providers.NumProvider;
+import wbs.wandcraft.WandcraftSettings;
+import wbs.wandcraft.WbsWandcraft;
 
 import java.util.List;
-import java.util.Random;
 
 public class RecipeEvents implements Listener {
-    public static final int XP_PER_SHARD = 5;
-
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -32,19 +32,31 @@ public class RecipeEvents implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAmethystSculk(BlockSpreadEvent event) {
+        WandcraftSettings settings = WbsWandcraft.getInstance().getSettings();
+        if (!settings.doSculkSpreadGeneration()) {
+            return;
+        }
+
         Block overtaken = event.getBlock();
         BlockState newState = event.getNewState();
 
         if (overtaken.getType() == Material.AMETHYST_BLOCK && newState.getType() == Material.SCULK) {
+            NumProvider shardsPerBlock = settings.shardsPerBlock();
+            shardsPerBlock.refresh();
             overtaken.getWorld().dropItemNaturally(
                     overtaken.getLocation().toCenterLocation().add(0, 0.51, 0),
-                    ItemStack.of(Material.ECHO_SHARD, new Random().nextInt(3) + 1)
+                    ItemStack.of(Material.ECHO_SHARD, shardsPerBlock.intVal())
             );
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onMobDeath(EntityDeathEvent event) {
+        WandcraftSettings settings = WbsWandcraft.getInstance().getSettings();
+        if (!settings.doMonsterDeathGeneration()) {
+            return;
+        }
+
         LivingEntity entity = event.getEntity();
         World world = entity.getWorld();
 
@@ -53,8 +65,9 @@ public class RecipeEvents implements Listener {
 
             int droppedExp = event.getDroppedExp();
 
-            if (droppedExp >= XP_PER_SHARD) {
-                int toConvert = droppedExp / XP_PER_SHARD;
+            int xpPerShard = settings.monsterDeathXpPerShard();
+            if (droppedExp >= xpPerShard) {
+                int toConvert = droppedExp / xpPerShard;
 
                 List<Item> itemEntities = nearbyEntities.stream()
                         .filter(Item.class::isInstance)
@@ -84,7 +97,7 @@ public class RecipeEvents implements Listener {
                 }
 
                 if (converted > 0) {
-                    event.setDroppedExp(droppedExp - (XP_PER_SHARD * converted));
+                    event.setDroppedExp(droppedExp - (xpPerShard * converted));
                 }
             }
         }

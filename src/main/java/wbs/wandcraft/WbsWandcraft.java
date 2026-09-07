@@ -9,7 +9,6 @@ import wbs.utils.util.commands.brigadier.WbsErrorsSubcommand;
 import wbs.utils.util.commands.brigadier.WbsReloadSubcommand;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.plugin.WbsPlugin;
-import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.wandcraft.commands.*;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.equipment.MagicEquipmentType;
@@ -22,6 +21,12 @@ import wbs.wandcraft.wand.Wand;
 @SuppressWarnings("UnstableApiUsage")
 public class WbsWandcraft extends WbsPlugin {
     public static NamespacedKey getKey(String key) {
+        NamespacedKey built = NamespacedKey.fromString(key, getInstance());
+
+        if (built != null) {
+            return built;
+        }
+
         return new NamespacedKey(getInstance(), key);
     }
 
@@ -38,14 +43,15 @@ public class WbsWandcraft extends WbsPlugin {
     }
 
     @Override
-    public void onEnable() {
+    public void onLoad() {
         instance = this;
 
         this.settings = new WandcraftSettings(this);
         this.settings.reload();
+    }
 
-        PacketEventsWrapper.get().ifPresent(pe -> pe.fullStackTrace(true));
-
+    @Override
+    public void onEnable() {
         WbsCommand.getStatic(this, "wandcraft")
                 .setPermission("wbswandcraft.command")
                 .addSubcommands(
@@ -102,6 +108,7 @@ public class WbsWandcraft extends WbsPlugin {
                         new CommandSpellCast(this, "cast"),
                         new CommandSpellCancel(this, "cancel"),
                         new CommandSpellbook(this, "spellbooktest"),
+                        new CommandRecipes(this, "recipes"),
                         WbsReloadSubcommand.getStatic(this, settings),
                         WbsErrorsSubcommand.getStatic(this, settings)
                 )

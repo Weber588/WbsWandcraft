@@ -17,13 +17,17 @@ import org.bukkit.block.BlockType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.inventory.ItemType;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
+import wbs.utils.util.persistent.WbsPersistentDataType;
+import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.WbsWandcraftBootstrap;
 import wbs.wandcraft.equipment.MagicEquipmentType;
 import wbs.wandcraft.equipment.hat.MagicHat;
+import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
@@ -41,6 +45,10 @@ import java.util.UUID;
 @NullMarked
 @SuppressWarnings("UnstableApiUsage")
 public class ItemUtils {
+    public static final NamespacedKey WANDCRAFT_ITEM_NAME = WbsWandcraft.getKey("wandcraft_item_name");
+    public static final NamespacedKey WANDCRAFT_ITEM_KEY = WbsWandcraft.getKey("wandcraft_item");
+    public static final NamespacedKey KEY_BLANK_SCROLL = WbsWandcraft.getKey("blank_scroll");
+
     public static final Material BASE_MATERIAL_WAND = Material.STICK;
     public static final Material BASE_MATERIAL_SPELL = Material.FLOW_BANNER_PATTERN;
     public static final Material BASE_MATERIAL_MODIFIER = Material.GLOBE_BANNER_PATTERN;
@@ -65,6 +73,12 @@ public class ItemUtils {
         addHiddenEnchant(blankScroll);
         blankScroll.setData(DataComponentTypes.MAX_STACK_SIZE, 64);
 
+        blankScroll.editPersistentDataContainer(container -> {
+                    container.set(WANDCRAFT_ITEM_NAME, PersistentDataType.STRING, "Blank Scroll");
+                    container.set(WANDCRAFT_ITEM_KEY, WbsPersistentDataType.NAMESPACED_KEY, WbsWandcraft.getKey("blank_scroll"));
+                }
+        );
+
         return blankScroll;
     }
 
@@ -72,12 +86,8 @@ public class ItemUtils {
         ItemStack hatItem = ItemStack.of(BASE_MATERIAL_HAT);
         hatItem.getDataTypes().forEach(hatItem::unsetData);
 
-        hatItem.setData(
-                DataComponentTypes.CUSTOM_MODEL_DATA,
-                CustomModelData.customModelData()
-                        .addString(hatType.getModel().getKey().asString())
-                        .build()
-        );
+        hatType.getModel().applyCustomModelData(hatItem);
+
         hatItem.setData(DataComponentTypes.ITEM_MODEL, DISPLAY_MATERIAL_HAT.getKey());
         hatItem.setData(DataComponentTypes.EQUIPPABLE, Equippable.equippable(EquipmentSlot.HEAD)
                 .damageOnHurt(false)
@@ -111,10 +121,7 @@ public class ItemUtils {
                 .cooldownGroup(WbsWandcraft.getKey(UUID.randomUUID().toString()))
         );
 
-        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
-                .addString(type.getWandTexture().getKey().asString())
-                .addColor(Color.WHITE)
-        );
+        type.getWandTexture().applyCustomModelData(item, builder -> builder.addColor(Color.WHITE));
 
         item.setData(DataComponentTypes.ITEM_MODEL, BASE_MATERIAL_WAND.getKey());
         addHiddenEnchant(item);
@@ -158,10 +165,7 @@ public class ItemUtils {
 //            hue = Math.random();
 //        }
 
-        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
-                .addString(WbsWandcraft.getKey("spellbook").asString())
-              //  .addColor(WbsColours.fromHSB(hue, 1, 1))
-        );
+        ResourcePackBuilder.ITEM_PROVIDER_SPELLBOOK.applyCustomModelData(item);
 
         item.setData(DataComponentTypes.ITEM_MODEL, DISPLAY_MATERIAL_SPELLBOOK.getKey());
 
@@ -200,19 +204,7 @@ public class ItemUtils {
 
         item.getDataTypes().forEach(item::unsetData);
 
-        CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
-
-        CustomModelData.Builder cloneBuilder = CustomModelData.customModelData();
-        if (data != null) {
-            cloneBuilder.addColors(data.colors());
-            cloneBuilder.addFlags(data.flags());
-            cloneBuilder.addFloats(data.floats());
-            cloneBuilder.addStrings(data.strings());
-        }
-
-        cloneBuilder.addString(spell.key().asString());
-        cloneBuilder.addColor(spell.getPrimarySpellType().color());
-        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
+        spellInstance.getDefinition().applyCustomModelData(item, builder -> builder.addColor(spell.getPrimarySpellType().color()));
 
         NamespacedKey itemModelKey = BASE_MATERIAL_SPELL.getKey();
 
@@ -224,6 +216,11 @@ public class ItemUtils {
         );
 
         spellInstance.toItem(item);
+        item.editPersistentDataContainer(container -> {
+                    container.set(WANDCRAFT_ITEM_NAME, PersistentDataType.STRING, spellInstance.getDefinition().name());
+                    container.set(WANDCRAFT_ITEM_KEY, WbsPersistentDataType.NAMESPACED_KEY, spellInstance.getDefinition().getKey());
+                }
+        );
         return item;
     }
 
@@ -247,26 +244,11 @@ public class ItemUtils {
 
         item.getDataTypes().forEach(item::unsetData);
 
-        CustomModelData data = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA);
-
-        CustomModelData.Builder cloneBuilder = CustomModelData.customModelData();
-        if (data != null) {
-            cloneBuilder.addColors(data.colors());
-            cloneBuilder.addFlags(data.flags());
-            cloneBuilder.addFloats(data.floats());
-            cloneBuilder.addStrings(data.strings());
-        }
-
         List<SpellAttributeModifier<?, ?>> modifiers = modifier.getModifiers();
         if (!modifiers.isEmpty()) {
             SpellAttributeModifier<?, ?> first = modifiers.getFirst();
-            cloneBuilder.addString(first.attribute().getKey().asString());
-            item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
-
-            cloneBuilder.addColor(first.getSentiment().getScrollColor());
+            first.attribute().applyCustomModelData(item);
         }
-
-        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, cloneBuilder);
 
         NamespacedKey itemModelKey = BASE_MATERIAL_MODIFIER.getKey();
         
@@ -274,10 +256,15 @@ public class ItemUtils {
         addHiddenEnchant(item);
 
         modifier.toItem(item);
+        item.editPersistentDataContainer(container -> {
+                    container.set(WANDCRAFT_ITEM_NAME, PersistentDataType.STRING, "Spell Modifier");
+                    container.set(WANDCRAFT_ITEM_KEY, WbsPersistentDataType.NAMESPACED_KEY, modifier.getTypeKey());
+                }
+        );
         return item;
     }
     
-    public static AttributeModificationResult modifyItem(ItemStack item, SpellAttributeInstance<?> attributeInstance, @NotNull AttributeModifierType modifierType) {
+    public static AttributeModificationResult modifyItem(ItemStack item, SpellAttributeInstance<?> attributeInstance, AttributeModifierType modifierType) {
         SpellModifier spellModifier = SpellModifier.fromItem(item);
         Wand wand = Wand.fromItem(item);
         SpellInstance instance = SpellInstance.fromItem(item);
@@ -302,7 +289,7 @@ public class ItemUtils {
         instance.toItem(item);
     }
 
-    public static @NotNull AttributeModificationResult modifyWand(ItemStack item, SpellAttributeInstance<?> attributeInstance, @NotNull AttributeModifierType modifierType, SpellAttribute<?> attribute, Wand wand) {
+    public static AttributeModificationResult modifyWand(ItemStack item, SpellAttributeInstance<?> attributeInstance, AttributeModifierType modifierType, SpellAttribute<?> attribute, Wand wand) {
         if (wand.getAttributeInstances().stream().anyMatch(value -> value.attribute().equals(attribute))) {
             wand.setAttribute(attributeInstance);
             wand.toItem(item);
@@ -314,7 +301,7 @@ public class ItemUtils {
         }
     }
 
-    public static <T> void modifyModifier(ItemStack item, SpellAttributeInstance<T> attributeInstance, @NotNull AttributeModifierType modifierType, SpellModifier spellModifier) {
+    public static <T> void modifyModifier(ItemStack item, SpellAttributeInstance<T> attributeInstance, AttributeModifierType modifierType, SpellModifier spellModifier) {
         SpellAttributeModifier<T, T> modifierInstance = attributeInstance.createModifier(modifierType);
 
         spellModifier.getModifiers().forEach(modifier -> {
@@ -333,6 +320,33 @@ public class ItemUtils {
             case MagicHat hat -> buildHat(hat);
             default -> throw new IllegalStateException("Unexpected value: " + magicEquipmentType);
         };
+    }
+
+    @Nullable
+    public static ItemStack buildItem(NamespacedKey key) {
+        ItemType itemType = RegistryAccess.registryAccess().getRegistry(RegistryKey.ITEM).get(key);
+        if (itemType != null) {
+            return itemType.createItemStack();
+        }
+        // TODO: Move this to a more dynamic place that supports other one-offs like spellbooks etc
+        if (key.equals(KEY_BLANK_SCROLL)) {
+            return ItemUtils.buildBlankScroll();
+        }
+
+        List<ItemBuildableRegistry<?>> buildableRegistries = List.of(
+                WandcraftRegistries.WAND_TYPES,
+                WandcraftRegistries.MAGIC_EQUIPMENT_TYPES,
+                WandcraftRegistries.SPELLS
+        );
+
+        for (ItemBuildableRegistry<?> registry : buildableRegistries) {
+            ItemStack item = registry.getDefaultItem(key);
+            if (item != null) {
+                return item;
+            }
+        }
+
+        return null;
     }
 
     public enum AttributeModificationResult {

@@ -284,7 +284,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     @Override
     public List<TextureLayer> getTextures() {
         return List.of(
-                new TextureLayer("modifier_overlay", false, 0xEC273F),
+                new TextureLayer("modifier_overlay").defaultTint(0xEC273F),
                 new TextureLayer("modifier_" + textureValue)
         );
     }

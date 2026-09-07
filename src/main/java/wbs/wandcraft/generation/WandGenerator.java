@@ -3,10 +3,8 @@ package wbs.wandcraft.generation;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.exceptions.InvalidConfigurationException;
 import wbs.utils.util.WbsCollectionUtil;
@@ -19,7 +17,6 @@ import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.types.WandType;
 import wbs.wandcraft.wand.types.WizardryWand;
-import wbs.wandcraft.wand.types.WizardryWandHolder;
 
 import java.util.*;
 
@@ -197,9 +194,7 @@ public class WandGenerator implements Keyed, ItemGenerator {
         if (!spellGenerators.isEmpty()) {
             // TODO: Implement for other wand types
             if (wand instanceof WizardryWand wizardryWand) {
-                WizardryWandHolder wandHolder = wizardryWand.getMenu(wandItem);
-                Inventory inventory = wandHolder.getInventory();
-
+                List<ItemStack> instanceItems = new LinkedList<>();
                 int spells = new Random().nextInt(minSpells, maxSpells + 1);
                 for (int i = 0; i < spells; i++) {
                     SpellInstanceGenerator spellGenerator = WbsCollectionUtil.getRandom(spellGenerators);
@@ -207,14 +202,13 @@ public class WandGenerator implements Keyed, ItemGenerator {
 
                     ItemStack instanceItem = ItemUtils.buildSpell(instance);
 
-                    inventory.addItem(instanceItem);
+                    instanceItems.add(instanceItem);
                 }
 
-                List<@Nullable ItemStack> contentsList = Arrays.asList(inventory.getContents());
-                Collections.shuffle(contentsList);
-                inventory.setContents(contentsList.toArray(ItemStack[]::new));
+                Collections.shuffle(instanceItems);
+                wizardryWand.setItems(instanceItems);
 
-                wandHolder.save();
+                wand.toItem(wandItem);
             }
         }
 

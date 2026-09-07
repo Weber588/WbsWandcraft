@@ -42,15 +42,15 @@ public final class HatModel implements ExternalItemProvider {
     }
 
     @Override
-    public ResourcePackObjects.Model buildBaseModel() {
-        ResourcePackObjects.SelectModel selectModel = new ResourcePackObjects.SelectModel(
+    public ResourcePackObjects.ModelReference buildBaseModel() {
+        ResourcePackObjects.SelectModelReference selectModel = new ResourcePackObjects.SelectModelReference(
                 "minecraft:context_entity_type",
                 ExternalItemProvider.super.buildBaseModel()
         );
 
         selectModel.addCase(new ResourcePackObjects.ModelCase(
                 "minecraft:evoker",
-                new ResourcePackObjects.StaticModel(namespace() + ":" + getModelType() + "/" + value() + "_evoker")
+                new ResourcePackObjects.StaticModelReference(namespace() + ":" + getModelType() + "/" + value() + "_evoker")
         ));
 
         return selectModel;

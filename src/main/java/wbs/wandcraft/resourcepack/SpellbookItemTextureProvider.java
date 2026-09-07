@@ -10,26 +10,26 @@ import java.util.Map;
 
 public class SpellbookItemTextureProvider implements DynamicItemTextureProvider {
     @Override
-    public ResourcePackObjects.Model buildBaseModel() {
-        return new ResourcePackObjects.ConditionModel(
+    public ResourcePackObjects.ModelReference buildBaseModel() {
+        return new ResourcePackObjects.ConditionModelReference(
                 "using_item",
-                new ResourcePackObjects.StaticModel(namespace() + ":item/" + value() + "_active", getTints()),
+                new ResourcePackObjects.StaticModelReference(namespace() + ":item/" + value() + "_active", getTints()),
                 DynamicItemTextureProvider.super.buildBaseModel()
         );
     }
 
     @Override
-    public Map<String, ResourcePackObjects.ItemModelDefinition> getModelDefinitions() {
-        Map<String, ResourcePackObjects.ItemModelDefinition> namedModelDefinitions = new HashMap<>();
+    public Map<String, ResourcePackObjects.ItemModel> getModelDefinitions() {
+        Map<String, ResourcePackObjects.ItemModel> namedModelDefinitions = new HashMap<>();
 
-        ResourcePackObjects.ItemModelDefinition baseModelDefinition = new ResourcePackObjects.ItemModelDefinition(
+        ResourcePackObjects.ItemModel baseModelDefinition = new ResourcePackObjects.ItemModel(
                 "minecraft:item/generated",
                 namespace() + ":item/" + value()
         );
 
         namedModelDefinitions.put(value(), baseModelDefinition);
 
-        ResourcePackObjects.ItemModelDefinition activeModelDefinition = new ResourcePackObjects.ItemModelDefinition(
+        ResourcePackObjects.ItemModel activeModelDefinition = new ResourcePackObjects.ItemModel(
                 "minecraft:item/generated",
                 namespace() + ":item/" + value() + "_active"
         );

@@ -66,7 +66,7 @@ public final class WildenWandHolder extends WandHolder<WildenWand> {
 
     @Override
     protected Inventory instantiateInventory() {
-        return Bukkit.createInventory(this, ROWS * 9, wandItem.effectiveName().color(NamedTextColor.DARK_GRAY));
+        return Bukkit.createInventory(this, ROWS * 9, getInventoryName());
     }
 
     @Override

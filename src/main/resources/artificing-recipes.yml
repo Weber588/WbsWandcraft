@@ -1,0 +1,40 @@
+# Hardcoded items that can be built
+misc:
+  wbswandcraft:broomstick:
+    base: minecraft:brush
+    cost: 3
+
+wand:
+  basic:
+    base: minecraft:stick
+    cost: 1
+  apprentice:
+    base: wbswandcraft:basic
+    cost: 2
+  sorcery:
+    base: wbswandcraft:apprentice
+    cost: 5
+    ingredient: minecraft:amethyst_shard
+  wizardry:
+    base: wbswandcraft:apprentice
+    cost: 5
+    ingredient: minecraft:emerald
+    # ingredient-amount: 3
+  mage:
+    base: wbswandcraft:apprentice
+    cost: 5
+    ingredient: minecraft:diamond
+  wilden:
+    base: wbswandcraft:apprentice
+    cost: 5
+    ingredient: '#minecraft:saplings'
+  barbarian:
+    base: wbswandcraft:basic_wand
+    cost: 16
+    ingredient: '#minecraft:logs'
+
+spell:
+  fireball:
+    base: wbswandcraft:blank_scroll
+    cost: 6
+    ingredient: fire_charge

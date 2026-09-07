@@ -8,6 +8,7 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import wbs.utils.util.WbsColours;
 import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.spell.attributes.BooleanSpellAttribute;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
@@ -29,7 +30,7 @@ public class WizardryWand extends Wand {
             .sentiment(SpellAttribute.Sentiment.NEGATIVE);
     public static final SpellAttribute<Boolean> SHUFFLE = new BooleanSpellAttribute("shuffle", false)
             .setShowAttribute(shuffle -> shuffle);
-    public static final SpellAttribute<Integer> SLOTS = new IntegerSpellAttribute("slots", 10);
+    public static final int SLOTS = 10;
 
     private final List<@Nullable ItemStack> items = new LinkedList<>();
 
@@ -37,7 +38,6 @@ public class WizardryWand extends Wand {
         super(uuid);
         setAttribute(DELAY.defaultInstance());
         setAttribute(SHUFFLE.defaultInstance());
-        setAttribute(SLOTS.defaultInstance());
     }
 
     @Override
@@ -118,7 +118,7 @@ public class WizardryWand extends Wand {
             return null;
         }
 
-        return colors.removeFirst().mixColors(colors.toArray(Color[]::new));
+        return WbsColours.mixBukkit(colors);
     }
 
     public void setItems(List<ItemStack> newItems) {

@@ -6,8 +6,8 @@ import org.bukkit.Color;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
@@ -16,17 +16,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-@SuppressWarnings("UnstableApiUsage")
+@NullMarked
 public class BasicWand extends Wand {
     private @Nullable ItemStack item;
 
-    public BasicWand(@NotNull String uuid) {
+    public BasicWand(String uuid) {
         super(uuid);
     }
 
     @Override
-    protected @NotNull Queue<@NotNull SpellInstance> getSpellQueue(@NotNull Player player, ItemStack wandItem, Event event) {
-        LinkedList<@NotNull SpellInstance> spellList = new LinkedList<>();
+    protected Queue<SpellInstance> getSpellQueue(Player player, ItemStack wandItem, Event event) {
+        LinkedList<SpellInstance> spellList = new LinkedList<>();
 
         SpellInstance spellInstance = getSpellInstance();
         if (spellInstance != null) {
@@ -41,7 +41,7 @@ public class BasicWand extends Wand {
     }
 
     @Override
-    public @NotNull BasicWandHolder getMenu(ItemStack item) {
+    public BasicWandHolder getMenu(ItemStack item) {
         return new BasicWandHolder(this, item);
     }
 
@@ -50,12 +50,12 @@ public class BasicWand extends Wand {
     }
 
     @Override
-    public @NotNull WandType<BasicWand> getWandType() {
+    public WandType<BasicWand> getWandType() {
         return WandType.BASIC;
     }
 
     @Override
-    public @NotNull List<Component> getLore() {
+    public List<Component> getLore() {
         List<Component> lore = new LinkedList<>(super.getLore());
 
         Component spellText;
@@ -85,7 +85,7 @@ public class BasicWand extends Wand {
     }
 
     @Override
-    protected Color getWandColour() {
+    protected @Nullable Color getWandColour() {
         SpellInstance spellInstance = getSpellInstance();
         if (spellInstance != null) {
             return spellInstance.getDefinition().getPrimarySpellType().wandColor();

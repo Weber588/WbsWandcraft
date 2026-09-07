@@ -16,7 +16,10 @@ import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.wand.WandHolder;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public final class SorceryWandHolder extends WandHolder<SorceryWand> {
     private static final int PREV_TIER_SLOT = slot(0, 3);
@@ -24,14 +27,14 @@ public final class SorceryWandHolder extends WandHolder<SorceryWand> {
     private static final ItemStack PREV_TIER_ITEM = new ItemStack(Material.RED_STAINED_GLASS_PANE);
     private static final ItemStack NEXT_TIER_ITEM = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
 
-    private static final int WAND_DISPLAY_SLOT = slot(0, 5);
+    private static final int WAND_DISPLAY_SLOT = slot(3, 5);
     private static final int UPGRADE_DISPLAY_SLOT = slot(1, 1);
     private static final List<Integer> UPGRADE_SLOTS = List.of(
             slot(3, 1),
             slot(4, 1)
     );
     private static final Map<SorceryWand.WandControl, Integer> CONTROL_SLOTS = Map.of(
-            SorceryWand.WandControl.SHIFT_DROP, slot(2, 5),
+            SorceryWand.WandControl.SHIFT_DROP, slot(1, 5),
             SorceryWand.WandControl.PUNCH, slot(3, 3),
             SorceryWand.WandControl.RIGHT_CLICK, slot(3, 7),
             SorceryWand.WandControl.SHIFT_PUNCH, slot(5, 4),
@@ -78,7 +81,7 @@ public final class SorceryWandHolder extends WandHolder<SorceryWand> {
 
     @Override
     protected Inventory instantiateInventory() {
-        return Bukkit.createInventory(this, 6 * 9, wandItem.effectiveName().color(NamedTextColor.DARK_GRAY));
+        return Bukkit.createInventory(this, 6 * 9, getInventoryName());
     }
 
     @Override
@@ -100,6 +103,7 @@ public final class SorceryWandHolder extends WandHolder<SorceryWand> {
 
                     ItemStack slotLabel = SLOT_LABEL.clone();
                     slotLabel.setData(DataComponentTypes.ITEM_NAME, Component.text(WbsEnums.toPrettyString(control)));
+                    setInvisibleInPack(slotLabel);
 
                     inventory.setItem(slot - 9, slotLabel);
 

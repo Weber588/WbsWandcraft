@@ -2,6 +2,7 @@ package wbs.wandcraft.spell;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import wbs.wandcraft.util.ItemDecorator;
 
@@ -11,7 +12,8 @@ import wbs.wandcraft.util.ItemDecorator;
 public interface WandEntry<T extends WandEntry<T>> extends ItemDecorator {
     default void toItem(ItemStack item) {
         item.editMeta(meta -> {
-            meta.getPersistentDataContainer().set(getTypeKey(), getThisType(), getThis());
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            container.set(getTypeKey(), getThisType(), getThis());
             ItemDecorator.decorate(this, meta);
         });
     }

@@ -9,10 +9,10 @@ import wbs.wandcraft.resourcepack.ResourcePackObjects;
 import java.util.List;
 
 public abstract class ExternalWandModel extends WandModelProvider implements ExternalItemProvider {
-    public static final ExternalWandModel BROOMSTICK = new ExternalWandModel("broomstick") {
+    public static final ExternalWandModel BROOMSTICK = new ExternalWandModel("broomstick", '\uE780') {
         @Override
-        public ResourcePackObjects.Model buildBaseModel() {
-            return new ResourcePackObjects.ConditionModel(
+        public ResourcePackObjects.ModelReference buildBaseModel() {
+            return new ResourcePackObjects.ConditionModelReference(
                     "using_item",
                     buildAppendedModel("_backwards"),
                     super.buildBaseModel()
@@ -27,11 +27,11 @@ public abstract class ExternalWandModel extends WandModelProvider implements Ext
         }
     };
 
-    protected ExternalWandModel(String nativeKey) {
-        this(WbsWandcraft.getKey(nativeKey));
+    protected ExternalWandModel(String nativeKey, char backgroundChar) {
+        this(WbsWandcraft.getKey(nativeKey), backgroundChar);
     }
-    protected ExternalWandModel(NamespacedKey key) {
-        super(key);
+    protected ExternalWandModel(NamespacedKey key, char backgroundChar) {
+        super(key, backgroundChar);
     }
 
     @Override

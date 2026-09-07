@@ -14,6 +14,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import wbs.utils.util.WbsColours;
 import wbs.utils.util.WbsEnums;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.wandcraft.WbsWandcraft;
@@ -224,7 +225,7 @@ public class SorceryWand extends Wand {
             return null;
         }
 
-        return colors.removeFirst().mixColors(colors.toArray(Color[]::new));
+        return WbsColours.mixBukkit(colors);
     }
 
     @NotNull

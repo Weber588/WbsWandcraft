@@ -8,10 +8,10 @@ import java.util.List;
 
 public class SpellbookItemModelProvider implements ExternalItemProvider {
     @Override
-    public ResourcePackObjects.Model buildBaseModel() {
-        return new ResourcePackObjects.ConditionModel(
+    public ResourcePackObjects.ModelReference buildBaseModel() {
+        return new ResourcePackObjects.ConditionModelReference(
                 "using_item",
-                new ResourcePackObjects.CompositeModel(
+                new ResourcePackObjects.CompositeModelReference(
                         buildAppendedModel("_open"),
                         buildAppendedModel("_open_overlay")
                                 .addTint(new ResourcePackObjects.ModelTint(0, 0)),

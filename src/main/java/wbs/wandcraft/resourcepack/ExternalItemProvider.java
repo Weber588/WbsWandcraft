@@ -1,23 +1,27 @@
 package wbs.wandcraft.resourcepack;
 
 import org.jetbrains.annotations.NotNull;
-import wbs.wandcraft.resourcepack.ResourcePackObjects.Model;
+import wbs.wandcraft.resourcepack.ResourcePackObjects.ModelReference;
 
 import java.util.List;
 
-import static wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModel;
+import static wbs.wandcraft.resourcepack.ResourcePackObjects.StaticModelReference;
 
 public interface ExternalItemProvider extends ItemModelProvider {
     @Override
-    default Model buildBaseModel() {
+    default ModelReference buildBaseModel() {
         return buildAppendedModel("");
     }
 
-    default StaticModel buildAppendedModel(String appendWith) {
-        return new StaticModel(namespace() + ":" + getModelType() + "/" + value() + appendWith);
+    default StaticModelReference buildAppendedModel(String appendWith) {
+        return new StaticModelReference(namespace() + ":" + getModelType() + "/" + value() + appendWith);
     }
 
     @NotNull String getModelType();
+
+    default boolean externalTexture() {
+        return true;
+    }
 
     default List<String> getAdditionalModels() {
         return List.of();

@@ -8,6 +8,7 @@ import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
@@ -42,6 +43,7 @@ import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.util.ItemDecorator;
+import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.types.WandType;
 
 import java.time.Duration;
@@ -325,7 +327,11 @@ public abstract class Wand implements Attributable {
         item.editMeta(meta -> {
             PersistentDataContainer container = meta.getPersistentDataContainer();
 
-            container.set(WAND_TYPE, WbsPersistentDataType.NAMESPACED_KEY, getWandType().getKey());
+            NamespacedKey wandTypeKey = getWandType().getKey();
+            String rawName = PlainTextComponentSerializer.plainText().serialize(getWandType().getItemName());
+            container.set(WAND_TYPE, WbsPersistentDataType.NAMESPACED_KEY, wandTypeKey);
+            container.set(ItemUtils.WANDCRAFT_ITEM_NAME, PersistentDataType.STRING, rawName);
+            container.set(ItemUtils.WANDCRAFT_ITEM_KEY, WbsPersistentDataType.NAMESPACED_KEY, wandTypeKey);
 
             ItemDecorator.decorate(this, meta);
         });

@@ -2,18 +2,21 @@ package wbs.wandcraft.wand;
 
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.resourcepack.ItemModelProvider;
 
+@NullMarked
 public abstract class WandModelProvider implements Keyed, ItemModelProvider {
+    protected final char backgroundChar;
     private final NamespacedKey key;
 
-    protected WandModelProvider(NamespacedKey key) {
+    protected WandModelProvider(NamespacedKey key, char backgroundChar) {
         this.key = key;
+        this.backgroundChar = backgroundChar;
     }
 
     @Override
-    public @NotNull NamespacedKey getKey() {
+    public NamespacedKey getKey() {
         return key;
     }
 }

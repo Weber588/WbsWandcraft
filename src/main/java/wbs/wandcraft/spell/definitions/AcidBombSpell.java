@@ -46,7 +46,7 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
         setAttribute(RADIUS, 4d);
 
         setAttribute(GRAVITY, 0.25);
-        setAttribute(SPEED, 0.1d);
+        setAttribute(SPEED, 0.7d);
         setAttribute(IMPRECISION, 5d);
     }
 
@@ -58,7 +58,7 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
         projectile.setParticle(new WbsParticleGroup().addEffect(BOMB_EFFECT, Particle.DUST));
-
+        projectile.setDebug(true);
         SpellInstance instance = context.instance();
 
         SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (result) -> {

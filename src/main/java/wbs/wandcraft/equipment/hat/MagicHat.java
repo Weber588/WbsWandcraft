@@ -37,7 +37,8 @@ public abstract class MagicHat implements MagicEquipmentType {
         return Component.text(getName()).color(getNameColour());
     }
 
-    protected @NotNull String getName() {
+    @Override
+    public @NotNull String getName() {
         return WbsStrings.capitalizeAll(hatName) + "'s Hat";
     }
 

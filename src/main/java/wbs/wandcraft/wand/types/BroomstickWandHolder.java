@@ -56,7 +56,7 @@ public final class BroomstickWandHolder extends WandHolder<BroomstickWand> {
 
     @Override
     protected Inventory instantiateInventory() {
-        return Bukkit.createInventory(this, InventoryType.DROPPER, wandItem.effectiveName().color(NamedTextColor.DARK_GRAY));
+        return Bukkit.createInventory(this, InventoryType.DROPPER, getInventoryName());
     }
 
     @Override
