@@ -14,18 +14,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 public final class MageWandHolder extends WandHolder<MageWand> {
-    private static final int WAND_DISPLAY_SLOT = slot(2, 4);
-    private static final int UPGRADE_DISPLAY_SLOT = slot(0, 4);
+    private static final int WAND_DISPLAY_SLOT = slot(3, 4);
+    private static final int UPGRADE_DISPLAY_SLOT = slot(1, 1);
     private static final List<Integer> UPGRADE_SLOTS = List.of(
-            slot(1, 2),
             slot(1, 3),
             slot(1, 4),
             slot(1, 5),
-            slot(1, 6)
+            slot(1, 6),
+            slot(1, 7)
     );
     private static final int ITEM_COLUMN_START = 1;
     private static final int ITEM_COLUMN_END = 7;
-    private static final int ITEM_ROW_START = 3;
+    private static final int ITEM_ROW_START = 4;
     private static final int ITEM_ROW_END = 4;
 
     public MageWandHolder(MageWand wand, ItemStack item) {
@@ -88,7 +88,7 @@ public final class MageWandHolder extends WandHolder<MageWand> {
                     }
 
                     itemIndex++;
-                } else if (row == 0 || row == 2 || row == 5) {
+                } else if (row == getRow(WAND_DISPLAY_SLOT) || row == getRow(UPGRADE_DISPLAY_SLOT) || row == 5 || row == 0) {
                     inventory.setItem(slot, SECONDARY_OUTLINE);
                 } else {
                     inventory.setItem(slot, MAIN_OUTLINE);

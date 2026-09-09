@@ -2,17 +2,14 @@ package wbs.wandcraft;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.tag.TagKey;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +18,6 @@ import wbs.utils.exceptions.InvalidConfigurationException;
 import wbs.utils.util.WbsEnums;
 import wbs.utils.util.configuration.WbsValueReader;
 import wbs.utils.util.plugin.WbsSettings;
-import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.utils.util.providers.NumProvider;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.crafting.ArtificingRecipe;
@@ -35,15 +31,15 @@ import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.util.ItemBuildableRegistry;
 import wbs.wandcraft.util.ItemUtils;
+import wbs.wandcraft.wand.Wand;
 
 import java.util.*;
 
 public class WandcraftSettings extends WbsSettings {
-
     public static final String SPELL_CONFIG_COST = "echo-shard-cost";
     public static final String SPELL_CONFIG_ATTRIBUTES = "attributes";
-    private boolean debugMode = false;
     private final Map<@NotNull EntityType, @NotNull Map<ItemStack, @NotNull Double>> customDrops = new HashMap<>();
+    private boolean devMode;
 
     protected WandcraftSettings(WbsWandcraft plugin) {
         super(plugin);
@@ -106,12 +102,10 @@ public class WandcraftSettings extends WbsSettings {
     public void reload() {
         String directory = "config.yml";
         YamlConfiguration config = this.loadDefaultConfig(directory);
+        devMode = config.getBoolean("dev-mode", false);
 
         WbsValueReader reader = new WbsValueReader(config, "wand-backgrounds", directory);
         backgroundMode = reader.readEnum(BackgroundMode.class, backgroundMode);
-        this.debugMode = config.getBoolean("debug", false);
-
-        PacketEventsWrapper.get().ifPresent(pe -> pe.fullStackTrace(debugMode));
 
         ConfigurationSection artificingTableSection = config.getConfigurationSection("artificing-table");
 
@@ -140,7 +134,7 @@ public class WandcraftSettings extends WbsSettings {
             }
         }
 
-        ResourcePackBuilder.loadResourcePack(this, config);
+        ResourcePackBuilder.loadResourcePack(config);
 
         this.loadSpellConfigs();
         this.loadRecipes();
@@ -195,10 +189,6 @@ public class WandcraftSettings extends WbsSettings {
                 }
             }
         }
-    }
-
-    public boolean debugMode() {
-        return debugMode;
     }
 
     private void loadSpellConfigs() {
@@ -385,7 +375,7 @@ public class WandcraftSettings extends WbsSettings {
 
     private List<ArtificingRecipe> artificingRecipes = new LinkedList<>();
     public List<ArtificingRecipe> getArtificingRecipes() {
-        return artificingRecipes;
+        return new LinkedList<>(artificingRecipes);
     }
 
     private void loadArtificingRecipes() {
@@ -454,7 +444,7 @@ public class WandcraftSettings extends WbsSettings {
 
         int cost = typeSection.getInt("cost", 1);
         RecipeChoice ingredient = getRecipeChoice("ingredient", typeSection, false);
-        int ingredientAmount = typeSection.getInt("ingredient-amount", 1);
+        int ingredientAmount = typeSection.getInt("ingredient-amount", ingredient != null ? 1 : 0);
 
         return new ArtificingRecipe(
                 recipeKey,
@@ -466,7 +456,7 @@ public class WandcraftSettings extends WbsSettings {
         );
     }
 
-    private @org.jspecify.annotations.Nullable RecipeChoice getRecipeChoice(String key, ConfigurationSection typeSection, boolean isRequired) {
+    private @Nullable RecipeChoice getRecipeChoice(String key, ConfigurationSection typeSection, boolean isRequired) {
         String baseString = typeSection.getString(key);
         if (baseString == null) {
             if (isRequired) {
@@ -480,10 +470,29 @@ public class WandcraftSettings extends WbsSettings {
         try {
             baseItem = Bukkit.getItemFactory().createItemStack(baseString);
         } catch (IllegalArgumentException ex) {
+            boolean isTag = false;
+            if (baseString.startsWith("#")) {
+                baseString = baseString.substring(1);
+                isTag = true;
+            }
+
             NamespacedKey asKey = NamespacedKey.fromString(baseString, plugin);
             if (asKey != null) {
-                baseItem = ItemUtils.buildItem(asKey);
-                isExact = true; // Custom items must be exact
+                if (isTag) {
+                    Registry<ItemType> itemRegistry = RegistryAccess.registryAccess().getRegistry(RegistryKey.ITEM);
+
+                    TagKey<ItemType> tagKey = TagKey.create(RegistryKey.ITEM, asKey);
+                    if (itemRegistry.hasTag(tagKey)) {
+                        //noinspection UnstableApiUsage
+                        return RecipeChoice.itemType(itemRegistry.getTag(tagKey));
+                    } else {
+                        logError("Invalid %s item tag: %s".formatted(key, "#" + baseString), typeSection, key);
+                        return null;
+                    }
+                } else {
+                    baseItem = ItemUtils.buildItem(asKey);
+                    isExact = true; // Custom items must be exact
+                }
             }
 
             if (baseItem == null) {
@@ -491,6 +500,19 @@ public class WandcraftSettings extends WbsSettings {
                 return null;
             }
         }
+
+        Wand wand = Wand.fromItem(baseItem);
+        if (wand != null) {
+            return RecipeChoice.predicateChoice(other -> {
+                Wand otherWand = Wand.fromItem(other);
+                if (otherWand == null) {
+                    return false;
+                }
+
+                return otherWand.getWandType().equals(wand.getWandType()) && otherWand.isEmpty();
+            }, baseItem);
+        }
+
         return isExact ? RecipeChoice.exactChoice(baseItem) : new RecipeChoice.MaterialChoice(baseItem.getType());
     }
 
@@ -583,6 +605,10 @@ public class WandcraftSettings extends WbsSettings {
                 }
             }
         }
+    }
+
+    public boolean devMode() {
+        return devMode;
     }
 
     public enum BackgroundMode {

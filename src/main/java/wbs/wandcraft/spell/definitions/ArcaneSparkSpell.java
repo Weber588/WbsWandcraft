@@ -31,10 +31,10 @@ public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectil
         setAttribute(COST, 50);
         setAttribute(COOLDOWN, 1 * Ticks.TICKS_PER_SECOND);
 
-        setAttribute(DAMAGE, 1d);
+        setAttribute(DAMAGE, 3d);
         setAttribute(BOUNCES, 4);
         setAttribute(SPEED, 2d);
-        setAttribute(IMPRECISION, 30d);
+        setAttribute(IMPRECISION, 15d);
         setAttribute(RANGE, 60d);
         setAttribute(DRAG, 0.03d);
         setAttribute(GRAVITY, 0.1d);

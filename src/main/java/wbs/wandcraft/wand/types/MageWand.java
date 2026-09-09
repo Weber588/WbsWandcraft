@@ -210,4 +210,9 @@ public class MageWand extends Wand {
 
         toItem(item);
     }
+
+    @Override
+    public boolean hasSpells() {
+        return !items.isEmpty();
+    }
 }

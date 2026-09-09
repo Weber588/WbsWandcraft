@@ -76,7 +76,7 @@ public class SorceryWand extends Wand {
 
     @Override
     protected void handleNoSpellAvailable(@NotNull Player player, ItemStack wandItem, Event event) {
-        if (isEmpty()) {
+        if (!hasSpells()) {
             WbsWandcraft.getInstance().sendActionBar("&wThis wand is empty...", player);
         } else if (getTieredItems().isEmpty()) {
             WbsWandcraft.getInstance().sendActionBar("&wNo spells on tier" + (tier + 1) + "!", player);
@@ -92,8 +92,9 @@ public class SorceryWand extends Wand {
         FAIL_EFFECT.play(Particle.SMOKE, WbsEntityUtil.getMiddleLocation(player));
     }
 
-    private boolean isEmpty() {
-        return getAllItems().entrySet().stream()
+    @Override
+    public boolean hasSpells() {
+        return !getAllItems().entrySet().stream()
                 .allMatch(entry ->
                         entry.getValue().isEmpty()
                 );

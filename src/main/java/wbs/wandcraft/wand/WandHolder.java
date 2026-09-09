@@ -31,6 +31,12 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     protected static int slot(int row, int column) {
         return row * 9 + column;
     }
+    protected static int getRow(int slot) {
+        return slot % 9;
+    }
+    protected static int getColumn(int slot) {
+        return slot / 9;
+    }
 
     // TODO: Move these being populated to WandBackground
     public static final Material MATERIAL_MAIN_OUTLINE = Material.PURPLE_STAINED_GLASS_PANE;
@@ -137,15 +143,19 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
     }
 
     private void populateBonusSlots() {
+        populateFakeWand();
+        Integer upgradeDisplaySlot = getUpgradeDisplaySlot();
+        if (upgradeDisplaySlot != null) {
+            inventory.setItem(upgradeDisplaySlot, UPGRADE_DISPLAY);
+        }
+    }
+
+    private void populateFakeWand() {
         ItemStack fakeWand = getFakeWand();
 
         Integer wandDisplaySlot = getWandDisplaySlot();
         if (wandDisplaySlot != null) {
             inventory.setItem(wandDisplaySlot, fakeWand);
-        }
-        Integer upgradeDisplaySlot = getUpgradeDisplaySlot();
-        if (upgradeDisplaySlot != null) {
-            inventory.setItem(upgradeDisplaySlot, UPGRADE_DISPLAY);
         }
     }
 
@@ -191,6 +201,7 @@ public abstract class WandHolder<T extends Wand> implements InventoryHolder {
         saveItems();
         saveUpgrades();
         wand.toItem(wandItem);
+        populateFakeWand();
     }
 
     protected void saveUpgrades() {

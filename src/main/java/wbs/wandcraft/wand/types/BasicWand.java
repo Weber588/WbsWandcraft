@@ -55,6 +55,11 @@ public class BasicWand extends Wand {
     }
 
     @Override
+    public boolean hasSpells() {
+        return item != null;
+    }
+
+    @Override
     public List<Component> getLore() {
         List<Component> lore = new LinkedList<>(super.getLore());
 

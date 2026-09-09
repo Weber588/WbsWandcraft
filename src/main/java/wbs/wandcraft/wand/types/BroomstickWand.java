@@ -161,4 +161,9 @@ public class BroomstickWand extends Wand {
 
         new Broomstick(broomstickEntity);
     }
+
+    @Override
+    public boolean hasSpells() {
+        return false;
+    }
 }

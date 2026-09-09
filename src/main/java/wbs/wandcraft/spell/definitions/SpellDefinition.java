@@ -102,10 +102,12 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
             String texture = "spell_" + key().value();
 
             String path = ResourcePackBuilder.getTexturesFolder(ResourcePackBuilder.WANDCRAFT, "item") + texture + ".png";
-            if (WbsWandcraft.getInstance().getResource(path) == null) {
-                if (WbsWandcraft.getInstance().getSettings().debugMode()) {
-                    WbsWandcraft.getInstance().getLogger().severe("The resource at path \"" + path + "\" was not found! A default texture will be used.");
-                }
+            WbsWandcraft plugin = WbsWandcraft.getInstance();
+            if (plugin.getResource(path) == null) {
+                plugin.debug(
+                        ResourcePackBuilder.DEBUG_RESOURCE_PACK,
+                        "The resource at path \"" + path + "\" was not found! A default texture will be used."
+                );
 
                 textureLayers = List.of(
                         new TextureLayer("default_spell_text_overlay").defaultTint(0x008000),

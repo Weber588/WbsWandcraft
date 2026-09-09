@@ -187,4 +187,9 @@ public class BarbarianWand extends Wand {
 
         tryCasting(player, item, event);
     }
+
+    @Override
+    public boolean hasSpells() {
+        return item != null;
+    }
 }

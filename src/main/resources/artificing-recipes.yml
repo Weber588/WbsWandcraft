@@ -6,7 +6,7 @@ misc:
 
 wand:
   basic:
-    base: minecraft:stick
+    base: minecraft:stick[] # Use exact match -- don't accept custom/modified items
     cost: 1
   apprentice:
     base: wbswandcraft:basic
@@ -19,7 +19,6 @@ wand:
     base: wbswandcraft:apprentice
     cost: 5
     ingredient: minecraft:emerald
-    # ingredient-amount: 3
   mage:
     base: wbswandcraft:apprentice
     cost: 5
@@ -29,9 +28,10 @@ wand:
     cost: 5
     ingredient: '#minecraft:saplings'
   barbarian:
-    base: wbswandcraft:basic_wand
-    cost: 16
+    base: wbswandcraft:basic
+    cost: 8
     ingredient: '#minecraft:logs'
+    ingredient-amount: 3
 
 spell:
   fireball:

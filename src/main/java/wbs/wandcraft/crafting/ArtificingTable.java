@@ -22,22 +22,21 @@ import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.persistent.BlockChunkStorageUtil;
 import wbs.utils.util.persistent.WbsPersistentDataType;
-import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
+import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.types.WandType;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @NullMarked
 public class ArtificingTable implements InventoryHolder {
+    public static final String DEBUG_CHANNEL_RECIPES = "recipes";
+
     private static final NamespacedKey SPAWN_TIME = WbsWandcraft.getKey("spawn_time");
     private static final NamespacedKey ARTIFICING_INVENTORY = WbsWandcraft.getKey("artificing_inventory");
     private static final NormalParticleEffect CONVERT_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
@@ -81,83 +80,144 @@ public class ArtificingTable implements InventoryHolder {
     }
 
     public void interact(Player player, EquipmentSlot hand) {
-        Item item = getItem();
+        Item baseItem = getItem();
 
-        if (player.isSneaking()) {
-            dropItem();
-            dropShards();
-        } else {
-            ItemStack heldItem = player.getInventory().getItem(hand);
-            Wand wand = Wand.fromItem(heldItem);
+        ItemStack heldItem = player.getInventory().getItem(hand);
+        Wand wand = Wand.fromItem(heldItem);
+        boolean sneaking = player.isSneaking();
+        if (wand != null && !sneaking) {
+            wand.startEditing(player, heldItem);
+            return;
+        }
+
+        if (tryCraftItem(player, hand, baseItem, heldItem)) {
+            return;
+        }
+
+        if (sneaking) {
             if (wand != null) {
                 wand.startEditing(player, heldItem);
-                return;
+            } else {
+                List<Item> items = getItems();
+                if (!items.isEmpty()) {
+                    Item last = items.getLast();
+                    dropFromTable(last);
+                }
+                dropShards();
             }
-            Spellbook spellbook = Spellbook.fromItem(heldItem);
-            if (spellbook != null) {
-                handleSpellbookClick(player, spellbook);
-                return;
+            return;
+        }
+
+        Spellbook spellbook = Spellbook.fromItem(heldItem);
+        if (spellbook != null) {
+            handleSpellbookClick(player, spellbook);
+            return;
+        }
+
+        player.openInventory(inventory);
+    }
+
+    private boolean tryCraftItem(Player player, EquipmentSlot hand, @Nullable Item baseItem, ItemStack heldItem) {
+        WbsWandcraft plugin = WbsWandcraft.getInstance();
+        List<ArtificingRecipe> recipes = plugin.getSettings().getArtificingRecipes();
+        // Prevent non-ingredient recipes from taking priority when other ingredients are present
+        recipes.sort(Comparator.comparing(recipe -> recipe.ingredient() == null));
+        if (baseItem == null) {
+            for (ArtificingRecipe recipe : recipes) {
+                if (recipe.baseItem().test(heldItem)) {
+                    Item droppedItem = player.dropItem(hand, 1);
+
+                    if (droppedItem != null) {
+                        acceptBaseItem(droppedItem);
+                    } else {
+                        throw new IllegalStateException("Failed to drop item previously checked?");
+                    }
+
+                    return true;
+                }
             }
+            return false;
+        }
 
-            WandcraftSettings settings = WbsWandcraft.getInstance().getSettings();
+        List<Item> items = getItems();
 
-            List<ArtificingRecipe> recipes = settings.getArtificingRecipes();
-            if (item == null) {
-                for (ArtificingRecipe recipe : recipes) {
-                    if (recipe.baseItem().test(heldItem)) {
-                        Item droppedItem = player.dropItem(hand, 1);
-
-                        if (droppedItem != null) {
-                            acceptBaseItem(droppedItem);
-                        } else {
-                            throw new IllegalStateException("Failed to drop item previously checked?");
+        for (ArtificingRecipe recipe : recipes) {
+            if (recipe.baseItem().test(baseItem.getItemStack())) {
+                plugin.debug(DEBUG_CHANNEL_RECIPES, "Possible match for recipe " + recipe.key().asString());
+                RecipeChoice ingredient = recipe.ingredient();
+                int existingAmount = 0;
+                int amount;
+                if (heldItem.getType() == Material.ECHO_SHARD) {
+                    if (ingredient != null) {
+                        int existingIngredient = 0;
+                        for (Item invItem : items) {
+                            ItemStack stack = invItem.getItemStack();
+                            if (ingredient.test(stack)) {
+                                existingIngredient += stack.getAmount();
+                            }
                         }
 
-                        return;
-                    }
-                }
-            } else {
-                for (ArtificingRecipe recipe : recipes) {
-                    if (recipe.baseItem().test(item.getItemStack())) {
-                        RecipeChoice ingredient = recipe.ingredient();
-                        int existingAmount = 0;
-                        int amount = 1;
-                        if (heldItem.getType() == Material.ECHO_SHARD) {
-                            for (ItemStack invItem : inventory) {
-                                if (invItem != null && invItem.getType() == Material.ECHO_SHARD) {
-                                    existingAmount += invItem.getAmount();
-                                }
-                            }
-                            amount = recipe.shardCost();
-                        } else if (ingredient != null && ingredient.test(heldItem)) {
-                            for (ItemStack invItem : inventory) {
-                                if (invItem != null && ingredient.test(invItem)) {
-                                    existingAmount += invItem.getAmount();
-                                }
-                            }
-                            amount = recipe.ingredientAmount();
-                        } else {
+                        // Make the player finish the rest of the recipe before accepting shards, or it'll use a pseudo-random
+                        // amount of shards
+                        if (existingIngredient > 0 && existingIngredient < recipe.ingredientAmount()) {
+                            // TODO: Replace this with spitting all other items off the table and playing a failure
+                            //  effect or sound
+                            player.sendActionBar(
+                                    Component.text("Recipe incomplete... (%d/%d)".formatted(existingIngredient, recipe.ingredientAmount()))
+                                            .style(plugin.getErrorStyle())
+                            );
+                            return true;
+                        } else if (existingIngredient == 0) {
                             continue;
                         }
+                    }
 
-                        int toDrop = Math.min(heldItem.getAmount(), amount - existingAmount);
-
-                        if (toDrop >= 1) {
-                            Item droppedItem = player.dropItem(hand, amount);
-
-                            if (droppedItem != null) {
-                                acceptRecipeItem(droppedItem);
-                            } else {
-                                throw new IllegalStateException("Failed to drop item previously checked?");
-                            }
-                            return;
+                    for (Item invItem : items) {
+                        ItemStack stack = invItem.getItemStack();
+                        if (stack.getType() == Material.ECHO_SHARD) {
+                            existingAmount += stack.getAmount();
                         }
                     }
+                    amount = recipe.shardCost();
+                } else if (ingredient != null && ingredient.test(heldItem)) {
+                    for (Item invItem : items) {
+                        ItemStack stack = invItem.getItemStack();
+                        if (ingredient.test(stack)) {
+                            existingAmount += stack.getAmount();
+                        }
+                    }
+                    amount = recipe.ingredientAmount();
+                } else {
+                    continue;
+                }
+
+                int toDrop = Math.min(heldItem.getAmount(), amount - existingAmount);
+
+                if (toDrop >= 1) {
+                    plugin.debug(
+                            DEBUG_CHANNEL_RECIPES,
+                            "Matched recipe %s\nDropping %s%s x%d"
+                                    .formatted(
+                                            recipe.key().asString(),
+                                            heldItem.getType(),
+                                            heldItem.getItemMeta().getAsComponentString(),
+                                            toDrop
+                                    )
+                    );
+
+                    Item droppedItem = player.dropItem(hand, toDrop);
+
+                    if (droppedItem != null) {
+                        acceptRecipeItem(recipe, droppedItem);
+                    } else {
+                        throw new IllegalStateException("Failed to drop item previously checked?");
+                    }
+                    return true;
                 }
             }
-
-            player.openInventory(inventory);
         }
+
+        return false;
     }
 
     private void dropItem() {
@@ -219,7 +279,7 @@ public class ArtificingTable implements InventoryHolder {
 
             item.setItemStack(ItemUtils.buildWand(currentWandType));
             dropItem();
-            CONVERT_EFFECT.setData(null).play(Particle.END_ROD, item.getLocation().add(0, 0.15, 0));
+            playGenericConvert(item.getLocation());
         } else {
             WbsWandcraft.getInstance().sendActionBar("Not enough echo shards! (" + shardsAvailable + "/" + cost + ")", player);
         }
@@ -244,18 +304,22 @@ public class ArtificingTable implements InventoryHolder {
 
                 item.setItemStack(ItemUtils.buildSpell(currentSpell));
                 dropItem();
-                List<SpellType> types = currentSpell.getTypes();
-                Color color1 = types.get(0).color();
-                Color color2 = color1;
-                if (types.size() > 1) {
-                    color2 = types.get(1).color();
-                }
-                CONVERT_EFFECT.setData(new Particle.DustTransition(color1, color2, 1.3f))
-                        .play(Particle.DUST_COLOR_TRANSITION, item.getLocation().add(0, 0.15, 0));
+                playConvertSpell(item.getLocation(), currentSpell);
             } else {
                 WbsWandcraft.getInstance().sendActionBar("Not enough echo shards! (" + shardsAvailable + "/" + cost + ")", player);
             }
         }
+    }
+
+    private static void playConvertSpell(Location location, SpellDefinition currentSpell) {
+        List<SpellType> types = currentSpell.getTypes();
+        Color color1 = types.get(0).color();
+        Color color2 = color1;
+        if (types.size() > 1) {
+            color2 = types.get(1).color();
+        }
+        CONVERT_EFFECT.setData(new Particle.DustTransition(color1, color2, 1.3f))
+                .play(Particle.DUST_COLOR_TRANSITION, location.add(0, 0.15, 0));
     }
 
     public void save() {
@@ -271,9 +335,14 @@ public class ArtificingTable implements InventoryHolder {
 
     @Nullable
     public Item getItem() {
+        return getItems().stream()
+                .min(Comparator.comparing(item -> item.getLocation().distance(block.getLocation().toCenterLocation())))
+                .orElse(null);
+    }
+
+    private List<Item> getItems() {
         NamespacedKey blockKey = ArtificingConfig.getBlockKey(block);
 
-        // Sort by age, oldest first -- that's the order they were added. First item is at the centre.
         return block.getWorld().getNearbyEntities(
                         BoundingBox.of(block).expand(32),
                         entity -> Objects.equals(
@@ -287,8 +356,8 @@ public class ArtificingTable implements InventoryHolder {
                     }
                     return null;
                 }).filter(Objects::nonNull)
-                .min(Comparator.comparing(item -> item.getLocation().distance(block.getLocation().toCenterLocation())))
-                .orElse(null);
+                .sorted(Comparator.comparingInt(Entity::getTicksLived).reversed())
+                .toList();
     }
 
     public void acceptBaseItem(Item spawningItem) {
@@ -296,27 +365,94 @@ public class ArtificingTable implements InventoryHolder {
             throw new IllegalStateException("Table is not able to accept new items.");
         }
 
-        Location centralItemLocation = getCentralItemLocation();
-
-        spawningItem.setGravity(false);
-        spawningItem.setGlowing(true);
-        COLOUR_TEAM.addEntities(spawningItem);
-
-        spawningItem.setVelocity(new Vector());
-
-        spawningItem.setCanPlayerPickup(false);
-        spawningItem.setCanMobPickup(false);
-        spawningItem.setWillAge(false);
-
-        PersistentDataContainer container = spawningItem.getPersistentDataContainer();
-        container.set(SPAWN_TIME, PersistentDataType.LONG, System.currentTimeMillis());
-        container.set(ArtificingConfig.TAG, WbsPersistentDataType.NAMESPACED_KEY, ArtificingConfig.getBlockKey(block));
-
-        spawningItem.teleport(centralItemLocation);
+        acceptItem(spawningItem);
     }
 
-    public void acceptRecipeItem(Item spawningItem) {
+    public void acceptRecipeItem(ArtificingRecipe recipe, Item spawningItem) {
+        List<Item> items = new LinkedList<>(getItems());
+        items.add(spawningItem);
 
+        RecipeChoice ingredient = recipe.ingredient();
+
+        Map<ItemStack, Integer> similarItemToAmount = new HashMap<>();
+        for (Item item : items) {
+            countItem(item, similarItemToAmount);
+        }
+
+        int echoShards = similarItemToAmount.getOrDefault(ItemStack.of(Material.ECHO_SHARD), 0);
+        int existingAmount = 0;
+
+        if (ingredient != null) {
+            existingAmount = similarItemToAmount.keySet()
+                    .stream()
+                    .filter(ingredient)
+                    .findFirst()
+                    .map(match -> similarItemToAmount.getOrDefault(match, 0))
+                    .orElse(0)
+            ;
+        }
+
+        if (recipe.ingredientAmount() <= existingAmount && recipe.shardCost() <= echoShards) {
+            craftItem(recipe, items, ingredient);
+        }
+
+        acceptItem(spawningItem);
+    }
+
+    private static void countItem(Item item, Map<ItemStack, Integer> similarItemToAmount) {
+        ItemStack stack = item.getItemStack();
+        Set<ItemStack> keys = similarItemToAmount.keySet();
+
+        if (keys.isEmpty()) {
+            similarItemToAmount.put(stack.asOne(), stack.getAmount());
+        } else {
+            keys.stream()
+                    .filter(stack::isSimilar)
+                    .findFirst()
+                    .ifPresentOrElse(match -> {
+                        int amount = similarItemToAmount.getOrDefault(match, 0);
+
+                        amount += stack.getAmount();
+
+                        similarItemToAmount.put(match, amount);
+                    }, () -> {
+                        similarItemToAmount.put(stack.asOne(), stack.getAmount());
+                    });
+        }
+    }
+
+    private void craftItem(ArtificingRecipe recipe, List<Item> items, @Nullable RecipeChoice ingredient) {
+        ItemStack result = recipe.result();
+
+        List<Item> toRemove = new LinkedList<>();
+        for (Item item : items) {
+            ItemStack stack = item.getItemStack();
+            if ((recipe.baseItem().test(stack)) || (ingredient != null && ingredient.test(stack)) || stack.getType() == Material.ECHO_SHARD) {
+                toRemove.add(item);
+            }
+        }
+
+        for (Item item : toRemove) {
+            item.remove();
+        }
+
+        Location location = getCentralItemLocation();
+
+        SpellInstance spellInstance = SpellInstance.fromItem(result);
+        if (spellInstance != null) {
+            playConvertSpell(location, spellInstance.getDefinition());
+        } else {
+            playGenericConvert(location);
+        }
+
+        dropAtTable(result);
+    }
+
+    private static void playGenericConvert(Location location) {
+        CONVERT_EFFECT.setData(null).play(Particle.END_ROD, location.add(0, 0.15, 0));
+    }
+
+    private void acceptItem(Item spawningItem) {
         Location centralItemLocation = getCentralItemLocation();
 
         spawningItem.setGravity(false);
@@ -371,13 +507,18 @@ public class ArtificingTable implements InventoryHolder {
         });
     }
 
-    private static void dropFromTable(Item item) {
+    private void dropFromTable(Item item) {
         ItemStack stack = item.getItemStack();
-        item.getWorld().dropItem(item.getLocation(), stack, spawned -> {
+        dropAtTable(stack);
+        item.remove();
+    }
+
+    private void dropAtTable(ItemStack stack) {
+        Location location = getCentralItemLocation();
+        location.getWorld().dropItem(location, stack, spawned -> {
             spawned.setVelocity(new Vector(0, 0.2, 0));
             spawned.setPickupDelay(2 * Ticks.TICKS_PER_SECOND);
         });
-        item.remove();
     }
 
     public Block getBlock() {
@@ -385,7 +526,7 @@ public class ArtificingTable implements InventoryHolder {
     }
 
     @Override
-    public @NotNull Inventory getInventory() {
+    public Inventory getInventory() {
         return inventory;
     }
 

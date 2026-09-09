@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class ResourcePackBuilder {
@@ -36,6 +37,7 @@ public class ResourcePackBuilder {
     public static final String ASSETS_FOLDER = "resourcepack/assets/";
     public static final @NotNull String WANDCRAFT = WbsWandcraft.getInstance().namespace();
     public static final @NotNull String MINECRAFT = NamespacedKey.MINECRAFT;
+    public static final String DEBUG_RESOURCE_PACK = "resource_pack";
 
     public static String getAssetsFolder(String namespace, String folder) {
         return ASSETS_FOLDER + namespace + "/" + folder + "/";
@@ -70,8 +72,8 @@ public class ResourcePackBuilder {
 
     public static final SpellbookItemModelProvider ITEM_PROVIDER_SPELLBOOK = new SpellbookItemModelProvider();
 
-    public static void loadResourcePack(WandcraftSettings settings, YamlConfiguration config) {
-        boolean updatedPack = createResourcePack(settings, config);
+    public static void loadResourcePack(YamlConfiguration config) {
+        boolean updatedPack = createResourcePack(config);
         if (updatedPack) {
             writeToExternalPlugins();
         }
@@ -98,9 +100,7 @@ public class ResourcePackBuilder {
                 Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 plugin.getLogger().severe("Failed to copy resource pack to ResourcePackManager/mixer!");
-                if (settings.debugMode()) {
-                    e.printStackTrace();
-                }
+                settings.debug(DEBUG_RESOURCE_PACK, e::printStackTrace);
             }
             /*
             ResourcePackManagerAPI.registerResourcePack(
@@ -116,10 +116,11 @@ public class ResourcePackBuilder {
         }
     }
 
-    private static boolean createResourcePack(WandcraftSettings settings, YamlConfiguration config) {
+    private static boolean createResourcePack(YamlConfiguration config) {
         long startTimestamp = System.currentTimeMillis();
 
         WbsWandcraft plugin = WbsWandcraft.getInstance();
+        WandcraftSettings settings = plugin.getSettings();
 
         String name = plugin.getName();
         String namespace = name.toLowerCase();
@@ -127,7 +128,6 @@ public class ResourcePackBuilder {
         Set<String> resourcesToLoad = new HashSet<>();
         resourcesToLoad.add("resourcepack/pack.mcmeta");
 
-        boolean debugMode = WbsWandcraft.getInstance().getSettings().debugMode();
         ConfigurationSection modelsSection = config.getConfigurationSection("item-models");
         if (modelsSection != null) {
             ConfigurationSection vanillaModelsSection = config.getConfigurationSection("vanilla-models");
@@ -165,15 +165,19 @@ public class ResourcePackBuilder {
         List<String> missingPaths = new LinkedList<>();
         resourcesToLoad.forEach(path -> {
             if (plugin.getResource(path) != null) {
-                plugin.saveResource(path, debugMode);
+                plugin.saveResource(path, settings.devMode());
             } else {
                 missingPaths.add(path);
             }
         });
 
-        if (!missingPaths.isEmpty() && debugMode) {
-            plugin.getLogger().severe("The following resources were not found! Default textures will be used.\n" +
-                    String.join("\n\t- ", missingPaths));
+        if (!missingPaths.isEmpty()) {
+            settings.debug(
+                    Level.SEVERE,
+                    DEBUG_RESOURCE_PACK,
+                    "The following resources were not found! Default textures will be used.\n" +
+                            String.join("\n\t- ", missingPaths)
+            );
         }
 
         File folderPath = plugin.getDataFolder().toPath().resolve("resourcepack").toFile();
@@ -254,6 +258,7 @@ public class ResourcePackBuilder {
 
     private static boolean handleBackgroundFontElement(InventoryBackgroundFontElement backgroundElement, List<String> resourcesToLoad) {
         WbsWandcraft plugin = WbsWandcraft.getInstance();
+        WandcraftSettings settings = plugin.getSettings();
 
         boolean missingTextures = false;
 
@@ -262,9 +267,7 @@ public class ResourcePackBuilder {
         String imagePath = getTexturesFolder(WANDCRAFT) + backgroundElement.texturePath() + ".png";
 
         if (plugin.getResource(imagePath) == null) {
-            if (plugin.getSettings().debugMode()) {
-                plugin.getLogger().warning("Font resource missing! " + imagePath);
-            }
+            settings.debug(DEBUG_RESOURCE_PACK, "Font resource missing! " + imagePath);
             missingTextures = false;
             return missingTextures;
         }
@@ -305,8 +308,8 @@ public class ResourcePackBuilder {
         }
 
         valid = valid.stream().distinct().collect(Collectors.toCollection(LinkedList::new));
-        plugin.getLogger().info("Valid: " + valid.stream().map(ItemModelProvider::modelResourceLocation).collect(Collectors.joining(", ")));
-        plugin.getLogger().info("Materials: " + Arrays.stream(materials).map(Material::getKey).map(Key::asMinimalString).collect(Collectors.joining(", ")));
+        plugin.debug(DEBUG_RESOURCE_PACK, "Valid: " + valid.stream().map(ItemModelProvider::modelResourceLocation).collect(Collectors.joining(", ")));
+        plugin.debug(DEBUG_RESOURCE_PACK, "Materials: " + Arrays.stream(materials).map(Material::getKey).map(Key::asMinimalString).collect(Collectors.joining(", ")));
 
         Path externalItemFolder = plugin.getDataPath().resolve(getItemsFolder(MINECRAFT));
         for (Material material : materials) {
@@ -319,7 +322,7 @@ public class ResourcePackBuilder {
             selectorDef.setOversizedInGUI(oversizedInGUI);
 
             File materialItemDef = externalItemFolder.resolve(material.key().value()).toFile();
-            plugin.getLogger().info("selectorDef " + materialItemDef.getName() + ": " + new Gson().toJson(selectorDef));
+            plugin.debug(DEBUG_RESOURCE_PACK, "selectorDef " + materialItemDef.getName() + ": " + new Gson().toJson(selectorDef));
             WbsFileUtil.writeJSONToFile(
                     materialItemDef,
                     selectorDef
@@ -350,6 +353,7 @@ public class ResourcePackBuilder {
 
     private static boolean handleDynamicItemProvider(DynamicItemTextureProvider itemProvider, List<String> resourcesToLoad) {
         WbsWandcraft plugin = WbsWandcraft.getInstance();
+        WandcraftSettings settings = plugin.getSettings();
 
         boolean missingTextures = false;
 
@@ -361,9 +365,7 @@ public class ResourcePackBuilder {
 
             if (plugin.getResource(imagePath) == null) {
                 missingTextures = true;
-                if (plugin.getSettings().debugMode()) {
-                    plugin.getLogger().warning("Item resource missing! " + imagePath);
-                }
+                settings.debug(DEBUG_RESOURCE_PACK, "Item resource missing! " + imagePath);
                 break;
             }
 
@@ -382,7 +384,7 @@ public class ResourcePackBuilder {
                     modelPath = modelPath.resolve(subfolder);
                 }
                 if (itemProvider instanceof WandBackground) {
-                    plugin.getLogger().info("Wand background being written to " + modelPath + ": " + new Gson().toJson(definition));
+                    plugin.debug(DEBUG_RESOURCE_PACK, "Wand background being written to " + modelPath + ": " + new Gson().toJson(definition));
                 }
                 WbsFileUtil.writeJSONToFile(
                         modelPath.resolve(name).toFile(),

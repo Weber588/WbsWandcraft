@@ -439,4 +439,9 @@ public abstract class Wand implements Attributable {
     public void handleDamageEntity(Player player, ItemStack item, EntityDamageByEntityEvent event) {
         tryCasting(player, item, event);
     }
+
+    public abstract boolean hasSpells();
+    public boolean isEmpty() {
+        return !hasSpells() && upgrades.isEmpty();
+    }
 }

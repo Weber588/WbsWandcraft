@@ -92,6 +92,11 @@ public class WildenWand extends Wand {
     }
 
     @Override
+    public boolean hasSpells() {
+        return !items.isEmpty();
+    }
+
+    @Override
     public @NotNull List<Component> getLore() {
         List<Component> lore = new LinkedList<>(super.getLore());
 

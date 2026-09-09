@@ -58,7 +58,7 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
         setAttribute(COOLDOWN, 1 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(SPEED, 3d);
-        setAttribute(DAMAGE, 6.0);
+        setAttribute(DAMAGE, 7.0);
         setAttribute(RANGE, 50.0);
         setAttribute(IMPRECISION, 0d);
         setAttribute(GRAVITY, 0d);

@@ -35,13 +35,13 @@ public class WandBackground implements Keyed, InventoryBackgroundFontElement, Dy
             '\uE779',
             FontOffsets.CHEST_6x9
     );
-    public static final WandBackground MAGE = GENERIC_6x9; /*new WandBackground(
+    public static final WandBackground MAGE = new WandBackground(
             WbsWandcraft.getKey("mage"),
             9,
             6,
             '\uE778',
             FontOffsets.CHEST_6x9
-    );*/
+    );
     public static final WandBackground WIZARDRY = new WandBackground(
             WbsWandcraft.getKey("wizardry"),
             9,

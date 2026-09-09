@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.crafting.ArtificingConfig;
+import wbs.wandcraft.crafting.ArtificingTable;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.Wand;
@@ -159,12 +160,16 @@ public class WandEvents implements Listener {
         }
 
         Entity clicked = event.getRightClicked();
-        if (clicked instanceof Interaction interaction && ArtificingConfig.getTable(interaction) != null) {
-            wand.startEditing(player, item);
-            event.setCancelled(true);
-        } else {
-            wand.handleRightClickEntity(player, item, event);
+        if (clicked instanceof Interaction interaction) {
+            ArtificingTable table = ArtificingConfig.getTable(interaction);
+            if (table != null) {
+                table.interact(player, event.getHand());
+                event.setCancelled(true);
+                return;
+            }
         }
+
+        wand.handleRightClickEntity(player, item, event);
     }
 
     @EventHandler(ignoreCancelled = true)

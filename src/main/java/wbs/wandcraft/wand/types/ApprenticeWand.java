@@ -88,6 +88,11 @@ public class ApprenticeWand extends Wand {
     }
 
     @Override
+    public boolean hasSpells() {
+        return left != null || right != null;
+    }
+
+    @Override
     public List<Component> getLore() {
         List<Component> lore = new LinkedList<>(super.getLore());
 
