@@ -62,7 +62,8 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
 
         Collection<LivingEntity> hit = new RadiusSelector<>(LivingEntity.class)
                 .setRange(radius)
-                .selectExcluding(caster);
+                .exclude(caster)
+                .select(context.location());
 
         for (LivingEntity target : hit) {
             double damage = scaleByDistance(context, target, DAMAGE_RANGE, DAMAGE);

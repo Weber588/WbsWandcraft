@@ -121,4 +121,15 @@ public class SpellModifier implements WandEntry<SpellModifier> {
     public @Nullable Component getItemName() {
         return Component.text("Spell Modifier");
     }
+
+    @Override
+    public void toItem(ItemStack item) {
+        WandEntry.super.toItem(item);
+
+        List<SpellAttributeModifier<?, ?>> modifiers = getModifiers();
+        if (!modifiers.isEmpty()) {
+            SpellAttributeModifier<?, ?> first = modifiers.getFirst();
+            first.attribute().applyCustomModelData(item);
+        }
+    }
 }

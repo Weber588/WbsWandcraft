@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import wbs.utils.util.WbsMath;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.wandcraft.context.CastContext;
@@ -34,7 +33,7 @@ public interface RaySpell extends ISpellDefinition, CastableSpell, RangedSpell, 
 
         double range = instance.getAttribute(RANGE);
 
-        RayTraceResult endResult = player.getWorld().rayTraceBlocks(player.getEyeLocation(), WbsMath.getFacingVector(player), range, getFluidCollisionMode(), ignorePassableBlocks());
+        RayTraceResult endResult = context.world().rayTraceBlocks(context.location(), getDirection(context), range, getFluidCollisionMode(), ignorePassableBlocks());
 
         Block hitBlock = null;
 

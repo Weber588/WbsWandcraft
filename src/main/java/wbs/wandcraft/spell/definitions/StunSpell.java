@@ -18,7 +18,7 @@ public class StunSpell extends SpellDefinition implements StatusEffectSpell<Livi
         setAttribute(COST, 200);
         setAttribute(COOLDOWN, 15 * Ticks.TICKS_PER_SECOND);
 
-        setAttribute(DURATION, 20);
+        setAttribute(DURATION, 1 * Ticks.TICKS_PER_SECOND);
         setAttribute(TARGET, TargeterType.RADIUS);
         setAttribute(TARGET_RANGE, 5d);
         setAttribute(MAX_TARGETS, 10);

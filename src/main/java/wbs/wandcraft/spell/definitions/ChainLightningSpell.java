@@ -3,6 +3,7 @@ package wbs.wandcraft.spell.definitions;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.LightningRod;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
@@ -195,7 +196,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
         // Check for lightning rods nearby and force the lightning that way
         Set<Block> nearbyBlocks = WbsLocationUtil.getNearbyBlocks(end, unsupportedArcLength * 1.5);
         for (Block nearbyBlock : nearbyBlocks) {
-            if (nearbyBlock.getType() == Material.LIGHTNING_ROD) {
+            if (nearbyBlock.getBlockData() instanceof LightningRod rod) {
                 return nearbyBlock.getLocation().add(0.5, 0.75, 0.5);
             }
         }

@@ -39,6 +39,9 @@ public class EffectUtils {
                 scale,
                 rightRotation
         ));
+
+        entity.setPersistent(false);
+
         return entity;
     }
 }

@@ -16,6 +16,8 @@ public class HoldSpell extends SpellDefinition implements StatusEffectSpell<Livi
         addSpellType(SpellType.SCULK);
 
         setAttribute(DURATION, 10 * Ticks.TICKS_PER_SECOND);
+        setAttribute(TARGET, TargeterType.LINE_OF_SIGHT);
+        setAttribute(TARGET_RAY_SIZE, 2d);
     }
 
     @Override

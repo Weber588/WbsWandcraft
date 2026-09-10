@@ -244,12 +244,6 @@ public class ItemUtils {
 
         item.getDataTypes().forEach(item::unsetData);
 
-        List<SpellAttributeModifier<?, ?>> modifiers = modifier.getModifiers();
-        if (!modifiers.isEmpty()) {
-            SpellAttributeModifier<?, ?> first = modifiers.getFirst();
-            first.attribute().applyCustomModelData(item);
-        }
-
         NamespacedKey itemModelKey = BASE_MATERIAL_MODIFIER.getKey();
         
         item.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);

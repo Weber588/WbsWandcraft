@@ -2,7 +2,6 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.entity.LivingEntity;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
@@ -24,12 +23,13 @@ public class PolymorphSpell extends SpellDefinition implements StatusEffectSpell
 
         setAttribute(DURATION, 15 * Ticks.TICKS_PER_SECOND);
         setAttribute(TARGET, TargeterType.LINE_OF_SIGHT);
+        setAttribute(TARGET_RAY_SIZE, 2d);
         setAttribute(TARGET_RANGE, 50d);
         setAttribute(MAX_TARGETS, 1);
     }
 
     @Override
-    public @NotNull StatusEffect getStatusEffect() {
+    public StatusEffect getStatusEffect() {
         return StatusEffectManager.POLYMORPHED;
     }
 

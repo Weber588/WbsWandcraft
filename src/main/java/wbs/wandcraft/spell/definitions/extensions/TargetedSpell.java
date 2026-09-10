@@ -22,11 +22,14 @@ public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
             TargeterType.LINE_OF_SIGHT,
             RegisteredPersistentDataType.TARGETER,
             TargeterType.class
-    );
+    ).setSuggestions(TargeterType.values());
     SpellAttribute<Integer> MAX_TARGETS = new IntegerSpellAttribute("max_targets", 1)
             .setShowAttribute((val, attributable) -> val > 1 && attributable.getAttribute(TARGET) != TargeterType.SELF);
     SpellAttribute<Double> TARGET_RANGE = new DoubleSpellAttribute("target_range", 20)
             .setShowAttribute((val, attributable) -> attributable.getAttribute(TARGET) != TargeterType.SELF)
+            .overrideTextureValue("range");
+    SpellAttribute<Double> TARGET_RAY_SIZE = new DoubleSpellAttribute("target_ray_size", 1)
+            .setShowAttribute((val, attributable) -> attributable.getAttribute(TARGET) == TargeterType.LINE_OF_SIGHT)
             .overrideTextureValue("range");
 
     default void setupTargeted() {
@@ -57,6 +60,7 @@ public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
             case LINE_OF_SIGHT -> {
                 LineOfSightSelector<T> selector = new LineOfSightSelector<>(entityClass)
                         .setRange(instance.getAttribute(TARGET_RANGE))
+                        .setRaySize(instance.getAttribute(TARGET_RAY_SIZE))
                         .setMaxSelections(instance.getAttribute(MAX_TARGETS))
                         .setPredicate(this::isValid)
                         .setDirection(location.getDirection());

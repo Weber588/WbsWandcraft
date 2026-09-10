@@ -36,6 +36,10 @@ public class DisplaceSpell extends SpellDefinition implements CastableSpell, Tar
 
         addSpellType(ENDER);
         addSpellType(SCULK);
+
+        setAttribute(TARGET, TargeterType.LINE_OF_SIGHT);
+        setAttribute(TARGET_RANGE, 75d);
+        setAttribute(TARGET_RAY_SIZE, 2d);
     }
 
     @Override

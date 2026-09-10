@@ -1,6 +1,7 @@
 package wbs.wandcraft.spell.attributes.modifier;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 
@@ -16,7 +17,7 @@ public class AttributeSetOperator<T> extends AttributeModificationOperator<T, T>
 
     @Override
     public Component asComponent(SpellAttribute<T> attribute, T modifierValue) {
-        return Component.text(" = " + attribute.formatValue(modifierValue));
+        return Component.text(" = ").append(Component.text(attribute.formatValue(modifierValue)).color(NamedTextColor.AQUA));
     }
 
     @Override

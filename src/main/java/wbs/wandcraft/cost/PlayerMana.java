@@ -61,10 +61,11 @@ public class PlayerMana {
         this.manaRegenerationCooloff = calculateManaRegenCooloffEvent.getCooloff();
     }
 
-    public void saveTo(Player player) {
+    public PlayerMana saveTo(Player player) {
         PersistentDataContainer container = player.getPersistentDataContainer();
         container.set(MANA_KEY, PersistentDataType.INTEGER, mana);
         container.set(LAST_USED_MANA_KEY, PersistentDataType.LONG, lastUsedMana);
+        return this;
     }
 
     public <T> T getOrDefault(PersistentDataHolder holder, NamespacedKey key, PersistentDataType<?, T> type, T defaultValue) {
@@ -92,8 +93,9 @@ public class PlayerMana {
         return manaRegenerationRate;
     }
 
-    private void tickRegeneration() {
+    public PlayerMana tickRegeneration() {
         this.mana = Math.min(this.maxMana, this.mana + this.manaRegenerationRate);
+        return this;
     }
 
     private long getUsableSystemMillis() {
@@ -119,7 +121,7 @@ public class PlayerMana {
         return remainder;
     }
 
-    public void showManaBar(Player player) {
+    public PlayerMana showManaBar(Player player) {
         ManaContext manaBar = CURRENT_MANA_BARS.get(player.getUniqueId());
 
         if (manaBar == null) {
@@ -127,11 +129,13 @@ public class PlayerMana {
         }
 
         manaBar.resetTimeLeftOnScreen();
+        return this;
     }
 
-    public void addMana(int manaGiven) {
+    public PlayerMana addMana(int manaGiven) {
         mana = mana + manaGiven;
         clampMana();
+        return this;
     }
 
     private void clampMana() {

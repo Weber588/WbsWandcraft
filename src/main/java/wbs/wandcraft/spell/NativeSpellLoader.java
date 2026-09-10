@@ -33,7 +33,6 @@ public class NativeSpellLoader extends SpellLoader {
             new ConcreteLoader<>(HoldSpell::new),
             new PluginDependentLoader("wbs.wandcraft.spell.definitions.MassIllusionSpell", "LibsDisguises"),
             new ConcreteLoader<>(HeatRaySpell::new),
-            new ConcreteLoader<>(InterruptSpell::new),
             new PluginDependentLoader("wbs.wandcraft.spell.definitions.HallucinationSpell", "LibsDisguises"),
             new ConcreteLoader<>(NegateMagicSpell::new),
             new ConcreteLoader<>(TurnUndeadSpell::new),
@@ -46,7 +45,8 @@ public class NativeSpellLoader extends SpellLoader {
             new ConcreteLoader<>(BlackHoleSpell::new),
             new ConcreteLoader<>(AcidBombSpell::new),
             new ConcreteLoader<>(VoidStepSpell::new),
-            new ConcreteLoader<>(DeathWalkSpell::new)
+            new ConcreteLoader<>(DeathWalkSpell::new),
+            new ConcreteLoader<>(ManaCircleSpell::new)
     );
 
     public List<Loader> getEntries() {
