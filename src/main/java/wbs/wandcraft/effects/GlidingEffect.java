@@ -5,10 +5,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsEventUtils;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.context.CastingManager;
+import wbs.wandcraft.spell.definitions.CrowsCallSpell;
 
 @NullMarked
 public class GlidingEffect extends StatusEffect {
@@ -20,11 +22,23 @@ public class GlidingEffect extends StatusEffect {
 
     @Override
     public boolean isValid(LivingEntity entity, StatusEffectInstance instance) {
+        if (entity instanceof Player player) {
+            CastContext concentratingOn = CastingManager.getConcentratingOn(player);
+            if (concentratingOn == null || !(concentratingOn.instance().getDefinition() instanceof CrowsCallSpell)) {
+                return false;
+            }
+        }
+
         return !entity.isOnGround() && entity.getLocation().add(0, -Double.MIN_VALUE, 0).getBlock().isPassable();
     }
 
     @Override
-    public @NotNull NamespacedKey getKey() {
+    protected void onRemove(LivingEntity entity, StatusEffectInstance instance) {
+        CastingManager.stopConcentrating(entity);
+    }
+
+    @Override
+    public NamespacedKey getKey() {
         return WbsWandcraft.getKey("gliding");
     }
 

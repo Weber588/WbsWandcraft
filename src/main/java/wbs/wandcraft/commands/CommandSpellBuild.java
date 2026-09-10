@@ -3,7 +3,6 @@ package wbs.wandcraft.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -14,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
+import wbs.utils.util.commands.brigadier.argument.WbsKeyArgumentType;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
@@ -26,11 +26,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandSpellBuild extends WbsSubcommand {
     private static final KeyedSimpleArgument DEFINITION = new KeyedSimpleArgument(
             "definition",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 

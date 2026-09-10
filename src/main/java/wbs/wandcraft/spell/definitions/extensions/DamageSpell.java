@@ -78,6 +78,9 @@ public interface DamageSpell extends ISpellDefinition {
     default void damage(CastContext context, Damageable target) {
         damage(context, target, getDamageType());
     }
+    default void damageScaledByDistance(CastContext context, Damageable target, double varianceClamp) {
+        damage(context, target, scaleByDistance(context, target, varianceClamp, DAMAGE), getDamageType());
+    }
 
     default void damage(CastContext context, Damageable target, double damage) {
         damage(context, target, damage, getDamageType());
@@ -93,9 +96,13 @@ public interface DamageSpell extends ISpellDefinition {
     }
 
     default void damageThen(Entity entity, CastContext context, Consumer<Damageable> then) {
+        damageThen(entity, context, context.instance().getAttribute(DAMAGE), then);
+    }
+
+    default void damageThen(Entity entity, CastContext context, double damage, Consumer<Damageable> then) {
         if (entity instanceof Damageable damageable) {
             double health = damageable.getHealth();
-            damage(context, damageable, getDamageType());
+            damage(context, damageable, damage, getDamageType());
             if (health != damageable.getHealth()) {
                 then.accept(damageable);
             }

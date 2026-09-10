@@ -120,7 +120,10 @@ public class NegateMagicSpell extends SpellDefinition implements CastableSpell, 
                     CastingManager.stopConcentrating(livingEntity);
                 }
                 if (CastingManager.isCasting(livingEntity)) {
-                    livingEntity.sendActionBar(castingMessage);
+                    // Don't tell the player casting Negate Magic that their spell was interrupted -- they know lol
+                    if (!nearbyEntity.getUniqueId().equals(context.player().getUniqueId())) {
+                        livingEntity.sendActionBar(castingMessage);
+                    }
                     CastingManager.stopCasting(livingEntity);
                 }
                 ItemStack activeItem = livingEntity.getActiveItem();

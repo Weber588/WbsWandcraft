@@ -11,7 +11,6 @@ import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spellbook.Spellbook;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandSpellLearn extends SpellSubcommand {
     public CommandSpellLearn(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);

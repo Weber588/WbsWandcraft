@@ -42,7 +42,7 @@ public class BlinkSpell extends SpellDefinition implements CastableSpell, Ranged
 
         double range = context.instance().getAttribute(RANGE);
         Vector direction = getDirection(context, range);
-        Block tpLocation = WbsEntityUtil.getSafeLocation(player, player.getLocation().add(direction), range);
+        Block tpLocation = WbsEntityUtil.getSafeLocation(player, context.location().add(direction), range);
 
         if (tpLocation != null) {
             player.teleport(tpLocation.getLocation().setDirection(WbsEntityUtil.getFacingVector(player)));

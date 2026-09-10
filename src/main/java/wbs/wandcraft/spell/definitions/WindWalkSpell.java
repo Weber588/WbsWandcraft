@@ -77,4 +77,9 @@ public class WindWalkSpell extends SpellDefinition implements CastableSpell, Spe
     public Particle getDefaultParticle() {
         return Particle.GUST;
     }
+
+    @Override
+    public boolean requiresConcentration() {
+        return true;
+    }
 }

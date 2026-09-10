@@ -29,7 +29,6 @@ import wbs.wandcraft.wand.Wand;
 
 import java.util.*;
 
-@SuppressWarnings("UnstableApiUsage")
 public class SorceryWand extends Wand {
     public static final SpellAttribute<Integer> TIERS = new IntegerSpellAttribute("tiers", 1);
 

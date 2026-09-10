@@ -15,9 +15,8 @@ import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell {
     private static final WbsParticleEffect EFFECT = new NormalParticleEffect()
             .setXYZ(0.1)
-            .setData(new Particle.DustTransition(ARCANE.wandColor(), ARCANE.mulColor(0.8), 1f))
+            .setData(new Particle.Spell(ARCANE.wandColor(), 1f))
             .setAmount(2);
-    private static final WbsParticleEffect EFFECT2 = EFFECT.clone().setData(null);
     private static final WbsParticleEffect END_EFFECT = new NormalParticleEffect()
             .setXYZ(0.1)
             .setSpeed(0.3)
@@ -29,7 +28,7 @@ public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectil
         addSpellType(ARCANE);
 
         setAttribute(COST, 50);
-        setAttribute(COOLDOWN, 1 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COOLDOWN, 2 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(DAMAGE, 3d);
         setAttribute(BOUNCES, 4);
@@ -57,13 +56,12 @@ public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectil
         SpellInstance instance = context.instance();
         projectile.setParticle(new WbsParticleGroup()
                 .addEffect(EFFECT, getParticle(instance))
-                .addEffect(EFFECT2, Particle.WAX_OFF)
         );
         projectile.setEndEffects(new WbsParticleGroup().addEffect(END_EFFECT, Particle.FIREWORK));
     }
 
     @Override
     public Particle getDefaultParticle() {
-        return Particle.DUST_COLOR_TRANSITION;
+        return Particle.INSTANT_EFFECT;
     }
 }

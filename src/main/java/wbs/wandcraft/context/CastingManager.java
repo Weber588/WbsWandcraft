@@ -1,6 +1,9 @@
 package wbs.wandcraft.context;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 
@@ -14,10 +17,10 @@ public class CastingManager {
     private static final Map<UUID, CastingQueue> CASTING = new HashMap<>();
     private static final Map<UUID, CastContext> CONCENTRATING = new HashMap<>();
 
-    public static void setCasting(Entity entity, CastingQueue castingQueue) {
-        setCasting(entity.getUniqueId(), castingQueue);
+    public static void startCasting(Entity entity, CastingQueue castingQueue) {
+        startCasting(entity.getUniqueId(), castingQueue);
     }
-    public static void setCasting(UUID uuid, CastingQueue castingQueue) {
+    public static void startCasting(UUID uuid, CastingQueue castingQueue) {
         if (CASTING.containsKey(uuid)) {
             throw new IllegalStateException(uuid + " is already casting!");
         }
@@ -42,17 +45,17 @@ public class CastingManager {
         return CASTING.containsKey(uuid);
     }
 
-    public static void stopCasting(Entity entity) {
-        stopCasting(entity.getUniqueId());
+    public static boolean stopCasting(Entity entity) {
+        return stopCasting(entity.getUniqueId());
     }
-    public static void stopCasting(UUID uuid) {
-        CASTING.remove(uuid);
+    public static boolean stopCasting(UUID uuid) {
+        return CASTING.remove(uuid) != null;
     }
 
-    public static void setConcentrating(Entity entity, CastContext context) {
-        setConcentrating(entity.getUniqueId(), context);
+    public static void startConcentrating(Entity entity, CastContext context) {
+        startConcentrating(entity.getUniqueId(), context);
     }
-    public static void setConcentrating(UUID uuid, CastContext context) {
+    public static void startConcentrating(UUID uuid, CastContext context) {
         CONCENTRATING.put(uuid, context);
     }
 
@@ -73,17 +76,37 @@ public class CastingManager {
         return CONCENTRATING.containsKey(uuid);
     }
 
-    public static boolean isConcentratingOn(Entity entity, CastContext context) {
-        return isConcentratingOn(entity.getUniqueId(), context);
+    public static boolean isConcentrating(Entity entity, CastContext context) {
+        return isConcentrating(entity.getUniqueId(), context);
     }
-    public static boolean isConcentratingOn(UUID uuid, CastContext context) {
+    public static boolean isConcentrating(UUID uuid, CastContext context) {
         return context.equals(CONCENTRATING.get(uuid));
     }
 
-    public static void stopConcentrating(Entity entity) {
-        stopConcentrating(entity.getUniqueId());
+    public static boolean stopConcentrating(Entity entity) {
+        return stopConcentrating(entity.getUniqueId());
     }
-    public static void stopConcentrating(UUID uuid) {
-        CONCENTRATING.remove(uuid);
+    public static boolean stopConcentrating(UUID uuid) {
+        return CONCENTRATING.remove(uuid) != null;
+    }
+
+    public static boolean stopConcentrating(Entity entity, CastContext context) {
+        return stopConcentrating(entity.getUniqueId(), context);
+    }
+    public static boolean stopConcentrating(UUID uuid, CastContext context) {
+        if (isConcentrating(uuid, context)) {
+            CONCENTRATING.remove(uuid);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean interruptConcentration(LivingEntity entity) {
+        boolean stopped = stopConcentrating(entity.getUniqueId());
+        if (stopped) {
+            Component concentrationMessage = Component.text("Concentration broken!").color(NamedTextColor.RED);
+            entity.sendActionBar(concentrationMessage);
+        }
+        return stopped;
     }
 }

@@ -1,8 +1,13 @@
 package wbs.wandcraft.crafting;
 
+import io.papermc.paper.registry.TypedKey;
+import io.papermc.paper.registry.set.RegistryKeySet;
+import io.papermc.paper.registry.tag.Tag;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.persistence.PersistentDataType;
 import org.jspecify.annotations.NullMarked;
@@ -42,10 +47,11 @@ public record ArtificingRecipe(
                 ;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private String getRecipeChoiceString(RecipeChoice choice) {
         if (choice instanceof RecipeChoice.ExactChoice exactChoice) {
             return "Exact match: " + exactChoice.getChoices().stream()
-                    .map(item -> getItemString(item))
+                    .map(ArtificingRecipe::getItemString)
                     .collect(Collectors.joining(" | "))
                     ;
         } else if (choice instanceof RecipeChoice.MaterialChoice materialChoice) {
@@ -53,6 +59,18 @@ public record ArtificingRecipe(
                     .map(type -> type.getKey().asMinimalString())
                     .collect(Collectors.joining(" | "))
                     ;
+        } else if (choice instanceof RecipeChoice.ItemTypeChoice itemChoice) {
+            RegistryKeySet<ItemType> keySet = itemChoice.itemTypes();
+
+            return switch (keySet) {
+                case Tag<ItemType> tag -> tag.tagKey().key().asMinimalString();
+                default -> keySet.values().stream()
+                        .map(TypedKey::key)
+                        .map(Key::asMinimalString)
+                        .collect(Collectors.joining(" | "));
+            };
+        } else if (choice instanceof RecipeChoice.PredicateChoice) {
+            return "Predicate (tell jane to improve this lol)";
         }
         return choice.toString();
     }

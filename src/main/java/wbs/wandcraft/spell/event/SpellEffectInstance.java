@@ -1,34 +1,35 @@
 package wbs.wandcraft.spell.event;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import wbs.utils.util.WbsKeyed;
 import wbs.wandcraft.ComponentRepresentable;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
-import wbs.wandcraft.context.CastContext;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class SpellEffectInstance<T> implements Attributable, ComponentRepresentable {
-    private final SpellEffectDefinition<T> definition;
+    private final SpellEffectDefinition<T> effect;
     private final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
-    private final Set<SpellTriggeredEvent<?>> allowedEvents = new HashSet<>();
+    private final Set<SpellTriggeredEvent<?>> triggers = new HashSet<>();
 
-    public SpellEffectInstance(SpellEffectDefinition<T> definition) {
-        this.definition = definition;
+    public SpellEffectInstance(SpellEffectDefinition<T> effect) {
+        this.effect = effect;
 
-        definition.getAttributeInstances().forEach(this::setAttribute);
+        effect.getAttributeInstances().forEach(this::setAttribute);
     }
 
-    public SpellEffectDefinition<T> getDefinition() {
-        return definition;
+    public SpellEffectDefinition<T> getEffect() {
+        return effect;
     }
 
     public <O> boolean run(CastContext context, SpellTriggeredEvent<O> trigger, O event) {
-        Function<O, T> mapper = definition.getSupportFor(trigger);
+        Function<O, T> mapper = effect.getSupportFor(trigger);
         if (mapper == null) {
             return false;
         }
@@ -37,29 +38,25 @@ public class SpellEffectInstance<T> implements Attributable, ComponentRepresenta
             return false;
         }
 
-        definition.run(context, this, mapper.apply(event));
+        effect.run(context, this, mapper.apply(event));
         return true;
     }
 
     @Override
     public Component toComponent() {
-        Component asComponent = definition.toComponent().color(NamedTextColor.GOLD);
+        Component asComponent = Component.text("On ");
+        if (!triggers.isEmpty()) {
+            String triggersString = triggers
+                    .stream()
+                    .map(WbsKeyed::toPrettyString)
+                    .collect(Collectors.joining(", "));
 
-        if (!attributeValues.isEmpty()) {
-            asComponent = asComponent.appendNewline().append(Component.text("  Attributes::").color(NamedTextColor.AQUA));
-            for (SpellAttributeInstance<?> instance : attributeValues) {
-                if (instance.shouldShow(this)) {
-                    asComponent = asComponent.appendNewline().append(Component.text("    > ")).append(instance.toComponent());
-                }
-            }
+            asComponent = asComponent.append(
+                    Component.text(triggersString + ": ")
+            );
         }
 
-        if (!allowedEvents.isEmpty()) {
-            asComponent = asComponent.appendNewline().append(Component.text("  Can Affect:").color(NamedTextColor.AQUA));
-            for (SpellTriggeredEvent<?> trigger : allowedEvents) {
-                asComponent = asComponent.appendNewline().append(Component.text("    > " + WbsKeyed.toPrettyString(trigger)));
-            }
-        }
+        asComponent = asComponent.append(effect.toComponent(this));
 
         return asComponent;
     }
@@ -69,15 +66,21 @@ public class SpellEffectInstance<T> implements Attributable, ComponentRepresenta
         return attributeValues;
     }
     
-    public void addAllowedTrigger(SpellTriggeredEvent<?> trigger) {
-        allowedEvents.add(trigger);
+    public SpellEffectInstance<T> addTrigger(SpellTriggeredEvent<?> trigger) {
+        triggers.add(trigger);
+        return this;
     }
 
-    public Set<SpellTriggeredEvent<?>> getAllowedEvents() {
-        return new HashSet<>(allowedEvents);
+    public Set<SpellTriggeredEvent<?>> getTriggers() {
+        return new HashSet<>(triggers);
     }
 
     public boolean allowsEvent(SpellTriggeredEvent<?> trigger) {
-        return allowedEvents.isEmpty() || allowedEvents.contains(trigger);
+        return triggers.isEmpty() || triggers.contains(trigger);
+    }
+
+    @Override
+    public String toString() {
+        return PlainTextComponentSerializer.plainText().serialize(toComponent());
     }
 }

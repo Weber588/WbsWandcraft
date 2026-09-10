@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.wand.Wand;
@@ -45,7 +46,7 @@ public class CastingQueue {
     }
 
     public void startCasting(@NotNull Player player) {
-        CastingManager.setCasting(player, this);
+        CastingManager.startCasting(player, this);
         enqueueCast(player);
     }
 
@@ -83,8 +84,19 @@ public class CastingQueue {
             delay = DEFAULT_CAST_DELAY;
         }
 
-        current = toCast.cast(player, wand, slot, () ->
-                WbsWandcraft.getInstance().runLater(() -> enqueueCast(player), delay)
+        CastContext cast = toCast.cast(player, wand, slot, () ->
+                enqueueLater(player, delay)
         );
+
+        if (cast != null) {
+            current = cast;
+        } else {
+            WbsWandcraft.getInstance().sendActionBar("Casting failed!", player);
+            enqueueLater(player, delay);
+        }
+    }
+
+    private int enqueueLater(@NonNull Player player, int delay) {
+        return WbsWandcraft.getInstance().runLater(() -> enqueueCast(player), delay);
     }
 }

@@ -15,6 +15,7 @@ import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,12 +99,15 @@ public class SpellModifier implements WandEntry<SpellModifier> {
         } else {
             loreList.add(Component.text("Effects:").color(NamedTextColor.AQUA));
 
-            loreList.addAll(effects.stream()
-                    .map(effect ->
-                            (Component) Component.text("  - ").color(NamedTextColor.GOLD)
-                                    .append(effect.toComponent())
-                    )
-                    .toList());
+            List<Component> list = new ArrayList<>();
+
+            for (SpellEffectInstance<?> effect : effects) {
+                Component effectEntry = Component.text("  - ").append(effect.toComponent()).color(NamedTextColor.GOLD);
+
+                list.add(effectEntry);
+            }
+
+            loreList.addAll(list);
         }
 
         return loreList;

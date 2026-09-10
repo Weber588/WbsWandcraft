@@ -43,6 +43,9 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
         addSpellType(ARCANE);
         addSpellType(VOID);
 
+        setAttribute(DAMAGE, 4d);
+        setAttribute(DURATION, 2 * Ticks.TICKS_PER_SECOND);
+
         setAttribute(COST, 200);
         setAttribute(COOLDOWN, 8 * Ticks.TICKS_PER_SECOND);
     }
@@ -90,7 +93,7 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
                         .select(WbsEntityUtil.getMiddleLocation(player));
 
                 for (LivingEntity e : entities) {
-                    damage(context, e);
+                    damageScaledByDistance(context, e, 2);
                 }
 
                 sound.play(playerLoc);

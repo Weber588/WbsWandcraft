@@ -37,7 +37,7 @@ public class ForcePullEffect extends SpellEffectDefinition<Location> {
     }
 
     @Override
-    public Component toComponent() {
-        return Component.text("Pulls all entities and magic objects towards the location.");
+    public Component toComponent(SpellEffectInstance<Location> instance) {
+        return Component.text("Pulls nearby entities.");
     }
 }

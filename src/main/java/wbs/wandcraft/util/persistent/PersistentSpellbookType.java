@@ -5,10 +5,11 @@ import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spellbook.Spellbook;
 
-public class PersistentSpellbookType implements PersistentDataType<PersistentDataContainer, Spellbook> {
+public class PersistentSpellbookType implements WbsPersistentDataType<PersistentDataContainer, Spellbook> {
     private static final @NotNull NamespacedKey CURRENT_PAGE = WbsWandcraft.getKey("current_page");
 
     @Override

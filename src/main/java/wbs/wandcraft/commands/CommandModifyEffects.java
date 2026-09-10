@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -20,45 +19,41 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.event.SpellEffectDefinition;
 import wbs.wandcraft.spell.event.SpellEffectInstance;
+import wbs.wandcraft.spell.event.SpellTriggeredEvent;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.Wand;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandModifyEffects extends WbsSubcommand {
     private static final KeyedSimpleArgument EFFECT_KEY = new KeyedSimpleArgument("effect_key",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             null
-    );
+    ).addKeyedSuggestions(WandcraftRegistries.EFFECTS.values());
+    private static final KeyedSimpleArgument EVENT_KEY = new KeyedSimpleArgument("event_key",
+            WbsWandcraft.getInstance(),
+            null
+    ).addKeyedSuggestions(WandcraftRegistries.SPELL_TRIGGERS.values());
     private static final KeyedSimpleArgument ATTRIBUTE_KEY = new KeyedSimpleArgument("attribute_key",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             null
     );
     private static final WbsSimpleArgument<String> ATTRIBUTE_VALUE = new WbsSimpleArgument<>("attribute_value",
-            StringArgumentType.word(),
+            StringArgumentType.greedyString(),
             "",
             String.class
     );
 
     static {
-        EFFECT_KEY.setSuggestionProvider((context, builder) ->
-                KeyedSuggestionProvider.getStaticKeyed(
-                        WandcraftRegistries.EFFECTS.stream()
-                                .map(Keyed::key)
-                                .toList()
-                        ).getSuggestions(context, builder)
-        );
-
         ATTRIBUTE_KEY.setSuggestionProvider((context, builder) -> {
             CommandSender sender = context.getSource().getSender();
             if (sender instanceof Player player) {
@@ -97,10 +92,7 @@ public class CommandModifyEffects extends WbsSubcommand {
             SpellAttribute<?> attribute = WandcraftRegistries.ATTRIBUTES.get(attributeKey);
 
             if (attribute != null) {
-                return WbsSuggestionProvider.getStatic(attribute.getSuggestions().stream()
-                        .filter(Objects::nonNull)
-                        .map(Object::toString)
-                        .toList()).getSuggestions(context, builder);
+                return WbsSuggestionProvider.getStatic(attribute.getStringSuggestions()).getSuggestions(context, builder);
             } else {
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().create("Attribute not found: " + attributeKey.asString());
             }
@@ -110,6 +102,7 @@ public class CommandModifyEffects extends WbsSubcommand {
     public CommandModifyEffects(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
         addSimpleArgument(EFFECT_KEY);
+        addSimpleArgument(EVENT_KEY);
         addSimpleArgument(ATTRIBUTE_KEY);
         addSimpleArgument(ATTRIBUTE_VALUE);
     }
@@ -139,6 +132,25 @@ public class CommandModifyEffects extends WbsSubcommand {
 
         if (effectDefinition == null) {
             plugin.sendMessage("Invalid effect type: " + effectKey.asString() + ".", sender);
+            return Command.SINGLE_SUCCESS;
+        }
+
+        NamespacedKey eventKey = configuredArgumentMap.get(EVENT_KEY);
+
+        if (eventKey == null) {
+            plugin.sendMessage("Choose an event: "
+                            + WandcraftRegistries.SPELL_TRIGGERS.stream()
+                            .map(Keyed::key)
+                            .map(Key::asString)
+                            .collect(Collectors.joining(", ")),
+                    context.getSource().getSender());
+            return Command.SINGLE_SUCCESS;
+        }
+
+        SpellTriggeredEvent<?> event = WandcraftRegistries.SPELL_TRIGGERS.get(eventKey);
+
+        if (event == null) {
+            plugin.sendMessage("Invalid event type: " + eventKey.asString() + ".", sender);
             return Command.SINGLE_SUCCESS;
         }
 
@@ -176,6 +188,7 @@ public class CommandModifyEffects extends WbsSubcommand {
             plugin.sendMessage("The held item does not support spell effects.", sender);
         } else {
             SpellEffectInstance<?> effectInstance = new SpellEffectInstance<>(effectDefinition);
+            effectInstance.addTrigger(event);
             effectInstance.setAttribute(attributeInstance);
 
             spellModifier.addEffect(effectInstance);

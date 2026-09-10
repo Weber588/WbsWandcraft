@@ -21,7 +21,6 @@ import wbs.wandcraft.wand.Wand;
 
 import java.util.*;
 
-@SuppressWarnings("UnstableApiUsage")
 public class WizardryWand extends Wand {
     public static final SpellAttribute<Integer> DELAY = new IntegerSpellAttribute("cast_delay", CastingQueue.DEFAULT_CAST_DELAY)
             .setShowAttribute(delay -> delay > 0 && delay != CastingQueue.DEFAULT_CAST_DELAY)

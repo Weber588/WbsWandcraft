@@ -6,10 +6,7 @@ import net.kyori.adventure.text.format.Style;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.*;
 import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
@@ -51,6 +48,7 @@ public interface Attributable extends ItemDecorator {
         getAttributeInstances().add(instance.clone());
     }
 
+    @UnknownNullability
     default <T> T getAttribute(SpellAttribute<T> attribute) {
         //noinspection unchecked
         SpellAttributeInstance<T> instance =

@@ -3,7 +3,6 @@ package wbs.wandcraft.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -13,6 +12,7 @@ import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.generation.WandGenerator;
 
 import java.util.stream.Collectors;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class CommandWandGenerate extends WbsSubcommand  {
     private static final WbsSimpleArgument.KeyedSimpleArgument WAND_GENERATOR = new WbsSimpleArgument.KeyedSimpleArgument(
             "wand_generator",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             null
     ).addKeyedSuggestions(WandcraftRegistries.WAND_GENERATORS.values());
 

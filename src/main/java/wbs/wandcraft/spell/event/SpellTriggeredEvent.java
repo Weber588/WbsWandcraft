@@ -3,7 +3,6 @@ package wbs.wandcraft.spell.event;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.context.CastContext;
@@ -21,7 +20,7 @@ public class SpellTriggeredEvent<T> implements Keyed {
     }
 
     @Override
-    public @NotNull NamespacedKey getKey() {
+    public NamespacedKey getKey() {
         return key;
     }
 
@@ -32,7 +31,7 @@ public class SpellTriggeredEvent<T> implements Keyed {
     public SpellEffectInstance<T> getAnonymousInstance(TriConsumer<CastContext, SpellEffectInstance<T>, T> consumer) {
         SpellEffectDefinition<T> definition = SpellEffectDefinition.anonymous(getEventClass(), consumer);
 
-        return new SpellEffectInstance<>(definition);
+        return new SpellEffectInstance<>(definition).addTrigger(this);
     }
 
     public void registerAnonymous(SpellInstance instance, Consumer<T> eventConsumer) {

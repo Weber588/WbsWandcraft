@@ -97,7 +97,7 @@ public abstract class Wand implements Attributable {
     }
 
     public static long getLastUsed(PersistentDataContainerView container) {
-        return WbsPersistentDataType.getOrDefault(container, LAST_USED, PersistentDataType.LONG, 0L);
+        return container.getOrDefault(LAST_USED, PersistentDataType.LONG, 0L);
     }
 
     private final @NotNull String uuid;

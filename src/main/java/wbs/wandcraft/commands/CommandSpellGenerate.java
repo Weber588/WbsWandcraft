@@ -3,16 +3,17 @@ package wbs.wandcraft.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
+import wbs.utils.util.commands.brigadier.argument.WbsKeyArgumentType;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
 
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class CommandSpellGenerate extends WbsSubcommand  {
     private static final WbsSimpleArgument.KeyedSimpleArgument SPELL_GENERATOR = new WbsSimpleArgument.KeyedSimpleArgument(
             "spell_generator",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             null
     ).addKeyedSuggestions(WandcraftRegistries.SPELL_GENERATORS.values());
 

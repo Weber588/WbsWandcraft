@@ -8,7 +8,6 @@ import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
-import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.utils.util.providers.NumProvider;
 import wbs.utils.util.providers.VectorProvider;
 import wbs.utils.util.providers.generator.num.CycleGenerator;
@@ -49,7 +48,7 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
         addSpellType(ARCANE);
         addSpellType(VOID);
 
-        setAttribute(COST, 350);
+        setAttribute(COST, 250);
         setAttribute(COOLDOWN, 7 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(SPEED, 5d);
@@ -86,11 +85,9 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
 
             Vector pushVector = new Vector(0, instance.getAttribute(FORCE), 0);
             for (LivingEntity target : hit) {
-                if (WbsRegionUtils.canDealDamage(context.player(), target)) {
+                damageThen(target, context, scaleByDistance(context, target, 3, DAMAGE), damageable -> {
                     target.setVelocity(pushVector);
-                    damage(context, target);
-                    target.setVelocity(pushVector);
-                }
+                });
             }
         });
     }

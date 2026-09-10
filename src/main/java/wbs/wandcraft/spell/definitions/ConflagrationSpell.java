@@ -4,10 +4,10 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.DiscParticleEffect;
-import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.BurnDamageSpell;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -19,12 +19,15 @@ import java.util.Collection;
 import static wbs.wandcraft.spell.definitions.type.SpellType.NETHER;
 
 public class ConflagrationSpell extends SpellDefinition implements CastableSpell, BurnDamageSpell, ForceSpell, RadiusedSpell {
+    public static final double DAMAGE_RANGE = 3d;
     private final DiscParticleEffect popEffect = (DiscParticleEffect) new DiscParticleEffect()
-            .setSpeed(1)
+            .setSpeed(3)
             .setAmount(10);
     private final DiscParticleEffect fireEffect = (DiscParticleEffect) new DiscParticleEffect()
-            .setSpeed(0.05)
-            .setAmount(15);
+            .setRandom(true)
+            .setRelative(true)
+            .setSpeed(0.4)
+            .setAmount(45);
 
     public ConflagrationSpell() {
         super("conflagration");
@@ -35,9 +38,9 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
         setAttribute(COOLDOWN, 7 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(DAMAGE, 2d);
-        setAttribute(FORCE, 3d);
+        setAttribute(FORCE, 2d);
         setAttribute(BURN_TIME, 60);
-        setAttribute(RADIUS, 4d);
+        setAttribute(RADIUS, 6d);
     }
 
     @Override
@@ -51,25 +54,28 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
         SpellInstance instance = context.instance();
 
         double radius = instance.getAttribute(RADIUS);
-        fireEffect.setRadius(radius).play(Particle.FLAME, context.location().add(0, -caster.getEyeHeight() + 0.1, 0));
-        popEffect.setRadius(radius).play(Particle.LAVA, context.location().add(0, -caster.getEyeHeight(), 0));
+        fireEffect.setRadius(radius / 4)
+                .setAmount((int) (radius * radius * Math.PI / 2))
+                .play(Particle.FLAME, context.location().add(0, -caster.getEyeHeight() + 0.1, 0));
+        popEffect.setRadius(radius)
+                .play(Particle.LAVA, context.location().add(0, -caster.getEyeHeight(), 0));
 
         Collection<LivingEntity> hit = new RadiusSelector<>(LivingEntity.class)
                 .setRange(radius)
                 .selectExcluding(caster);
 
         for (LivingEntity target : hit) {
-            if (WbsRegionUtils.canDealDamage(caster.getPlayer(), target)) {
-                damageAndBurn(target, context);
+            double damage = scaleByDistance(context, target, DAMAGE_RANGE, DAMAGE);
+            int burnTime = scaleByDistance(context, target, DAMAGE_RANGE, BURN_TIME);
+            damageAndBurn(target, context, damage, burnTime);
 
-                target.setVelocity(
-                        target.getEyeLocation() // Give a slight upwards force by using eye height
-                                .subtract(context.location())
-                                .toVector()
-                                .normalize()
-                                .multiply(instance.getAttribute(FORCE))
-                );
-            }
+            Vector centerToTarget = target.getEyeLocation() // Give a slight upwards force by using eye height
+                    .subtract(context.location())
+                    .toVector();
+
+            target.setVelocity(centerToTarget.normalize()
+                    .multiply(scaleByDistance(context, target, 2, FORCE))
+            );
         }
     }
 

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.events.SpellCastEvent;
 import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.Attributable;
@@ -87,6 +88,12 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
     @Nullable
     public CastContext cast(Player player, @Nullable Wand wand, EquipmentSlot slot, Runnable callback) {
         if (definition instanceof CastableSpell castable) {
+            if (castable.requiresConcentration()) {
+                if (CastingManager.isConcentrating(player)) {
+                    CastingManager.interruptConcentration(player);
+                }
+            }
+
             CastContext context = new CastContext(player, this, wand, slot, player.getEyeLocation(), null, callback);
             SpellCastEvent castEvent = new SpellCastEvent(player, context);
             if (!castEvent.callEvent()) {
@@ -124,8 +131,10 @@ public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
         Set<SpellEffectInstance<?>> effects = new HashSet<>();
 
         for (SpellEffectInstance<?> effect : triggeredEffects) {
-            if (effect.getDefinition().getSupportFor(event) != null) {
-                effects.add(effect);
+            if (effect.getEffect().getSupportFor(event) != null) {
+                if (effect.allowsEvent(event)) {
+                    effects.add(effect);
+                }
             }
         }
 

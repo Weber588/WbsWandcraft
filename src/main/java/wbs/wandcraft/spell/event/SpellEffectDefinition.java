@@ -6,11 +6,10 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
-import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
-import wbs.wandcraft.context.CastContext;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +17,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @NullMarked
-public abstract class SpellEffectDefinition<T> implements Keyed, ComponentRepresentable, Attributable {
+public abstract class SpellEffectDefinition<T> implements Keyed, Attributable {
     public static <T> SpellEffectDefinition<T> anonymous(Class<T> eventClass, TriConsumer<CastContext, SpellEffectInstance<T>, T> consumer) {
         return new SpellEffectDefinition<>(eventClass, WbsWandcraft.getKey("anonymous")) {
             @Override
@@ -27,7 +26,7 @@ public abstract class SpellEffectDefinition<T> implements Keyed, ComponentRepres
             }
 
             @Override
-            public Component toComponent() {
+            public Component toComponent(SpellEffectInstance<T> instance) {
                 return Component.text("Anonymous");
             }
         };
@@ -77,4 +76,6 @@ public abstract class SpellEffectDefinition<T> implements Keyed, ComponentRepres
     public Set<SpellAttributeInstance<?>> getAttributeInstances() {
         return attributeValues;
     }
+
+    public abstract Component toComponent(SpellEffectInstance<T> instance);
 }

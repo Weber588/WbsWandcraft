@@ -26,11 +26,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandWandBuild extends WbsSubcommand {
     private static final WbsSimpleArgument.KeyedSimpleArgument WAND_TYPE = new WbsSimpleArgument.KeyedSimpleArgument(
             "wand_type",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             null
     ).addKeyedSuggestions(WandcraftRegistries.WAND_TYPES.values());
 

@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
-@SuppressWarnings("UnstableApiUsage")
 public class BarbarianWand extends Wand {
     public static final NamespacedKey ATTRIBUTE_KEY = WbsWandcraft.getKey("barbarian_range");
     private static final double PLAYER_DEFAULT_ENTITY_RANGE = 3;

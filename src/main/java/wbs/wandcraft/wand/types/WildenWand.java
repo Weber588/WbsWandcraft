@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 
-@SuppressWarnings("UnstableApiUsage")
 public class WildenWand extends Wand {
     private final List<@Nullable ItemStack> items = new LinkedList<>();
     private int lastSpellCooldownTicks = 0;

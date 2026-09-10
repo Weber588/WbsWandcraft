@@ -5,7 +5,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.NamespacedKey;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
+import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.cost.PlayerMana;
@@ -23,6 +25,7 @@ import java.util.*;
 
 import static wbs.wandcraft.spellbook.Spellbook.DESCRIPTION_COLOR;
 
+@NullMarked
 public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTextureProvider {
     protected final Map<Key, SpellTriggeredEvent<?>> events = new HashMap<>();
 
@@ -32,6 +35,7 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
 
     private final NamespacedKey key;
     protected int echoShardCost = -1;
+    @Nullable
     private List<TextureLayer> textureLayers;
 
     SpellDefinition(String nativeKey) {
@@ -43,7 +47,12 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
     }
 
     public void addAttribute(SpellAttribute<?> attribute) {
-        defaultAttributes.add(attribute.defaultInstance());
+        SpellAttributeInstance<?> instance = attribute.defaultInstance();
+        if (instance == null) {
+            WbsWandcraft.getInstance().debug(SpellAttribute.DEBUG_CHANNEL_ATTRIBUTES, "Null default instance passed to SpellDefinition#addAttribute");
+        } else {
+            defaultAttributes.add(instance);
+        }
     }
 
     public Collection<SpellAttribute<?>> getAttributes() {
@@ -51,23 +60,24 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
     }
 
     @Override
-    public @NotNull NamespacedKey getKey() {
+    public NamespacedKey getKey() {
         return key;
     }
 
     @Override
     public Component displayName() {
         return Component.text(
-                WbsStrings.capitalizeAll(key.value().replaceAll("_", " "))
+                WbsStrings.capitalizeAll(key.value().replace("_", " "))
         ).color(
                 getPrimarySpellType().textColor()
         );
     }
 
-    public @NotNull SpellType getPrimarySpellType() {
+    public SpellType getPrimarySpellType() {
         return spellTypes.stream().findFirst().orElse(SpellType.ARCANE);
     }
 
+    @UnknownNullability
     public <T> T getDefault(SpellAttribute<T> attribute) {
         for (SpellAttributeInstance<?> instance : defaultAttributes) {
             if (instance.attribute().equals(attribute)) {
@@ -97,7 +107,7 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
     }
 
     @Override
-    public @NotNull final List<TextureLayer> getTextures() {
+    public final List<TextureLayer> getTextures() {
         if (textureLayers == null) {
             String texture = "spell_" + key().value();
 

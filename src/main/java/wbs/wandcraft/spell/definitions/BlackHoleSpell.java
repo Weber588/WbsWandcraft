@@ -63,7 +63,7 @@ public class BlackHoleSpell extends SpellDefinition implements CustomProjectileS
             Entity hitEntity = result.getHitEntity();
 
             if (hitEntity instanceof Damageable damageable) {
-                damage(context, damageable);
+                damageScaledByDistance(context, damageable, 2);
             }
         });
     }

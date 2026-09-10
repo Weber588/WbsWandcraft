@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -20,6 +19,7 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
@@ -32,14 +32,12 @@ import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.types.WizardryWand;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandModifyAttributes extends WbsSubcommand {
     private static final KeyedSimpleArgument ATTRIBUTE_KEY = new KeyedSimpleArgument("attribute_key",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             null
     );
     private static final WbsSimpleArgument<String> ATTRIBUTE_VALUE = new WbsSimpleArgument<>("attribute_value",
@@ -48,7 +46,7 @@ public class CommandModifyAttributes extends WbsSubcommand {
             String.class
     );
     private static final KeyedSimpleArgument MODIFIER_TYPE = new KeyedSimpleArgument("modifier_type",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             AttributeModifierType.ADD.getKey()
     );
 
@@ -98,10 +96,7 @@ public class CommandModifyAttributes extends WbsSubcommand {
             SpellAttribute<?> attribute = WandcraftRegistries.ATTRIBUTES.get(attributeKey);
 
             if (attribute != null) {
-                return WbsSuggestionProvider.getStatic(attribute.getSuggestions().stream()
-                        .filter(Objects::nonNull)
-                        .map(Object::toString)
-                        .toList()).getSuggestions(context, builder);
+                return WbsSuggestionProvider.getStatic(attribute.getStringSuggestions()).getSuggestions(context, builder);
             } else {
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().create("Attribute not found: " + attributeKey.asString());
             }

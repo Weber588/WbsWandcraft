@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractPersistentWandType<T extends Wand> implements PersistentDataType<PersistentDataContainer, T> {
+public abstract class AbstractPersistentWandType<T extends Wand> implements WbsPersistentDataType<PersistentDataContainer, T> {
     private static final NamespacedKey WAND_ATTRIBUTES = WbsWandcraft.getKey("wand_attributes");
     private static final NamespacedKey WAND_ATTRIBUTE_MODIFIERS = WbsWandcraft.getKey("wand_attribute_modifiers");
     private static final NamespacedKey UUID = WbsWandcraft.getKey("wand_uuid");

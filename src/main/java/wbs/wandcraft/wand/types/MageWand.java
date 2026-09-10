@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 
-@SuppressWarnings("UnstableApiUsage")
 public class MageWand extends Wand {
     private final List<@Nullable ItemStack> items = new LinkedList<>();
     private int currentSlot = 0;

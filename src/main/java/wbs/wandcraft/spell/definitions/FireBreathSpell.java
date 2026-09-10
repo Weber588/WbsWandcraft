@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.RingParticleEffect;
+import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.*;
 import wbs.wandcraft.spell.definitions.type.SpellType;
@@ -95,7 +96,9 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
                     if (WbsMath.chance(5)) {
                         Block relative = hitBlock.getRelative(hitBlockFace);
                         if (relative.isEmpty()) {
-                            relative.setType(Material.FIRE);
+                            if (WbsRegionUtils.canBuildAt(relative.getLocation(), player)) {
+                                relative.setType(Material.FIRE);
+                            }
                         }
                     }
                 }

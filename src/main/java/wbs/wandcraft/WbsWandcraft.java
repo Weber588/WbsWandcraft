@@ -15,10 +15,13 @@ import wbs.wandcraft.equipment.MagicEquipmentType;
 import wbs.wandcraft.learning.RegistrableLearningMethod;
 import wbs.wandcraft.listeners.*;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
+import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
+import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
 
-@SuppressWarnings("UnstableApiUsage")
 public class WbsWandcraft extends WbsPlugin {
     public static NamespacedKey getKey(String key) {
         NamespacedKey built = NamespacedKey.fromString(key, getInstance());
@@ -134,6 +137,23 @@ public class WbsWandcraft extends WbsPlugin {
             WandcraftRegistries.STATUS_EFFECTS.stream().forEach(StatusEffect::registerEvents);
             WandcraftRegistries.MAGIC_EQUIPMENT_TYPES.stream().forEach(MagicEquipmentType::registerEvents);
             settings.getGenerationMethods().forEach(RegistrableLearningMethod::registerEvents);
+
+            String out = "Spell\tDirect Damage\tCast Type\tTarget\tEffects\tRange\tCost\tCoooldown\n";
+
+            for (SpellDefinition def : WandcraftRegistries.SPELLS.stream().toList()) {
+                if (def instanceof DamageSpell damageSpell) {
+                    out += "%s\t%s\t%s\t?\t?\t%s\t%d\t%d\n".formatted(
+                            def.name(),
+                            damageSpell.getAttribute(DamageSpell.DAMAGE),
+                            damageSpell instanceof ContinuousCastableSpell ? "Continuous" : "Single",
+                            damageSpell.getAttribute(RangedSpell.RANGE),
+                            damageSpell.getAttribute(CastableSpell.COST),
+                            damageSpell.getAttribute(CastableSpell.COOLDOWN)
+                    );
+                }
+            }
+
+            getLogger().info(out);
         });
     }
 }

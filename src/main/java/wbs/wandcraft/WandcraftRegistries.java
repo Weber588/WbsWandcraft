@@ -16,9 +16,7 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.type.SpellType;
-import wbs.wandcraft.spell.event.CastSpellEffect;
-import wbs.wandcraft.spell.event.ForcePullEffect;
-import wbs.wandcraft.spell.event.SpellEffectDefinition;
+import wbs.wandcraft.spell.event.*;
 import wbs.wandcraft.util.ItemBuildableRegistry;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.ExternalWandModel;
@@ -139,6 +137,11 @@ public class WandcraftRegistries {
             StatusEffectManager.DISGUISED,
             StatusEffectManager.INVISIBLE,
             StatusEffectManager.NATURE_PHASING
+    );
+    public static final WbsRegistry<SpellTriggeredEvent<?>> SPELL_TRIGGERS = new WbsRegistry<>(
+            SpellTriggeredEvents.OBJECT_TICK_TRIGGER,
+            SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER,
+            SpellTriggeredEvents.ON_HIT_TRIGGER
     );
     public static final WbsRegistry<SpellEffectDefinition<?>> EFFECTS = new WbsRegistry<>(
             new ForcePullEffect(),

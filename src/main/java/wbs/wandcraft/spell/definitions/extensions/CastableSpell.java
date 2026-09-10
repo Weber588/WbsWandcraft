@@ -28,4 +28,8 @@ public interface CastableSpell extends ISpellDefinition {
     default boolean completeAfterCast() {
         return true;
     }
+
+    default boolean requiresConcentration() {
+        return false;
+    }
 }

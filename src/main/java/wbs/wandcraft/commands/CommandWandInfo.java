@@ -3,7 +3,6 @@ package wbs.wandcraft.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,15 +14,15 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
+import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.wand.types.WandType;
 
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandWandInfo extends WbsSubcommand {
     private static final WbsSimpleArgument.KeyedSimpleArgument WAND_TYPE = new WbsSimpleArgument.KeyedSimpleArgument(
             "wand_type",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             null
     ).addKeyedSuggestions(WandcraftRegistries.WAND_TYPES.values());
 

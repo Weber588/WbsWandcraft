@@ -10,7 +10,6 @@ import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.util.ItemUtils;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandModifierBuild extends WbsSubcommand {
     public CommandModifierBuild(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);

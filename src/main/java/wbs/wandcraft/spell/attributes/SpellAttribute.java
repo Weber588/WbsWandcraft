@@ -11,6 +11,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsColours;
 import wbs.utils.util.persistent.WbsPersistentDataType;
@@ -18,8 +19,8 @@ import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.RegisteredPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.resourcepack.TextureLayer;
 import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
+import wbs.wandcraft.resourcepack.TextureLayer;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModificationOperator;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
@@ -31,13 +32,16 @@ import java.util.function.Function;
 
 @NullMarked
 public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, DynamicItemTextureProvider {
+    public static final String DEBUG_CHANNEL_ATTRIBUTES = "attributes";
+
     private final NamespacedKey key;
     private Component displayName;
     private final RegisteredPersistentDataType<T> type;
-    @Nullable
+    @UnknownNullability
     private final T defaultValue;
-    private final Function<String, T> parse;
-    private final Collection<T> suggestions = new HashSet<>();
+    private final Function<String, @UnknownNullability T> parse;
+    private final Collection<@UnknownNullability T> suggestions = new HashSet<>();
+    private final Collection<String> rawSuggestions = new HashSet<>();
     private BiFunction<T, Attributable, Boolean> shouldShow = (val, attributable) -> true;
     private Function<T, String> formatter = Objects::toString;
     private Function<T, String> rawFormatter = Objects::toString;
@@ -46,7 +50,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     private String textureValue;
     private Sentiment sentiment = Sentiment.POSITIVE;
 
-    public SpellAttribute(NamespacedKey key, RegisteredPersistentDataType<T> type, @Nullable T defaultValue, Function<String, T> parse) {
+    public SpellAttribute(NamespacedKey key, RegisteredPersistentDataType<T> type, @UnknownNullability T defaultValue, Function<String, @UnknownNullability T> parse) {
         this.key = key;
         this.displayName = Component.text(WbsStrings.capitalizeAll(key.value().replace("_", " ")));
         this.type = type;
@@ -61,7 +65,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         WandcraftRegistries.ATTRIBUTES.register(this);
     }
 
-    public SpellAttribute(@Subst("key") String nativeKey, RegisteredPersistentDataType<T> type, @Nullable T defaultValue, Function<String, T> parse) {
+    public SpellAttribute(@Subst("key") String nativeKey, RegisteredPersistentDataType<T> type, @UnknownNullability T defaultValue, Function<String, @UnknownNullability T> parse) {
         this(WbsWandcraft.getKey(nativeKey), type, defaultValue, parse);
     }
 
@@ -72,6 +76,15 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
 
     public SpellAttribute<T> addSuggestions(Collection<T> suggestions) {
         this.suggestions.addAll(suggestions);
+        return this;
+    }
+
+    public final SpellAttribute<T> addRawSuggestions(String... suggestions) {
+        return addRawSuggestions(Arrays.asList(suggestions));
+    }
+
+    public SpellAttribute<T> addRawSuggestions(Collection<String> suggestions) {
+        this.rawSuggestions.addAll(suggestions);
         return this;
     }
 
@@ -86,7 +99,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return this;
     }
 
-    public SpellAttributeInstance<T> getInstance(@Nullable T value) {
+    public SpellAttributeInstance<T> getInstance(@UnknownNullability T value) {
         return new SpellAttributeInstance<>(this, value);
     }
 
@@ -219,7 +232,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     public <M> SpellAttributeModifier<T, M> createModifier(
             AttributeModifierType modifierDefinition,
             RegisteredPersistentDataType<M> modifierDataType,
-            @Nullable M value
+            @UnknownNullability M value
     ) {
         AttributeModificationOperator<T, M> operator = modifierDefinition.buildModifierType(type.dataType(), modifierDataType);
 
@@ -235,6 +248,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return this;
     }
 
+    @UnknownNullability
     public T parse(String stringValue) {
         return parse.apply(stringValue);
     }
@@ -244,6 +258,16 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     }
 
     public Collection<T> getSuggestions() {
+        return suggestions;
+    }
+
+    public Collection<String> getStringSuggestions() {
+        List<String> suggestions = new LinkedList<>(this.suggestions.stream()
+                .filter(Objects::nonNull)
+                .map(Object::toString)
+                .toList());
+
+        suggestions.addAll(rawSuggestions);
         return suggestions;
     }
 

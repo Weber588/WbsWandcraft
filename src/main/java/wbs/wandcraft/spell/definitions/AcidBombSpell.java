@@ -13,13 +13,16 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
+import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
 import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-public class AcidBombSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell, RadiusedSpell {
+public class AcidBombSpell extends SpellDefinition implements CustomProjectileSpell, DurationalSpell, DamageSpell, RadiusedSpell {
     private static final NormalParticleEffect BOMB_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
             .setXYZ(0.4)
             .setAmount(0)
@@ -28,10 +31,10 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
             .setSpeed(0.2)
             .setAmount(60);
 
-    private static final List<PotionEffect> HIT_EFFECTS = List.of(
-            new PotionEffect(PotionEffectType.SLOWNESS, 12, 1),
-            new PotionEffect(PotionEffectType.POISON, 12, 0),
-            new PotionEffect(PotionEffectType.NAUSEA, 4, 0)
+    private static final Map<PotionEffectType, Double> HIT_EFFECTS = Map.of(
+            PotionEffectType.SLOWNESS, 1d,
+            PotionEffectType.POISON, 1d,
+            PotionEffectType.NAUSEA, 0.3
     );
 
     public AcidBombSpell() {
@@ -39,14 +42,15 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
 
         addSpellType(SpellType.NATURE);
 
-        setAttribute(COST, 1000);
-        setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);
+        setAttribute(COST, 300);
+        setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(DAMAGE, 6d);
         setAttribute(RADIUS, 4d);
+        setAttribute(DURATION, 12);
 
         setAttribute(GRAVITY, 0.25);
-        setAttribute(SPEED, 0.7d);
+        setAttribute(SPEED, 3d);
         setAttribute(IMPRECISION, 5d);
     }
 
@@ -58,10 +62,10 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
         projectile.setParticle(new WbsParticleGroup().addEffect(BOMB_EFFECT, Particle.DUST));
-        projectile.setDebug(true);
         SpellInstance instance = context.instance();
 
         SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (result) -> {
+            debug("Expired.");
             EXPLODE_EFFECT.play(Particle.SNEEZE, result);
             EXPLODE_EFFECT.play(Particle.TOTEM_OF_UNDYING, result);
 
@@ -71,9 +75,18 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
 
             List<LivingEntity> nearby = selector.select(result);
 
+            int duration = instance.getAttribute(DURATION);
+
+            List<PotionEffect> effects = new LinkedList<>();
+
+            HIT_EFFECTS.forEach((type, multiplier) -> {
+                PotionEffect effect = new PotionEffect(type, (int) Math.ceil(duration * multiplier), 0, false, true, true);
+                effects.add(effect);
+            });
+
             for (LivingEntity hit : nearby) {
-                damageThen(hit, context, damageable -> {
-                    HIT_EFFECTS.forEach(hit::addPotionEffect);
+                damageThen(hit, context, _ -> {
+                    effects.forEach(hit::addPotionEffect);
                 });
             }
         });

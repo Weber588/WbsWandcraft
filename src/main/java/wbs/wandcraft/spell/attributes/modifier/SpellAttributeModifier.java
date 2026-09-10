@@ -7,7 +7,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.RegisteredPersistentDataType;
@@ -24,16 +24,17 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
 
     private final SpellAttribute<T> attribute;
     private final @NotNull AttributeModificationOperator<T, M> modifierOperation;
-    @Nullable
+    @UnknownNullability
     private M modifierValue;
 
-    public SpellAttributeModifier(SpellAttribute<T> attribute, @NotNull AttributeModificationOperator<T, M> modifierOperation, @Nullable M modifierValue) {
+    public SpellAttributeModifier(SpellAttribute<T> attribute, @NotNull AttributeModificationOperator<T, M> modifierOperation, @UnknownNullability M modifierValue) {
         this.attribute = attribute;
         this.modifierOperation = modifierOperation;
         this.modifierValue = modifierValue;
     }
 
     @SuppressWarnings("unchecked")
+    @UnknownNullability
     public T modify(T value) {
         T modified = modifierOperation.modify(value, modifierValue);
 

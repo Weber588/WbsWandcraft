@@ -4,7 +4,6 @@ import com.google.common.collect.Multimap;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -12,6 +11,7 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
+import wbs.utils.util.commands.brigadier.argument.WbsKeyArgumentType;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
@@ -21,16 +21,16 @@ import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.learning.LearningMethod;
 import wbs.wandcraft.learning.RegistrableLearningMethod;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandSpellInfo extends WbsSubcommand {
     private static final WbsSimpleArgument.KeyedSimpleArgument DEFINITION = new WbsSimpleArgument.KeyedSimpleArgument(
             "definition",
-            ArgumentTypes.namespacedKey(),
+            WbsWandcraft.getInstance(),
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
@@ -66,8 +66,13 @@ public class CommandSpellInfo extends WbsSubcommand {
                 .append("\nSpell: ")
                 .append(spell.displayName().color(NamedTextColor.GOLD))
                 .append("\nTypes: ")
-                .append(types)
-                .append("\nDescription: ")
+                .append(types);
+
+        if (spell instanceof CastableSpell castableSpell && castableSpell.requiresConcentration()) {
+            builder.append(Component.text("\nRequires Concentration").color(NamedTextColor.AQUA));
+        }
+
+        builder.append("\nDescription: ")
                 .append(spell.description().color(NamedTextColor.GOLD))
                 .append("\nAttributes: ");
 

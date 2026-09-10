@@ -10,7 +10,6 @@ import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spellbook.Spellbook;
 
-@SuppressWarnings("UnstableApiUsage")
 public class CommandSpellForget extends SpellSubcommand {
     public CommandSpellForget(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);

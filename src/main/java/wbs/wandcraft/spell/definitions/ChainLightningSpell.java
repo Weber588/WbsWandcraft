@@ -37,6 +37,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
             Color.fromRGB(15, 240, 240),
             Color.fromRGB(200, 160, 255)
     );
+    public static final int WATER_MULTIPLIER = 2;
 
     public ChainLightningSpell() {
         super("chain_lightning");
@@ -45,10 +46,11 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
 
         setAttribute(COST, 500);
         setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
+        setAttribute(DAMAGE, 2d);
 
-        setAttribute(MAX_DURATION, 100);
+        setAttribute(MAX_DURATION, 15 * Ticks.TICKS_PER_SECOND);
         setAttribute(COST_PER_TICK, 3);
-        setAttribute(RANGE, 5d);
+        setAttribute(RANGE, 8d);
 
         updateEffectColour();
     }
@@ -109,8 +111,8 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
                             .withDamageLocation(next.point)
                             .build();
 
-                    if (entity.isInWaterOrRainOrBubbleColumn()) {
-                        entity.damage(damage * 2, source);
+                    if (entity.isInWater() || entity.isInRain()) {
+                        entity.damage(damage * WATER_MULTIPLIER, source);
                     } else {
                         entity.damage(damage, source);
                     }
