@@ -2,7 +2,6 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.util.Ticks;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -40,7 +39,7 @@ public class ManaCircleSpell extends SpellDefinition implements CastableSpell, R
         setAttribute(COST, 500);
         setAttribute(COOLDOWN, 60 * Ticks.TICKS_PER_SECOND);
 
-        setAttribute(RADIUS, 2d);
+        setAttribute(RADIUS, 2.5d);
         setAttribute(DURATION, 15 * Ticks.TICKS_PER_SECOND);
     }
 
@@ -115,9 +114,7 @@ public class ManaCircleSpell extends SpellDefinition implements CastableSpell, R
 
         @Override
         protected boolean tick() {
-            if (Bukkit.getCurrentTick() % 5 == 0) {
-                world.spawnParticle(Particle.ENCHANT, getLocation().add(new Vector(radius / 2, Math.random() * 4, 0).rotateAroundY(Math.random() * Math.TAU)), 1);
-            }
+            world.spawnParticle(Particle.ENCHANT, getLocation().add(new Vector(radius / 2, Math.random() * 4, 0).rotateAroundY(Math.random() * Math.TAU)), 1);
 
             List<LivingEntity> inCircle = selector.select(getLocation());
 
@@ -127,7 +124,9 @@ public class ManaCircleSpell extends SpellDefinition implements CastableSpell, R
                             .addMana(MANA_PER_TICK)
                             .saveTo(player);
                 } else if (target instanceof Spellcaster spellcaster) {
-                    beginCasting(spellcaster);
+                    if (spellcaster.getTarget() != null) {
+                        beginCasting(spellcaster);
+                    }
                 } else if (target instanceof Guardian guardian) {
                     guardian.setLaserTicks(guardian.getLaserTicks() + 1);
                 } else if (target instanceof Vex vex) {
