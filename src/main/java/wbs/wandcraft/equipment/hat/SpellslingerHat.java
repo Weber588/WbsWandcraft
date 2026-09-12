@@ -4,7 +4,7 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
@@ -18,12 +18,12 @@ import java.util.List;
 public class SpellslingerHat extends MagicHat {
     private static final SpellAttributeModifier<Double, Double> SPEED_MODIFIER = CustomProjectileSpell.SPEED.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             2d
     );
     private static final SpellAttributeModifier<Double, Double> RANGE_MODIFIER = CustomProjectileSpell.RANGE.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             1.5d
     );
     private static final double PROJECTILE_COOLDOWN_REDUCTION = 0.5;

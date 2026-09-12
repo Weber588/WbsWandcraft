@@ -1,7 +1,7 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.Material;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.spell.attributes.EnumSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
@@ -9,7 +9,7 @@ import wbs.wandcraft.spell.definitions.ISpellDefinition;
 public interface MaterialSpell extends ISpellDefinition {
     SpellAttribute<Material> MATERIAL = new EnumSpellAttribute<>("material",
             null,
-            RegisteredPersistentDataType.MATERIAL,
+            AttributeDataType.MATERIAL,
             Material.class
     ).addSuggestions(Material.values())
             .setShowAttribute((value, attributable) -> {

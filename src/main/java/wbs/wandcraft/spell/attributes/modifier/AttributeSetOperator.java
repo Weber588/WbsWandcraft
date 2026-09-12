@@ -2,11 +2,11 @@ package wbs.wandcraft.spell.attributes.modifier;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 public class AttributeSetOperator<T> extends AttributeModificationOperator<T, T> {
-    public AttributeSetOperator(AttributeModifierType definition, RegisteredPersistentDataType<T> baseType) {
+    public AttributeSetOperator(AttributeModifierType definition, AttributeDataType<T> baseType) {
         super(definition, baseType.dataType(), baseType);
     }
 

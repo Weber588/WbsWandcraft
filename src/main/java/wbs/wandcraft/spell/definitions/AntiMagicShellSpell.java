@@ -50,9 +50,14 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
     public void cast(CastContext context) {
         Player player = context.player();
 
-        AntiMagicShellObject shellObject = new AntiMagicShellObject(context.location(), player, context);
+        new AntiMagicShellObject(context.location(), player, context)
+                .startConcentrating()
+                .spawn();
+    }
 
-        shellObject.spawn();
+    @Override
+    public boolean requiresConcentration() {
+        return true;
     }
 
     @Override
@@ -61,6 +66,9 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
     }
 
     public class AntiMagicShellObject extends KinematicMagicObject implements Listener {
+        private int hits;
+        private final SphereParticleEffect effect = new SphereParticleEffect();
+
         public AntiMagicShellObject(Location location, Player caster, CastContext context) {
             super(location, caster, context);
 
@@ -77,6 +85,12 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
             effect.setAmount((int) (7 * Math.PI * radius * radius));
             effect.setChance(25);
 
+            effect.setDynamicDataProvider((point, particle) -> {
+                double yOffset = Math.abs(point.getY()); // abs not needed, just looks cool
+
+                return Math.asin(yOffset / radius);
+            });
+
             ((AntiMagicShellCollider) collider).setRadius(radius);
 
             if (instance.getAttribute(FOLLOWS_PLAYER)) {
@@ -85,10 +99,6 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
                 collider.setPredicate(obj -> true);
             }
         }
-
-        private int hits;
-
-        private final SphereParticleEffect effect = new SphereParticleEffect();
 
         @Override
         protected void onSpawn() {

@@ -2,11 +2,11 @@ package wbs.wandcraft.spell.attributes.modifier;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.persistence.PersistentDataType;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 public class AttributeAddOperator<T extends Number, M extends Number> extends AttributeModificationOperator<T, M> {
-    public AttributeAddOperator(AttributeModifierType definition, PersistentDataType<?, T> baseType, RegisteredPersistentDataType<M> modifierType) {
+    public AttributeAddOperator(AttributeModifierType definition, PersistentDataType<?, T> baseType, AttributeDataType<M> modifierType) {
         super(definition, baseType, modifierType);
     }
 

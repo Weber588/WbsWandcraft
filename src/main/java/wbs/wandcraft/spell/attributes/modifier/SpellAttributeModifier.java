@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.ComponentRepresentable;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -89,7 +89,7 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
         }
 
         NamespacedKey typeKey = container.get(SpellAttributeModifier.MODIFIER_TYPE, WbsPersistentDataType.NAMESPACED_KEY);
-        RegisteredPersistentDataType<?> modifierType = WandcraftRegistries.DATA_TYPES.get(typeKey);
+        AttributeDataType<?> modifierType = WandcraftRegistries.DATA_TYPES.get(typeKey);
         if (modifierType == null) {
             throw new IllegalStateException("Invalid or missing data type for modifier.");
         }

@@ -3,7 +3,7 @@ package wbs.wandcraft.equipment.hat;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.equipment.EquipmentManager;
 import wbs.wandcraft.equipment.MagicEquipmentSlot;
@@ -23,12 +23,12 @@ public class SpeedsterHat extends MagicHat {
 
     private static final SpellAttributeModifier<Double, Double> SPEED_MODIFIER = SpeedSpell.SPEED.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             SPEED_MULTIPLIER
     );
     private static final SpellAttributeModifier<Double, Double> FORCE_MODIFIER = ForceSpell.FORCE.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             SPEED_MULTIPLIER
     );
     private static final double COOLDOWN_REDUCTION = 0.25;

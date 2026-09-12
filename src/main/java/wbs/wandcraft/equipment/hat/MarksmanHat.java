@@ -3,7 +3,7 @@ package wbs.wandcraft.equipment.hat;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
@@ -17,12 +17,12 @@ import java.util.List;
 public class MarksmanHat extends MagicHat {
     private static final SpellAttributeModifier<Double, Double> IMPRECISION_MODIFIER = DirectionalSpell.IMPRECISION.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             0d
     );
     private static final SpellAttributeModifier<Double, Double> RANGE_MODIFIER = RangedSpell.RANGE.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             1.5
     );
 

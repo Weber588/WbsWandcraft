@@ -80,7 +80,6 @@ public class MageLightSpell extends SpellDefinition implements CustomProjectileS
 
         projectile.setHitEntities(false);
 
-
         SpellTriggeredEvents.ON_HIT_TRIGGER.registerAnonymous(context.instance(), (result) -> {
             Block hitBlock = result.getHitBlock();
             BlockFace hitBlockFace = result.getHitBlockFace();
@@ -160,7 +159,6 @@ public class MageLightSpell extends SpellDefinition implements CustomProjectileS
 
                     for (Player player : players) {
                         player.sendBlockChange(block.getLocation(), Material.STRUCTURE_VOID.createBlockData());
-
                     }
                 }
             }

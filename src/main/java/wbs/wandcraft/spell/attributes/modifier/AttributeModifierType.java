@@ -2,7 +2,7 @@ package wbs.wandcraft.spell.attributes.modifier;
 
 import org.bukkit.Keyed;
 import org.bukkit.persistence.PersistentDataType;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 
 public interface AttributeModifierType extends Keyed {
     AttributeModifierType SET = new AttributeSetModifierType();
@@ -11,6 +11,6 @@ public interface AttributeModifierType extends Keyed {
 
     <T, M> AttributeModificationOperator<T, M> buildModifierType(
             PersistentDataType<?, T> baseType,
-            RegisteredPersistentDataType<M> modifierType
+            AttributeDataType<M> modifierType
     );
 }

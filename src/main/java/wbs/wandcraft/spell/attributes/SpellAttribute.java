@@ -1,5 +1,11 @@
 package wbs.wandcraft.spell.attributes;
 
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -10,13 +16,14 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.intellij.lang.annotations.Subst;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsColours;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStrings;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
@@ -27,16 +34,18 @@ import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @NullMarked
-public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, DynamicItemTextureProvider {
+public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, DynamicItemTextureProvider, SuggestionProvider<CommandSourceStack> {
     public static final String DEBUG_CHANNEL_ATTRIBUTES = "attributes";
 
     private final NamespacedKey key;
     private Component displayName;
-    private final RegisteredPersistentDataType<T> type;
+    private final AttributeDataType<T> type;
+    private @NotNull ArgumentType<T> argumentType;
     @UnknownNullability
     private final T defaultValue;
     private final Function<String, @UnknownNullability T> parse;
@@ -50,10 +59,11 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     private String textureValue;
     private Sentiment sentiment = Sentiment.POSITIVE;
 
-    public SpellAttribute(NamespacedKey key, RegisteredPersistentDataType<T> type, @UnknownNullability T defaultValue, Function<String, @UnknownNullability T> parse) {
+    public SpellAttribute(NamespacedKey key, AttributeDataType<T> type, ArgumentType<T> argumentType, @UnknownNullability T defaultValue, Function<String, @UnknownNullability T> parse) {
         this.key = key;
         this.displayName = Component.text(WbsStrings.capitalizeAll(key.value().replace("_", " ")));
         this.type = type;
+        this.argumentType = argumentType;
         this.defaultValue = defaultValue;
         this.parse = parse;
         if (defaultValue != null) {
@@ -65,8 +75,8 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         WandcraftRegistries.ATTRIBUTES.register(this);
     }
 
-    public SpellAttribute(@Subst("key") String nativeKey, RegisteredPersistentDataType<T> type, @UnknownNullability T defaultValue, Function<String, @UnknownNullability T> parse) {
-        this(WbsWandcraft.getKey(nativeKey), type, defaultValue, parse);
+    public SpellAttribute(@Subst("key") String nativeKey, AttributeDataType<T> type, ArgumentType<T> argumentType, @UnknownNullability T defaultValue, Function<String, @UnknownNullability T> parse) {
+        this(WbsWandcraft.getKey(nativeKey), type, argumentType, defaultValue, parse);
     }
 
     @SafeVarargs
@@ -120,7 +130,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return getInstance(value);
     }
 
-    public RegisteredPersistentDataType<T> type() {
+    public AttributeDataType<T> type() {
         return type;
     }
 
@@ -152,7 +162,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return this;
     }
 
-    public <M> SpellAttribute<T> addTypedFormatter(RegisteredPersistentDataType<M> dataType, Function<M, String> formatter) {
+    public <M> SpellAttribute<T> addTypedFormatter(AttributeDataType<M> dataType, Function<M, String> formatter) {
         this.typedFormatters.add(new TypedFormatter<>(dataType, formatter));
         if (dataType.dataType().getComplexType() == type.dataType().getComplexType()) {
             //noinspection unchecked
@@ -167,13 +177,13 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     public SpellAttribute<T> setNumericFormatter(double multiplicationFactor, Function<String, String> numericFormatter) {
         DecimalFormat decimalFormat = new DecimalFormat("0.##");
 
-        addTypedFormatter(RegisteredPersistentDataType.INTEGER,
+        addTypedFormatter(AttributeDataType.INTEGER,
                 val -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * val))
         );
-        addTypedFormatter(RegisteredPersistentDataType.DOUBLE,
+        addTypedFormatter(AttributeDataType.DOUBLE,
                 val -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * val))
         );
-        addTypedFormatter(RegisteredPersistentDataType.LONG,
+        addTypedFormatter(AttributeDataType.LONG,
                 val -> numericFormatter.apply(decimalFormat.format(multiplicationFactor * val))
         );
 
@@ -215,7 +225,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return rawFormatter.apply(value);
     }
 
-    public <M> SpellAttributeModifier<T, M> createModifier(PersistentDataContainerView container, RegisteredPersistentDataType<M> modifierType) {
+    public <M> SpellAttributeModifier<T, M> createModifier(PersistentDataContainerView container, AttributeDataType<M> modifierType) {
         M value =  container.get(SpellAttributeModifier.MODIFIER_VALUE, modifierType.dataType());
 
         NamespacedKey operationTypeKey = container.get(SpellAttributeModifier.MODIFIER_OPERATION, WbsPersistentDataType.NAMESPACED_KEY);
@@ -231,7 +241,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
 
     public <M> SpellAttributeModifier<T, M> createModifier(
             AttributeModifierType modifierDefinition,
-            RegisteredPersistentDataType<M> modifierDataType,
+            AttributeDataType<M> modifierDataType,
             @UnknownNullability M value
     ) {
         AttributeModificationOperator<T, M> operator = modifierDefinition.buildModifierType(type.dataType(), modifierDataType);
@@ -273,6 +283,10 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
 
     public Class<T> getTClass() {
         return type.dataType().getComplexType();
+    }
+
+    public ArgumentType<T> getArgumentType() {
+        return argumentType;
     }
 
     public int compareTo(SpellAttribute<?> other) {
@@ -340,7 +354,26 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return this;
     }
 
-    private record TypedFormatter<M>(RegisteredPersistentDataType<M> dataType, Function<@Nullable M, String> formatter) {
+    public T getArgument(CommandContext<CommandSourceStack> context, String name) {
+        return context.getArgument(name, getTClass());
+    }
+
+    public SpellAttributeInstance<T> getInstance(CommandContext<CommandSourceStack> context, String name) {
+        SpellAttributeInstance<T> instance = getInstance(getArgument(context, name));
+
+        WbsWandcraft
+                .getInstance().getLogger().info("Got instance " + instance.value() + " for " + name + " from " + context.getInput());
+        return instance;
+    }
+
+    @Override
+    public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        getStringSuggestions().forEach(builder::suggest);
+
+        return builder.buildFuture();
+    }
+
+    private record TypedFormatter<M>(AttributeDataType<M> dataType, Function<@Nullable M, String> formatter) {
         public String format(Object value) {
             Class<M> complexType = dataType.dataType().getComplexType();
             if (complexType != (value.getClass())) {

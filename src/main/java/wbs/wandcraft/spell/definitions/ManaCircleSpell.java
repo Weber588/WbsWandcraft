@@ -45,10 +45,14 @@ public class ManaCircleSpell extends SpellDefinition implements CastableSpell, R
 
     @Override
     public void cast(CastContext context) {
-        ManaCircleObject object = new ManaCircleObject(context.player().getLocation(), context);
+        new ManaCircleObject(context.player().getLocation(), context)
+                .startConcentrating()
+                .spawn();
+    }
 
-        CastingManager.startConcentrating(context.player(), context);
-        object.spawn();
+    @Override
+    public boolean requiresConcentration() {
+        return true;
     }
 
     @Override
@@ -171,8 +175,6 @@ public class ManaCircleSpell extends SpellDefinition implements CastableSpell, R
                     }, display::remove);
                 });
             });
-
-            CastingManager.stopConcentrating(context.player(), context);
         }
     }
 }

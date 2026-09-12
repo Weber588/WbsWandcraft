@@ -46,10 +46,9 @@ public class HealingCircleSpell extends SpellDefinition implements CastableSpell
 
     @Override
     public void cast(CastContext context) {
-        HealingCircleObject object = new HealingCircleObject(context.player().getLocation(), context);
-
-        CastingManager.startConcentrating(context.player(), context);
-        object.spawn();
+        new HealingCircleObject(context.player().getLocation(), context)
+                .startConcentrating()
+                .spawn();
     }
 
     @Override
@@ -138,8 +137,6 @@ public class HealingCircleSpell extends SpellDefinition implements CastableSpell
                     });
                 });
             });
-
-            CastingManager.stopConcentrating(context.player(), context);
         }
     }
 }

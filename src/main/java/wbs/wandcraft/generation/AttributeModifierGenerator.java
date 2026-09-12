@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.exceptions.InvalidConfigurationException;
 import wbs.utils.util.WbsCollectionUtil;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WandcraftSettings;
 import wbs.wandcraft.WbsWandcraft;
@@ -104,7 +104,7 @@ public class AttributeModifierGenerator<T> implements Keyed, ItemGenerator {
 
             for (Object value : values) {
                 boolean foundType = false;
-                for (RegisteredPersistentDataType<?> type : WandcraftRegistries.DATA_TYPES.values()) {
+                for (AttributeDataType<?> type : WandcraftRegistries.DATA_TYPES.values()) {
                     Class<?> clazz = type.dataType().getComplexType();
                     if (clazz.isInstance(value)) {
                         valuesToAdd.add(ModifierValue.from(type, value));
@@ -129,7 +129,7 @@ public class AttributeModifierGenerator<T> implements Keyed, ItemGenerator {
     }
 
     @SafeVarargs
-    public final <M> AttributeModifierGenerator<T> setValues(RegisteredPersistentDataType<M> modifierType, M... values) {
+    public final <M> AttributeModifierGenerator<T> setValues(AttributeDataType<M> modifierType, M... values) {
         List<ModifierValue<?>> list = new LinkedList<>();
 
         Arrays.stream(values)
@@ -161,8 +161,8 @@ public class AttributeModifierGenerator<T> implements Keyed, ItemGenerator {
         return ItemUtils.buildModifier(generate());
     }
 
-    public record ModifierValue<M>(RegisteredPersistentDataType<M> type, @Nullable M value) {
-        public static <T> ModifierValue<?> from(RegisteredPersistentDataType<T> type, @Nullable Object value) {
+    public record ModifierValue<M>(AttributeDataType<M> type, @Nullable M value) {
+        public static <T> ModifierValue<?> from(AttributeDataType<T> type, @Nullable Object value) {
             return new ModifierValue<>(type, type.dataType().getComplexType().cast(value));
         }
 

@@ -3,7 +3,7 @@ package wbs.wandcraft.spell.attributes.modifier;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 
 public class AttributeMultiplyModifierType implements AttributeModifierType {
@@ -13,7 +13,7 @@ public class AttributeMultiplyModifierType implements AttributeModifierType {
     }
 
     @Override
-    public <T, M> AttributeModificationOperator<T, M> buildModifierType(PersistentDataType<?, T> baseType, RegisteredPersistentDataType<M> modifierType) {
+    public <T, M> AttributeModificationOperator<T, M> buildModifierType(PersistentDataType<?, T> baseType, AttributeDataType<M> modifierType) {
         if (!Number.class.isAssignableFrom(baseType.getComplexType())) {
             throw new IllegalArgumentException("Multiply only supports numeric types");
         }
@@ -25,7 +25,7 @@ public class AttributeMultiplyModifierType implements AttributeModifierType {
         return (AttributeModificationOperator<T, M>) new AttributeMultiplyOperator<>(
                 this,
                 (PersistentDataType<?, ? extends Number>) baseType,
-                (RegisteredPersistentDataType<? extends Number>) modifierType
+                (AttributeDataType<? extends Number>) modifierType
         );
     }
 }

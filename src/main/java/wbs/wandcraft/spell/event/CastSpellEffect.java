@@ -1,11 +1,19 @@
 package wbs.wandcraft.spell.event;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.CustomArgumentType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.jspecify.annotations.NullMarked;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.utils.util.commands.brigadier.KeyedSuggestionProvider;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
@@ -17,7 +25,8 @@ import wbs.wandcraft.spell.definitions.SpellInstance;
 public class CastSpellEffect extends SpellEffectDefinition<Location> {
     private static final SpellAttribute<SpellInstance> SPELL = new SpellAttribute<>(
             "spell",
-            RegisteredPersistentDataType.SPELL,
+            AttributeDataType.SPELL,
+            new SpellInstanceType(),
             new SpellInstance(WandcraftRegistries.SPELLS.stream().findAny().orElseThrow()),
             string -> {
                 SpellDefinition definition = WandcraftRegistries.SPELLS.get(NamespacedKey.fromString(string, WbsWandcraft.getInstance()));
@@ -47,5 +56,32 @@ public class CastSpellEffect extends SpellEffectDefinition<Location> {
     @Override
     public Component toComponent(SpellEffectInstance<Location> instance) {
         return Component.text("Cast ").append(instance.getAttribute(SPELL).getDefinition().displayName());
+    }
+
+    private static class SpellInstanceType implements CustomArgumentType<SpellInstance, NamespacedKey>, KeyedSuggestionProvider<SpellDefinition> {
+
+        @Override
+        public SpellInstance parse(StringReader reader) throws CommandSyntaxException {
+            NamespacedKey key = ArgumentTypes.namespacedKey().parse(reader);
+
+            SpellDefinition def = WandcraftRegistries.SPELLS.get(key);
+
+            if (def == null) {
+                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException()
+                        .create("Invalid spell key \"" + key.asString() + "\"");
+            }
+
+            return new SpellInstance(def);
+        }
+
+        @Override
+        public ArgumentType<NamespacedKey> getNativeType() {
+            return ArgumentTypes.namespacedKey();
+        }
+
+        @Override
+        public Iterable<SpellDefinition> getSuggestions(CommandContext<CommandSourceStack> commandContext) {
+            return WandcraftRegistries.SPELLS.values();
+        }
     }
 }

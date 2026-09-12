@@ -7,7 +7,7 @@ import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
 import org.jetbrains.annotations.Contract;
 import wbs.utils.util.particles.WbsParticleEffect;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.spell.attributes.Attributable;
 import wbs.wandcraft.spell.attributes.EnumSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -16,7 +16,7 @@ import wbs.wandcraft.spell.definitions.ISpellDefinition;
 public interface ParticleSpell extends ISpellDefinition {
     SpellAttribute<Particle> PARTICLE = new EnumSpellAttribute<>("particle_effect",
             null,
-            RegisteredPersistentDataType.PARTICLE,
+            AttributeDataType.PARTICLE,
             Particle.class
     ).addSuggestions(Particle.values())
             .setShowAttribute((val, attributable) -> {

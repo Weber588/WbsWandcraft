@@ -1,13 +1,14 @@
 package wbs.wandcraft.spell.attributes;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 
 @NullMarked
 public class BooleanSpellAttribute extends SpellAttribute<Boolean> {
     public BooleanSpellAttribute(String key, boolean defaultValue) {
-        super(key, RegisteredPersistentDataType.BOOLEAN, defaultValue, Boolean::parseBoolean);
+        super(key, AttributeDataType.BOOLEAN, BoolArgumentType.bool(), defaultValue, Boolean::parseBoolean);
 
         setSuggestions(true, false);
         // TODO: Make this translatable, if minecraft has something for this in vanilla pack

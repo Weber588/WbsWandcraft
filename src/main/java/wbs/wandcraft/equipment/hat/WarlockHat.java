@@ -3,7 +3,7 @@ package wbs.wandcraft.equipment.hat;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.equipment.EquipmentManager;
 import wbs.wandcraft.equipment.MagicEquipmentSlot;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class WarlockHat extends MagicHat {
     private static final SpellAttributeModifier<Double, Double> DAMAGE_MODIFIER = DamageSpell.DAMAGE.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             2.5
     );
 

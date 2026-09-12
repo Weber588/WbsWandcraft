@@ -55,6 +55,9 @@ public class CastingManager {
     public static void startConcentrating(Entity entity, CastContext context) {
         startConcentrating(entity.getUniqueId(), context);
     }
+    public static void startConcentrating(CastContext context) {
+        startConcentrating(context.player(), context);
+    }
     public static void startConcentrating(UUID uuid, CastContext context) {
         CONCENTRATING.put(uuid, context);
     }
@@ -90,12 +93,9 @@ public class CastingManager {
         return CONCENTRATING.remove(uuid) != null;
     }
 
-    public static boolean stopConcentrating(Entity entity, CastContext context) {
-        return stopConcentrating(entity.getUniqueId(), context);
-    }
-    public static boolean stopConcentrating(UUID uuid, CastContext context) {
-        if (isConcentrating(uuid, context)) {
-            CONCENTRATING.remove(uuid);
+    public static boolean stopConcentrating(CastContext context) {
+        if (isConcentrating(context.player(), context)) {
+            CONCENTRATING.remove(context.player().getUniqueId());
             return true;
         }
         return false;

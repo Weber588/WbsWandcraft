@@ -2,15 +2,15 @@ package wbs.wandcraft.spell.attributes.modifier;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.persistence.PersistentDataType;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 public abstract class AttributeModificationOperator<T, M> {
     private final AttributeModifierType definition;
     private final PersistentDataType<?, T> baseType;
-    private final RegisteredPersistentDataType<M> modifierType;
+    private final AttributeDataType<M> modifierType;
 
-    public AttributeModificationOperator(AttributeModifierType definition, PersistentDataType<?, T> baseType, RegisteredPersistentDataType<M> modifierType) {
+    public AttributeModificationOperator(AttributeModifierType definition, PersistentDataType<?, T> baseType, AttributeDataType<M> modifierType) {
         this.definition = definition;
         this.baseType = baseType;
         this.modifierType = modifierType;
@@ -24,7 +24,7 @@ public abstract class AttributeModificationOperator<T, M> {
         return baseType;
     }
 
-    public RegisteredPersistentDataType<M> getModifierType() {
+    public AttributeDataType<M> getModifierType() {
         return modifierType;
     }
 

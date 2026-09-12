@@ -1,23 +1,23 @@
 package wbs.wandcraft.spell.attributes;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import org.bukkit.NamespacedKey;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 
 @NullMarked
 public class IntegerSpellAttribute extends SpellAttribute<Integer> {
     @SuppressWarnings("unused")
     public IntegerSpellAttribute(NamespacedKey key, int defaultValue) {
-        super(key, RegisteredPersistentDataType.INTEGER, defaultValue, Integer::parseInt);
+        super(key, AttributeDataType.INTEGER, IntegerArgumentType.integer(), defaultValue, Integer::parseInt);
     }
 
     public IntegerSpellAttribute(String nativeKey, int defaultValue) {
-        super(nativeKey, RegisteredPersistentDataType.INTEGER, defaultValue, Integer::parseInt);
+        super(nativeKey, AttributeDataType.INTEGER, IntegerArgumentType.integer(), defaultValue, Integer::parseInt);
     }
 
     @Override
-    public Sentiment getSentiment(@NotNull Integer value) {
+    public Sentiment getSentiment(Integer value) {
         return value < 0 ? sentiment().invert() : sentiment();
     }
 }

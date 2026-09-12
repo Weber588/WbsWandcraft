@@ -1,9 +1,10 @@
 package wbs.wandcraft.spell.attributes;
 
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 
 import java.text.DecimalFormat;
 
@@ -13,12 +14,12 @@ public class DoubleSpellAttribute extends SpellAttribute<Double> {
 
     @SuppressWarnings("unused")
     public DoubleSpellAttribute(NamespacedKey key, double defaultValue) {
-        super(key, RegisteredPersistentDataType.DOUBLE, defaultValue, Double::parseDouble);
+        super(key, AttributeDataType.DOUBLE, DoubleArgumentType.doubleArg(), defaultValue, Double::parseDouble);
         setFormatter(FORMAT::format);
     }
 
     public DoubleSpellAttribute(String nativeKey, double defaultValue) {
-        super(nativeKey, RegisteredPersistentDataType.DOUBLE, defaultValue, Double::parseDouble);
+        super(nativeKey, AttributeDataType.DOUBLE, DoubleArgumentType.doubleArg(), defaultValue, Double::parseDouble);
         setFormatter(FORMAT::format);
     }
 

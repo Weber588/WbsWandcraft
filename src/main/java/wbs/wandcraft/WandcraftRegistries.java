@@ -26,17 +26,7 @@ import wbs.wandcraft.wand.background.WandBackground;
 import wbs.wandcraft.wand.types.WandType;
 
 public class WandcraftRegistries {
-    public static final WbsRegistry<RegisteredPersistentDataType<?>> DATA_TYPES = new WbsRegistry<>(
-            RegisteredPersistentDataType.INTEGER,
-            RegisteredPersistentDataType.BOOLEAN,
-            RegisteredPersistentDataType.DOUBLE,
-            RegisteredPersistentDataType.STRING,
-            RegisteredPersistentDataType.LONG,
-            RegisteredPersistentDataType.PARTICLE,
-            RegisteredPersistentDataType.MATERIAL,
-            RegisteredPersistentDataType.TARGETER,
-            RegisteredPersistentDataType.SPELL
-    );
+    public static final WbsRegistry<AttributeDataType<?>> DATA_TYPES = new WbsRegistry<>();
     public static final WbsRegistry<SpellAttribute<?>> ATTRIBUTES = new WbsRegistry<>();
     public static final WbsRegistry<AttributeModifierType> MODIFIER_TYPES = new WbsRegistry<>(
             AttributeModifierType.SET,

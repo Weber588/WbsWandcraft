@@ -2,7 +2,7 @@ package wbs.wandcraft.spell.attributes.modifier;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.persistence.PersistentDataType;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 import java.text.DecimalFormat;
@@ -12,7 +12,7 @@ public class AttributeMultiplyOperator<T extends Number, M extends Number> exten
     // TODO: Make this configurable. Not sure about it, since divide symbol looks a lot like plus in game
     private static final boolean DO_DIVISION_SYMBOL = false;
 
-    public AttributeMultiplyOperator(AttributeModifierType definition, PersistentDataType<?, T> baseType, RegisteredPersistentDataType<M> modifierType) {
+    public AttributeMultiplyOperator(AttributeModifierType definition, PersistentDataType<?, T> baseType, AttributeDataType<M> modifierType) {
         super(definition, baseType, modifierType);
     }
 

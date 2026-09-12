@@ -17,7 +17,7 @@ import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
@@ -44,7 +44,7 @@ public class BarbarianWand extends Wand {
         super(uuid);
 
         setAttribute(RangedSpell.RANGE, BASE_RANGE);
-        setModifier(CastableSpell.COOLDOWN.createModifier(AttributeModifierType.MULTIPLY, RegisteredPersistentDataType.DOUBLE, 0.5));
+        setModifier(CastableSpell.COOLDOWN.createModifier(AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, 0.5));
     }
 
     @Override

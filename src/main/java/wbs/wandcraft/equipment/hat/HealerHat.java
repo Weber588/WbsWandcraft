@@ -3,7 +3,7 @@ package wbs.wandcraft.equipment.hat;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
@@ -16,7 +16,7 @@ import java.util.List;
 public class HealerHat extends MagicHat {
     private static final SpellAttributeModifier<Double, Double> HEALTH_MODIFIER = HealthSpell.HEALTH.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             3d
     );
 

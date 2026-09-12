@@ -11,12 +11,13 @@ import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.events.objects.MagicObjectSpawnEvent;
 import wbs.wandcraft.exceptions.MagicObjectExistsException;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.PersistenceLevel;
 import wbs.wandcraft.objects.colliders.Collider;
-import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.event.SpellTriggeredEvents;
 
 import java.util.Objects;
@@ -26,7 +27,7 @@ public abstract class MagicObject {
 	public Player caster;
 	@NotNull
 	public CastContext context;
-	
+
 	public MagicObject(Location location, @NotNull CastContext context) {
 		this.spawnLocation = location;
 		this.caster = context.player();
@@ -39,6 +40,7 @@ public abstract class MagicObject {
 	public World world;
 	protected boolean active = true;
 	protected boolean isPersistent = false; // Persistent objects are immune to some removal effects (such as Negate Magic)
+	protected boolean requiresConcentration = false;
 
 	protected PersistenceLevel persistenceLevel = PersistenceLevel.WEAK;
 
@@ -82,10 +84,20 @@ public abstract class MagicObject {
 
 		timerID = new BukkitRunnable() {
 			boolean cancel = false;
+
 			@Override
-	        public void run() {
+			public void run() {
 				debug("Tick started");
-				cancel = tick();
+				if (requiresConcentration) {
+					if (!CastingManager.isConcentrating(caster, context)) {
+						debug("Concentration broken");
+						cancel = true;
+					}
+				}
+
+				if (!cancel) {
+					cancel = tick();
+				}
 
 				if (!cancel && effects != null) {
 					effects.play(getLocation());
@@ -111,8 +123,8 @@ public abstract class MagicObject {
 					debug("Removing");
 					remove();
 				}
-	        }
-	    }.runTaskTimer(WbsWandcraft.getInstance(), 0L, 1L).getTaskId();
+			}
+		}.runTaskTimer(WbsWandcraft.getInstance(), 0L, 1L).getTaskId();
 
 		debug("Spawned: \n" + this);
 		return true;
@@ -131,6 +143,7 @@ public abstract class MagicObject {
 
 	/**
 	 * Called every tick by the magic object
+	 *
 	 * @return Whether or not to cancel. True to make the object expire.
 	 */
 	protected abstract boolean tick();
@@ -141,15 +154,16 @@ public abstract class MagicObject {
 
 	/**
 	 * Remove this magic object.
+	 *
 	 * @param force If the object is persistent, this must be true to remove it.
 	 * @return Whether or not the object was removed.
 	 */
 	public final boolean remove(boolean force) {
 		if (isPersistent && !force) return false;
 		if (!active) return false;
-		
-	//	plugin.broadcast("Fizzling ID " + timerID);
-		
+
+		//	plugin.broadcast("Fizzling ID " + timerID);
+
 		active = false;
 		MagicObjectManager.remove(caster.getUniqueId(), this);
 		if (timerID != -1) {
@@ -166,6 +180,10 @@ public abstract class MagicObject {
 
 		if (collider != null) {
 			collider.remove();
+		}
+
+		if (requiresConcentration) {
+			CastingManager.stopConcentrating(context);
 		}
 
 		onRemove();
@@ -196,6 +214,7 @@ public abstract class MagicObject {
 	/**
 	 * Returns the distance between this object and another magic object.
 	 * Returns {@link Double#POSITIVE_INFINITY} if it's in another world.
+	 *
 	 * @param other The object to measure distance to.
 	 * @return The distance between the objects, or {@link Double#POSITIVE_INFINITY}
 	 * if they're in different worlds.
@@ -218,6 +237,7 @@ public abstract class MagicObject {
 	public boolean isPersistent() {
 		return isPersistent;
 	}
+
 	public void setPersistent(boolean isPersistent) {
 		this.isPersistent = isPersistent;
 	}
@@ -226,7 +246,7 @@ public abstract class MagicObject {
 		this.effects = effects.clone();
 		return this;
 	}
-	
+
 	public MagicObject setEndEffects(WbsParticleGroup endEffects) {
 		this.endEffects = endEffects.clone();
 		return this;
@@ -235,7 +255,7 @@ public abstract class MagicObject {
 	public final Location getSpawnLocation() {
 		return spawnLocation.clone();
 	}
-	
+
 	// This method can be overridden by extending classes
 	public Location getLocation() {
 		return spawnLocation.clone();
@@ -250,7 +270,7 @@ public abstract class MagicObject {
 	protected boolean chance(double percent) {
 		return WbsMath.chance(percent);
 	}
-	
+
 	protected Vector randomVector(double magnitude) {
 		return WbsMath.randomVector(magnitude);
 	}
@@ -295,6 +315,20 @@ public abstract class MagicObject {
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
+	}
+
+	public MagicObject startConcentrating() {
+		requiresConcentration(true);
+		CastingManager.startConcentrating(context);
+		return this;
+	}
+
+	public boolean requiresConcentration() {
+		return requiresConcentration;
+	}
+
+	public void requiresConcentration(boolean requiresConcentration) {
+		this.requiresConcentration = requiresConcentration;
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import wbs.utils.util.entities.selector.LineOfSightSelector;
 import wbs.utils.util.entities.selector.RadiusSelector;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.EnumSpellAttribute;
@@ -20,7 +20,7 @@ import java.util.List;
 public interface TargetedSpell<T extends Entity> extends ISpellDefinition {
     SpellAttribute<TargeterType> TARGET = new EnumSpellAttribute<>("target",
             TargeterType.LINE_OF_SIGHT,
-            RegisteredPersistentDataType.TARGETER,
+            AttributeDataType.TARGETER,
             TargeterType.class
     ).setSuggestions(TargeterType.values());
     SpellAttribute<Integer> MAX_TARGETS = new IntegerSpellAttribute("max_targets", 1)

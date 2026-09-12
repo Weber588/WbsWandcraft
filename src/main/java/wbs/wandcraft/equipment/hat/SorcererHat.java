@@ -6,7 +6,7 @@ import org.bukkit.entity.Vex;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsEventUtils;
-import wbs.wandcraft.RegisteredPersistentDataType;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.equipment.EquipmentManager;
 import wbs.wandcraft.equipment.MagicEquipmentSlot;
@@ -24,12 +24,12 @@ import java.util.Map;
 public class SorcererHat extends MagicHat {
     private static final SpellAttributeModifier<Integer, Double> DURATION_MODIFIER = DurationalSpell.DURATION.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             1.75
     );
     private static final SpellAttributeModifier<Double, Double> RANGE_MODIFIER = RangedSpell.RANGE.createModifier(
             AttributeModifierType.MULTIPLY,
-            RegisteredPersistentDataType.DOUBLE,
+            AttributeDataType.DOUBLE,
             1.25
     );
 
