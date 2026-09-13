@@ -1,8 +1,12 @@
 package wbs.wandcraft.commands;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -10,7 +14,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import wbs.utils.util.commands.brigadier.RedirectedStack;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
 import wbs.utils.util.commands.brigadier.argument.WbsKeyedArgumentType;
 import wbs.utils.util.commands.brigadier.argument.WbsStringArgumentType;
@@ -23,7 +26,10 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 public class CommandSpellCast extends WbsSubcommand {
@@ -33,35 +39,63 @@ public class CommandSpellCast extends WbsSubcommand {
 
     @Override
     protected void addThens(LiteralArgumentBuilder<CommandSourceStack> builder) {
-        WbsKeyedArgumentType<SpellDefinition> spellArgType = new WbsKeyedArgumentType<>("spell", WandcraftRegistries.SPELLS);
+        for (SpellDefinition spell : WandcraftRegistries.SPELLS.values()) {
+            String spellKey = spell.key().asString();
 
-        CommandNode<CommandSourceStack> spellArg = Commands.argument("spell", spellArgType)
-                .executes(this::cast)
-                .build();
+            CommandNode<CommandSourceStack> spellArg = Commands.literal(spellKey)
+                    .executes(context -> cast(spell, context))
+                    .build();
 
-        WbsKeyedArgumentType<SpellAttribute<?>> attributeArgType = new WbsKeyedArgumentType<>("attribute", WandcraftRegistries.ATTRIBUTES);
+            Collection<SpellAttribute<?>> attributes = spell.getAttributes();
+            attributes.remove(CastableSpell.COOLDOWN);
+            attributes.remove(CastableSpell.COST);
 
-        CommandNode<CommandSourceStack> attributeArg = Commands.argument("attribute", attributeArgType)
-                .executes(this::cast)
-                .executes(context -> {
-                    plugin.sendMessage("Enter a value! (jane pls make this better)", context.getSource().getSender());
-                    return Command.SINGLE_SUCCESS;
-                }).then(Commands.argument("attribute-value", WbsStringArgumentType.word())
+            WbsKeyedArgumentType<SpellAttribute<?>> attributeArgType = new WbsKeyedArgumentType<>("attribute", WandcraftRegistries.ATTRIBUTES)
+                    .defaultNamespace(WbsWandcraft.getInstance().namespace())
+                    .setSuggestionProvider(context -> {
+                        List<SpellAttribute<?>> toSuggest = new LinkedList<>(attributes);
+
+                        getAttributes(spell, context).stream()
+                                .map(SpellAttributeInstance::attribute)
+                                .forEach(toSuggest::remove);
+
+                        return toSuggest;
+                    });
+
+            CommandNode<CommandSourceStack> previous = spellArg;
+            for (int i = 0; i < attributes.size(); i++) {
+                int finalI = i;
+                WbsStringArgumentType attrValueArgType = new WbsStringArgumentType.StringWordArgumentType() {
+                    @Override
+                    public @NotNull ArgumentType<String> getNativeType() {
+                        return StringArgumentType.string();
+                    }
+                };
+                ArgumentCommandNode<CommandSourceStack, String> attrValue = Commands.argument("attribute-value-" + i, attrValueArgType)
                         .suggests((context, suggestions) -> {
-                            SpellAttribute<?> attribute = context.getArgument("attribute", SpellAttribute.class);
+                            SpellAttribute<?> attribute = context.getArgument("attribute-" + finalI, SpellAttribute.class);
 
                             return attribute.getSuggestions(context, suggestions);
                         })
-                        .executes(this::cast)
-                        .fork(spellArg, context -> List.of(new RedirectedStack(context)))
-                ).build();
+                        .executes(context -> cast(spell, context))
+                        .build();
 
-        spellArg.addChild(attributeArg);
+                CommandNode<CommandSourceStack> attributeArg = Commands.argument("attribute-" + i, attributeArgType)
+                        .executes(context -> {
+                            plugin.sendMessage("Enter a value! (jane pls make this better)", context.getSource().getSender());
+                            return Command.SINGLE_SUCCESS;
+                        }).then(attrValue)
+                        .build();
 
-        builder.then(spellArg);
+                previous.addChild(attributeArg);
+                previous = attrValue;
+            }
+
+            builder.then(spellArg);
+        }
     }
 
-    private int cast(CommandContext<CommandSourceStack> context) {
+    private int cast(SpellDefinition spell, CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         CommandSender sender = context.getSource().getSender();
 
         if (!(sender instanceof Player player)) {
@@ -69,21 +103,9 @@ public class CommandSpellCast extends WbsSubcommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        SpellDefinition spell = RedirectedStack.getRoot(context).getArgument("spell", SpellDefinition.class);
         SpellInstance instance = new SpellInstance(spell);
 
-        RedirectedStack.loopParents(context, c -> {
-            try {
-                SpellAttribute<?> attribute = c.getArgument("attribute", SpellAttribute.class);
-                String attributeValueString = c.getArgument("attribute-value", String.class);
-
-                WbsWandcraft.getInstance().getLogger().info("attribute: " + attribute.key().asString());
-                WbsWandcraft.getInstance().getLogger().info("attribute-value: " + attributeValueString);
-
-                SpellAttributeInstance<?> attributeInstance = attribute.getParsedInstance(attributeValueString);
-                instance.setAttribute(attributeInstance);
-            } catch (IllegalArgumentException ignored) {}
-        });
+        getAttributes(spell, context).forEach(instance::setAttribute);
 
         if (CastingManager.isCasting(player)) {
             plugin.buildMessage(
@@ -101,6 +123,35 @@ public class CommandSpellCast extends WbsSubcommand {
                 .startCasting(player);
 
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static List<SpellAttributeInstance<?>> getAttributes(SpellDefinition spell, CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        List<SpellAttributeInstance<?>> attributes = new LinkedList<>();
+        for (int i = 0; i < spell.getAttributes().size(); i++) {
+            SpellAttribute<?> attribute;
+            String attributeValueString;
+
+            try {
+                attribute = context.getArgument("attribute-" + i, SpellAttribute.class);
+                attributeValueString = context.getArgument("attribute-value-" + i, String.class);
+            } catch (IllegalArgumentException ignored) {
+                continue;
+            }
+
+            WbsWandcraft.getInstance().getLogger().info("attribute: " + attribute.key().asString());
+            WbsWandcraft.getInstance().getLogger().info("attribute-value: " + attributeValueString);
+
+            SpellAttributeInstance<?> attributeInstance;
+            try {
+                attributeInstance = attribute.getParsedInstance(attributeValueString);
+                WbsWandcraft.getInstance().getLogger().info("attribute-value parsed: " + attributeInstance.value());
+                attributes.add(attributeInstance);
+            } catch (NumberFormatException ex) {
+                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().create(ex.getMessage());
+            }
+        }
+
+        return attributes;
     }
 
     @Override

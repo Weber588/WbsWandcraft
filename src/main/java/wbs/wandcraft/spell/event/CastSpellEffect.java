@@ -7,7 +7,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.CustomArgumentType;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -35,7 +34,11 @@ public class CastSpellEffect extends SpellEffectDefinition<Location> {
                     return null;
                 }
                 return new SpellInstance(definition);
-            }).addRawSuggestions(WandcraftRegistries.SPELLS.stream().map(SpellDefinition::key).map(Key::asString).toList());
+            })
+            .addRawSuggestions(WandcraftRegistries.SPELLS.stream()
+                    .map(spellDefinition -> '"' + spellDefinition.key().asString() + '"')
+                    .toList()
+    );
 
     public CastSpellEffect() {
         super(Location.class, "cast_spell");
