@@ -11,6 +11,7 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostUtils;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.attributable.AttributableSetupHandler;
 
 public interface ContinuousCastableSpell extends CastableSpell {
     SpellAttribute<Integer> FIXED_DURATION = new IntegerSpellAttribute("fixed_duration", Ticks.TICKS_PER_SECOND)
@@ -23,6 +24,7 @@ public interface ContinuousCastableSpell extends CastableSpell {
             .setShowAttribute(cost -> cost > 0)
             .overrideTextureValue("cost");
 
+    @AttributableSetupHandler
     default void setupContinuousCast() {
         addAttribute(MAX_DURATION);
         addAttribute(COST_PER_TICK);

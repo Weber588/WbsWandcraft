@@ -17,7 +17,7 @@ import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.PersistenceLevel;
 import wbs.wandcraft.objects.generics.MagicObject;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.wand.Wand;
@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class NegateMagicSpell extends SpellDefinition implements CastableSpell, RadiusedSpell {
+public class NegateMagicSpell extends SpellDefinition implements CastableSpell, RadiusAttributable {
     // Should this be a list of non-magic potion effects (hunger, weakness, poison etc.) since most are magic?
     private static final Set<PotionEffectType> MAGIC_EFFECTS = Set.of(
             PotionEffectType.HASTE,

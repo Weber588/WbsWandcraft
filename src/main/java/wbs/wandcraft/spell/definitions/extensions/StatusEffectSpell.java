@@ -7,11 +7,13 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectInstance;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.TargetAttributable;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 
 import java.util.List;
 
-public interface StatusEffectSpell<T extends LivingEntity> extends CastableSpell, DurationalSpell, TargetedSpell<T> {
+public interface StatusEffectSpell<T extends LivingEntity> extends CastableSpell, DurationAttributable, TargetAttributable<T> {
     @NotNull StatusEffect getStatusEffect();
 
     @Override

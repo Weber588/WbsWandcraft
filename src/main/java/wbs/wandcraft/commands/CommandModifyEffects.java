@@ -20,13 +20,13 @@ import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleA
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.attributes.Attributable;
+import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.event.SpellEffectDefinition;
-import wbs.wandcraft.spell.event.SpellEffectInstance;
-import wbs.wandcraft.spell.event.SpellTriggeredEvent;
+import wbs.wandcraft.spell.effect.SpellEffectDefinition;
+import wbs.wandcraft.spell.effect.SpellEffectInstance;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvent;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.wand.Wand;
 
@@ -59,19 +59,19 @@ public class CommandModifyEffects extends WbsSubcommand {
             if (sender instanceof Player player) {
                 ItemStack item = player.getInventory().getItemInMainHand();
 
-                Attributable attributable = null;
+                AttributeHolder attributeHolder = null;
                 Wand wand = Wand.fromItem(item);
                 SpellInstance instance = SpellInstance.fromItem(item);
                 if (wand != null) {
-                    attributable = wand;
+                    attributeHolder = wand;
                 } else if (instance != null) {
-                    attributable = instance;
+                    attributeHolder = instance;
                 }
 
                 List<SpellAttribute<?>> attributes = new LinkedList<>();
 
-                if (attributable != null) {
-                    attributable.deriveAttributeValues().stream()
+                if (attributeHolder != null) {
+                    attributeHolder.deriveAttributeValues().stream()
                             .map(SpellAttributeInstance::attribute)
                             .forEach(attributes::add);
                 } else {

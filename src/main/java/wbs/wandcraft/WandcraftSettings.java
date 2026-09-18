@@ -24,7 +24,7 @@ import wbs.wandcraft.crafting.ArtificingRecipe;
 import wbs.wandcraft.generation.AttributeModifierGenerator;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.generation.WandGenerator;
-import wbs.wandcraft.learning.*;
+import wbs.wandcraft.spell.learning.*;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;

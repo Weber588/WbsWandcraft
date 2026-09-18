@@ -11,15 +11,14 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
-import wbs.utils.util.commands.brigadier.argument.WbsKeyArgumentType;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
-import wbs.wandcraft.learning.LearningMethod;
-import wbs.wandcraft.learning.RegistrableLearningMethod;
+import wbs.wandcraft.spell.learning.LearningMethod;
+import wbs.wandcraft.spell.learning.RegistrableLearningMethod;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 

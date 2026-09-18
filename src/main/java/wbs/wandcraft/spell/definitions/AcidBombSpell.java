@@ -12,17 +12,17 @@ import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
-import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
-import wbs.wandcraft.spell.event.SpellTriggeredEvents;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class AcidBombSpell extends SpellDefinition implements CustomProjectileSpell, DurationalSpell, DamageSpell, RadiusedSpell {
+public class AcidBombSpell extends SpellDefinition implements CustomProjectileSpell, DurationAttributable, DamageAttributable, RadiusAttributable {
     private static final NormalParticleEffect BOMB_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
             .setXYZ(0.4)
             .setAmount(0)
@@ -62,10 +62,10 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
         projectile.setParticle(new WbsParticleGroup().addEffect(BOMB_EFFECT, Particle.DUST));
+        projectile.setDebug(true);
         SpellInstance instance = context.instance();
 
         SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (result) -> {
-            debug("Expired.");
             EXPLODE_EFFECT.play(Particle.SNEEZE, result);
             EXPLODE_EFFECT.play(Particle.TOTEM_OF_UNDYING, result);
 

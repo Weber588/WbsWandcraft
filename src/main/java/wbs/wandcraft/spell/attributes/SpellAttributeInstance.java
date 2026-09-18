@@ -62,7 +62,7 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
     public Component toComponent() {
         return attribute.displayName().color(NamedTextColor.GOLD)
                 .append(Component.text(": "))
-                .append(Component.text(attribute.formatValue(value)).color(NamedTextColor.AQUA));
+                .append(Component.text(attribute.toString(value)).color(NamedTextColor.AQUA));
     }
 
     @Override
@@ -70,8 +70,8 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
         return other.attribute().compareTo(attribute);
     }
 
-    public boolean shouldShow(Attributable attributable) {
-        return attribute.shouldShow(value, attributable);
+    public boolean shouldShow(AttributeHolder attributeHolder) {
+        return attribute.shouldShow(value, attributeHolder);
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")

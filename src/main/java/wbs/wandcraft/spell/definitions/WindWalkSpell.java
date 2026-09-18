@@ -11,10 +11,14 @@ import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
+import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 import wbs.wandcraft.spell.definitions.extensions.*;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
-public class WindWalkSpell extends SpellDefinition implements CastableSpell, SpeedSpell, DurationalSpell, ParticleSpell, RadiusedSpell {
+public class WindWalkSpell extends SpellDefinition implements CastableSpell, SpeedAttributable, DurationAttributable, ParticleAttributable, RadiusAttributable {
     private final RingParticleEffect effect = (RingParticleEffect) new RingParticleEffect()
             .setRadius(2);
 

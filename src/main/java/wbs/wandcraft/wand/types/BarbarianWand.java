@@ -23,7 +23,7 @@ import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -43,7 +43,7 @@ public class BarbarianWand extends Wand {
     public BarbarianWand(@NotNull String uuid) {
         super(uuid);
 
-        setAttribute(RangedSpell.RANGE, BASE_RANGE);
+        setAttribute(RangeAttributable.RANGE, BASE_RANGE);
         setModifier(CastableSpell.COOLDOWN.createModifier(AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, 0.5));
     }
 
@@ -55,8 +55,8 @@ public class BarbarianWand extends Wand {
         if (spellInstance != null) {
             SpellInstance modified = applyModifiers(spellInstance);
 
-            if (modified.getDefinition() instanceof RangedSpell) {
-                modified.setAttribute(RangedSpell.RANGE, this.getAttribute(RangedSpell.RANGE));
+            if (modified.getDefinition() instanceof RangeAttributable) {
+                modified.setAttribute(RangeAttributable.RANGE, this.getAttribute(RangeAttributable.RANGE));
             }
 
             spellList.add(modified);
@@ -108,10 +108,10 @@ public class BarbarianWand extends Wand {
                 meta.getPersistentDataContainer().set(Wand.WAND_KEY, CustomPersistentDataTypes.BARBARIAN_WAND_TYPE, this)
         );
 
-        double rangeBoost = getAttribute(RangedSpell.RANGE, 0d);
+        double rangeBoost = getAttribute(RangeAttributable.RANGE, 0d);
 
         for (SpellAttributeModifier<?, ?> modifier : attributeModifiers) {
-            if (modifier.attribute().equals(RangedSpell.RANGE)) {
+            if (modifier.attribute().equals(RangeAttributable.RANGE)) {
                 //noinspection unchecked
                 rangeBoost = ((SpellAttributeModifier<Double, ?>) modifier).modify(rangeBoost);
             }

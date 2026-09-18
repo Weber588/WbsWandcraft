@@ -15,7 +15,7 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.generics.MagicObject;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -23,7 +23,7 @@ import java.util.Collection;
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
 
-public class RecallSpell extends SpellDefinition implements CastableSpell, DurationalSpell {
+public class RecallSpell extends SpellDefinition implements CastableSpell, DurationAttributable {
     private static final NormalParticleEffect TELEPORT_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
             .setXYZ(0)
             .setSpeed(0.02)

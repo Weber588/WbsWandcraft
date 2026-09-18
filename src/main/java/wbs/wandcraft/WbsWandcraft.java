@@ -12,13 +12,13 @@ import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.commands.*;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.equipment.MagicEquipmentType;
-import wbs.wandcraft.learning.RegistrableLearningMethod;
+import wbs.wandcraft.spell.learning.RegistrableLearningMethod;
 import wbs.wandcraft.listeners.*;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
-import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
 
@@ -141,14 +141,14 @@ public class WbsWandcraft extends WbsPlugin {
             String out = "Spell\tDirect Damage\tCast Type\tTarget\tEffects\tRange\tCost\tCoooldown\n";
 
             for (SpellDefinition def : WandcraftRegistries.SPELLS.stream().toList()) {
-                if (def instanceof DamageSpell damageSpell) {
+                if (def instanceof DamageAttributable damageAttributable) {
                     out += "%s\t%s\t%s\t?\t?\t%s\t%d\t%d\n".formatted(
                             def.name(),
-                            damageSpell.getAttribute(DamageSpell.DAMAGE),
-                            damageSpell instanceof ContinuousCastableSpell ? "Continuous" : "Single",
-                            damageSpell.getAttribute(RangedSpell.RANGE),
-                            damageSpell.getAttribute(CastableSpell.COST),
-                            damageSpell.getAttribute(CastableSpell.COOLDOWN)
+                            damageAttributable.getAttribute(DamageAttributable.DAMAGE),
+                            damageAttributable instanceof ContinuousCastableSpell ? "Continuous" : "Single",
+                            damageAttributable.getAttribute(RangeAttributable.RANGE),
+                            damageAttributable.getAttribute(CastableSpell.COST),
+                            damageAttributable.getAttribute(CastableSpell.COOLDOWN)
                     );
                 }
             }

@@ -13,12 +13,12 @@ import wbs.wandcraft.WbsWandcraft;
 
 @NullMarked
 public class SpellType implements Keyed {
-    public static final SpellType ARCANE = new SpellType("arcane", TextColor.color(0xaca55d), Color.fromRGB(0xd7c719));
-    public static final SpellType NETHER = new SpellType("nether", TextColor.color(0x95232c), Color.fromRGB(0x95232c));
-    public static final SpellType ENDER = new SpellType("ender", TextColor.color(0x871192), Color.fromRGB(0xc719d7));
-    public static final SpellType SCULK = new SpellType("sculk", TextColor.color(0x5d8bac), Color.fromRGB(0x5daca5));
-    public static final SpellType VOID = new SpellType("void", TextColor.color(0x123249), Color.fromRGB(0x121749));
-    public static final SpellType NATURE = new SpellType("nature", TextColor.color(0x2c9523), Color.fromRGB(0x41d035));
+    public static final SpellType ARCANE = new SpellType("arcane", TextColor.color(0xd3b400), Color.fromRGB(0xd7c719));
+    public static final SpellType NETHER = new SpellType("nether", TextColor.color(0xa6001b), Color.fromRGB(0x95232c));
+    public static final SpellType ENDER = new SpellType("ender", TextColor.color(0x8e009c), Color.fromRGB(0xc719d7));
+    public static final SpellType SCULK = new SpellType("sculk", TextColor.color(0x80c4e3), Color.fromRGB(0x5daca5));
+    public static final SpellType VOID = new SpellType("void", TextColor.color(0x00325d), Color.fromRGB(0x121749));
+    public static final SpellType NATURE = new SpellType("nature", TextColor.color(0x009a00), Color.fromRGB(0x41d035));
 
     private final NamespacedKey key;
     private final Component displayName;
@@ -39,7 +39,7 @@ public class SpellType implements Keyed {
     }
 
     SpellType(String nativeKey, TextColor textColor, Color wandColor) {
-        this(nativeKey, Component.text(WbsStrings.capitalizeAll(nativeKey.replaceAll("_", " "))), textColor, wandColor);
+        this(nativeKey, Component.text(WbsStrings.capitalizeAll(nativeKey.replace("_", " "))), textColor, wandColor);
     }
     public Component displayName() {
         return displayName;

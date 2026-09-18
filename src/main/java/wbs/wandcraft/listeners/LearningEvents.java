@@ -12,8 +12,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.learning.LearningMethod;
-import wbs.wandcraft.learning.LearningTrigger;
+import wbs.wandcraft.spell.learning.LearningMethod;
+import wbs.wandcraft.spell.learning.LearningTrigger;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spellbook.Spellbook;
 

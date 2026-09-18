@@ -25,7 +25,7 @@ import wbs.wandcraft.effects.StatusEffectInstance;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.RequiresPlugin;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
 import java.util.Collection;
@@ -35,7 +35,7 @@ import java.util.Objects;
 
 @RequiresPlugin("LibsDisguises")
 @NullMarked
-public class HallucinationSpell extends SpellDefinition implements CastableSpell, DurationalSpell {
+public class HallucinationSpell extends SpellDefinition implements CastableSpell, DurationAttributable {
     public HallucinationSpell() {
         super("hallucination");
 

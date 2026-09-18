@@ -20,6 +20,10 @@ import wbs.wandcraft.objects.generics.MagicObject;
 import wbs.wandcraft.spell.attributes.BooleanSpellAttribute;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.FollowAttributable;
+import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.List;
@@ -27,7 +31,7 @@ import java.util.Objects;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.SCULK;
 
-public class AntiMagicShellSpell extends SpellDefinition implements CastableSpell, RadiusedSpell, DurationalSpell, ParticleSpell, FollowableSpell {
+public class AntiMagicShellSpell extends SpellDefinition implements CastableSpell, RadiusAttributable, DurationAttributable, ParticleAttributable, FollowAttributable {
     private static final SpellAttribute<Boolean> IS_REFLECTIVE = new BooleanSpellAttribute("is_reflective", true);
     private static final SpellAttribute<Integer> MAXIMUM_HITS = new IntegerSpellAttribute("maximum_hits", 6)
             .setShowAttribute(value -> value > 0);

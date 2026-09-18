@@ -9,9 +9,9 @@ import wbs.utils.util.persistent.KeyedPersistentDataType;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.event.SpellEffectDefinition;
-import wbs.wandcraft.spell.event.SpellEffectInstance;
-import wbs.wandcraft.spell.event.SpellTriggeredEvent;
+import wbs.wandcraft.spell.effect.SpellEffectDefinition;
+import wbs.wandcraft.spell.effect.SpellEffectInstance;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvent;
 
 import java.util.List;
 

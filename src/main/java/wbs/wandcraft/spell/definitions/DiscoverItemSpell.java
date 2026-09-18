@@ -18,14 +18,14 @@ import wbs.utils.util.WbsLocationUtil;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 
-public class DiscoverItemSpell extends SpellDefinition implements CastableSpell, RadiusedSpell {
+public class DiscoverItemSpell extends SpellDefinition implements CastableSpell, RadiusAttributable {
     private static final Set<Material> WHITELISTED_TILE_ENTITY_DISPLAYS = Set.of(
             Material.FURNACE,
             Material.SMOKER,

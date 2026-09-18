@@ -9,12 +9,12 @@ import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.HealthSpell;
+import wbs.wandcraft.spell.attributes.attributable.HealthAttributable;
 
 import java.util.List;
 
 public class HealerHat extends MagicHat {
-    private static final SpellAttributeModifier<Double, Double> HEALTH_MODIFIER = HealthSpell.HEALTH.createModifier(
+    private static final SpellAttributeModifier<Double, Double> HEALTH_MODIFIER = HealthAttributable.HEALTH.createModifier(
             AttributeModifierType.MULTIPLY,
             AttributeDataType.DOUBLE,
             3d

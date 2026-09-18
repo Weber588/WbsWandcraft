@@ -9,12 +9,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
 import java.util.Optional;
 
-public class EmergencyTeleportSpell extends SpellDefinition implements CastableSpell, RangedSpell {
+public class EmergencyTeleportSpell extends SpellDefinition implements CastableSpell, RangeAttributable {
 
     public static final int MAX_ATTEMPTS = 10;
 

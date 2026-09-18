@@ -18,12 +18,12 @@ import wbs.wandcraft.exceptions.MagicObjectExistsException;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.PersistenceLevel;
 import wbs.wandcraft.objects.colliders.Collider;
-import wbs.wandcraft.spell.event.SpellTriggeredEvents;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Objects;
 
 public abstract class MagicObject {
-	public Location spawnLocation; // The spawn location; should never change. To move, use DynamicMagicObject
+	public final Location spawnLocation; // The spawn location; should never change. To move, use DynamicMagicObject
 	public Player caster;
 	@NotNull
 	public CastContext context;
@@ -99,7 +99,7 @@ public abstract class MagicObject {
 					cancel = tick();
 				}
 
-				if (!cancel && effects != null) {
+				if (playEffectsOnTick() && !cancel && effects != null) {
 					effects.play(getLocation());
 				}
 
@@ -127,6 +127,10 @@ public abstract class MagicObject {
 		}.runTaskTimer(WbsWandcraft.getInstance(), 0L, 1L).getTaskId();
 
 		debug("Spawned: \n" + this);
+		return true;
+	}
+
+	protected boolean playEffectsOnTick() {
 		return true;
 	}
 

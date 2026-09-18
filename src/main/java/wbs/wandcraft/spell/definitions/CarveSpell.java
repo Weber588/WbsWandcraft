@@ -23,10 +23,10 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostUtils;
 import wbs.wandcraft.objects.colliders.Collider;
 import wbs.wandcraft.objects.colliders.Collision;
-import wbs.wandcraft.spell.definitions.extensions.BurnDamageSpell;
+import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.wand.Wand;
 
@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class CarveSpell extends SpellDefinition implements ContinuousCastableSpell, CastableSpell, BurnDamageSpell, RangedSpell {
+public class CarveSpell extends SpellDefinition implements ContinuousCastableSpell, CastableSpell, BurnDamageAttributable, RangeAttributable {
     private static final Particle.DustTransition PARTICLE_DATA = new Particle.DustTransition(
             SpellType.ARCANE.color(),
             SpellType.NETHER.color(),

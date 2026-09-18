@@ -14,10 +14,14 @@ import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.attributable.AttributableSetupHandler;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.event.SpellTriggeredEvents;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
-public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, ParticleSpell {
+public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributable, ParticleAttributable {
     SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0)
             .setShowAttribute(value -> value > 0)
             .sentiment(SpellAttribute.Sentiment.NEUTRAL);
@@ -33,6 +37,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
             .setNumericFormatter(20d, value -> value + " blocks/second²")
             .sentiment(SpellAttribute.Sentiment.NEUTRAL);
 
+    @AttributableSetupHandler
     default void setupCustomProjectile() {
         addAttribute(BOUNCES);
         addAttribute(GRAVITY);
@@ -100,8 +105,8 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangedSpell, Pa
             Entity hitEntity = result.getHitEntity();
             Block hitBlock = result.getHitBlock();
             if (hitEntity != null) {
-                if (this instanceof DamageSpell damageSpell && hitEntity instanceof Damageable damageable) {
-                    damageSpell.damage(context, damageable, DamageType.INDIRECT_MAGIC);
+                if (this instanceof DamageAttributable damageAttributable && hitEntity instanceof Damageable damageable) {
+                    damageAttributable.damage(context, damageable, DamageType.INDIRECT_MAGIC);
                 }
 
                 expire |= expireOnHitEntity();

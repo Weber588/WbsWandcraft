@@ -11,7 +11,7 @@ import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.particles.LineParticleEffect;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.TargetedSpell;
+import wbs.wandcraft.spell.attributes.attributable.TargetAttributable;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
 import static wbs.wandcraft.spell.definitions.type.SpellType.SCULK;
 
-public class DisplaceSpell extends SpellDefinition implements CastableSpell, TargetedSpell<LivingEntity> {
+public class DisplaceSpell extends SpellDefinition implements CastableSpell, TargetAttributable<LivingEntity> {
     private static final LineParticleEffect LINE_EFFECT = (LineParticleEffect) new LineParticleEffect()
             .setScaleAmount(true)
             .setRadius(0.1)

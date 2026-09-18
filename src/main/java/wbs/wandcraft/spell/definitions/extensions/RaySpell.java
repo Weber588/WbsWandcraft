@@ -12,16 +12,18 @@ import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.definitions.ISpellDefinition;
+import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.event.SpellTriggeredEvents;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public interface RaySpell extends ISpellDefinition, CastableSpell, RangedSpell, RadiusedSpell, DirectionalSpell {
+public interface RaySpell extends CastableSpell, RangeAttributable, RadiusAttributable, DirectionAttributable {
     @Override
     default void cast(CastContext context) {
         if (getStepSize() <= 0) {

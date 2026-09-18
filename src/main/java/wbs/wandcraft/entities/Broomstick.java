@@ -14,7 +14,7 @@ import org.joml.AxisAngle4f;
 import org.joml.Quaternionf;
 import wbs.utils.util.WbsMath;
 import wbs.utils.util.persistent.WbsPersistentDataType;
-import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
+import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 import wbs.wandcraft.wand.Wand;
 import wbs.wandcraft.wand.types.BroomstickWand;
 
@@ -58,7 +58,7 @@ public class Broomstick extends CustomEntity {
 
         Vector originalVelocity = broomstick.getVelocity();
         // TODO: Make this get from modifiers instead of direct attribute
-        if (originalVelocity.length() > MAX_SPEED + wand.getAttribute(SpeedSpell.SPEED, 0d)) {
+        if (originalVelocity.length() > MAX_SPEED + wand.getAttribute(SpeedAttributable.SPEED, 0d)) {
             return;
         }
 

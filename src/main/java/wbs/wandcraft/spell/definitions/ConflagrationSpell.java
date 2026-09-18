@@ -9,16 +9,16 @@ import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.DiscParticleEffect;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.definitions.extensions.BurnDamageSpell;
+import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.ForceSpell;
-import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
+import wbs.wandcraft.spell.attributes.attributable.ForceAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 
 import java.util.Collection;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.NETHER;
 
-public class ConflagrationSpell extends SpellDefinition implements CastableSpell, BurnDamageSpell, ForceSpell, RadiusedSpell {
+public class ConflagrationSpell extends SpellDefinition implements CastableSpell, BurnDamageAttributable, ForceAttributable, RadiusAttributable {
     public static final double DAMAGE_RANGE = 3d;
     private final DiscParticleEffect popEffect = (DiscParticleEffect) new DiscParticleEffect()
             .setSpeed(3)

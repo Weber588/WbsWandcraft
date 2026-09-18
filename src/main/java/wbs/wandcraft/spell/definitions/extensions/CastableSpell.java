@@ -3,6 +3,7 @@ package wbs.wandcraft.spell.definitions.extensions;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.attributable.AttributableSetupHandler;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
 public interface CastableSpell extends ISpellDefinition {
@@ -18,6 +19,7 @@ public interface CastableSpell extends ISpellDefinition {
 
     void cast(CastContext context);
 
+    @AttributableSetupHandler
     default void setupCastable() {
         addAttribute(COOLDOWN);
         addAttribute(COST);

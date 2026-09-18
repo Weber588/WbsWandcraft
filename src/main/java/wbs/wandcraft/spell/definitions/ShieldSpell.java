@@ -14,6 +14,10 @@ import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.colliders.MagicSpawnedBlock;
 import wbs.wandcraft.spell.attributes.BooleanSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
+import wbs.wandcraft.spell.attributes.attributable.FollowAttributable;
+import wbs.wandcraft.spell.attributes.attributable.MaterialAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
@@ -22,7 +26,7 @@ import java.util.List;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 
-public class ShieldSpell extends SpellDefinition implements ContinuousCastableSpell, DirectionalSpell, RadiusedSpell, MaterialSpell, FollowableSpell {
+public class ShieldSpell extends SpellDefinition implements ContinuousCastableSpell, DirectionAttributable, RadiusAttributable, MaterialAttributable, FollowAttributable {
     private static final SpellAttribute<Boolean> IS_BUBBLE = new BooleanSpellAttribute("is_bubble", false)
             .setWritable(true);
 

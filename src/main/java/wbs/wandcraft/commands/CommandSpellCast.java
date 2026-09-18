@@ -75,14 +75,17 @@ public class CommandSpellCast extends WbsSubcommand {
                         .suggests((context, suggestions) -> {
                             SpellAttribute<?> attribute = context.getArgument("attribute-" + finalI, SpellAttribute.class);
 
-                            return attribute.getSuggestions(context, suggestions);
+                            return attribute.listSuggestions(context, suggestions);
                         })
                         .executes(context -> cast(spell, context))
                         .build();
 
                 CommandNode<CommandSourceStack> attributeArg = Commands.argument("attribute-" + i, attributeArgType)
                         .executes(context -> {
-                            plugin.sendMessage("Enter a value! (jane pls make this better)", context.getSource().getSender());
+                            SpellAttribute<?> attribute = context.getArgument("attribute-" + finalI, SpellAttribute.class);
+                            plugin.buildMessage("Enter a value for ")
+                                    .append(attribute.displayName())
+                                    .send(context.getSource().getSender());
                             return Command.SINGLE_SUCCESS;
                         }).then(attrValue)
                         .build();
@@ -138,13 +141,9 @@ public class CommandSpellCast extends WbsSubcommand {
                 continue;
             }
 
-            WbsWandcraft.getInstance().getLogger().info("attribute: " + attribute.key().asString());
-            WbsWandcraft.getInstance().getLogger().info("attribute-value: " + attributeValueString);
-
             SpellAttributeInstance<?> attributeInstance;
             try {
                 attributeInstance = attribute.getParsedInstance(attributeValueString);
-                WbsWandcraft.getInstance().getLogger().info("attribute-value parsed: " + attributeInstance.value());
                 attributes.add(attributeInstance);
             } catch (NumberFormatException ex) {
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().create(ex.getMessage());

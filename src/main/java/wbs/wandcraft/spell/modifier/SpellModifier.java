@@ -12,7 +12,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.event.SpellEffectInstance;
+import wbs.wandcraft.spell.effect.SpellEffectInstance;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 
 import java.util.ArrayList;

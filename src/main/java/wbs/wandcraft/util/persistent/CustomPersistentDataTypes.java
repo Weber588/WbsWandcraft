@@ -1,5 +1,7 @@
 package wbs.wandcraft.util.persistent;
 
+import net.kyori.adventure.key.Key;
+import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -15,6 +17,7 @@ import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 
 import java.util.UUID;
+import java.util.function.Function;
 
 public class CustomPersistentDataTypes {
     public static final PersistentSpellEffectInstanceType SPELL_EFFECT = new PersistentSpellEffectInstanceType();
@@ -185,6 +188,48 @@ public class CustomPersistentDataTypes {
             }
 
             return enumFromString;
+        }
+    }
+
+    public static class PersistentKeyedType<T extends Keyed> implements PersistentDataType<String, T> {
+        // Force mark T as notnull, even if a nullable function is provided
+        public static <T extends Keyed> PersistentKeyedType<@NotNull T> get(Class<T> clazz, Function<Key, T> function) {
+            return new PersistentKeyedType<>(clazz, function);
+        }
+
+        private final Function<Key, T> function;
+        private final Class<T> clazz;
+
+        private PersistentKeyedType(Class<T> clazz, Function<Key, T> function) {
+            this.function = function;
+            this.clazz = clazz;
+        }
+
+        @Override
+        public @NotNull Class<String> getPrimitiveType() {
+            return String.class;
+        }
+
+        @Override
+        public @NotNull Class<T> getComplexType() {
+            return clazz;
+        }
+
+        @Override
+        public @NotNull String toPrimitive(@NotNull T keyed, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
+            return keyed.getKey().asString();
+        }
+
+        @Override
+        public @NotNull T fromPrimitive(@NotNull String asString, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
+            NamespacedKey namespacedKey = WbsPersistentDataType.NAMESPACED_KEY.fromPrimitive(asString, persistentDataAdapterContext);
+
+            T found = function.apply(namespacedKey);
+            if (found == null) {
+                throw new IllegalStateException("Keyed value not found! " + clazz.getCanonicalName() + ": " + asString);
+            }
+
+            return found;
         }
     }
 }

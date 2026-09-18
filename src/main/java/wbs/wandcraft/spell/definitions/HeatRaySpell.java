@@ -22,16 +22,17 @@ import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.colliders.Collider;
 import wbs.wandcraft.objects.colliders.Collision;
-import wbs.wandcraft.spell.definitions.extensions.BurnDamageSpell;
+import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class HeatRaySpell extends SpellDefinition implements ContinuousCastableSpell, CastableSpell, BurnDamageSpell, RangedSpell {
+public class HeatRaySpell extends SpellDefinition implements DirectionAttributable, ContinuousCastableSpell, CastableSpell, BurnDamageAttributable, RangeAttributable {
     public static final int WATER_PER_TICK = 3;
     public static final double BEAM_RADIUS = 0.6;
     private static final Particle.DustTransition PARTICLE_DATA = new Particle.DustTransition(

@@ -12,15 +12,15 @@ import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.effects.StatusEffectInstance;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
-import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 
 import java.util.UUID;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
 import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
 
-public class CrowsCallSpell extends SpellDefinition implements CastableSpell, DurationalSpell, SpeedSpell {
+public class CrowsCallSpell extends SpellDefinition implements CastableSpell, DurationAttributable, SpeedAttributable {
     public CrowsCallSpell() {
         super("crows_call");
 

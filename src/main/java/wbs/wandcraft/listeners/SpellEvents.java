@@ -11,7 +11,7 @@ import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.cost.CostType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 
 @SuppressWarnings("unused")
 public class SpellEvents implements Listener {
@@ -41,8 +41,8 @@ public class SpellEvents implements Listener {
                 if (context != null) {
                     SpellDefinition currentDefinition = context.instance().getDefinition();
 
-                    if (currentDefinition instanceof DamageSpell damageSpell) {
-                        Component deathMessage = damageSpell.getDeathMessage(killer, victim);
+                    if (currentDefinition instanceof DamageAttributable damageAttributable) {
+                        Component deathMessage = damageAttributable.getDeathMessage(killer, victim);
                         if (deathMessage != null) {
                             event.deathMessage(deathMessage);
                         }

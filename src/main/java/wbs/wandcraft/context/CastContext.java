@@ -9,7 +9,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.event.SpellTriggeredEvent;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvent;
 import wbs.wandcraft.wand.Wand;
 
 import java.util.Objects;

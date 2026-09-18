@@ -19,9 +19,9 @@ import wbs.utils.util.particles.ElectricParticleEffect;
 import wbs.utils.util.particles.LineParticleEffect;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
-import wbs.wandcraft.spell.definitions.extensions.DirectionalSpell;
-import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class ChainLightningSpell extends SpellDefinition implements ContinuousCastableSpell, DirectionalSpell, DamageSpell, RangedSpell {
+public class ChainLightningSpell extends SpellDefinition implements ContinuousCastableSpell, DirectionAttributable, DamageAttributable, RangeAttributable {
     private static final LineParticleEffect EFFECT = (LineParticleEffect) new LineParticleEffect()
             .setScaleAmount(true)
             .setAmount(7);

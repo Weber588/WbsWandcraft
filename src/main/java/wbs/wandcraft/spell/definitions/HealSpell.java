@@ -5,11 +5,11 @@ import org.bukkit.entity.LivingEntity;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.TargetedHealthSpell;
+import wbs.wandcraft.spell.attributes.attributable.TargetedHealthAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
 @NullMarked
-public class HealSpell extends SpellDefinition implements CastableSpell, TargetedHealthSpell {
+public class HealSpell extends SpellDefinition implements CastableSpell, TargetedHealthAttributable {
     public HealSpell() {
         super("heal");
 

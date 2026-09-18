@@ -18,16 +18,16 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.objects.generics.MagicObject;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
-import wbs.wandcraft.spell.definitions.extensions.HealthSpell;
-import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.HealthAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.util.EffectUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class HealingCircleSpell extends SpellDefinition implements CastableSpell, HealthSpell, RadiusedSpell, DurationalSpell {
+public class HealingCircleSpell extends SpellDefinition implements CastableSpell, HealthAttributable, RadiusAttributable, DurationAttributable {
     private static final int GLYPHS_PER_BLOCK = 3;
 
     public HealingCircleSpell() {

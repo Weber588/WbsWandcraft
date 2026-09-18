@@ -1,4 +1,7 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
-public interface IProjectileSpell extends CastableSpell, SpeedSpell, DirectionalSpell {
+import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
+import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
+
+public interface IProjectileSpell extends CastableSpell, SpeedAttributable, DirectionAttributable {
 }

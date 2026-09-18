@@ -11,15 +11,14 @@ import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.cost.PlayerMana;
+import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.SpellExtensionManager;
 import wbs.wandcraft.spell.definitions.type.SpellType;
-import wbs.wandcraft.spell.event.SpellTriggeredEvent;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvent;
 
 import java.util.*;
 
@@ -43,20 +42,7 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
     }
     public SpellDefinition(NamespacedKey key) {
         this.key = key;
-        SpellExtensionManager.setup(this);
-    }
-
-    public void addAttribute(SpellAttribute<?> attribute) {
-        SpellAttributeInstance<?> instance = attribute.defaultInstance();
-        if (instance == null) {
-            WbsWandcraft.getInstance().debug(SpellAttribute.DEBUG_CHANNEL_ATTRIBUTES, "Null default instance passed to SpellDefinition#addAttribute");
-        } else {
-            defaultAttributes.add(instance);
-        }
-    }
-
-    public Collection<SpellAttribute<?>> getAttributes() {
-        return new LinkedList<>(defaultAttributes.stream().map(SpellAttributeInstance::attribute).toList());
+        setupAttributables();
     }
 
     @Override

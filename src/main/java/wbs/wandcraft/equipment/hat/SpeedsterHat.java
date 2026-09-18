@@ -12,8 +12,8 @@ import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.ForceSpell;
-import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
+import wbs.wandcraft.spell.attributes.attributable.ForceAttributable;
+import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 
 import java.util.List;
 import java.util.Map;
@@ -21,12 +21,12 @@ import java.util.Map;
 public class SpeedsterHat extends MagicHat {
     public static final double SPEED_MULTIPLIER = 1.5;
 
-    private static final SpellAttributeModifier<Double, Double> SPEED_MODIFIER = SpeedSpell.SPEED.createModifier(
+    private static final SpellAttributeModifier<Double, Double> SPEED_MODIFIER = SpeedAttributable.SPEED.createModifier(
             AttributeModifierType.MULTIPLY,
             AttributeDataType.DOUBLE,
             SPEED_MULTIPLIER
     );
-    private static final SpellAttributeModifier<Double, Double> FORCE_MODIFIER = ForceSpell.FORCE.createModifier(
+    private static final SpellAttributeModifier<Double, Double> FORCE_MODIFIER = ForceAttributable.FORCE.createModifier(
             AttributeModifierType.MULTIPLY,
             AttributeDataType.DOUBLE,
             SPEED_MULTIPLIER

@@ -14,13 +14,12 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.KeyedSuggestionProvider;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
-import wbs.utils.util.commands.brigadier.WbsSuggestionProvider;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument.KeyedSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.attributes.Attributable;
+import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
@@ -56,19 +55,19 @@ public class CommandModifyAttributes extends WbsSubcommand {
             if (sender instanceof Player player) {
                 ItemStack item = player.getInventory().getItemInMainHand();
 
-                Attributable attributable = null;
+                AttributeHolder attributeHolder = null;
                 Wand wand = Wand.fromItem(item);
                 SpellInstance instance = SpellInstance.fromItem(item);
                 if (wand != null) {
-                    attributable = wand;
+                    attributeHolder = wand;
                 } else if (instance != null) {
-                    attributable = instance;
+                    attributeHolder = instance;
                 }
 
                 Set<SpellAttribute<?>> attributes = new HashSet<>();
 
-                if (attributable != null) {
-                    attributable.deriveAttributeValues().stream()
+                if (attributeHolder != null) {
+                    attributeHolder.deriveAttributeValues().stream()
                             .map(SpellAttributeInstance::attribute)
                             .forEach(attributes::add);
 
@@ -96,7 +95,7 @@ public class CommandModifyAttributes extends WbsSubcommand {
             SpellAttribute<?> attribute = WandcraftRegistries.ATTRIBUTES.get(attributeKey);
 
             if (attribute != null) {
-                return WbsSuggestionProvider.getStatic(attribute.getStringSuggestions()).getSuggestions(context, builder);
+                return attribute.listSuggestions(context, builder);
             } else {
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().create("Attribute not found: " + attributeKey.asString());
             }

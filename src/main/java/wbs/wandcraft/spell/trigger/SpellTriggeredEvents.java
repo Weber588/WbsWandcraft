@@ -1,0 +1,14 @@
+package wbs.wandcraft.spell.trigger;
+
+import org.bukkit.Location;
+import org.bukkit.util.RayTraceResult;
+import wbs.wandcraft.WbsWandcraft;
+
+public class SpellTriggeredEvents {
+    public static final SpellTriggeredEvent<RayTraceResult> ON_HIT_TRIGGER
+            = new SpellTriggeredEvent<>(WbsWandcraft.getKey("hit"), RayTraceResult.class);
+    public static final SpellTriggeredEvent<Location> OBJECT_TICK_TRIGGER
+            = new SpellTriggeredEvent<>(WbsWandcraft.getKey("tick"), Location.class);
+    public static final SpellTriggeredEvent<Location> OBJECT_EXPIRE_TRIGGER
+            = new SpellTriggeredEvent<>(WbsWandcraft.getKey("expire"), Location.class);
+}

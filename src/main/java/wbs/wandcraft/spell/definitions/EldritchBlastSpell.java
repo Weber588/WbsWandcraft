@@ -7,12 +7,12 @@ import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
 
-public class EldritchBlastSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell {
+public class EldritchBlastSpell extends SpellDefinition implements CustomProjectileSpell, DamageAttributable {
     private static final WbsParticleGroup EFFECT = new WbsParticleGroup();
     private static final WbsParticleGroup END_EFFECT = new WbsParticleGroup();
 

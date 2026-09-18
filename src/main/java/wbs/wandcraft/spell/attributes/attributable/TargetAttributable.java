@@ -1,0 +1,110 @@
+package wbs.wandcraft.spell.attributes.attributable;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import wbs.utils.util.entities.selector.LineOfSightSelector;
+import wbs.utils.util.entities.selector.RadiusSelector;
+import wbs.wandcraft.AttributeDataType;
+import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.spell.attributes.*;
+import wbs.wandcraft.spell.definitions.SpellInstance;
+
+import java.util.List;
+
+public interface TargetAttributable<T extends Entity> extends AttributeHolder {
+    SpellAttribute<TargeterType> TARGET = new EnumSpellAttribute<>("target",
+            TargeterType.LINE_OF_SIGHT,
+            AttributeDataType.TARGETER,
+            TargeterType.class
+    ).setSuggestions(TargeterType.values());
+    SpellAttribute<Integer> MAX_TARGETS = new IntegerSpellAttribute("max_targets", 1)
+            .setShowAttribute((val, attributable) -> val > 1 && attributable.getAttribute(TARGET) != TargeterType.SELF);
+    SpellAttribute<Double> TARGET_RANGE = new DoubleSpellAttribute("target_range", 20)
+            .setShowAttribute((val, attributable) -> attributable.getAttribute(TARGET) != TargeterType.SELF)
+            .overrideTextureValue("range");
+    SpellAttribute<Double> TARGET_RAY_SIZE = new DoubleSpellAttribute("target_ray_size", 1)
+            .setShowAttribute((val, attributable) -> attributable.getAttribute(TARGET) == TargeterType.LINE_OF_SIGHT)
+            .overrideTextureValue("range");
+
+    @AttributableSetupHandler
+    default void setupTargeted() {
+        addAttribute(MAX_TARGETS);
+        addAttribute(TARGET);
+        addAttribute(TARGET_RANGE);
+    }
+
+    Class<T> getEntityClass();
+
+    default List<T> getTargets(CastContext context) {
+        SpellInstance instance = context.instance();
+        Player player = context.player();
+        Location location = context.location();
+
+        TargeterType targeterType = instance.getAttribute(TARGET);
+
+        Class<T> entityClass = getEntityClass();
+
+        switch (targeterType) {
+            case SELF -> {
+                if (entityClass.isInstance(player)) {
+                    return List.of(entityClass.cast(player));
+                } else {
+                    return List.of();
+                }
+            }
+            case LINE_OF_SIGHT -> {
+                LineOfSightSelector<T> selector = new LineOfSightSelector<>(entityClass)
+                        .setRange(instance.getAttribute(TARGET_RANGE))
+                        .setRaySize(instance.getAttribute(TARGET_RAY_SIZE))
+                        .setMaxSelections(instance.getAttribute(MAX_TARGETS))
+                        .setPredicate(this::isValid)
+                        .setDirection(location.getDirection());
+
+                if (entityClass.isInstance(player)) {
+                    selector.exclude(entityClass.cast(player));
+                }
+
+                return selector
+                        .select(location);
+            }
+            case RADIUS -> {
+                RadiusSelector<T> selector = new RadiusSelector<>(entityClass)
+                        .setRange(instance.getAttribute(TARGET_RANGE))
+                        .setPredicate(this::isValid)
+                        .setMaxSelections(instance.getAttribute(MAX_TARGETS));
+
+                if (entityClass.isInstance(player)) {
+                    selector.exclude(entityClass.cast(player));
+                }
+
+                return selector.select(context.location());
+            }
+            default -> throw new IllegalStateException("Targeter missing: " + this);
+        }
+    }
+
+    default boolean isValid(T entity) {
+        if (entity instanceof LivingEntity livingEntity) {
+            return livingEntity.hasAI();
+        }
+        return true;
+    }
+
+    default String getNoTargetsMessage(CastContext context) {
+        TargeterType targeterType = context.instance().getAttribute(TARGET);
+
+        return switch (targeterType) {
+            case SELF -> "Cannot target yourself!";
+            case LINE_OF_SIGHT -> "No valid targets in line of sight!";
+            case RADIUS -> "No valid targets in radius!";
+        };
+    }
+
+    enum TargeterType {
+        SELF,
+        LINE_OF_SIGHT,
+        RADIUS,
+    }
+}

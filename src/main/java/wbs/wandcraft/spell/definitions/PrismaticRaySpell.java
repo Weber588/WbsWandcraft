@@ -9,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsColours;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 import wbs.wandcraft.spell.definitions.extensions.RaySpell;
 
 import java.util.Set;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 
-public class PrismaticRaySpell extends SpellDefinition implements CastableSpell, RaySpell, DamageSpell {
+public class PrismaticRaySpell extends SpellDefinition implements CastableSpell, RaySpell, DamageAttributable {
 
     public static final @NotNull Color START_COLOR = Color.fromRGB(0xFF7575);
     public static final @NotNull Color END_COLOR = Color.fromRGB(0xFF7578);

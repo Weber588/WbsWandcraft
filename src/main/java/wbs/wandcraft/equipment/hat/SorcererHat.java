@@ -15,19 +15,19 @@ import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
-import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 
 import java.util.List;
 import java.util.Map;
 
 public class SorcererHat extends MagicHat {
-    private static final SpellAttributeModifier<Integer, Double> DURATION_MODIFIER = DurationalSpell.DURATION.createModifier(
+    private static final SpellAttributeModifier<Integer, Double> DURATION_MODIFIER = DurationAttributable.DURATION.createModifier(
             AttributeModifierType.MULTIPLY,
             AttributeDataType.DOUBLE,
             1.75
     );
-    private static final SpellAttributeModifier<Double, Double> RANGE_MODIFIER = RangedSpell.RANGE.createModifier(
+    private static final SpellAttributeModifier<Double, Double> RANGE_MODIFIER = RangeAttributable.RANGE.createModifier(
             AttributeModifierType.MULTIPLY,
             AttributeDataType.DOUBLE,
             1.25

@@ -19,11 +19,11 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.events.SpellCastEvent;
 import wbs.wandcraft.spell.WandEntry;
-import wbs.wandcraft.spell.attributes.Attributable;
+import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.event.SpellEffectInstance;
-import wbs.wandcraft.spell.event.SpellTriggeredEvent;
+import wbs.wandcraft.spell.effect.SpellEffectInstance;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvent;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class SpellInstance implements WandEntry<SpellInstance>, Attributable {
+public class SpellInstance implements WandEntry<SpellInstance>, AttributeHolder {
     public static final NamespacedKey SPELL_INSTANCE_KEY = WbsWandcraft.getKey("spell_instance");
     public static final NamespacedKey LAST_CAST_KEY = WbsWandcraft.getKey("last_cast_spell");
 

@@ -13,13 +13,17 @@ import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
+import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.extensions.*;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class FireBreathSpell extends SpellDefinition implements ContinuousCastableSpell, BurnDamageSpell, DirectionalSpell, RangedSpell, ParticleSpell {
+public class FireBreathSpell extends SpellDefinition implements ContinuousCastableSpell, BurnDamageAttributable, DirectionAttributable, RangeAttributable, ParticleAttributable {
     private static final RingParticleEffect FIRE_EFFECT = (RingParticleEffect) new RingParticleEffect()
             .setRadius(0.01)
             .setVariation(0.03)

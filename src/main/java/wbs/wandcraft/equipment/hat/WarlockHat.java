@@ -12,13 +12,13 @@ import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 
 import java.util.List;
 import java.util.Map;
 
 public class WarlockHat extends MagicHat {
-    private static final SpellAttributeModifier<Double, Double> DAMAGE_MODIFIER = DamageSpell.DAMAGE.createModifier(
+    private static final SpellAttributeModifier<Double, Double> DAMAGE_MODIFIER = DamageAttributable.DAMAGE.createModifier(
             AttributeModifierType.MULTIPLY,
             AttributeDataType.DOUBLE,
             2.5

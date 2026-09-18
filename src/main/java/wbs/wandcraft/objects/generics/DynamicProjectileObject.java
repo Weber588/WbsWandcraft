@@ -17,6 +17,8 @@ public class DynamicProjectileObject extends DynamicMagicObject {
     @NotNull
     private Runnable maxDistanceReached = () -> {};
 
+    private boolean shouldPlayParticles = false;
+
     public DynamicProjectileObject(Location location, Player caster, CastContext context) {
         super(location, caster, context);
 
@@ -34,18 +36,24 @@ public class DynamicProjectileObject extends DynamicMagicObject {
     }
 
     @Override
+    protected boolean beforeMove() {
+        setStepsPerTick(getVelocity().length() * 5);
+        return super.beforeMove();
+    }
+
+    @Override
     protected boolean onStep(int step, int stepsThisTick) {
         debug("Projectile object onStep()");
         boolean cancel = super.onStep(step, stepsThisTick);
 
-        setStepsPerTick(getVelocity().length() * 5);
+        double distanceFromSpawn = getLocation().distanceSquared(getSpawnLocation());
 
-        if (effects != null && (getAge() * getStepsPerTick() > 2 || getLocation().distance(getSpawnLocation()) > 0.5)) {
+        if (effects != null && (shouldPlayParticles || distanceFromSpawn > 1)) {
             debug("Projectile object playing effects");
+            shouldPlayParticles = true;
             effects.buildAndPlay(location);
         }
 
-        double distanceFromSpawn = getLocation().distanceSquared(getSpawnLocation());
         if (distanceFromSpawn > range * range) {
             debug("Projectile object left range in onStep -- cancelling (" + distanceFromSpawn + " > " + range * range);
             cancel = true;
@@ -53,6 +61,12 @@ public class DynamicProjectileObject extends DynamicMagicObject {
         }
 
         return cancel;
+    }
+
+    // Handled in onStep
+    @Override
+    protected boolean playEffectsOnTick() {
+        return false;
     }
 
     public double getRange() {

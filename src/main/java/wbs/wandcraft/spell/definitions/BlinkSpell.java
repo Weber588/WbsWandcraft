@@ -11,13 +11,13 @@ import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DirectionalSpell;
-import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
-import wbs.wandcraft.spell.definitions.extensions.SpeedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
+import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
 
-public class BlinkSpell extends SpellDefinition implements CastableSpell, RangedSpell, SpeedSpell, DirectionalSpell {
+public class BlinkSpell extends SpellDefinition implements CastableSpell, RangeAttributable, SpeedAttributable, DirectionAttributable {
     public BlinkSpell() {
         super("blink");
 

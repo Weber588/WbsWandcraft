@@ -4,9 +4,9 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 
-public class ControlWeatherSpell extends SpellDefinition implements CastableSpell, DurationalSpell {
+public class ControlWeatherSpell extends SpellDefinition implements CastableSpell, DurationAttributable {
     public ControlWeatherSpell() {
         super("control_weather");
     }

@@ -1,11 +1,12 @@
 package wbs.wandcraft.spell.attributes;
 
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.argument.CustomArgumentType;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -16,11 +17,12 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsColours;
+import wbs.utils.util.commands.brigadier.argument.ArgumentTypeSuggestionProvider;
+import wbs.utils.util.commands.brigadier.argument.WrappedCustomArgument;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.AttributeDataType;
@@ -34,24 +36,23 @@ import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @NullMarked
-public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, DynamicItemTextureProvider, SuggestionProvider<CommandSourceStack> {
+public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, DynamicItemTextureProvider, ArgumentTypeSuggestionProvider<T, Object>, WrappedCustomArgument<T, Object> {
     public static final String DEBUG_CHANNEL_ATTRIBUTES = "attributes";
 
     private final NamespacedKey key;
     private Component displayName;
     private final AttributeDataType<T> type;
-    private @NotNull ArgumentType<T> argumentType;
+    private final ArgumentType<T> argumentType;
     @UnknownNullability
     private final T defaultValue;
     private final Function<String, @UnknownNullability T> parse;
     private final Collection<@UnknownNullability T> suggestions = new HashSet<>();
     private final Collection<String> rawSuggestions = new HashSet<>();
-    private BiFunction<T, Attributable, Boolean> shouldShow = (val, attributable) -> true;
+    private BiFunction<T, AttributeHolder, Boolean> shouldShow = (val, attributable) -> true;
     private Function<T, String> formatter = Objects::toString;
     private Function<T, String> rawFormatter = Objects::toString;
     private final List<TypedFormatter<?>> typedFormatters = new LinkedList<>();
@@ -142,13 +143,13 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     public SpellAttribute<T> setShowAttribute(Function<T, Boolean> shouldShow) {
         return setShowAttribute((val, ignored) -> shouldShow.apply(val));
     }
-    public SpellAttribute<T> setShowAttribute(BiFunction<T, Attributable, Boolean> shouldShow) {
+    public SpellAttribute<T> setShowAttribute(BiFunction<T, AttributeHolder, Boolean> shouldShow) {
         this.shouldShow = shouldShow;
         return this;
     }
 
-    public boolean shouldShow(T value, Attributable attributable) {
-        return shouldShow.apply(value, attributable);
+    public boolean shouldShow(T value, AttributeHolder attributeHolder) {
+        return shouldShow.apply(value, attributeHolder);
     }
 
     public SpellAttribute<T> setFormatter(Function<T, String> formatter) {
@@ -274,7 +275,7 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     public Collection<String> getStringSuggestions() {
         List<String> suggestions = new LinkedList<>(this.suggestions.stream()
                 .filter(Objects::nonNull)
-                .map(Object::toString)
+                .map(formatter)
                 .toList());
 
         suggestions.addAll(rawSuggestions);
@@ -367,10 +368,61 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     }
 
     @Override
-    public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
-        getStringSuggestions().forEach(builder::suggest);
+    public Iterable<T> getSuggestions(CommandContext<CommandSourceStack> commandContext) {
+        return suggestions;
+    }
 
-        return builder.buildFuture();
+    /**
+     * toString method for {@link wbs.utils.util.commands.brigadier.WbsSuggestionProvider#toString(T)}.
+     * @return Same as {@link #toRawString(T)}, except wrapped in quotation marks for suggestions containing
+     */
+    @Override
+    public String toString(@Nullable T value) {
+        if (value == null) {
+            return "null";
+        }
+        String rawFormatted = rawFormatter.apply(value);
+        return StringArgumentType.escapeIfRequired(rawFormatted);
+    }
+
+    @Override
+    public Collection<String> getSuggestionMatches(T value) {
+        if (!(value instanceof Keyed keyed)) {
+            return ArgumentTypeSuggestionProvider.super.getSuggestionMatches(value);
+        }
+
+        List<String> toMatch = new LinkedList<>();
+
+        toMatch.add(keyed.key().asString());
+        toMatch.add(keyed.key().value());
+        toMatch.add("\"" + keyed.key().asString() + "\"");
+        toMatch.add("\"" + keyed.key().value() + "\"");
+
+        String[] sections = keyed.key().key().value().split("/");
+
+        toMatch.addAll(List.of(sections));
+
+        return toMatch;
+    }
+
+    @Override
+    public CustomArgumentType<T, Object> getWrappedArgumentType() {
+        return new CustomArgumentType<>() {
+            @Override
+            public T parse(StringReader reader) throws CommandSyntaxException {
+                return argumentType.parse(reader);
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public ArgumentType<Object> getNativeType() {
+                if (argumentType instanceof CustomArgumentType<?,?> custom) {
+                    return (ArgumentType<Object>) custom.getNativeType();
+                } else {
+                    return (ArgumentType<Object>) argumentType;
+                }
+            }
+        };
     }
 
     private record TypedFormatter<M>(AttributeDataType<M> dataType, Function<@Nullable M, String> formatter) {

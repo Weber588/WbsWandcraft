@@ -17,6 +17,7 @@ import wbs.utils.util.particles.SpiralParticleEffect;
 import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.spell.attributes.attributable.*;
 import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
@@ -24,7 +25,7 @@ import java.util.Collection;
 import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
 import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
 
-public class VoidStepSpell extends SpellDefinition implements CastableSpell, RangedSpell, SpeedSpell, DirectionalSpell, DamageSpell, RadiusedSpell {
+public class VoidStepSpell extends SpellDefinition implements CastableSpell, RangeAttributable, SpeedAttributable, DirectionAttributable, DamageAttributable, RadiusAttributable {
     private static final ElectricParticleEffect EFFECT = (ElectricParticleEffect) new ElectricParticleEffect()
             .setTicks(40)
             .setRadius(0.6)

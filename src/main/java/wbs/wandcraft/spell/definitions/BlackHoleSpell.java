@@ -24,16 +24,16 @@ import wbs.wandcraft.objects.generics.DynamicMagicObject;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.objects.generics.MagicObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
-import wbs.wandcraft.spell.definitions.extensions.ForceSpell;
-import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.ForceAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
-import wbs.wandcraft.spell.event.SpellTriggeredEvents;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.List;
 import java.util.Set;
 
-public class BlackHoleSpell extends SpellDefinition implements CustomProjectileSpell, RadiusedSpell, DamageSpell, ForceSpell {
+public class BlackHoleSpell extends SpellDefinition implements CustomProjectileSpell, RadiusAttributable, DamageAttributable, ForceAttributable {
 
     public static final float MAX_HARDNESS = Material.ANCIENT_DEBRIS.getHardness() - 0.1f;
 

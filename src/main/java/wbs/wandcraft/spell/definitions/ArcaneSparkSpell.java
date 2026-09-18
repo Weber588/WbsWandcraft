@@ -8,11 +8,11 @@ import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 
-public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell {
+public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectileSpell, DamageAttributable {
     private static final WbsParticleEffect EFFECT = new NormalParticleEffect()
             .setXYZ(0.1)
             .setData(new Particle.Spell(ARCANE.wandColor(), 1f))

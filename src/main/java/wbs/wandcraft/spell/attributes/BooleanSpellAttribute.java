@@ -24,4 +24,8 @@ public class BooleanSpellAttribute extends SpellAttribute<Boolean> {
             return sentiment().invert();
         }
     }
+
+    SpellAttribute<Boolean> getThis() {
+        return this;
+    }
 }

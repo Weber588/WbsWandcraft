@@ -16,6 +16,10 @@ import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
+import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
@@ -24,7 +28,7 @@ import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
 
 // TODO: Make this a continuous cast spell
-public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, DurationalSpell, DamageSpell, SpeedSpell, ParticleSpell {
+public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, DurationAttributable, DamageAttributable, SpeedAttributable, ParticleAttributable {
     private final Particle.DustOptions data = new Particle.DustOptions(ARCANE.mulColor(1.2), 0.6F);
     private final Particle.DustOptions dataCore = new Particle.DustOptions(VOID.mulColor(0.5), 1F);
 

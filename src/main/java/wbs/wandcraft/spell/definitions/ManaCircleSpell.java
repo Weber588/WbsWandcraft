@@ -19,15 +19,15 @@ import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.objects.generics.MagicObject;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
-import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.util.EffectUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class ManaCircleSpell extends SpellDefinition implements CastableSpell, RadiusedSpell, DurationalSpell {
+public class ManaCircleSpell extends SpellDefinition implements CastableSpell, RadiusAttributable, DurationAttributable {
     private static final int GLYPHS_PER_BLOCK = 3;
     private static final int MANA_PER_TICK = 3;
 

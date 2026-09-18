@@ -15,11 +15,11 @@ import wbs.wandcraft.ai.CustomAvoidGoal;
 import wbs.wandcraft.ai.TemporaryGoal;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
-import wbs.wandcraft.spell.definitions.extensions.TargetedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.TargetAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
-public class TurnUndeadSpell extends SpellDefinition implements CastableSpell, DurationalSpell, TargetedSpell<Mob> {
+public class TurnUndeadSpell extends SpellDefinition implements CastableSpell, DurationAttributable, TargetAttributable<Mob> {
     private static final NormalParticleEffect EFFECT = (NormalParticleEffect) new NormalParticleEffect()
             .setSpeed(0.05)
             .setAmount(15);
@@ -58,7 +58,7 @@ public class TurnUndeadSpell extends SpellDefinition implements CastableSpell, D
 
     @Override
     public boolean isValid(Mob entity) {
-        return TargetedSpell.super.isValid(entity) && WbsRegistryUtil.isTagged(entity.getType(), EntityTypeTagKeys.UNDEAD);
+        return TargetAttributable.super.isValid(entity) && WbsRegistryUtil.isTagged(entity.getType(), EntityTypeTagKeys.UNDEAD);
     }
 
     @Override

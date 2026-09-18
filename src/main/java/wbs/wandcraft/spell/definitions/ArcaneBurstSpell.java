@@ -15,17 +15,17 @@ import wbs.utils.util.providers.generator.vector.VectorGenerator;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
-import wbs.wandcraft.spell.definitions.extensions.DamageSpell;
-import wbs.wandcraft.spell.definitions.extensions.ForceSpell;
-import wbs.wandcraft.spell.definitions.extensions.RadiusedSpell;
-import wbs.wandcraft.spell.event.SpellTriggeredEvents;
+import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.ForceAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Collection;
 
 import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
 import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
 
-public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectileSpell, DamageSpell, RadiusedSpell, ForceSpell {
+public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectileSpell, DamageAttributable, RadiusAttributable, ForceAttributable {
     private static final WbsParticleGroup EXPLODE_GROUP = new WbsParticleGroup();
 
     static {

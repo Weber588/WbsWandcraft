@@ -9,18 +9,18 @@ import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.DirectionalSpell;
-import wbs.wandcraft.spell.definitions.extensions.RangedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 
 import java.util.List;
 
 public class MarksmanHat extends MagicHat {
-    private static final SpellAttributeModifier<Double, Double> IMPRECISION_MODIFIER = DirectionalSpell.IMPRECISION.createModifier(
+    private static final SpellAttributeModifier<Double, Double> IMPRECISION_MODIFIER = DirectionAttributable.IMPRECISION.createModifier(
             AttributeModifierType.MULTIPLY,
             AttributeDataType.DOUBLE,
             0d
     );
-    private static final SpellAttributeModifier<Double, Double> RANGE_MODIFIER = RangedSpell.RANGE.createModifier(
+    private static final SpellAttributeModifier<Double, Double> RANGE_MODIFIER = RangeAttributable.RANGE.createModifier(
             AttributeModifierType.MULTIPLY,
             AttributeDataType.DOUBLE,
             1.5

@@ -36,7 +36,7 @@ import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.cost.CostUtils;
 import wbs.wandcraft.events.EnqueueSpellsEvent;
 import wbs.wandcraft.events.SpendManaEvent;
-import wbs.wandcraft.spell.attributes.Attributable;
+import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 
 import static wbs.wandcraft.util.persistent.AbstractPersistentWandType.WAND_TYPE;
 
-public abstract class Wand implements Attributable {
+public abstract class Wand implements AttributeHolder {
     public static final NamespacedKey WAND_KEY = WbsWandcraft.getKey("wand");
     public static final NamespacedKey LAST_USED = WbsWandcraft.getKey("last_used");
 
@@ -271,7 +271,7 @@ public abstract class Wand implements Attributable {
             modifiers.addAll(spellModifier.getModifiers());
         });
 
-        return Attributable.super.deriveAttributeValues().stream()
+        return AttributeHolder.super.deriveAttributeValues().stream()
                 .map(instance -> {
                     SpellAttributeInstance<?> clone = instance.clone();
                     for (SpellAttributeModifier<?, ?> modifier : modifiers) {
@@ -291,7 +291,7 @@ public abstract class Wand implements Attributable {
         List<Component> lore = new LinkedList<>();
 
         lore.add(Component.text("Attributes:").color(NamedTextColor.AQUA));
-        lore.addAll(Attributable.super.getLore());
+        lore.addAll(AttributeHolder.super.getLore());
 
         if (!attributeModifiers.isEmpty()) {
             lore.add(Component.text("Modifiers:").color(NamedTextColor.AQUA));

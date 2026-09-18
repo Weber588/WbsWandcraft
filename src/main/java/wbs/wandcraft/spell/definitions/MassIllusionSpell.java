@@ -19,8 +19,8 @@ import wbs.wandcraft.effects.StatusEffectInstance;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.RequiresPlugin;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.extensions.DurationalSpell;
-import wbs.wandcraft.spell.definitions.extensions.TargetedSpell;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.attributable.TargetAttributable;
 import wbs.wandcraft.spell.definitions.type.SpellType;
 
 import java.util.Collections;
@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RequiresPlugin("LibsDisguises")
-public class MassIllusionSpell extends SpellDefinition implements CastableSpell, DurationalSpell, TargetedSpell<LivingEntity> {
+public class MassIllusionSpell extends SpellDefinition implements CastableSpell, DurationAttributable, TargetAttributable<LivingEntity> {
     public MassIllusionSpell() {
         super("mass_illusion");
 
