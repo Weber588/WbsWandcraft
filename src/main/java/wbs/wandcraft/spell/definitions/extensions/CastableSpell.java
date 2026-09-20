@@ -1,21 +1,29 @@
 package wbs.wandcraft.spell.definitions.extensions;
 
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.attributable.AttributableSetupHandler;
+import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
 
 public interface CastableSpell extends ISpellDefinition {
+    double SCULK_MULTIPLIER = 0.8;
+
     // TODO: Populate cooldown for all spells
     SpellAttribute<Integer> COOLDOWN = new IntegerSpellAttribute("cooldown", 5)
             .setShowAttribute(cooldown -> cooldown > 0)
             .setTicksToSecondsFormatter()
             .overrideTextureValue("duration")
-            .sentiment(SpellAttribute.Sentiment.NEGATIVE);
+            .sentiment(SpellAttribute.Sentiment.NEGATIVE)
+            .typeModifier(SpellType.ARCANE, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, 0.8);
+
     SpellAttribute<Integer> COST = new IntegerSpellAttribute("cost", 100)
             .setShowAttribute(cost -> cost > 0)
-            .sentiment(SpellAttribute.Sentiment.NEGATIVE);
+            .sentiment(SpellAttribute.Sentiment.NEGATIVE)
+            .typeModifier(SpellType.SCULK, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, SCULK_MULTIPLIER);
 
     void cast(CastContext context);
 

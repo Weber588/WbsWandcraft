@@ -7,8 +7,8 @@ import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
-import static wbs.wandcraft.spell.definitions.type.SpellType.SCULK;
+import static wbs.wandcraft.spell.SpellType.ENDER;
+import static wbs.wandcraft.spell.SpellType.SCULK;
 
 public class PlanarBindingSpell extends SpellDefinition implements StatusEffectSpell<LivingEntity> {
     public PlanarBindingSpell() {

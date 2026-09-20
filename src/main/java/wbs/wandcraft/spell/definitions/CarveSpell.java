@@ -21,13 +21,14 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostUtils;
-import wbs.wandcraft.objects.colliders.Collider;
+import wbs.wandcraft.objects.colliders.MagicObjectCollider;
 import wbs.wandcraft.objects.colliders.Collision;
 import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 import wbs.wandcraft.wand.Wand;
 
 import java.util.HashMap;
@@ -80,6 +81,7 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
         Vector facingVector = WbsEntityUtil.getFacingVector(player, range);
         Location beamStartLocation = player.getEyeLocation();
 
+
         handleCarveCollisions(context, beamStartLocation, facingVector, range);
     }
 
@@ -88,7 +90,7 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
 
         Collision closestCollision = null;
         double closestCollisionDistance = Double.MAX_VALUE;
-        for (Collider collider : Collider.getColliders()) {
+        for (MagicObjectCollider collider : MagicObjectCollider.getColliders()) {
             Collision collision = collider.getCollision(beamStartLocation, endLocation);
             if (collision != null) {
                 double hitDistance = collision.getHitLocation().distance(beamStartLocation);
@@ -128,7 +130,9 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
 
             Entity hitEntity = result.getHitEntity();
             if (hitEntity != null) {
-                damageAndBurn(hitEntity, context);
+                if (damageAndBurn(hitEntity, context) > 0) {
+                    context.runEffects(SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER, hitEntity);
+                }
                 HIT_EFFECT.play(Particle.SMALL_FLAME, endLocation);
             }
             Block hitBlock = result.getHitBlock();

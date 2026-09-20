@@ -22,8 +22,8 @@ import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Collection;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
-import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
+import static wbs.wandcraft.spell.SpellType.ARCANE;
+import static wbs.wandcraft.spell.SpellType.VOID;
 
 public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectileSpell, DamageAttributable, RadiusAttributable, ForceAttributable {
     private static final WbsParticleGroup EXPLODE_GROUP = new WbsParticleGroup();
@@ -77,16 +77,17 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
         projectile.setParticle(new WbsParticleGroup().addEffect(effect, particle));
         projectile.setEndEffects(EXPLODE_GROUP);
 
-        SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (result) -> {
+        SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (expiringObject) -> {
             Collection<LivingEntity> hit = new RadiusSelector<>(LivingEntity.class)
                     .setRange(instance.getAttribute(RADIUS))
                     .exclude(context.player())
-                    .select(result);
+                    .select(expiringObject.getLocation());
 
             Vector pushVector = new Vector(0, instance.getAttribute(FORCE), 0);
             for (LivingEntity target : hit) {
-                damageThen(target, context, scaleByDistance(context, target, 3, DAMAGE), damageable -> {
+                damageThen(target, context, scaleByDistance(context, target, 3, DAMAGE), _ -> {
                     target.setVelocity(pushVector);
+                    context.runEffects(SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER, target);
                 });
             }
         });

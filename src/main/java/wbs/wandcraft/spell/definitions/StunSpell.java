@@ -7,7 +7,7 @@ import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
+import static wbs.wandcraft.spell.SpellType.ARCANE;
 
 public class StunSpell extends SpellDefinition implements StatusEffectSpell<LivingEntity> {
     public StunSpell() {

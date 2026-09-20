@@ -9,8 +9,8 @@ import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
-import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
+import static wbs.wandcraft.spell.SpellType.ARCANE;
+import static wbs.wandcraft.spell.SpellType.VOID;
 
 public class EldritchBlastSpell extends SpellDefinition implements CustomProjectileSpell, DamageAttributable {
     private static final WbsParticleGroup EFFECT = new WbsParticleGroup();
@@ -61,7 +61,6 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
         setAttribute(DAMAGE, 7.0);
         setAttribute(RANGE, 50.0);
         setAttribute(IMPRECISION, 0d);
-        setAttribute(GRAVITY, 0d);
     }
 
     @Override

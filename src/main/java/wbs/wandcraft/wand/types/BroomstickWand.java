@@ -59,7 +59,7 @@ public class BroomstickWand extends Wand {
             if (spellDefinition == null) {
                 WbsWandcraft.getInstance().getLogger().warning(SpellInstance.LAST_CAST_KEY.asString() + " present on player " + player.getName() + ", but not registered to registries.");
             } else {
-                return new SpellInstance(spellDefinition);
+                return spellDefinition.newInstance();
             }
         }
         return null;

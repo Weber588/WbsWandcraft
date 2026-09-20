@@ -17,8 +17,8 @@ import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 
 import java.util.UUID;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
-import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
+import static wbs.wandcraft.spell.SpellType.ENDER;
+import static wbs.wandcraft.spell.SpellType.VOID;
 
 public class CrowsCallSpell extends SpellDefinition implements CastableSpell, DurationAttributable, SpeedAttributable {
     public CrowsCallSpell() {

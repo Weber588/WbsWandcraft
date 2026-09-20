@@ -5,8 +5,7 @@ import wbs.wandcraft.spell.attributes.BooleanSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 
 public interface FollowAttributable extends AttributeHolder {
-    SpellAttribute<Boolean> FOLLOWS_PLAYER = new BooleanSpellAttribute("follow_player", false)
-            .setWritable(true);
+    SpellAttribute<Boolean> FOLLOWS_PLAYER = new BooleanSpellAttribute("follow_player", false);
 
     @AttributableSetupHandler
     default void setUpFollowing() {

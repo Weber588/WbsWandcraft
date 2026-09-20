@@ -6,7 +6,7 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.entity.Fireball;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.EntityProjectileSpell;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 
 public class FireballSpell extends SpellDefinition implements EntityProjectileSpell<Fireball> {
     public FireballSpell() {

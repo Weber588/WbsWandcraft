@@ -15,7 +15,7 @@ import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
+import static wbs.wandcraft.spell.SpellType.ENDER;
 
 public class BlinkSpell extends SpellDefinition implements CastableSpell, RangeAttributable, SpeedAttributable, DirectionAttributable {
     public BlinkSpell() {

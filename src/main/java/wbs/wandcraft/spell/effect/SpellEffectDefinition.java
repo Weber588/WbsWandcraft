@@ -68,7 +68,7 @@ public abstract class SpellEffectDefinition<T> implements Keyed, AttributeHolder
     public void run(CastContext context, SpellEffectInstance<T> effectInstance, Supplier<T> event) {
         run(context, effectInstance, event.get());
     }
-    public abstract void run(CastContext context, SpellEffectInstance<T> effectInstance, T event);
+    public abstract void run(CastContext context, SpellEffectInstance<T> effectInstance, T t);
 
     public NamespacedKey getKey() {
         return key;

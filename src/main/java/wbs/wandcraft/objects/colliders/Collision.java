@@ -7,13 +7,13 @@ import org.jetbrains.annotations.NotNull;
 public class Collision {
 
     @NotNull
-    private final Collider collider;
+    private final MagicObjectCollider collider;
     @NotNull
     private final Location hitLocation;
     @NotNull
     private Vector normal;
 
-    public Collision(@NotNull Collider collider, @NotNull Location hitLocation, @NotNull Vector normal) {
+    public Collision(@NotNull MagicObjectCollider collider, @NotNull Location hitLocation, @NotNull Vector normal) {
         this.collider = collider;
 
         this.hitLocation = hitLocation;
@@ -21,7 +21,7 @@ public class Collision {
     }
 
     @NotNull
-    public Collider getCollider() {
+    public MagicObjectCollider getCollider() {
         return collider;
     }
 

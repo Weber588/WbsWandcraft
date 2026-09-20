@@ -2,7 +2,6 @@ package wbs.wandcraft.spell.definitions.extensions;
 
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -11,24 +10,27 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
-import wbs.wandcraft.spell.attributes.attributable.AttributableSetupHandler;
-import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
-import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
-import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
+import wbs.wandcraft.spell.attributes.attributable.*;
+import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributable, ParticleAttributable {
     SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0)
             .setShowAttribute(value -> value > 0)
-            .sentiment(SpellAttribute.Sentiment.NEUTRAL);
-    SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0.16)
+            .sentiment(SpellAttribute.Sentiment.NEUTRAL)
+            .typeModifier(SpellType.SCULK, AttributeModifierType.SET_UP, 1);
+    SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0)
+            .addSuggestions(0.08, 0.16)
             .setShowAttribute(value -> value != 0)
             .setNumericFormatter(20d, value -> value + " blocks/second²")
-            .sentiment(SpellAttribute.Sentiment.NEUTRAL);
+            .sentiment(SpellAttribute.Sentiment.NEUTRAL)
+            .typeModifier(SpellType.NATURE, AttributeModifierType.SET_UP, 0.04)
+            .typeModifier(SpellType.VOID, AttributeModifierType.ADD, 0.08);
     SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size",0.3)
             .setNumericFormatter(value -> value + " blocks")
             .sentiment(SpellAttribute.Sentiment.NEUTRAL);
@@ -72,7 +74,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributab
         WbsParticleGroup tickEffects = new WbsParticleGroup();
 
         projectile.setHitBoxSize(hitboxSize);
-        tickEffects.addEffect(new NormalParticleEffect().setXYZ(hitboxSize).setAmount(3), particle);
+        tickEffects.addEffect(new NormalParticleEffect().setXYZ(hitboxSize / 3).setAmount(2), particle);
 
         projectile.setRange(range);
         projectile.setVelocity(getDirection(context, speed));
@@ -105,8 +107,12 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributab
             Entity hitEntity = result.getHitEntity();
             Block hitBlock = result.getHitBlock();
             if (hitEntity != null) {
-                if (this instanceof DamageAttributable damageAttributable && hitEntity instanceof Damageable damageable) {
-                    damageAttributable.damage(context, damageable, DamageType.INDIRECT_MAGIC);
+                if (hitEntity instanceof Damageable damageable) {
+                    if (this instanceof BurnDamageAttributable burnDamager) {
+                        burnDamager.damageAndBurn(damageable, context);
+                    } else if (this instanceof DamageAttributable damageAttributable) {
+                        damageAttributable.damage(context, damageable);
+                    }
                 }
 
                 expire |= expireOnHitEntity();

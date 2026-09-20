@@ -7,6 +7,12 @@ import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 
 public class AttributeSetModifierType implements AttributeModifierType {
+    private final int priority;
+
+    public AttributeSetModifierType(int priority) {
+        this.priority = priority;
+    }
+
     @Override
     public @NotNull NamespacedKey getKey() {
         return WbsWandcraft.getKey("set");
@@ -20,5 +26,10 @@ public class AttributeSetModifierType implements AttributeModifierType {
 
         //noinspection unchecked
         return (AttributeModificationOperator<T, M>) new AttributeSetOperator<>(this, modifierType);
+    }
+
+    @Override
+    public int priority() {
+        return priority;
     }
 }

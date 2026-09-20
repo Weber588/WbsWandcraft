@@ -10,16 +10,16 @@ import org.bukkit.entity.Player;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.particles.LineParticleEffect;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.TargetAttributable;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
-import static wbs.wandcraft.spell.definitions.type.SpellType.SCULK;
+import static wbs.wandcraft.spell.SpellType.ENDER;
+import static wbs.wandcraft.spell.SpellType.SCULK;
 
 public class DisplaceSpell extends SpellDefinition implements CastableSpell, TargetAttributable<LivingEntity> {
     private static final LineParticleEffect LINE_EFFECT = (LineParticleEffect) new LineParticleEffect()
@@ -51,7 +51,7 @@ public class DisplaceSpell extends SpellDefinition implements CastableSpell, Tar
     public void cast(CastContext context) {
         Player player = context.player();
 
-        List<LivingEntity> toSwap = new LinkedList<>(getTargets(context));
+        List<LivingEntity> toSwap = getTargets(context);
         toSwap.add(player);
 
         Collections.shuffle(toSwap);
@@ -79,6 +79,8 @@ public class DisplaceSpell extends SpellDefinition implements CastableSpell, Tar
 
             world.spawnParticle(Particle.DRAGON_BREATH, targetLocation, 25, 0.15, 0.15, 0.15, 0, 1f);
             world.spawnParticle(Particle.WITCH, targetLocation, 400, 0.6, 1, 0.6, 0);
+
+            runTrigger(context, entity);
         }
     }
 

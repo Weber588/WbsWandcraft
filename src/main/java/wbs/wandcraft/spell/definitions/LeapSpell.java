@@ -11,8 +11,8 @@ import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
-import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
+import static wbs.wandcraft.spell.SpellType.ENDER;
+import static wbs.wandcraft.spell.SpellType.VOID;
 
 public class LeapSpell extends SpellDefinition implements CastableSpell, DirectionAttributable, SpeedAttributable {
     public LeapSpell() {

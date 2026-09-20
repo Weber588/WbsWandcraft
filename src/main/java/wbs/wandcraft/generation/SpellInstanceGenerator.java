@@ -99,7 +99,7 @@ public class SpellInstanceGenerator implements Keyed, ItemGenerator {
     }
 
     public SpellInstance generate() {
-        SpellInstance instance = new SpellInstance(WbsCollectionUtil.getRandom(definitions));
+        SpellInstance instance = WbsCollectionUtil.getRandom(definitions).newInstance();
 
         for (AttributeModifierGenerator<?> generator : modifierGenerators) {
             SpellAttributeModifier<?, ?> modifier = generator.generate();

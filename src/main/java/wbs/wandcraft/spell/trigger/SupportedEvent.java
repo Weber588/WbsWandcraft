@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.RayTraceResult;
+import wbs.wandcraft.objects.generics.MagicObject;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -26,6 +27,10 @@ public final class SupportedEvent<T, O> {
 
                 return result.getHitPosition().toLocation(Objects.requireNonNull(world));
             });
+    public static final SupportedEvent<Block, RayTraceResult> BLOCK_RAYTRACE =
+            new SupportedEvent<>(RayTraceResult.class, RayTraceResult::getHitBlock);
+    public static final SupportedEvent<Location, MagicObject> LOCATION_MAGIC_OBJECT =
+            new SupportedEvent<>(MagicObject.class, MagicObject::getLocation);
     public static <T extends Entity> SupportedEvent<T, RayTraceResult> entityFromRaytraceEvent(Class<T> clazz) {
         return new SupportedEvent<>(RayTraceResult.class, (RayTraceResult rayTraceResult) -> {
             Entity hitEntity = rayTraceResult.getHitEntity();

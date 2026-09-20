@@ -26,7 +26,7 @@ import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.RequiresPlugin;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 
 import java.util.Collection;
 import java.util.EnumSet;

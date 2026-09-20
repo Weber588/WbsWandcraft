@@ -50,7 +50,7 @@ public class SpellModifier implements WandEntry<SpellModifier> {
     private final List<SpellEffectInstance<?>> effects = new LinkedList<>();
 
     public void modify(SpellInstance instance) {
-        modifiers.forEach(instance::applyModifier);
+        modifiers.stream().sorted().forEachOrdered(instance::applyModifier);
         effects.forEach(instance::registerEffect);
     }
 

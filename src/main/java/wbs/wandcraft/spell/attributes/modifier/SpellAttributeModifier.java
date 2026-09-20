@@ -8,6 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
+import org.jspecify.annotations.NonNull;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.AttributeDataType;
@@ -16,7 +17,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 
-public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
+public class SpellAttributeModifier<T, M> implements ComponentRepresentable, Comparable<SpellAttributeModifier<?, ?>> {
     public static final NamespacedKey ATTRIBUTE_KEY = WbsWandcraft.getKey("attribute");
     public static final NamespacedKey MODIFIER_OPERATION = WbsWandcraft.getKey("modifier_operation");
     public static final NamespacedKey MODIFIER_TYPE = WbsWandcraft.getKey("modifier_type");
@@ -26,6 +27,7 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
     private final @NotNull AttributeModificationOperator<T, M> modifierOperation;
     @UnknownNullability
     private M modifierValue;
+    private int priority = 0;
 
     public SpellAttributeModifier(SpellAttribute<T> attribute, @NotNull AttributeModificationOperator<T, M> modifierOperation, @UnknownNullability M modifierValue) {
         this.attribute = attribute;
@@ -49,6 +51,15 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
         }
 
         return modified;
+    }
+
+    public SpellAttributeModifier<T, M> priority(int priority) {
+        this.priority = priority;
+        return this;
+    }
+
+    public int priority() {
+        return priority;
     }
 
     public void modify(SpellInstance instance) {
@@ -129,5 +140,14 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable {
 
     public SpellAttribute.Sentiment getSentiment() {
         return modifierOperation.getSentiment(modifierValue).multiply(attribute.sentiment());
+    }
+
+    @Override
+    public int compareTo(@NonNull SpellAttributeModifier<?, ?> other) {
+        int operationComparison = other.modifierOperation.getDefinition().priority() - this.modifierOperation.getDefinition().priority();
+
+        int comparison = other.priority - this.priority;
+
+        return operationComparison * 1000 + comparison;
     }
 }

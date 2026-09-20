@@ -92,7 +92,7 @@ public class CostType implements Keyed {
     ).manaEquivalent(50);
 
     // TODO: Make this configurable
-    private static final Set<PotionEffect> FATIGUE_EFFECTS = Set.of(
+    public static final Set<PotionEffect> FATIGUE_EFFECTS = Set.of(
             new PotionEffect(PotionEffectType.BLINDNESS, 10 * Ticks.TICKS_PER_SECOND, 0, true, true, true),
             new PotionEffect(PotionEffectType.NAUSEA, 10 * Ticks.TICKS_PER_SECOND, 0, true, true, true),
             new PotionEffect(PotionEffectType.SLOWNESS, 10 * Ticks.TICKS_PER_SECOND, 0, true, true, true),

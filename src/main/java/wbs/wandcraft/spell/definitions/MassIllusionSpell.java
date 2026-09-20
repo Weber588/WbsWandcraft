@@ -18,10 +18,10 @@ import wbs.wandcraft.effects.PolymorphedEffect;
 import wbs.wandcraft.effects.StatusEffectInstance;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.RequiresPlugin;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.TargetAttributable;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.SpellType;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -101,6 +101,7 @@ public class MassIllusionSpell extends SpellDefinition implements CastableSpell,
                 PolymorphedEffect.POLYMORPH_EFFECT.play(Particle.CLOUD, WbsEntityUtil.getMiddleLocation(target));
                 target.teleport(targetLocation);
                 PolymorphedEffect.POLYMORPH_EFFECT.play(Particle.CLOUD, WbsEntityUtil.getMiddleLocation(target));
+                runTrigger(context, target);
             }
         }
     }

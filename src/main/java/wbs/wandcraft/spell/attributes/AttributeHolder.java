@@ -49,6 +49,11 @@ public interface AttributeHolder extends ItemDecorator {
         getAttributeInstances().add(instance.clone());
     }
 
+    default boolean hasAttribute(SpellAttribute<?> attribute) {
+        return deriveAttributeValues().stream()
+                .anyMatch(inst -> inst.attribute().equals(attribute));
+    }
+
     @UnknownNullability
     default <T> T getAttribute(SpellAttribute<T> attribute) {
         //noinspection unchecked

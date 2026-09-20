@@ -200,7 +200,7 @@ public class ItemUtils {
 
     public static ItemStack buildSpell(SpellDefinition spell) {
         ItemStack item = ItemStack.of(BASE_MATERIAL_SPELL);
-        SpellInstance spellInstance = new SpellInstance(spell);
+        SpellInstance spellInstance = spell.newInstance();
 
         item.getDataTypes().forEach(item::unsetData);
 

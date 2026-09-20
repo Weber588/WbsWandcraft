@@ -14,7 +14,7 @@ import wbs.wandcraft.spell.definitions.extensions.RaySpell;
 
 import java.util.Set;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
+import static wbs.wandcraft.spell.SpellType.ARCANE;
 
 public class PrismaticRaySpell extends SpellDefinition implements CastableSpell, RaySpell, DamageAttributable {
 

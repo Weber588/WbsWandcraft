@@ -13,10 +13,11 @@ import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.ForceAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Collection;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.NETHER;
+import static wbs.wandcraft.spell.SpellType.NETHER;
 
 public class ConflagrationSpell extends SpellDefinition implements CastableSpell, BurnDamageAttributable, ForceAttributable, RadiusAttributable {
     public static final double DAMAGE_RANGE = 3d;
@@ -68,7 +69,9 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
         for (LivingEntity target : hit) {
             double damage = scaleByDistance(context, target, DAMAGE_RANGE, DAMAGE);
             int burnTime = scaleByDistance(context, target, DAMAGE_RANGE, BURN_TIME);
-            damageAndBurn(target, context, damage, burnTime);
+            if (damageAndBurn(target, context, damage, burnTime) > 0) {
+                context.runEffects(SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER, target);
+            }
 
             Vector centerToTarget = target.getEyeLocation() // Give a slight upwards force by using eye height
                     .subtract(context.location())

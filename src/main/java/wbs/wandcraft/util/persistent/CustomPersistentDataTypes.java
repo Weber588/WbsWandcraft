@@ -122,7 +122,7 @@ public class CustomPersistentDataTypes {
                 throw new IllegalStateException("Spell definition not recognised:" + definitionKey.asString());
             }
 
-            SpellInstance spellInstance = new SpellInstance(definition);
+            SpellInstance spellInstance = definition.newInstance();
             spellInstance.readAttributes(container, ATTRIBUTES);
 
             return spellInstance;

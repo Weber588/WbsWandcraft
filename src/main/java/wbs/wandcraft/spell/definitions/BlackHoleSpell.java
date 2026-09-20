@@ -27,7 +27,7 @@ import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 import wbs.wandcraft.spell.attributes.attributable.ForceAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.List;
@@ -47,7 +47,6 @@ public class BlackHoleSpell extends SpellDefinition implements CustomProjectileS
 
         setAttribute(RADIUS, 4d);
         setAttribute(FORCE, 0.8);
-        setAttribute(GRAVITY, 0d);
         setAttribute(SPEED, 0.1d);
         setAttribute(IMPRECISION, 2d);
     }
@@ -63,7 +62,9 @@ public class BlackHoleSpell extends SpellDefinition implements CustomProjectileS
             Entity hitEntity = result.getHitEntity();
 
             if (hitEntity instanceof Damageable damageable) {
-                damageScaledByDistance(context, damageable, 2);
+                if (damageScaledByDistance(context, damageable, 2) > 0) {
+                    context.runEffects(SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER, hitEntity);
+                }
             }
         });
     }

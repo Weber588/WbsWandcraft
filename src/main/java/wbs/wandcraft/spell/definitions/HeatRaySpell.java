@@ -20,14 +20,14 @@ import wbs.utils.util.particles.LineParticleEffect;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.objects.colliders.Collider;
+import wbs.wandcraft.objects.colliders.MagicObjectCollider;
 import wbs.wandcraft.objects.colliders.Collision;
 import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
 import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -91,7 +91,7 @@ public class HeatRaySpell extends SpellDefinition implements DirectionAttributab
 
         Collision closestCollision = null;
         double closestCollisionDistance = Double.MAX_VALUE;
-        for (Collider collider : Collider.getColliders()) {
+        for (MagicObjectCollider collider : MagicObjectCollider.getColliders()) {
             Collision collision = collider.getCollision(beamStartLocation, endLocation);
             if (collision != null) {
                 double hitDistance = collision.getHitLocation().distance(beamStartLocation);

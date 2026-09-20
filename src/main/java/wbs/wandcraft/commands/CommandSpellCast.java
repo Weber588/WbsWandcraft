@@ -50,7 +50,7 @@ public class CommandSpellCast extends WbsSubcommand {
             attributes.remove(CastableSpell.COOLDOWN);
             attributes.remove(CastableSpell.COST);
 
-            WbsKeyedArgumentType<SpellAttribute<?>> attributeArgType = new WbsKeyedArgumentType<>("attribute", WandcraftRegistries.ATTRIBUTES)
+            WbsKeyedArgumentType<SpellAttribute<?>> attributeArgType = new WbsKeyedArgumentType<>(plugin, "attribute", WandcraftRegistries.ATTRIBUTES)
                     .defaultNamespace(WbsWandcraft.getInstance().namespace())
                     .setSuggestionProvider(context -> {
                         List<SpellAttribute<?>> toSuggest = new LinkedList<>(attributes);
@@ -106,7 +106,7 @@ public class CommandSpellCast extends WbsSubcommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        SpellInstance instance = new SpellInstance(spell);
+        SpellInstance instance = spell.newInstance();
 
         getAttributes(spell, context).forEach(instance::setAttribute);
 

@@ -18,7 +18,8 @@ import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.extensions.*;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -110,7 +111,9 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
         } while (result != null && result.getHitEntity() != null);
 
         for (Entity hitEntity : hitEntities) {
-            damageAndBurn(hitEntity, context);
+            if (damageAndBurn(hitEntity, context) > 0) {
+                context.runEffects(SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER, hitEntity);
+            }
         }
     }
 

@@ -5,16 +5,16 @@ import org.bukkit.entity.Entity;
 import wbs.wandcraft.context.CastContext;
 
 public interface BurnDamageAttributable extends BurnTimeAttributable, DamageAttributable {
-    default void damageAndBurn(Entity entity, CastContext context) {
-        damageAndBurn(entity, context, context.instance().getAttribute(DAMAGE));
+    default double damageAndBurn(Entity entity, CastContext context) {
+        return damageAndBurn(entity, context, context.instance().getAttribute(DAMAGE));
     }
-    default void damageAndBurn(Entity entity, CastContext context, double damage) {
+    default double damageAndBurn(Entity entity, CastContext context, double damage) {
         int burnTime = context.instance().getAttribute(BURN_TIME);
-        damageAndBurn(entity, context, damage, burnTime);
+        return damageAndBurn(entity, context, damage, burnTime);
     }
-    default void damageAndBurn(Entity entity, CastContext context, double damage, int burnTime) {
-        damageThen(entity, context, damage, damageable -> {
-            damageable.setFireTicks(burnTime);
+    default double damageAndBurn(Entity entity, CastContext context, double damage, int burnTime) {
+        return damageThen(entity, context, damage, damageable -> {
+            igniteUnconditional(damageable, burnTime);
         });
     }
 

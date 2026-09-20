@@ -36,7 +36,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.*;
@@ -66,7 +66,6 @@ public class MageLightSpell extends SpellDefinition implements CustomProjectileS
         setAttribute(SPEED, 2.5d);
         setAttribute(RANGE, 50.0);
         setAttribute(IMPRECISION, 0d);
-        setAttribute(GRAVITY, 0d);
     }
 
     @Override

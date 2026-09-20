@@ -11,7 +11,7 @@ import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.RaySpell;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 
 import java.util.Set;
 

@@ -22,8 +22,8 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 
 import java.util.Collection;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
-import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
+import static wbs.wandcraft.spell.SpellType.ENDER;
+import static wbs.wandcraft.spell.SpellType.VOID;
 
 public class VoidStepSpell extends SpellDefinition implements CastableSpell, RangeAttributable, SpeedAttributable, DirectionAttributable, DamageAttributable, RadiusAttributable {
     private static final ElectricParticleEffect EFFECT = (ElectricParticleEffect) new ElectricParticleEffect()

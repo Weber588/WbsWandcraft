@@ -18,7 +18,7 @@ import wbs.wandcraft.objects.PersistenceLevel;
 import wbs.wandcraft.objects.generics.MagicObject;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.wand.Wand;
 

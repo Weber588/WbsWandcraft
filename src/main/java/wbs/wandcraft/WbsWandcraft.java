@@ -58,6 +58,7 @@ public class WbsWandcraft extends WbsPlugin {
         WbsCommand.getStatic(this, "wandcraft")
                 .setPermission("wbswandcraft.command")
                 .addSubcommands(
+                        new CommandSpellCastDynamic(this, "dynTest"),
                         WbsCommand.getStatic(this, "spell").addSubcommands(
                                 new CommandSpellLearn(this, "learn"),
                                 new CommandSpellForget(this, "forget"),
@@ -109,6 +110,7 @@ public class WbsWandcraft extends WbsPlugin {
                                 })
                         ).inferSubPermissions(),
                         new CommandSpellCast(this, "cast"),
+                        new CommandSpellTypeInfo(this, "type"),
                         new CommandSpellCancel(this, "cancel"),
                         new CommandSpellbook(this, "spellbooktest"),
                         new CommandRecipes(this, "recipes"),

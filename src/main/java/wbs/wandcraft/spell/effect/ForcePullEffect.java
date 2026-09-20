@@ -18,16 +18,15 @@ public class ForcePullEffect extends SpellEffectDefinition<Location> {
     public ForcePullEffect() {
         super(Location.class, "force_pull");
 
-        setAttribute(RANGE.defaultInstance());
-        setAttribute(SPEED.defaultInstance());
+        addAttribute(RANGE);
+        addAttribute(SPEED);
 
         supportedEvents.add(SupportedEvent.LOCATION_RAYTRACE);
+        supportedEvents.add(SupportedEvent.LOCATION_MAGIC_OBJECT);
     }
 
     @Override
-    public void run(CastContext context, SpellEffectInstance<Location> effectInstance, Location event) {
-        Location location = context.location();
-
+    public void run(CastContext context, SpellEffectInstance<Location> effectInstance, Location location) {
         RadiusSelector<Entity> selector = new RadiusSelector<>(Entity.class).setRange(effectInstance.getAttribute(RANGE));
 
         selector.select(location).forEach(entity -> {

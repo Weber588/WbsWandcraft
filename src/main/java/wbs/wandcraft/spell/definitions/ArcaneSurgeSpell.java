@@ -21,11 +21,12 @@ import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
 import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 import wbs.wandcraft.spell.definitions.extensions.*;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Collection;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
-import static wbs.wandcraft.spell.definitions.type.SpellType.VOID;
+import static wbs.wandcraft.spell.SpellType.ARCANE;
+import static wbs.wandcraft.spell.SpellType.VOID;
 
 // TODO: Make this a continuous cast spell
 public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, DurationAttributable, DamageAttributable, SpeedAttributable, ParticleAttributable {
@@ -97,7 +98,9 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
                         .select(WbsEntityUtil.getMiddleLocation(player));
 
                 for (LivingEntity e : entities) {
-                    damageScaledByDistance(context, e, 2);
+                    if (damageScaledByDistance(context, e, 2) > 0) {
+                        context.runEffects(SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER, e);
+                    }
                 }
 
                 sound.play(playerLoc);

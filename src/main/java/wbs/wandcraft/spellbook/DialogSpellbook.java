@@ -26,7 +26,7 @@ public class DialogSpellbook {
             DialogAction.CustomClickAction callback = DialogAction.customClick(
                     (view, audience) -> {
                         if (audience instanceof Player player) {
-                            new SpellInstance(spell).cast(player, null, null, () -> {
+                            spell.newInstance().cast(player, null, null, () -> {
                                 WbsWandcraft.getInstance()
                                         .buildMessage(Component.text("Cast ").append(spell.displayName()))
                                         .send(player);

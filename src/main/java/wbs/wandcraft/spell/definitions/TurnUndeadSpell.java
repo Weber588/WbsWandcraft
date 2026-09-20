@@ -17,7 +17,7 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.TargetAttributable;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 
 public class TurnUndeadSpell extends SpellDefinition implements CastableSpell, DurationAttributable, TargetAttributable<Mob> {
     private static final NormalParticleEffect EFFECT = (NormalParticleEffect) new NormalParticleEffect()
@@ -44,7 +44,7 @@ public class TurnUndeadSpell extends SpellDefinition implements CastableSpell, D
         int duration = context.instance().getAttribute(DURATION);
         double range = context.instance().getAttribute(TARGET_RANGE);
 
-        getTargets(context).forEach(target -> {
+        applyToTargets(context, target -> {
             EFFECT.setXYZ(target.getWidth()).setY(target.getHeight()).play(Particle.RAID_OMEN, WbsEntityUtil.getMiddleLocation(target));
             target.getPathfinder().stopPathfinding();
             target.setTarget(null);

@@ -14,7 +14,7 @@ public class KeyedSpellAttribute<T extends Keyed> extends SpellAttribute<T> {
     public KeyedSpellAttribute(NamespacedKey key, @Nullable T defaultValue, AttributeDataType<T> type, String typeName, Function<NamespacedKey, @Nullable T> function) {
         super(key,
                 type,
-                new WbsKeyedArgumentType<>(typeName, function),
+                new WbsKeyedArgumentType<>(WbsWandcraft.getInstance(), typeName, function),
                 defaultValue,
                 str -> parse(str, function)
         );
@@ -26,7 +26,7 @@ public class KeyedSpellAttribute<T extends Keyed> extends SpellAttribute<T> {
     public KeyedSpellAttribute(String nativeKey, @Nullable T defaultValue, AttributeDataType<T> type, String typeName, Function<NamespacedKey, @Nullable T> function) {
         super(WbsWandcraft.getKey(nativeKey),
                 type,
-                new WbsKeyedArgumentType<>(typeName, function),
+                new WbsKeyedArgumentType<>(WbsWandcraft.getInstance(), typeName, function),
                 defaultValue,
                 str -> parse(str, function)
         );

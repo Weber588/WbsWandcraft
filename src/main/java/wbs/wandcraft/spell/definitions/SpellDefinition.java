@@ -1,6 +1,5 @@
 package wbs.wandcraft.spell.definitions;
 
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -17,8 +16,7 @@ import wbs.wandcraft.resourcepack.TextureLayer;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.type.SpellType;
-import wbs.wandcraft.spell.trigger.SpellTriggeredEvent;
+import wbs.wandcraft.spell.SpellType;
 
 import java.util.*;
 
@@ -26,8 +24,6 @@ import static wbs.wandcraft.spellbook.Spellbook.DESCRIPTION_COLOR;
 
 @NullMarked
 public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTextureProvider {
-    protected final Map<Key, SpellTriggeredEvent<?>> events = new HashMap<>();
-
     protected final Set<SpellAttributeInstance<?>> defaultAttributes = new HashSet<>();
 
     protected final List<SpellType> spellTypes = new LinkedList<>();
@@ -60,7 +56,15 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
     }
 
     public SpellType getPrimarySpellType() {
-        return spellTypes.stream().findFirst().orElse(SpellType.ARCANE);
+        return spellTypes.stream().findFirst().orElseThrow(() -> new IllegalStateException("Spell definition lacked spell type!"));
+    }
+
+    @Nullable
+    public SpellType getSecondarySpellType() {
+        if (spellTypes.size() > 1) {
+            return spellTypes.get(1);
+        }
+        return null;
     }
 
     @UnknownNullability
@@ -143,7 +147,6 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
                         .stream()
                         .map(spellType ->
                                 spellType.displayName()
-                                        .color(spellType.textColor())
                                         .decorate(TextDecoration.ITALIC)
                         )
                         .toList()
@@ -161,5 +164,9 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
         }
 
         return echoShardCost;
+    }
+
+    public SpellInstance newInstance() {
+        return new SpellInstance(this);
     }
 }

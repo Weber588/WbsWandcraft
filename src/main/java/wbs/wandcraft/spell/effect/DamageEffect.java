@@ -9,15 +9,15 @@ import wbs.wandcraft.spell.trigger.SupportedEvent;
 
 @NullMarked
 public class DamageEffect extends SpellEffectDefinition<LivingEntity> implements DamageAttributable {
-    public DamageEffect(Class<LivingEntity> eventClass, String keyString) {
-        super(eventClass, keyString);
+    public DamageEffect() {
+        super(LivingEntity.class, "damage");
 
         supportedEvents.add(SupportedEvent.entityFromRaytraceEvent(LivingEntity.class));
     }
 
     @Override
     public void run(CastContext context, SpellEffectInstance<LivingEntity> effectInstance, LivingEntity event) {
-        damage(context, event);
+        damage(context, event, effectInstance.getAttribute(DAMAGE));
     }
 
     @Override

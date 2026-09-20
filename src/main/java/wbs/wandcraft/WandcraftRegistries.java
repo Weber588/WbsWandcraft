@@ -9,14 +9,17 @@ import wbs.wandcraft.equipment.hat.*;
 import wbs.wandcraft.generation.AttributeModifierGenerator;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.generation.WandGenerator;
-import wbs.wandcraft.spell.learning.*;
 import wbs.wandcraft.spell.NativeSpellLoader;
 import wbs.wandcraft.spell.SpellLoader;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.definitions.type.SpellType;
-import wbs.wandcraft.spell.effect.*;
+import wbs.wandcraft.spell.dynamic.DynamicSpellProjectile;
+import wbs.wandcraft.spell.dynamic.SpellAspect;
+import wbs.wandcraft.spell.effect.SpellEffectDefinition;
+import wbs.wandcraft.spell.effect.SpellEffectDefinitions;
+import wbs.wandcraft.spell.learning.*;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvent;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 import wbs.wandcraft.util.ItemBuildableRegistry;
@@ -28,9 +31,11 @@ import wbs.wandcraft.wand.background.WandBackground;
 import wbs.wandcraft.wand.types.WandType;
 
 public class WandcraftRegistries {
+    public static final WbsRegistry<SpellType> SPELL_TYPES = new WbsRegistry<>();
     public static final WbsRegistry<AttributeDataType<?>> DATA_TYPES = new WbsRegistry<>();
     public static final WbsRegistry<SpellAttribute<?>> ATTRIBUTES = new WbsRegistry<>();
     public static final WbsRegistry<AttributeModifierType> MODIFIER_TYPES = new WbsRegistry<>(
+            AttributeModifierType.SET_UP,
             AttributeModifierType.SET,
             AttributeModifierType.ADD,
             AttributeModifierType.MULTIPLY
@@ -104,10 +109,12 @@ public class WandcraftRegistries {
             new WarlockHat()
     );
 
-    public static final WbsRegistry<SpellType> SPELL_TYPES = new WbsRegistry<>();
     public static final ItemBuildableRegistry<SpellDefinition> SPELLS = new ItemBuildableRegistry<>(
             ItemUtils::buildSpell,
             SpellLoader.loadSpells(new NativeSpellLoader())
+    );
+    public static final WbsRegistry<SpellAspect> SPELL_ASPECTS = new WbsRegistry<>(
+            DynamicSpellProjectile.PROJECTILE_ASPECT
     );
     public static final WbsRegistry<LearningMethodType<?>> LEARNING_PROVIDERS = new WbsRegistry<>(
             LearningMethodType.build("advancements", AdvancementLearningTrigger::new),
@@ -136,8 +143,13 @@ public class WandcraftRegistries {
             SpellTriggeredEvents.ON_HIT_TRIGGER
     );
     public static final WbsRegistry<SpellEffectDefinition<?>> EFFECTS = new WbsRegistry<>(
-            new ForcePullEffect(),
-            new CastSpellEffect()
+            SpellEffectDefinitions.FORCE_PULL,
+            SpellEffectDefinitions.CAST_SPELL,
+            SpellEffectDefinitions.DAMAGE,
+            SpellEffectDefinitions.IGNITE,
+            SpellEffectDefinitions.RANDOM_TELEPORT,
+            SpellEffectDefinitions.HEAL,
+            SpellEffectDefinitions.GROW
     );
     public static final WbsRegistry<WandGenerator> WAND_GENERATORS = new WbsRegistry<>();
     public static final WbsRegistry<SpellInstanceGenerator> SPELL_GENERATORS = new WbsRegistry<>();

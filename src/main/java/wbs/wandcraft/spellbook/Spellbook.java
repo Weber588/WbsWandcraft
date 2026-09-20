@@ -39,12 +39,11 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.generation.SpellInstanceGenerator;
+import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.definitions.SpellDefinition;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.learning.LearningMethod;
 import wbs.wandcraft.spell.learning.RegistrableLearningMethod;
-import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.definitions.type.SpellType;
 import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
@@ -491,7 +490,7 @@ public class Spellbook implements ItemDecorator {
                 return;
             }
 
-            CastingQueue castingQueue = new CastingQueue(new SpellInstance(definition), null);
+            CastingQueue castingQueue = new CastingQueue(definition.newInstance(), null);
             castingQueue.startCasting(player);
             player.setCooldown(item, Ticks.TICKS_PER_SECOND);
         }

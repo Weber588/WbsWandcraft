@@ -6,23 +6,34 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostUtils;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.attributable.AttributableSetupHandler;
+import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
+import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 
 public interface ContinuousCastableSpell extends CastableSpell {
     SpellAttribute<Integer> FIXED_DURATION = new IntegerSpellAttribute("fixed_duration", Ticks.TICKS_PER_SECOND)
             .setShowAttribute(duration -> duration != 20)
-            .overrideTextureValue("duration");
+            .overrideTextureValue("duration")
+            .typeModifier(SpellType.ARCANE, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, DurationAttributable.ARCANE_MULTIPLIER)
+            .typeModifier(SpellType.NATURE, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, DurationAttributable.NATURE_MULTIPLIER)
+            .typeModifier(SpellType.NETHER, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, DurationAttributable.NETHER_MULTIPLIER);
     SpellAttribute<Integer> MAX_DURATION = new IntegerSpellAttribute("max_duration", 5 * Ticks.TICKS_PER_SECOND)
             .setShowAttribute(duration -> duration > 0)
-            .overrideTextureValue("duration");
+            .overrideTextureValue("duration")
+            .typeModifier(SpellType.ARCANE, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, DurationAttributable.ARCANE_MULTIPLIER)
+            .typeModifier(SpellType.NATURE, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, DurationAttributable.NATURE_MULTIPLIER)
+            .typeModifier(SpellType.NETHER, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, DurationAttributable.NETHER_MULTIPLIER);
     SpellAttribute<Integer> COST_PER_TICK = new IntegerSpellAttribute("cost_per_tick", 5)
             .setShowAttribute(cost -> cost > 0)
-            .overrideTextureValue("cost");
+            .overrideTextureValue("cost")
+            .typeModifier(SpellType.SCULK, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, SCULK_MULTIPLIER);
 
     @AttributableSetupHandler
     default void setupContinuousCast() {

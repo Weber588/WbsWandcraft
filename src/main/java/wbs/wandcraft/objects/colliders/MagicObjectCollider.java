@@ -13,15 +13,15 @@ import wbs.wandcraft.objects.generics.MagicObject;
 import java.util.*;
 import java.util.function.Predicate;
 
-public abstract class Collider {
+public abstract class MagicObjectCollider {
 
-    private static final Map<MagicObject, Collider> objectsWithColliders = new HashMap<>();
+    private static final Map<MagicObject, MagicObjectCollider> objectsWithColliders = new HashMap<>();
 
-    public static Set<Collider> getColliders() {
+    public static Set<MagicObjectCollider> getColliders() {
         return new HashSet<>(objectsWithColliders.values());
     }
 
-    public static Map<MagicObject, Collider> getColliderMap() {
+    public static Map<MagicObject, MagicObjectCollider> getColliderMap() {
         return new HashMap<>(objectsWithColliders);
     }
 
@@ -45,7 +45,7 @@ public abstract class Collider {
 
     protected Predicate<KinematicMagicObject> predicate = obj -> true;
 
-    public Collider(MagicObject parent) {
+    public MagicObjectCollider(MagicObject parent) {
         this.parent = parent;
         location = parent.getLocation();
         world = Objects.requireNonNull(location.getWorld());

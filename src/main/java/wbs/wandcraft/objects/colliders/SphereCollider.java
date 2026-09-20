@@ -5,7 +5,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.objects.generics.MagicObject;
 
-public class SphereCollider extends Collider {
+public class SphereCollider extends MagicObjectCollider {
 
     private double radius;
 

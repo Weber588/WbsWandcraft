@@ -17,7 +17,8 @@ import wbs.wandcraft.events.objects.MagicObjectSpawnEvent;
 import wbs.wandcraft.exceptions.MagicObjectExistsException;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.PersistenceLevel;
-import wbs.wandcraft.objects.colliders.Collider;
+import wbs.wandcraft.objects.colliders.MagicObjectCollider;
+import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Objects;
@@ -50,7 +51,7 @@ public abstract class MagicObject {
 
 	protected int timerID = -1; // The ID of the runnable
 
-	protected Collider collider;
+	protected MagicObjectCollider collider;
 
 	@Nullable
 	protected WbsParticleGroup effects = null; // The vast majority of magicobjects will use particles
@@ -104,7 +105,7 @@ public abstract class MagicObject {
 				}
 
 				if (!cancel) {
-					context.runEffects(SpellTriggeredEvents.OBJECT_TICK_TRIGGER, getLocation());
+					context.runEffects(SpellTriggeredEvents.OBJECT_TICK_TRIGGER, MagicObject.this);
 				}
 
 				age++;
@@ -175,7 +176,7 @@ public abstract class MagicObject {
 		}
 
 		debug("Object Expire Trigger start");
-		context.runEffects(SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER, getLocation());
+		context.runEffects(SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER, this);
 		debug("Object Expire Trigger end");
 
 		if (endEffects != null) {
@@ -247,7 +248,9 @@ public abstract class MagicObject {
 	}
 
 	public MagicObject setParticle(WbsParticleGroup effects) {
-		this.effects = effects.clone();
+		this.effects = effects.clone().play(((effect, location, particle) ->
+				ParticleAttributable.playEffectSafely(effect, location, particle, context.instance().getDefinition())
+		));
 		return this;
 	}
 
@@ -309,11 +312,11 @@ public abstract class MagicObject {
 	}
 
 	@Nullable
-	public Collider getCollider() {
+	public MagicObjectCollider getCollider() {
 		return collider;
 	}
 
-	public void setCollider(@Nullable Collider collider) {
+	public void setCollider(@Nullable MagicObjectCollider collider) {
 		this.collider = collider;
 	}
 

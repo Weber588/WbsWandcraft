@@ -16,7 +16,7 @@ import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ENDER;
+import static wbs.wandcraft.spell.SpellType.ENDER;
 
 public class WarpSpell extends SpellDefinition implements CustomProjectileSpell {
 
@@ -31,7 +31,6 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
         setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(SIZE, 0.0);
-        setAttribute(GRAVITY, 0.0);
         setAttribute(IMPRECISION, 3d);
         setAttribute(RANGE, 150d);
         setAttribute(SPEED, 3d);

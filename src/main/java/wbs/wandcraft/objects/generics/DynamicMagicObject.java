@@ -14,7 +14,7 @@ import wbs.utils.util.WbsMath;
 import wbs.wandcraft.events.objects.DynamicObjectBounceEvent;
 import wbs.wandcraft.events.objects.DynamicObjectPhysicsEvent;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
-import wbs.wandcraft.objects.colliders.Collider;
+import wbs.wandcraft.objects.colliders.MagicObjectCollider;
 import wbs.wandcraft.context.CastContext;
 
 import java.util.Objects;
@@ -215,7 +215,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
 
         MagicObjectMoveEvent event = new MagicObjectMoveEvent(this, newLocation);
 
-        for (MagicObject object : Collider.getObjectsWithColliders()) {
+        for (MagicObject object : MagicObjectCollider.getObjectsWithColliders()) {
             if (object == this) continue;
             object.collider.tryColliding(event);
             if (event.isCancelled()) return cancel;

@@ -7,6 +7,12 @@ import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 
 public class AttributeAddModifierType implements AttributeModifierType {
+    private final int priority;
+
+    public AttributeAddModifierType(int priority) {
+        this.priority = priority;
+    }
+
     @Override
     public @NotNull NamespacedKey getKey() {
         return WbsWandcraft.getKey("add");
@@ -27,5 +33,10 @@ public class AttributeAddModifierType implements AttributeModifierType {
                 (PersistentDataType<?, ? extends Number>) baseType,
                 (AttributeDataType<? extends Number>) modifierType
         );
+    }
+
+    @Override
+    public int priority() {
+        return priority;
     }
 }

@@ -14,10 +14,12 @@ import org.jspecify.annotations.NonNull;
 import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.KeyedSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
+import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.ISpellDefinition;
 import wbs.wandcraft.util.DistanceScaler;
 
@@ -26,14 +28,17 @@ import java.util.function.Consumer;
 public interface DamageAttributable extends AttributeHolder, DistanceScaler {
     SpellAttribute<Double> DAMAGE = new DoubleSpellAttribute("damage", 1.0)
             .addSuggestions(1.0, 2.0, 5.0)
-            .setShowAttribute(value -> value > 0);
+            .setShowAttribute(value -> value > 0)
+            .typeModifiers(SpellType.NETHER, 2d, null, 1d)
+            .typeModifiers(SpellType.VOID, 3d, null, 2d);
     SpellAttribute<DamageType> DAMAGE_TYPE = new KeyedSpellAttribute<>(
             "damage_type",
             DamageType.MAGIC,
             AttributeDataType.DAMAGE_TYPE,
             "damage type",
             k -> RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).get(k)
-    ).addSuggestions(RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).stream().toList());
+    ).addSuggestions(RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).stream().toList())
+            .typeModifier(SpellType.NETHER, AttributeModifierType.SET, DamageType.IN_FIRE);
 
     @AttributableSetupHandler
     default void setUpDamage() {
@@ -96,41 +101,59 @@ public interface DamageAttributable extends AttributeHolder, DistanceScaler {
         return builder;
     }
 
-    default void damage(CastContext context, Damageable target) {
-        damage(context, target, getDamageType(context));
+    default double damage(CastContext context, Damageable target) {
+        return damage(context, target, getDamageType(context));
     }
-    default void damageScaledByDistance(CastContext context, Damageable target, double varianceClamp) {
-        damage(context, target, scaleByDistance(context, target, varianceClamp, DAMAGE), getDamageType(context));
+    default double damageScaledByDistance(CastContext context, Damageable target, double varianceClamp) {
+        return damage(context, target, scaleByDistance(context, target, varianceClamp, DAMAGE), getDamageType(context));
     }
 
-    default void damage(CastContext context, Damageable target, double damage) {
-        damage(context, target, damage, getDamageType(context));
+    default double damage(CastContext context, Damageable target, double damage) {
+        return damage(context, target, damage, getDamageType(context));
     }
-    default void damage(CastContext context, Damageable target, DamageType type) {
+    default double damage(CastContext context, Damageable target, DamageType type) {
         double damage = context.instance().getAttribute(DAMAGE);
-        damage(context, target, damage, type);
+        return damage(context, target, damage, type);
     }
-    default void damage(CastContext context, Damageable target, double damage, DamageType type) {
-        if (WbsRegionUtils.canDealDamage(context.player(), target)) {
-            target.damage(damage, buildDamageSource(context, type).build());
+    default double damage(CastContext context, Damageable target, double damage, DamageType type) {
+        return damage(context, target, damage, type, null);
+    }
+    default double damage(CastContext context, Damageable target, double damage, DamageType type, @Nullable Consumer<DamageSource.Builder> modifySource) {
+        if (damage <= 0) {
+            return 0;
         }
-    }
 
-    default void damageThen(Entity entity, CastContext context, Consumer<Damageable> then) {
-        damageThen(entity, context, context.instance().getAttribute(DAMAGE), then);
-    }
-
-    default void damageThen(Entity entity, CastContext context, double damage, Consumer<Damageable> then) {
-        if (entity instanceof Damageable damageable) {
-            double health = damageable.getHealth();
-            damage(context, damageable, damage, getDamageType(context));
-            if (health != damageable.getHealth()) {
-                then.accept(damageable);
+        if (WbsRegionUtils.canDealDamage(context.player(), target)) {
+            double health = target.getHealth();
+            DamageSource.Builder sourceBuilder = buildDamageSource(context, type);
+            if (modifySource != null) {
+                modifySource.accept(sourceBuilder);
+            }
+            target.damage(damage, sourceBuilder.build());
+            if (health > target.getHealth()) {
+                return health - target.getHealth();
             }
         }
+
+        return 0;
     }
 
-    private static DamageType getDamageType(CastContext context) {
+    default double damageThen(Entity entity, CastContext context, Consumer<Damageable> then) {
+        return damageThen(entity, context, context.instance().getAttribute(DAMAGE), then);
+    }
+
+    default double damageThen(Entity entity, CastContext context, double damage, Consumer<Damageable> then) {
+        if (entity instanceof Damageable damageable) {
+            double damageDealt = damage(context, damageable, damage, getDamageType(context));
+            if (damageDealt > 0) {
+                then.accept(damageable);
+            }
+            return damageDealt;
+        }
+        return 0;
+    }
+
+    default DamageType getDamageType(CastContext context) {
         return context.instance().getAttribute(DAMAGE_TYPE);
     }
 }

@@ -27,7 +27,7 @@ public class CastSpellEffect extends SpellEffectDefinition<Location> {
             "spell",
             AttributeDataType.SPELL,
             new SpellInstanceType(),
-            new SpellInstance(WandcraftRegistries.SPELLS.stream().findAny().orElseThrow()),
+            WandcraftRegistries.SPELLS.stream().findAny().orElseThrow().newInstance(),
             string -> {
                 string = string.replace("\"", "");
                 SpellDefinition definition = WandcraftRegistries.SPELLS.get(NamespacedKey.fromString(string, WbsWandcraft.getInstance()));
@@ -35,7 +35,7 @@ public class CastSpellEffect extends SpellEffectDefinition<Location> {
                     //noinspection DataFlowIssue
                     return null;
                 }
-                return new SpellInstance(definition);
+                return definition.newInstance();
             })
             .addRawSuggestions(WandcraftRegistries.SPELLS.stream()
                     .map(spellDefinition -> '"' + spellDefinition.key().asString() + '"')
@@ -48,6 +48,7 @@ public class CastSpellEffect extends SpellEffectDefinition<Location> {
         setAttribute(SPELL.defaultInstance());
 
         supportedEvents.add(SupportedEvent.LOCATION_RAYTRACE);
+        supportedEvents.add(SupportedEvent.LOCATION_MAGIC_OBJECT);
     }
 
     @Override
@@ -76,7 +77,7 @@ public class CastSpellEffect extends SpellEffectDefinition<Location> {
                         .create("Invalid spell key \"" + key.asString() + "\"");
             }
 
-            return new SpellInstance(def);
+            return def.newInstance();
         }
 
         @Override

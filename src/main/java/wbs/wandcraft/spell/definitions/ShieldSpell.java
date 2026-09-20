@@ -24,11 +24,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.ARCANE;
+import static wbs.wandcraft.spell.SpellType.ARCANE;
 
 public class ShieldSpell extends SpellDefinition implements ContinuousCastableSpell, DirectionAttributable, RadiusAttributable, MaterialAttributable, FollowAttributable {
-    private static final SpellAttribute<Boolean> IS_BUBBLE = new BooleanSpellAttribute("is_bubble", false)
-            .setWritable(true);
+    private static final SpellAttribute<Boolean> IS_BUBBLE = new BooleanSpellAttribute("is_bubble", false);
 
     private static final NormalParticleEffect CASTING_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
             .setXYZ(0.5)

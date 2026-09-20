@@ -42,7 +42,7 @@ import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.crafting.ArtificingTable;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.EffectUtils;
 

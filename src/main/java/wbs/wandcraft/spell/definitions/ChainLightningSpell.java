@@ -4,13 +4,13 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.LightningRod;
-import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.WbsLocationUtil;
 import wbs.utils.util.WbsMath;
@@ -18,11 +18,12 @@ import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.particles.ElectricParticleEffect;
 import wbs.utils.util.particles.LineParticleEffect;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
+import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,6 +49,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
         setAttribute(COST, 500);
         setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);
         setAttribute(DAMAGE, 2d);
+        setAttribute(DAMAGE_TYPE, DamageType.LIGHTNING_BOLT);
 
         setAttribute(MAX_DURATION, 15 * Ticks.TICKS_PER_SECOND);
         setAttribute(COST_PER_TICK, 3);
@@ -71,7 +73,8 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
         double damage = context.instance().getAttribute(DAMAGE);
 
         if (player.isInWater() || player.isInRain()) {
-            damage(context, player, DamageType.LIGHTNING_BOLT);
+            lightningDamage(context, player, damage, null);
+
             ElectricParticleEffect sparkingEffect = new ElectricParticleEffect()
                     .setTicks(2 * Ticks.TICKS_PER_SECOND);
 
@@ -108,15 +111,8 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
 
             if (!hits.isEmpty()) {
                 hits.forEach(entity -> {
-                    DamageSource source = buildDamageSource(context, DamageType.INDIRECT_MAGIC)
-                            .withDamageLocation(next.point)
-                            .build();
+                    lightningDamage(context, entity, damage, next.point);
 
-                    if (entity.isInWater() || entity.isInRain()) {
-                        entity.damage(damage * WATER_MULTIPLIER, source);
-                    } else {
-                        entity.damage(damage, source);
-                    }
                     Location entityHitPoint = entity.getLocation().add(
                             Math.random() * entity.getWidth() / 2,
                             Math.random() * entity.getHeight(),
@@ -147,6 +143,26 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
             if (rayTraceResult == null) {
                 closestKnown.children.add(next);
             }
+        }
+    }
+
+    private void lightningDamage(CastContext context, LivingEntity entity, double damage, @Nullable Location damageLocation) {
+        double damageToDeal = damage;
+        DamageType damageType = getDamageType(context);
+        if (entity.isInWater() || entity.isInRain()) {
+            damageToDeal *= WATER_MULTIPLIER;
+            damageType = DamageType.INDIRECT_MAGIC;
+        }
+
+        double dealt = damage(context,
+                entity,
+                damageToDeal,
+                damageType,
+                damageLocation == null ? null :builder -> builder.withDamageLocation(damageLocation)
+        );
+
+        if (dealt > 0) {
+            context.runEffects(SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER, entity);
         }
     }
 

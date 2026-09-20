@@ -55,7 +55,7 @@ public class SpellInstance implements WandEntry<SpellInstance>, AttributeHolder 
     private final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
     private final Set<SpellEffectInstance<?>> triggeredEffects = new HashSet<>();
 
-    public SpellInstance(SpellDefinition definition) {
+    SpellInstance(SpellDefinition definition) {
         this.definition = definition;
 
         attributeValues.addAll(definition.getAttributeInstances());

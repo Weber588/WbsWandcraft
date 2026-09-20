@@ -29,7 +29,7 @@ import wbs.wandcraft.spell.definitions.extensions.*;
 import java.util.List;
 import java.util.Objects;
 
-import static wbs.wandcraft.spell.definitions.type.SpellType.SCULK;
+import static wbs.wandcraft.spell.SpellType.SCULK;
 
 public class AntiMagicShellSpell extends SpellDefinition implements CastableSpell, RadiusAttributable, DurationAttributable, ParticleAttributable, FollowAttributable {
     private static final SpellAttribute<Boolean> IS_REFLECTIVE = new BooleanSpellAttribute("is_reflective", true);

@@ -18,8 +18,7 @@ public interface MaterialAttributable extends AttributeHolder {
                 }
 
                 return true;
-            })
-            .setWritable(true);
+            });
 
     @AttributableSetupHandler
     default void setupMaterials() {

@@ -30,6 +30,8 @@ import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.resourcepack.TextureLayer;
+import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.SpellTypeModifiers;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModificationOperator;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
@@ -56,7 +58,6 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     private Function<T, String> formatter = Objects::toString;
     private Function<T, String> rawFormatter = Objects::toString;
     private final List<TypedFormatter<?>> typedFormatters = new LinkedList<>();
-    private boolean isWritable = false;
     private String textureValue;
     private Sentiment sentiment = Sentiment.POSITIVE;
 
@@ -250,6 +251,15 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         return new SpellAttributeModifier<>(this, operator, value);
     }
 
+    public SpellAttributeModifier<T, T> createModifier(
+            AttributeModifierType modifierDefinition,
+            @UnknownNullability T value
+    ) {
+        AttributeModificationOperator<T, T> operator = modifierDefinition.buildModifierType(type.dataType(), type);
+
+        return new SpellAttributeModifier<>(this, operator, value);
+    }
+
     public Component displayName() {
         return displayName;
     }
@@ -309,15 +319,6 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
     @Nullable
     public SpellAttributeInstance<T> defaultInstance() {
         return getInstance(defaultValue);
-    }
-
-    public boolean isWritable() {
-        return isWritable;
-    }
-
-    public SpellAttribute<T> setWritable(boolean writable) {
-        isWritable = writable;
-        return this;
     }
 
     @Override
@@ -423,6 +424,33 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
                 }
             }
         };
+    }
+
+    public <M> SpellAttribute<T> typeModifier(SpellType spellType,
+                                              AttributeModifierType modifierDefinition,
+                                              AttributeDataType<M> modifierDataType,
+                                              @UnknownNullability M value) {
+        if (value != null) {
+            SpellTypeModifiers.registerTypeModifier(spellType, createModifier(modifierDefinition, modifierDataType, value));
+        }
+        return this;
+    }
+
+    public SpellAttribute<T> typeModifier(SpellType spellType, AttributeModifierType modifierDefinition, @UnknownNullability T value) {
+        return typeModifier(spellType, modifierDefinition, type, value);
+    }
+
+    public SpellAttribute<T> typeModifiers(SpellType spellType, @Nullable T setUp, @Nullable T set) {
+        return typeModifiers(spellType, setUp, set, null);
+    }
+    public SpellAttribute<T> typeModifiers(SpellType spellType, @Nullable T setUp, @Nullable T set, @Nullable T add) {
+        return typeModifiers(spellType, setUp, set, add, null);
+    }
+    public SpellAttribute<T> typeModifiers(SpellType spellType, @Nullable T setUp, @Nullable T set, @Nullable T add, @Nullable T mul) {
+        typeModifier(spellType, AttributeModifierType.SET_UP, type, setUp);
+        typeModifier(spellType, AttributeModifierType.SET, type, set);
+        typeModifier(spellType, AttributeModifierType.ADD, type, add);
+        return typeModifier(spellType, AttributeModifierType.MULTIPLY, type, mul);
     }
 
     private record TypedFormatter<M>(AttributeDataType<M> dataType, Function<@Nullable M, String> formatter) {

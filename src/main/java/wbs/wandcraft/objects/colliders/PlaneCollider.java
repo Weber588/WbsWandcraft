@@ -5,7 +5,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.objects.generics.MagicObject;
 
-public abstract class PlaneCollider extends Collider {
+public abstract class PlaneCollider extends MagicObjectCollider {
 
     @NotNull
     protected Vector normal;

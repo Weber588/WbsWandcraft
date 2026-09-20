@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
@@ -11,11 +12,11 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
-import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.LinkedList;
@@ -62,18 +63,18 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
         projectile.setParticle(new WbsParticleGroup().addEffect(BOMB_EFFECT, Particle.DUST));
-        projectile.setDebug(true);
         SpellInstance instance = context.instance();
 
-        SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (result) -> {
-            EXPLODE_EFFECT.play(Particle.SNEEZE, result);
-            EXPLODE_EFFECT.play(Particle.TOTEM_OF_UNDYING, result);
+        SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (expiringObject) -> {
+            Location location = expiringObject.getLocation();
+            EXPLODE_EFFECT.play(Particle.SNEEZE, location);
+            EXPLODE_EFFECT.play(Particle.TOTEM_OF_UNDYING, location);
 
             RadiusSelector<LivingEntity> selector = new RadiusSelector<>(LivingEntity.class);
             selector.setRange(instance.getAttribute(RADIUS));
             selector.exclude(context.player());
 
-            List<LivingEntity> nearby = selector.select(result);
+            List<LivingEntity> nearby = selector.select(location);
 
             int duration = instance.getAttribute(DURATION);
 
@@ -87,6 +88,7 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
             for (LivingEntity hit : nearby) {
                 damageThen(hit, context, _ -> {
                     effects.forEach(hit::addPotionEffect);
+                    context.runEffects(SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER, hit);
                 });
             }
         });

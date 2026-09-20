@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
-import wbs.wandcraft.spell.definitions.type.SpellType;
+import wbs.wandcraft.spell.SpellType;
 
 public class HoldSpell extends SpellDefinition implements StatusEffectSpell<LivingEntity> {
     public HoldSpell() {

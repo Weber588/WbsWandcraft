@@ -3,6 +3,7 @@ package wbs.wandcraft.spell.definitions.extensions;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.effects.StatusEffect;
@@ -21,19 +22,29 @@ public interface StatusEffectSpell<T extends LivingEntity> extends CastableSpell
         Player player = context.player();
         SpellInstance instance = context.instance();
 
-        List<T> targets = getTargets(context);
+        StatusEffect statusEffect = getStatusEffect();
 
-        if (targets.isEmpty()) {
-            String noTargetsMessage = getNoTargetsMessage(context);
-            WbsWandcraft.getInstance().sendActionBar(noTargetsMessage, player);
+        List<T> applied = applyToTargets(context, target ->
+                StatusEffectInstance.applyEffect(
+                        target,
+                        statusEffect,
+                        instance.getAttribute(DURATION),
+                        true,
+                        player
+                )
+        );
+
+        WbsWandcraft.getInstance().getLogger().info("Targeted: " + applied.size());
+
+        if (applied.isEmpty()) {
+            WbsWandcraft.getInstance().sendActionBar(getNoTargetsMessage(context), player);
         } else {
-            targets.forEach(target -> StatusEffectInstance.applyEffect(
-                    target,
-                    getStatusEffect(),
-                    instance.getAttribute(DURATION),
-                    true,
-                    player
-            ));
+            WbsMessageBuilder message = WbsWandcraft.getInstance().buildMessageNoPrefix("Applied ")
+                    .append(statusEffect.display())
+                    .append(" to ")
+                    .append(groupName(applied));
+
+            message.build().send(player);
         }
     }
 }

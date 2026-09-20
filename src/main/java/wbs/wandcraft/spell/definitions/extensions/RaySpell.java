@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
@@ -17,6 +16,7 @@ import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
+import wbs.wandcraft.util.BoundingBoxUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -71,7 +71,10 @@ public interface RaySpell extends CastableSpell, RangeAttributable, RadiusAttrib
                 hit.removeAll(alreadyHit);
                 hit.remove(player.getPlayer());
                 for (LivingEntity target : hit) {
-                    RayTraceResult result = new RayTraceResult(WbsEntityUtil.getMiddleLocation(target).toVector(), target);
+                    RayTraceResult result = new RayTraceResult(
+                            BoundingBoxUtil.getClosestInBounds(target.getBoundingBox(), endLoc).toVector(),
+                            target
+                    );
                     context.runEffects(SpellTriggeredEvents.ON_HIT_TRIGGER, result);
                     onHitEntity(context, currentPos, target);
                 }
@@ -84,6 +87,7 @@ public interface RaySpell extends CastableSpell, RangeAttributable, RadiusAttrib
         }
 
         if (hitBlock != null) {
+            context.runEffects(SpellTriggeredEvents.ON_HIT_TRIGGER, endResult);
             onHitBlock(context, hitBlock, Objects.requireNonNull(endResult.getHitBlockFace()));
         }
     }

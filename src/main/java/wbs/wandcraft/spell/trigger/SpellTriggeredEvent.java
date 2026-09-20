@@ -36,6 +36,10 @@ public class SpellTriggeredEvent<T> implements Keyed {
         return new SpellEffectInstance<>(definition).addTrigger(this);
     }
 
+    public <O> SpellEffectInstance<O> getInstance(SpellEffectDefinition<O> definition) {
+        return new SpellEffectInstance<>(definition).addTrigger(this);
+    }
+
     public void registerAnonymous(SpellInstance instance, Consumer<T> eventConsumer) {
         instance.registerEffect(
                 getAnonymousInstance((context, effect, result) ->
