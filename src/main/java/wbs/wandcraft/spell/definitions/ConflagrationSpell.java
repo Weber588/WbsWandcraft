@@ -45,7 +45,7 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Throw out a wave of fire in all directions, repelling and burning nearby mobs.";
     }
 

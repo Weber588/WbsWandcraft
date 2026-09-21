@@ -25,7 +25,7 @@ public class HealSpell extends SpellDefinition implements CastableSpell, Targete
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Instantly heals the target.";
     }
 

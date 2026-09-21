@@ -139,7 +139,7 @@ public class NegateMagicSpell extends SpellDefinition implements CastableSpell, 
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Dispels all magic effects in a radius around you.";
     }
 }

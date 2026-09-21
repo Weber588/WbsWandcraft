@@ -29,7 +29,7 @@ public class FireballSpell extends SpellDefinition implements EntityProjectileSp
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Shoots a fireball!";
     }
 

@@ -69,13 +69,13 @@ public class MageLightSpell extends SpellDefinition implements CustomProjectileS
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Fires an orb of light that lingers wherever it hits, acting as a magic torch.";
     }
 
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
-        projectile.setParticle(EFFECT);
+        projectile.setTickEffects(EFFECT);
 
         projectile.setHitEntities(false);
 

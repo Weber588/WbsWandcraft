@@ -25,7 +25,7 @@ public class StunSpell extends SpellDefinition implements StatusEffectSpell<Livi
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Temporarily stuns all mobs in a radius, cancelling eating, drinking, and adding a short cooldown to held items.";
     }
 

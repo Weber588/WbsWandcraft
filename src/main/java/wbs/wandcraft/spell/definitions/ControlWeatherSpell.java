@@ -19,7 +19,7 @@ public class ControlWeatherSpell extends SpellDefinition implements CastableSpel
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Intensify the weather, or clear it if it's thundering";
     }
 

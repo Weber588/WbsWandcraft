@@ -65,7 +65,7 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
 
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
-        projectile.setParticle(EFFECT);
+        projectile.setTickEffects(EFFECT);
         projectile.setEndEffects(END_EFFECT);
     }
 
@@ -75,7 +75,7 @@ public class EldritchBlastSpell extends SpellDefinition implements CustomProject
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "A simple projectile spell that fires a blast of energy in the direction the caster is facing, dealing damage to anything hit.";
     }
 }

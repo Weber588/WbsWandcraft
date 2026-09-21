@@ -40,7 +40,7 @@ public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectil
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Shoots several sparks of arcane energy that bounce and do damage on hit.";
     }
 
@@ -54,7 +54,7 @@ public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectil
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
         SpellInstance instance = context.instance();
-        projectile.setParticle(new WbsParticleGroup()
+        projectile.setTickEffects(new WbsParticleGroup()
                 .addEffect(EFFECT, getParticle(instance))
         );
         projectile.setEndEffects(new WbsParticleGroup().addEffect(END_EFFECT, Particle.FIREWORK));

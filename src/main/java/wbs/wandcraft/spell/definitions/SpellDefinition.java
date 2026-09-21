@@ -3,27 +3,35 @@ package wbs.wandcraft.spell.definitions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.apache.commons.lang3.NotImplementedException;
+import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.NullMarked;
+import wbs.utils.util.particles.ParticleDataProvider;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.resourcepack.TextureLayer;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.SpellType;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import static wbs.wandcraft.spellbook.Spellbook.DESCRIPTION_COLOR;
 
 @NullMarked
-public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTextureProvider {
+public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTextureProvider, ParticleDataProvider {
     protected final Set<SpellAttributeInstance<?>> defaultAttributes = new HashSet<>();
 
     protected final List<SpellType> spellTypes = new LinkedList<>();
@@ -86,7 +94,9 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
     public Component description() {
         return Component.text(rawDescription());
     }
-    public abstract String rawDescription();
+    protected String rawDescription() {
+        throw new NotImplementedException("Raw description was not implemented but still called from description()");
+    }
     public List<Component> loreDescription() {
         LinkedList<Component> components = new LinkedList<>();
         WbsStrings.wrapText(rawDescription(), 140).stream()
@@ -168,5 +178,20 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
 
     public SpellInstance newInstance() {
         return new SpellInstance(this);
+    }
+
+    @Override
+    public Color getColor(Particle particle, @Nullable Location location) {
+        return getPrimarySpellType().color();
+    }
+
+    @Override
+    public Color getSecondaryColor(Particle particle, @Nullable Location location) {
+        SpellType secondarySpellType = getSecondarySpellType();
+        if (secondarySpellType != null) {
+            return secondarySpellType.color();
+        }
+
+        return getColor(particle, location);
     }
 }

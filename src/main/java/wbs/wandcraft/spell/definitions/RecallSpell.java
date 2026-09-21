@@ -152,7 +152,7 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Leave behind a magic checkpoint, that you return to when you cast it again!";
     }
 }

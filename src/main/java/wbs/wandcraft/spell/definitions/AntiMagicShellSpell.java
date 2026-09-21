@@ -7,6 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import wbs.utils.util.WbsMath;
+import wbs.utils.util.particles.ParticleDataProvider;
 import wbs.utils.util.particles.SphereParticleEffect;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.events.objects.MagicObjectMoveEvent;
@@ -24,7 +25,7 @@ import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.FollowAttributable;
 import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
-import wbs.wandcraft.spell.definitions.extensions.*;
+import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 
 import java.util.List;
 import java.util.Objects;
@@ -120,7 +121,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
             SpellInstance instance = context.instance();
 
             if (getAge() % 5 == 0) {
-                playEffectSafely(effect, instance, getLocation());
+                ParticleDataProvider.playEffectSafely(effect, location, getParticle(instance), instance.getDefinition());
             }
 
             if (hits == 0) {
@@ -167,7 +168,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Form a shield around you that prevents any magic objects from entering or leaving";
     }
 }

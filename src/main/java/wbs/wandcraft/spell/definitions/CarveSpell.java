@@ -235,7 +235,7 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Shoots a fine laser that can break blocks or hurt players.";
     }
 

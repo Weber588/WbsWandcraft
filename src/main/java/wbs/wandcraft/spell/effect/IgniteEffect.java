@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Fire;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.RayTraceResult;
@@ -28,7 +29,12 @@ public class IgniteEffect extends SpellEffectDefinition<RayTraceResult> implemen
                 Block relative = hitBlock.getRelative(hitBlockFace);
                 if (relative.isEmpty()) {
                     if (WbsRegionUtils.canBuildAt(relative.getLocation(), context.player())) {
-                        relative.setType(Material.FIRE);
+                        Fire fire = (Fire) Material.FIRE.createBlockData();
+                        BlockFace fireFace = hitBlockFace.getOppositeFace();
+                        if (fireFace != BlockFace.DOWN) {
+                            fire.setFace(fireFace, true);
+                        }
+                        relative.setBlockData(fire);
                     }
                 }
             }

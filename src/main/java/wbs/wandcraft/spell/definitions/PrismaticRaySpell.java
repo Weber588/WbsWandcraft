@@ -36,7 +36,7 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "A beam of energy is instantly sent out in the direction you're facing, dealing damage to ALL creatures in its path.";
     }
 

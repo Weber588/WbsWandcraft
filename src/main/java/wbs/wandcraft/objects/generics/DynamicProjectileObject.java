@@ -48,10 +48,10 @@ public class DynamicProjectileObject extends DynamicMagicObject {
 
         double distanceFromSpawn = getLocation().distanceSquared(getSpawnLocation());
 
-        if (effects != null && (shouldPlayParticles || distanceFromSpawn > 1)) {
+        if (tickEffects != null && (shouldPlayParticles || distanceFromSpawn > 1)) {
             debug("Projectile object playing effects");
             shouldPlayParticles = true;
-            effects.buildAndPlay(location);
+            tickEffects.buildAndPlay(location);
         }
 
         if (distanceFromSpawn > range * range) {

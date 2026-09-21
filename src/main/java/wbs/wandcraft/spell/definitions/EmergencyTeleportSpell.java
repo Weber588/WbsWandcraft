@@ -25,7 +25,7 @@ public class EmergencyTeleportSpell extends SpellDefinition implements CastableS
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Teleports you to a random safe space, ";
     }
 

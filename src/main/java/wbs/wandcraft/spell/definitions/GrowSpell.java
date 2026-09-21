@@ -63,7 +63,7 @@ public class GrowSpell extends SpellDefinition implements RaySpell {
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Applies bone meal on the target block";
     }
 }

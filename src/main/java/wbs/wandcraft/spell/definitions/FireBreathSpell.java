@@ -45,7 +45,7 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Continuously breathe fire, until you stop sneaking or until the max duration is reached.";
     }
 

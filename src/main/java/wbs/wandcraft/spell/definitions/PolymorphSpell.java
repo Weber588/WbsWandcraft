@@ -39,7 +39,7 @@ public class PolymorphSpell extends SpellDefinition implements StatusEffectSpell
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Transforms the target entity into a sheep for a short duration";
     }
 }

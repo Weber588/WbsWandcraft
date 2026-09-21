@@ -35,7 +35,7 @@ public class CrowsCallSpell extends SpellDefinition implements CastableSpell, Du
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Fly straight up, and glide until you touch the ground.";
     }
 

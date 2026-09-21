@@ -37,7 +37,7 @@ public class WindWalkSpell extends SpellDefinition implements CastableSpell, Spe
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "The caster is pulled into a vortex, moving in the direction they're looking for a short time.";
     }
 

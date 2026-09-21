@@ -27,7 +27,7 @@ public class CharmSpell extends SpellDefinition implements StatusEffectSpell<Mob
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Pacifies nearby mobs, turning them friendly towards you for a short duration.";
     }
 

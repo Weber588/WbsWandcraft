@@ -126,7 +126,7 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "The caster moves forward for a set distance, dealing damage to nearby creatures. " +
                         "The caster is immune to all damage while moving.";
     }

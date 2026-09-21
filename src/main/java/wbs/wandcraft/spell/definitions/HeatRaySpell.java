@@ -208,7 +208,7 @@ public class HeatRaySpell extends SpellDefinition implements DirectionAttributab
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Shoots a ray of heat that can evaporate water and burns entities";
     }
 }

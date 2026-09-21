@@ -24,7 +24,7 @@ public class AmorphousEarthSpell extends SpellDefinition implements StatusEffect
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Allows you to walk through nearby natural blocks, seeming to phase through the world. Sneak to descend.";
     }
 

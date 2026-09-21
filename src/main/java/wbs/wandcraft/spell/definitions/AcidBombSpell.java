@@ -56,13 +56,13 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Fires a blob of acid that damages and poisons mobs in an area where it hits";
     }
 
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
-        projectile.setParticle(new WbsParticleGroup().addEffect(BOMB_EFFECT, Particle.DUST));
+        projectile.setTickEffects(new WbsParticleGroup().addEffect(BOMB_EFFECT, Particle.DUST));
         SpellInstance instance = context.instance();
 
         SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (expiringObject) -> {

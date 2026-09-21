@@ -25,7 +25,7 @@ public class DeathWalkSpell extends SpellDefinition implements StatusEffectSpell
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Prevents undead from targeting you for the duration of the effect";
     }
 

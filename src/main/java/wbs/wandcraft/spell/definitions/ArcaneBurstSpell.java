@@ -52,6 +52,7 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
         setAttribute(COOLDOWN, 7 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(SPEED, 5d);
+        setAttribute(GRAVITY, 0.16);
         setAttribute(FORCE, 1.5);
         setAttribute(DAMAGE, 6.0);
         setAttribute(RANGE, 100.0);
@@ -74,7 +75,7 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
 
         Particle particle = getParticle(instance);
 
-        projectile.setParticle(new WbsParticleGroup().addEffect(effect, particle));
+        projectile.setTickEffects(new WbsParticleGroup().addEffect(effect, particle));
         projectile.setEndEffects(EXPLODE_GROUP);
 
         SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (expiringObject) -> {
@@ -99,7 +100,7 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "A spiral of arcane energy that flies and throws nearby mobs on impact.";
     }
 }

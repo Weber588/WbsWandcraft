@@ -66,7 +66,7 @@ public class DiscoverItemSpell extends SpellDefinition implements CastableSpell,
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Searches nearby containers for copies of the item in your off hand, and highlights them.";
     }
 

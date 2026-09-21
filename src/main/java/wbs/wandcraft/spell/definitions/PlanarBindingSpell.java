@@ -27,7 +27,7 @@ public class PlanarBindingSpell extends SpellDefinition implements StatusEffectS
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Prevents all nearby entities from teleporting for a short duration.";
     }
 

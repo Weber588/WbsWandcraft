@@ -57,7 +57,7 @@ public class LeapSpell extends SpellDefinition implements CastableSpell, Directi
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "The caster is thrown in the direction they're facing, and takes no fall damage.";
     }
 }

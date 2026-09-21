@@ -13,7 +13,7 @@ import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 
 public interface DirectionAttributable extends AttributeHolder {
-    SpellAttribute<Double> IMPRECISION = new DoubleSpellAttribute("imprecision", 8)
+    SpellAttribute<Double> IMPRECISION = new DoubleSpellAttribute("imprecision", 5)
             .setShowAttribute(value -> value != 0)
             .setNumericFormatter(accuracy -> accuracy + " degrees")
             .sentiment(SpellAttribute.Sentiment.NEGATIVE)
@@ -21,15 +21,15 @@ public interface DirectionAttributable extends AttributeHolder {
             .typeModifiers(SpellType.SCULK, 4d, null, null, 1.25);
 
     default Vector getDirection(CastContext context) {
+        double length = 1;
+
         if (this instanceof RangeAttributable) {
-            double range = context.instance().getAttribute(RangeAttributable.RANGE);
-            return getDirection(context, range);
+            length = context.instance().getAttribute(RangeAttributable.RANGE);
         } else if (this instanceof DistanceAttributable) {
-            double distance = context.instance().getAttribute(DistanceAttributable.DISTANCE);
-            return getDirection(context, distance);
+            length = context.instance().getAttribute(DistanceAttributable.DISTANCE);
         }
 
-        return getDirection(context, 1);
+        return getDirection(context, length);
     }
 
     default Vector getDirection(CastContext context, double magnitude) {

@@ -21,7 +21,7 @@ public class HoldSpell extends SpellDefinition implements StatusEffectSpell<Livi
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "The target is held in place, unable to move for a short duration.";
     }
 

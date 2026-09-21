@@ -56,7 +56,7 @@ public class ManaCircleSpell extends SpellDefinition implements CastableSpell, R
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Create a circle of runes that regenerates mana and magic attacks.";
     }
 

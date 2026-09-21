@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.dynamic;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
@@ -9,41 +10,60 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.particles.NormalParticleEffect;
-import wbs.utils.util.particles.WbsParticleEffect;
+import wbs.utils.util.particles.ParticleDataProvider;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostType;
-import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.SpellType;
-import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
+import wbs.wandcraft.spell.definitions.extensions.RaySpell;
 import wbs.wandcraft.spell.effect.SpellEffectDefinitions;
 import wbs.wandcraft.spell.effect.SpellEffectInstance;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.List;
+import java.util.Set;
 
 @NullMarked
-public class DynamicSpellProjectile extends DynamicSpell implements CustomProjectileSpell {
-    public static SpellAspect PROJECTILE_ASPECT = new SpellAspect("projectile", DynamicSpellProjectile::new);
+public class DynamicSpellRay extends DynamicSpell implements RaySpell {
+    public static SpellAspect RAY_ASPECT = new SpellAspect("ray", DynamicSpellRay::new);
+    private final WbsParticleGroup particleGroup;
 
-    public DynamicSpellProjectile(SpellType primary, @Nullable SpellType secondary) {
-        super("projectile", primary, secondary);
+    public DynamicSpellRay(SpellType primary, @Nullable SpellType secondary) {
+        super("ray", primary, secondary);
 
-        setAttribute(GRAVITY, 0d);
+        particleGroup = getParticleGroup(
+                new NormalParticleEffect().setAmount(2),
+                new NormalParticleEffect().setAmount(1)
+        ).setPlayFunction(((effect, location, particle) -> {
+            effect.build();
+            ParticleDataProvider.playEffectSafely(effect, location, particle, this);
+        }));
+
+        setAttribute(RADIUS, 0.4d);
+        setAttribute(IMPRECISION, 0.5d);
     }
 
     @Override
-    public void configure(DynamicProjectileObject projectile, CastContext context) {
-        WbsParticleGroup particleGroup = getParticleGroup(
-                buildParticleEffect(projectile).setAmount(2),
-                buildParticleEffect(projectile).setAmount(1)
-        );
+    public boolean onStep(CastContext context, Location currentPos, Set<LivingEntity> alreadyHit, int currentStep, int maxSteps) {
+        double radius = context.instance().getAttribute(RADIUS);
+        particleGroup.effects().keySet().forEach(effect -> {
+            if (effect instanceof NormalParticleEffect nEffect) {
+                nEffect.setXYZ(radius / 5);
+            }
+        });
 
-        projectile.setTickEffects(particleGroup);
+        particleGroup.play(currentPos);
+        return false;
     }
 
-    private static WbsParticleEffect buildParticleEffect(DynamicProjectileObject projectile) {
-        return new NormalParticleEffect().setXYZ(projectile.getHitBoxSize() / 3);
+    @Override
+    public boolean canHitEntities() {
+        return true;
+    }
+
+    @Override
+    public double getStepSize() {
+        return 0.3;
     }
 
     @Override

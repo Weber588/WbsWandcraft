@@ -52,7 +52,7 @@ public class BlackHoleSpell extends SpellDefinition implements CustomProjectileS
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Fires a slow moving black hole that eats blocks and entities in its path.";
     }
 

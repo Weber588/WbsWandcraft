@@ -41,7 +41,13 @@ public class SpellEffectInstance<T> implements AttributeHolder, ComponentReprese
 
         T mapped = mapper.apply(event);
         if (mapped != null) {
-            effect.run(context, this, mapped);
+            // An event running should never interrupt the outer action
+            try {
+                effect.run(context, this, mapped);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return false;
+            }
             return true;
         }
         return false;

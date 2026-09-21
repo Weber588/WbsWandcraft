@@ -29,15 +29,16 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributab
             .setShowAttribute(value -> value != 0)
             .setNumericFormatter(20d, value -> value + " blocks/second²")
             .sentiment(SpellAttribute.Sentiment.NEUTRAL)
-            .typeModifier(SpellType.NATURE, AttributeModifierType.SET_UP, 0.04)
-            .typeModifier(SpellType.VOID, AttributeModifierType.ADD, 0.08);
+            .typeModifier(SpellType.NATURE, AttributeModifierType.SET_UP, 0.02)
+            .typeModifier(SpellType.VOID, AttributeModifierType.ADD, 0.04);
     SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size",0.3)
             .setNumericFormatter(value -> value + " blocks")
             .sentiment(SpellAttribute.Sentiment.NEUTRAL);
     SpellAttribute<Double> DRAG = new DoubleSpellAttribute("drag",0)
             .setShowAttribute(value -> value != 0)
             .setNumericFormatter(20d, value -> value + " blocks/second²")
-            .sentiment(SpellAttribute.Sentiment.NEUTRAL);
+            .sentiment(SpellAttribute.Sentiment.NEUTRAL)
+            .typeModifier(SpellType.VOID, AttributeModifierType.ADD, 0.04);
 
     @AttributableSetupHandler
     default void setupCustomProjectile() {
@@ -79,7 +80,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributab
         projectile.setRange(range);
         projectile.setVelocity(getDirection(context, speed));
         projectile.setDrag(drag);
-        projectile.setParticle(tickEffects);
+        projectile.setTickEffects(tickEffects);
         projectile.setGravity(gravity);
 
         if (bounces > 0) {

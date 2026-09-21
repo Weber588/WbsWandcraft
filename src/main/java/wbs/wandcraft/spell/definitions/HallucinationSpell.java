@@ -122,7 +122,7 @@ public class HallucinationSpell extends SpellDefinition implements CastableSpell
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Turn invisible and leave behind a hallucination of yourself that flees from nearby mobs, allowing you to make a quick getaway";
     }
 

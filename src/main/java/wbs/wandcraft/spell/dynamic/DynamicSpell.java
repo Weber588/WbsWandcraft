@@ -2,20 +2,25 @@ package wbs.wandcraft.spell.dynamic;
 
 import com.google.common.collect.Multimap;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Particle;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
+import wbs.utils.util.particles.WbsParticleEffect;
+import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.SpellTypeModifiers;
 import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.effect.SpellEffectInstance;
 
-// TODO: Give implementing classes default effect triggers based on spell types
+import java.util.function.Consumer;
+
 // Add all attributes with non-affecting values that may be used
-public abstract class DynamicSpell extends SpellDefinition implements BurnDamageAttributable {
+public abstract class DynamicSpell extends SpellDefinition implements BurnDamageAttributable, ParticleAttributable {
     private final String dynamicType;
 
     private static String getStrippedKey(SpellType primary) {
@@ -50,8 +55,19 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
     }
 
     @Override
-    public String rawDescription() {
-        return "A dynamic " + dynamicType + " spell.";
+    public Component description() {
+        Component description = Component.text("A ")
+                .append(getPrimarySpellType().displayName());
+
+        SpellType secondarySpellType = getSecondarySpellType();
+        if (secondarySpellType != null) {
+            description = description.append(Component.text("/"))
+                    .append(secondarySpellType.displayName());
+        }
+
+        description = description.append(Component.text(" " + dynamicType + " spell."));
+
+        return description;
     }
 
     @Override
@@ -72,5 +88,42 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
         return newInstance;
     }
 
+    @NotNull
+    protected WbsParticleGroup getParticleGroup(WbsParticleEffect effect) {
+        return getParticleGroup(effect.clone(), effect.clone());
+    }
+
+    @NotNull
+    protected WbsParticleGroup getParticleGroup(WbsParticleEffect primaryEffect, WbsParticleEffect secondaryEffect) {
+        WbsParticleGroup particleGroup = new WbsParticleGroup();
+
+        SpellType primarySpellType = getPrimarySpellType();
+        SpellType secondarySpellType = getSecondarySpellType();
+
+        primarySpellType.defaultEffect().accept(primaryEffect);
+        particleGroup.addEffect(primaryEffect, primarySpellType.defaultParticle());
+
+        if (secondarySpellType != null) {
+            Consumer<WbsParticleEffect> secondaryModifier = secondarySpellType.defaultEffect();
+            secondaryModifier.accept(secondaryEffect);
+            particleGroup.addEffect(secondaryEffect, secondarySpellType.defaultParticle(), 5);
+        } else {
+            Particle secondaryParticle = primarySpellType.secondaryParticle();
+            Consumer<WbsParticleEffect> secondaryModifier = primarySpellType.secondaryEffect();
+            if (secondaryParticle != null) {
+                if (secondaryModifier != null) {
+                    secondaryModifier.accept(secondaryEffect);
+                }
+                particleGroup.addEffect(secondaryEffect, secondaryParticle, 5);
+            }
+        }
+        return particleGroup;
+    }
+
     protected abstract Multimap<SpellType, SpellEffectInstance<?>> typedEvents();
+
+    @Override
+    public Particle getDefaultParticle() {
+        return Particle.INSTANT_EFFECT;
+    }
 }

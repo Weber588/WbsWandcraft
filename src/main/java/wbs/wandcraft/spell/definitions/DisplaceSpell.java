@@ -43,7 +43,7 @@ public class DisplaceSpell extends SpellDefinition implements CastableSpell, Tar
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Swaps the caster with a random target.";
     }
 

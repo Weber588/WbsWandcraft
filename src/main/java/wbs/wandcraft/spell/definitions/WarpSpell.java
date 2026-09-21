@@ -51,7 +51,7 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
 
         Particle particle = getParticle(instance);
 
-        projectile.setParticle(new WbsParticleGroup().addEffect(effect, particle));
+        projectile.setTickEffects(new WbsParticleGroup().addEffect(effect, particle));
         projectile.setEndEffects(new WbsParticleGroup().addEffect(END_EFFECT, particle));
 
         Player player = context.player();
@@ -67,7 +67,7 @@ public class WarpSpell extends SpellDefinition implements CustomProjectileSpell 
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Teleport to a point you're looking at within range.";
     }
 }

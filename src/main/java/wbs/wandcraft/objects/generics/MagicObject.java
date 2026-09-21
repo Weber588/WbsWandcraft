@@ -9,6 +9,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.utils.util.WbsMath;
+import wbs.utils.util.particles.ParticleDataProvider;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
@@ -18,7 +19,6 @@ import wbs.wandcraft.exceptions.MagicObjectExistsException;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.PersistenceLevel;
 import wbs.wandcraft.objects.colliders.MagicObjectCollider;
-import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Objects;
@@ -54,7 +54,7 @@ public abstract class MagicObject {
 	protected MagicObjectCollider collider;
 
 	@Nullable
-	protected WbsParticleGroup effects = null; // The vast majority of magicobjects will use particles
+	protected WbsParticleGroup tickEffects = null;
 	@Nullable
 	protected WbsParticleGroup endEffects = null;
 	@Nullable
@@ -100,8 +100,8 @@ public abstract class MagicObject {
 					cancel = tick();
 				}
 
-				if (playEffectsOnTick() && !cancel && effects != null) {
-					effects.play(getLocation());
+				if (playEffectsOnTick() && !cancel && tickEffects != null) {
+					tickEffects.play(getLocation());
 				}
 
 				if (!cancel) {
@@ -247,11 +247,15 @@ public abstract class MagicObject {
 		this.isPersistent = isPersistent;
 	}
 
-	public MagicObject setParticle(WbsParticleGroup effects) {
-		this.effects = effects.clone().play(((effect, location, particle) ->
-				ParticleAttributable.playEffectSafely(effect, location, particle, context.instance().getDefinition())
+	public MagicObject setTickEffects(WbsParticleGroup effects) {
+		this.tickEffects = effects.clone().setPlayFunction(((effect, location, particle) ->
+				ParticleDataProvider.playEffectSafely(effect, location, particle, context.instance().getDefinition())
 		));
 		return this;
+	}
+
+	public @Nullable WbsParticleGroup getTickEffects() {
+		return tickEffects != null ? tickEffects.clone() : null;
 	}
 
 	public MagicObject setEndEffects(WbsParticleGroup endEffects) {
@@ -351,7 +355,7 @@ public abstract class MagicObject {
 				", maxAge=" + maxAge +
 				", timerID=" + timerID +
 				", collider=" + collider +
-				", effects=" + effects +
+				", effects=" + tickEffects +
 				", endEffects=" + endEffects +
 				", dispelEffects=" + dispelEffects +
 				", debug=" + debug

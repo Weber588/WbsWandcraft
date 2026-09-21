@@ -52,7 +52,7 @@ public class HealingCircleSpell extends SpellDefinition implements CastableSpell
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Create a circle of runes that heal anything in its radius.";
     }
 

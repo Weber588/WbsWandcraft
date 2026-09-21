@@ -46,7 +46,7 @@ public class MassIllusionSpell extends SpellDefinition implements CastableSpell,
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Disguises all mobs in a radius, and shuffles them randomly so nobody knows who's who!";
     }
 

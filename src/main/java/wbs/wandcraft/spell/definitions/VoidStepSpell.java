@@ -94,7 +94,7 @@ public class VoidStepSpell extends SpellDefinition implements CastableSpell, Ran
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "The caster is teleported a short distance in the direction they're facing.";
     }
 }

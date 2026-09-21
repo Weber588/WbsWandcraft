@@ -54,7 +54,7 @@ public class ShieldSpell extends SpellDefinition implements ContinuousCastableSp
     }
 
     @Override
-    public String rawDescription() {
+    protected String rawDescription() {
         return "Continuously spawn an arc of blocks in the direction you're looking, blocking most magic and entities!";
     }
 
