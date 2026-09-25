@@ -19,6 +19,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 
 import java.util.Random;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @NullMarked
@@ -40,22 +41,22 @@ public class SpellType implements Keyed {
     }
 
     // TODO: Move these to a config
-    public static final TextColor ARCANE_COLOUR = color("d3b400");
+    public static final TextColor ARCANE_COLOUR = color("bd9a0c");
     public static final Color ARCANE_WAND_COLOR = wandColor("d7c719");
 
-    public static final TextColor NETHER_COLOR = color("a6001b");
+    public static final TextColor NETHER_COLOR = color("9e3d3b");
     public static final Color NETHER_WAND_COLOR = wandColor("95232c");
 
-    public static final TextColor ENDER_COLOR = color("8e009c");
+    public static final TextColor ENDER_COLOR = color("a34796");
     public static final Color ENDER_WAND_COLOR = wandColor("c719d7");
 
-    public static final TextColor SCULK_COLOR = color("80c4e3");
+    public static final TextColor SCULK_COLOR = color("007494");
     public static final Color SCULK_WAND_COLOR = wandColor("5daca5");
 
-    public static final TextColor VOID_COLOR = color("00325d");
+    public static final TextColor VOID_COLOR = color("1c3f6e");
     public static final Color VOID_WAND_COLOR = wandColor("121749");
 
-    public static final TextColor NATURE_COLOR = color("009a00");
+    public static final TextColor NATURE_COLOR = color("2d7922");
     public static final Color NATURE_WAND_COLOUR = wandColor("41d035");
     
     public static final SpellType ARCANE = new SpellType("arcane", ARCANE_COLOUR, ARCANE_WAND_COLOR)
@@ -63,32 +64,21 @@ public class SpellType implements Keyed {
                     The domain of order, information, and reason. Arcane magic is \
                     coordinated, efficient, and precise; the science of magic."""
             ).defaultParticle(Particle.DUST_COLOR_TRANSITION);
+
     public static final SpellType NETHER = new SpellType("nether", NETHER_COLOR, NETHER_WAND_COLOR)
             .rawDescription("""
                     The domain of controlled chaos; fire and undeath. Fire can be a sign of danger, or of warmth and safety, \
                     depending on how well it's controlled."""
-            ).defaultParticle(effect -> {
-                if (effect instanceof SpeedParticleEffect sEffect) {
-                    sEffect.setSpeed(0.02);
-                }
-            }, Particle.SMALL_FLAME)
+            ).defaultParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.02, Particle.SMALL_FLAME)
             .velocityAffectedParticle(Particle.FLAME)
             .secondaryParticle(effect -> effect.setChance(1), Particle.FLAME);
+
     public static final SpellType ENDER = new SpellType("ender", ENDER_COLOR, ENDER_WAND_COLOR)
             .rawDescription("""
                     The domain of dimensionality, spacetime, and geometry. Ender magic is a corruption of natural law, \
                     treating physics and reality as obstacles to be ignored."""
-            ).defaultParticle(effect -> {
-                if (effect instanceof SpeedParticleEffect sEffect) {
-                    sEffect.setSpeed(0.02);
-                }
-            }, Particle.REVERSE_PORTAL)
-            .secondaryParticle(effect -> {
-                effect.setChance(1);
-                if (effect instanceof SpeedParticleEffect sEffect) {
-                    sEffect.setSpeed(0.2);
-                }
-            }, Particle.PORTAL)
+            ).defaultParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.02, Particle.REVERSE_PORTAL)
+            .secondaryParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.2, Particle.PORTAL)
             .velocityAffectedParticle(Particle.DRAGON_BREATH);
     
     public static final SpellType SCULK = new SpellType("sculk", SCULK_COLOR, SCULK_WAND_COLOR)
@@ -233,6 +223,20 @@ public class SpellType implements Keyed {
         this.particleEffectModifier = effectModifier;
         return this;
     }
+    public <T, R> SpellType defaultParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
+        this.defaultParticle = defaultParticle;
+        this.particleEffectModifier = toModifier(clazz, function, value);
+        return this;
+    }
+
+    private <T, R> Consumer<WbsParticleEffect> toModifier(Class<T> clazz, BiConsumer<T, R> function, R value) {
+        return effect -> {
+            if (clazz.isAssignableFrom(effect.getClass())) {
+                //noinspection unchecked
+                function.accept((T) effect, value);
+            }
+        };
+    }
 
     public @Nullable Particle secondaryParticle() {
         return secondaryParticle;
@@ -248,6 +252,11 @@ public class SpellType implements Keyed {
     public SpellType secondaryParticle(Consumer<WbsParticleEffect> secondaryModifier, @Nullable Particle secondaryParticle) {
         this.secondaryParticle = secondaryParticle;
         this.secondaryEffectModifier = secondaryModifier;
+        return this;
+    }
+    public <T, R> SpellType secondaryParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
+        this.secondaryParticle = defaultParticle;
+        this.secondaryEffectModifier = toModifier(clazz, function, value);
         return this;
     }
 

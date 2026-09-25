@@ -37,9 +37,7 @@ public class KeyedSpellAttribute<T extends Keyed> extends SpellAttribute<T> {
 
     private static <T extends Keyed> T parse(String string, Function<NamespacedKey, T> function) {
         string = string.replace("\"", "");
-        WbsWandcraft.getInstance().getLogger().info("damage type string to parse: " + string);
         NamespacedKey asKey = NamespacedKey.fromString(string);
-        WbsWandcraft.getInstance().getLogger().info("asKey: " + asKey);
         if (asKey == null) return null;
         return function.apply(asKey);
     }

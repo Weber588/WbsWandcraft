@@ -50,7 +50,7 @@ public class CommandSpellInfo extends WbsSubcommand {
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
-    private static final TextColor CATEGORY_COLOR = TextColor.color(0xe3a11c);
+    private static final TextColor EXTRAS_COLOUR = TextColor.color(0xe3a11c);
     public static final TextColor ACCENTS_STYLE = NamedTextColor.GOLD;
 
     private static final Map<SpellDefinition, Integer> PAGE_NUMBERS = new HashMap<>();
@@ -169,12 +169,12 @@ public class CommandSpellInfo extends WbsSubcommand {
         builder.append("\n").append(types);
 
         if (spell instanceof CastableSpell castableSpell && castableSpell.requiresConcentration()) {
-            builder.append(Component.text("\nConcentration").color(NamedTextColor.BLUE).hoverEvent(HoverEvent.showText(
+            builder.append(Component.text("\nConcentration").color(EXTRAS_COLOUR).hoverEvent(HoverEvent.showText(
                     Component.text("""
                             This spell requires concentration for
                             the duration of the spell.
                             You can only concentrate on a single
-                            spell at a time.""").color(NamedTextColor.GOLD)
+                            spell at a time.""").color(Spellbook.DESCRIPTION_COLOR)
             )));
         }
 
@@ -225,13 +225,15 @@ public class CommandSpellInfo extends WbsSubcommand {
                 }).toList()
         );
 
+        TextComponent textDescription = Component.text("Generation: \n").color(EXTRAS_COLOUR)
+                .append(generation);
+
         if (collapse) {
             return Component.text("[G]")
-                    .color(CATEGORY_COLOR)
-                    .hoverEvent(HoverEvent.showText(generation));
+                    .color(EXTRAS_COLOUR)
+                    .hoverEvent(HoverEvent.showText(textDescription));
         } else {
-            return Component.text("Generation: \n").color(CATEGORY_COLOR)
-                    .append(generation);
+            return textDescription;
         }
     }
 
@@ -256,29 +258,32 @@ public class CommandSpellInfo extends WbsSubcommand {
             return null;
         }
 
+        TextComponent descriptionText = Component.text("Learning criteria: \n").color(EXTRAS_COLOUR)
+                .append(learning);
+
         TextComponent text;
         if (collapse) {
             text = Component.text("[L]")
-                    .color(CATEGORY_COLOR)
-                    .hoverEvent(HoverEvent.showText(learning));
+                    .color(EXTRAS_COLOUR)
+                    .hoverEvent(HoverEvent.showText(descriptionText));
         } else {
-            text = Component.text("Learning criteria: \n").color(CATEGORY_COLOR)
-                    .append(learning);
+            text = descriptionText;
         }
         return text;
     }
 
     private static @NonNull Component getAttributeComponent(SpellDefinition spell, boolean collapse) {
         Component attributes = Component.join(JoinConfiguration.newlines(), spell.getLore());
+        TextComponent descriptionText = Component.text("Attributes: \n")
+                .color(EXTRAS_COLOUR)
+                .append(attributes);
 
         if (collapse) {
             return Component.text("[A]")
-                    .color(CATEGORY_COLOR)
-                    .hoverEvent(HoverEvent.showText(attributes));
+                    .color(EXTRAS_COLOUR)
+                    .hoverEvent(HoverEvent.showText(descriptionText));
         } else {
-            return Component.text("Attributes: \n")
-                    .color(CATEGORY_COLOR)
-                    .append(attributes);
+            return descriptionText;
         }
     }
 
