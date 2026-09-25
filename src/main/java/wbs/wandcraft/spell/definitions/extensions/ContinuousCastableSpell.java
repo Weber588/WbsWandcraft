@@ -48,7 +48,7 @@ public interface ContinuousCastableSpell extends CastableSpell {
         onStartCasting(context);
 
         Player player = context.player();
-        boolean isContinuousCast = player.isSneaking();
+        boolean isContinuousCast = isContinuousCast(player);
         int startTick = Bukkit.getCurrentTick();
 
         int endTick;
@@ -66,7 +66,7 @@ public interface ContinuousCastableSpell extends CastableSpell {
             @Override
             public void run() {
                 Player player = context.getOnlinePlayer();
-                if (endTick <= Bukkit.getCurrentTick() || player == null || isContinuousCast && !player.isSneaking() || !player.isOnline() || player.isDead()) {
+                if (endTick <= Bukkit.getCurrentTick() || player == null || isContinuousCast && !isContinuousCast(player) || !player.isOnline() || player.isDead()) {
                     cancel();
                     return;
                 }
@@ -82,6 +82,10 @@ public interface ContinuousCastableSpell extends CastableSpell {
                 context.finish();
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    default boolean isContinuousCast(Player player) {
+        return player.isSneaking();
     }
 
     default boolean completeAfterCast() {

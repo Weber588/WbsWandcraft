@@ -25,7 +25,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerTakeLecternBookEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.view.LecternView;
 import org.bukkit.util.Transformation;
@@ -40,11 +39,12 @@ import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.crafting.ArtificingTable;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.EffectUtils;
+import wbs.wandcraft.util.ItemUtils;
 
 import java.util.Random;
 
@@ -130,13 +130,6 @@ public class SpellbookEvents implements Listener {
                     }}, 1);
                 return;
             }
-
-            EquipmentSlot hand = event.getHand();
-            if (hand == null) {
-                hand = EquipmentSlot.HAND;
-            }
-
-            // player.swingHand(hand);
 
             event.setUseItemInHand(Event.Result.DENY);
 
@@ -306,7 +299,7 @@ public class SpellbookEvents implements Listener {
     }
 
     @EventHandler
-    public void onSpellbookOpen(PlayerTakeLecternBookEvent event) {
+    public void onSpellbookTake(PlayerTakeLecternBookEvent event) {
         //noinspection ConstantValue
         if (event.getLectern() == null) {
             // Marked as NotNull, but can be null when using MenuType.LECTERN
@@ -320,7 +313,7 @@ public class SpellbookEvents implements Listener {
             return;
         }
 
-        if (Spellbook.isSpellbook(book)) {
+        if (book.getPersistentDataContainer().has(ItemUtils.WANDCRAFT_ITEM_KEY)) {
             event.setCancelled(true);
         }
     }

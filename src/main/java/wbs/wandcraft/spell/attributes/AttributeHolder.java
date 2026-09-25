@@ -45,6 +45,7 @@ public interface AttributeHolder extends ItemDecorator {
         if (instance == null) {
             return;
         }
+        WbsWandcraft.getInstance().getLogger().info("setAttribute " + instance.attribute() + " " + instance.value());
         getAttributeInstances().removeIf(existing -> existing.attribute().equals(instance.attribute()));
         getAttributeInstances().add(instance.clone());
     }

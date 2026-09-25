@@ -11,7 +11,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import wbs.utils.exceptions.InvalidConfigurationException;
@@ -107,14 +106,14 @@ public class KillLearningTrigger extends LearningTrigger<EntityDeathEvent> {
     }
 
     @Override
-    public @NotNull Component describe(Component indent, boolean shorten) {
+    public Component describe(Component indent, boolean shorten) {
         Component message = Component.text("Kill ");
 
         if (killsRequired > 0) {
             message = message.append(Component.text("at least " + killsRequired + " "));
         }
 
-        message = message.append(Component.text(" mobs of type: "));
+        message = message.append(Component.text("mobs of type: "));
         Component joiner = Component.newline().append(indent).append(Component.text(" - "));
         if (entityTypes.size() > 5 && shorten) {
             Component hover = Component.text("Hover").color(TextColor.color(NamedTextColor.AQUA));

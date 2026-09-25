@@ -59,6 +59,12 @@ public class WbsWandcraft extends WbsPlugin {
                 .setPermission("wbswandcraft.command")
                 .addSubcommands(
                         new CommandSpellCastDynamic(this, "dynTest"),
+                        WbsCommand.getStatic(this, "info").addSubcommands(
+                                new CommandSpellInfo(this, "spell"),
+                                new CommandSpellTypeInfo(this, "type"),
+                                new CommandWandInfo(this, "wand")
+                                // TODO: Add modifiers & dynamic spells (and maybe attributes?)
+                        ).inferSubPermissions(),
                         WbsCommand.getStatic(this, "spell").addSubcommands(
                                 new CommandSpellLearn(this, "learn"),
                                 new CommandSpellForget(this, "forget"),

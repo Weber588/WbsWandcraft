@@ -64,7 +64,7 @@ public class Spellbook implements ItemDecorator {
             .decorate(TextDecoration.ITALIC)
             .build();
 
-    private static final TextComponent LINE_BREAK = Component.newline().append(Component.text("                            ").decorate(TextDecoration.STRIKETHROUGH)).appendNewline();
+    public static final TextComponent LINE_BREAK = Component.newline().append(Component.text("                            ").decorate(TextDecoration.STRIKETHROUGH)).appendNewline();
     public static final NamedTextColor WAND_COLOR = NamedTextColor.GOLD;
 
     public static List<SpellDefinition> getKnownSpells(PersistentDataViewHolder holder) {

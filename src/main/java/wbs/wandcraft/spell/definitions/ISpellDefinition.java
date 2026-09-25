@@ -9,7 +9,7 @@ import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.util.DistanceScaler;
 
 @NullMarked
-public interface ISpellDefinition extends Keyed, AttributeHolder, DistanceScaler {
+public interface ISpellDefinition extends Keyed, AttributeHolder, DistanceScaler, Comparable<Keyed> {
 
     default String name() {
         return WbsStrings.capitalizeAll(key().value().replace("_", " "));
@@ -28,5 +28,10 @@ public interface ISpellDefinition extends Keyed, AttributeHolder, DistanceScaler
         }
 
         WbsWandcraft.getInstance().debug(channel.formatted(id), message);
+    }
+
+    @Override
+    default int compareTo(Keyed other) {
+        return getKey().compareTo(other.getKey());
     }
 }

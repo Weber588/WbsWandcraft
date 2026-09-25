@@ -109,7 +109,7 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
     @Override
     public final List<TextureLayer> getTextures() {
         if (textureLayers == null) {
-            String texture = "spell_" + key().value();
+            String texture = "spell_" + getTextureKeyValue();
 
             String path = ResourcePackBuilder.getTexturesFolder(ResourcePackBuilder.WANDCRAFT, "item") + texture + ".png";
             WbsWandcraft plugin = WbsWandcraft.getInstance();
@@ -131,6 +131,10 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
         }
 
         return textureLayers;
+    }
+
+    protected String getTextureKeyValue() {
+        return key().value();
     }
 
     public void addSpellType(SpellType type) {

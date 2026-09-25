@@ -31,12 +31,39 @@ public class SpellType implements Keyed {
         );
     }
 
-    public static final SpellType ARCANE = new SpellType("arcane", TextColor.color(0xd3b400), Color.fromRGB(0xd7c719))
+    private static TextColor color(String value) {
+        return TextColor.color(Integer.valueOf(value, 16));
+    }
+
+    private static Color wandColor(String value) {
+        return Color.fromRGB(Integer.valueOf(value, 16));
+    }
+
+    // TODO: Move these to a config
+    public static final TextColor ARCANE_COLOUR = color("d3b400");
+    public static final Color ARCANE_WAND_COLOR = wandColor("d7c719");
+
+    public static final TextColor NETHER_COLOR = color("a6001b");
+    public static final Color NETHER_WAND_COLOR = wandColor("95232c");
+
+    public static final TextColor ENDER_COLOR = color("8e009c");
+    public static final Color ENDER_WAND_COLOR = wandColor("c719d7");
+
+    public static final TextColor SCULK_COLOR = color("80c4e3");
+    public static final Color SCULK_WAND_COLOR = wandColor("5daca5");
+
+    public static final TextColor VOID_COLOR = color("00325d");
+    public static final Color VOID_WAND_COLOR = wandColor("121749");
+
+    public static final TextColor NATURE_COLOR = color("009a00");
+    public static final Color NATURE_WAND_COLOUR = wandColor("41d035");
+    
+    public static final SpellType ARCANE = new SpellType("arcane", ARCANE_COLOUR, ARCANE_WAND_COLOR)
             .rawDescription("""
                     The domain of order, information, and reason. Arcane magic is \
                     coordinated, efficient, and precise; the science of magic."""
             ).defaultParticle(Particle.DUST_COLOR_TRANSITION);
-    public static final SpellType NETHER = new SpellType("nether", TextColor.color(0xa6001b), Color.fromRGB(0x95232c))
+    public static final SpellType NETHER = new SpellType("nether", NETHER_COLOR, NETHER_WAND_COLOR)
             .rawDescription("""
                     The domain of controlled chaos; fire and undeath. Fire can be a sign of danger, or of warmth and safety, \
                     depending on how well it's controlled."""
@@ -45,8 +72,9 @@ public class SpellType implements Keyed {
                     sEffect.setSpeed(0.02);
                 }
             }, Particle.SMALL_FLAME)
+            .velocityAffectedParticle(Particle.FLAME)
             .secondaryParticle(effect -> effect.setChance(1), Particle.FLAME);
-    public static final SpellType ENDER = new SpellType("ender", TextColor.color(0x8e009c), Color.fromRGB(0xc719d7))
+    public static final SpellType ENDER = new SpellType("ender", ENDER_COLOR, ENDER_WAND_COLOR)
             .rawDescription("""
                     The domain of dimensionality, spacetime, and geometry. Ender magic is a corruption of natural law, \
                     treating physics and reality as obstacles to be ignored."""
@@ -60,35 +88,37 @@ public class SpellType implements Keyed {
                 if (effect instanceof SpeedParticleEffect sEffect) {
                     sEffect.setSpeed(0.2);
                 }
-            }, Particle.PORTAL);
-    public static final SpellType SCULK = new SpellType("sculk", TextColor.color(0x80c4e3), Color.fromRGB(0x5daca5))
+            }, Particle.PORTAL)
+            .velocityAffectedParticle(Particle.DRAGON_BREATH);
+    
+    public static final SpellType SCULK = new SpellType("sculk", SCULK_COLOR, SCULK_WAND_COLOR)
             .rawDescription("""
                     The domain of corruption, contradiction, and chaos. Sculk magic makes you doubt your senses, and \
                     fight to retain control of the very magic you call forth."""
             ).defaultParticle(effect -> effect.setDynamicDataProvider(
                     (_, _) -> (float) Math.random() * Math.PI * 2),
                     Particle.SCULK_CHARGE
-            );
-    public static final SpellType VOID = new SpellType("void", TextColor.color(0x00325d), Color.fromRGB(0x121749))
+            )
+            .velocityAffectedParticle(Particle.SCULK_CHARGE);
+
+    public static final SpellType VOID = new SpellType("void", VOID_COLOR, VOID_WAND_COLOR)
             .rawDescription("""
                     The domain of eternity and absence. Everything ends except for darkness, the cold, and time."""
-            ).defaultParticle(Particle.LARGE_SMOKE);
+            ).defaultParticle(Particle.SMOKE)
+            .velocityAffectedParticle(Particle.SMOKE);
 
-    public static final SpellType NATURE;
-
-    static {
-        Color natureColour = Color.fromRGB(0x41d035);
-        NATURE = new SpellType("nature", TextColor.color(0x009a00), natureColour)
-                .rawDescription("""
-                        The domain of the natural world, life, and adaptability. Natural magic respects the natural laws \
-                        of reality, but uses them to its advantage."""
-                ).secondaryParticle(
-                        effect -> effect.setDynamicDataProvider((_, _) ->
-                                mulColor(natureColour, new Random().nextDouble(0.9, 1.1))
-                        ),
-                        Particle.TINTED_LEAVES
-                );
-    }
+    public static final SpellType NATURE = new SpellType("nature", NATURE_COLOR, NATURE_WAND_COLOUR)
+            .rawDescription("""
+                       The domain of the natural world, life, and adaptability. Natural magic respects the natural laws \
+                       of reality, but uses them to its advantage."""
+            ).secondaryParticle(
+                    effect -> effect.setDynamicDataProvider((_, _) ->
+                            mulColor(NATURE_WAND_COLOUR, new Random().nextDouble(0.8, 1.2))
+                    ),
+                    Particle.TINTED_LEAVES
+            )
+            .velocityAffectedParticle(Particle.HAPPY_VILLAGER);
+    
 
     public static SpellType getOpposite(SpellType type) {
         if (type == ARCANE) {
@@ -120,6 +150,10 @@ public class SpellType implements Keyed {
     private Particle secondaryParticle = null;
     @Nullable
     private Consumer<WbsParticleEffect> secondaryEffectModifier = null;
+    private Particle velocityAffectedParticle = Particle.END_ROD;
+
+    // TODO: Clean up the particle nonsense and have a single related object that defines certain types/shapes of particle usage;
+    //  For example, generic, around_player, directional_point, velocity
 
     protected SpellType(NamespacedKey key, Component displayName, TextColor textColor, Color wandColor) {
         this.key = key;
@@ -214,6 +248,15 @@ public class SpellType implements Keyed {
     public SpellType secondaryParticle(Consumer<WbsParticleEffect> secondaryModifier, @Nullable Particle secondaryParticle) {
         this.secondaryParticle = secondaryParticle;
         this.secondaryEffectModifier = secondaryModifier;
+        return this;
+    }
+
+    public Particle velocityAffectedParticle() {
+        return velocityAffectedParticle;
+    }
+
+    public SpellType velocityAffectedParticle(Particle velocityAffectedParticle) {
+        this.velocityAffectedParticle = velocityAffectedParticle;
         return this;
     }
 }

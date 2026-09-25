@@ -11,16 +11,16 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.effects.StatusEffectInstance;
 import wbs.wandcraft.effects.StatusEffectManager;
-import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
+import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
 
 import java.util.UUID;
 
 import static wbs.wandcraft.spell.SpellType.ENDER;
 import static wbs.wandcraft.spell.SpellType.VOID;
 
-public class CrowsCallSpell extends SpellDefinition implements CastableSpell, DurationAttributable, SpeedAttributable {
+public class CrowsCallSpell extends SpellDefinition implements ContinuousCastableSpell, DurationAttributable, SpeedAttributable {
     public CrowsCallSpell() {
         super("crows_call");
 
@@ -40,14 +40,9 @@ public class CrowsCallSpell extends SpellDefinition implements CastableSpell, Du
     }
 
     @Override
-    public void cast(CastContext context) {
+    public void onStartCasting(CastContext context) {
         Player caster = context.player();
         SpellInstance instance = context.instance();
-
-        if (StatusEffectManager.getInstance(caster, StatusEffectManager.GLIDING) != null) {
-            WbsWandcraft.getInstance().sendActionBar("Already gliding!", caster);
-            return;
-        }
 
         if (caster.isFlying()) {
             caster.setFlying(false);
@@ -85,7 +80,20 @@ public class CrowsCallSpell extends SpellDefinition implements CastableSpell, Du
     }
 
     @Override
-    public boolean requiresConcentration() {
+    public boolean isContinuousCast(Player player) {
         return true;
+    }
+
+    @Override
+    public void tick(CastContext context, int tick, int ticksLeft) {
+
+    }
+
+    @Override
+    public void onStopCasting(CastContext context) {
+        StatusEffectInstance instance = StatusEffectManager.getInstance(context.player(), StatusEffectManager.GLIDING);
+        if (instance != null) {
+            instance.cancel(true);
+        }
     }
 }
