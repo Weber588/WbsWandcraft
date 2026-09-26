@@ -343,6 +343,13 @@ public class ItemUtils {
         return null;
     }
 
+    public static boolean isWandcraftItem(@Nullable ItemStack item) {
+        if (item == null) {
+            return false;
+        }
+        return item.getPersistentDataContainer().has(ItemUtils.WANDCRAFT_ITEM_KEY);
+    }
+
     public enum AttributeModificationResult {
         MODIFIED_MODIFIER,
         MODIFIED_WAND_MODIFIER,

@@ -44,6 +44,7 @@ import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.modifier.SpellModifier;
 import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.util.ItemUtils;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.wand.types.WandType;
 
 import java.time.Duration;
@@ -299,8 +300,9 @@ public abstract class Wand implements AttributeHolder {
             // TODO: Unify this code with code from SpellModifier
             lore.addAll(attributeModifiers.stream()
                     .map(modifier ->
-                            (Component) Component.text("  - ").color(NamedTextColor.GOLD)
-                                    .append(modifier.toComponent())
+                            (Component) Component.text("  - ")
+                                    .color(MenuUtils.ACCENTS_STYLE)
+                                    .append(modifier.toComponent().color(MenuUtils.EXTRAS_COLOUR))
                     )
                     .toList());
         }

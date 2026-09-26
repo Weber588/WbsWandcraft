@@ -24,6 +24,7 @@ import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -96,7 +97,7 @@ public class BarbarianWand extends Wand {
         }
 
         lore.add(Component.text("Spell: ").color(NamedTextColor.AQUA)
-                .append(spellText.color(NamedTextColor.GOLD)));
+                .append(spellText.color(MenuUtils.EXTRAS_COLOUR)));
 
         return lore;
     }

@@ -125,7 +125,6 @@ public class SpellAttributeModifier<T, M> implements ComponentRepresentable, Com
         );
     }
 
-
     public M value() {
         return modifierValue;
     }

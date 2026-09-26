@@ -17,7 +17,10 @@ public class AttributeSetOperator<T> extends AttributeModificationOperator<T, T>
 
     @Override
     public Component asComponent(SpellAttribute<T> attribute, T modifierValue) {
-        return Component.text(" ∧ ").append(Component.text(attribute.formatValue(modifierValue)).color(NamedTextColor.AQUA));
+        return Component.text(" ∧ ").append(
+                Component.text(attribute.formatValue(modifierValue))
+                        .color(NamedTextColor.AQUA)
+        );
     }
 
     @Override

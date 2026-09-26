@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -80,7 +81,12 @@ public class MageWand extends Wand {
         SpellInstance currentSpell = getCurrentSpellInstance();
 
         if (currentSpell == null) {
-            lore.add(Component.text("Spells:").color(NamedTextColor.AQUA).append(Component.text(" None").color(NamedTextColor.GOLD)));
+            lore.add(Component.text("Spells:")
+                    .color(NamedTextColor.AQUA)
+                    .append(Component.text(" None")
+                            .color(MenuUtils.EXTRAS_COLOUR)
+                    )
+            );
             return lore;
         }
 
@@ -88,7 +94,7 @@ public class MageWand extends Wand {
                 .color(NamedTextColor.AQUA)
                 .append(currentSpell.getDefinition()
                         .displayName()
-                        .color(NamedTextColor.GOLD)
+                        .color(MenuUtils.EXTRAS_COLOUR)
                 )
         );
 
@@ -103,7 +109,7 @@ public class MageWand extends Wand {
                             .color(NamedTextColor.AQUA)
                             .append(prevInstance.getDefinition()
                                     .displayName()
-                                    .color(NamedTextColor.GOLD)
+                                    .color(MenuUtils.EXTRAS_COLOUR)
                             )
                     );
                 }
@@ -112,7 +118,7 @@ public class MageWand extends Wand {
                             .color(NamedTextColor.AQUA)
                             .append(nextInstance.getDefinition()
                                     .displayName()
-                                    .color(NamedTextColor.GOLD)
+                                    .color(MenuUtils.EXTRAS_COLOUR)
                             )
                     );
                 }
@@ -193,14 +199,14 @@ public class MageWand extends Wand {
             SpellInstance prevInstance = getPrevInstance(spellInstances);
             if (prevInstance != null) {
                 spellDisplay = spellDisplay.append(prevInstance.getDefinition().displayName().color(NamedTextColor.GRAY));
-                spellDisplay = spellDisplay.append(Component.text(" ← ").color(NamedTextColor.GOLD));
+                spellDisplay = spellDisplay.append(Component.text(" ← ").color(MenuUtils.ACCENTS_STYLE));
             }
 
             spellDisplay = spellDisplay.append(currentSpellDisplay);
 
             SpellInstance nextInstance = getNextInstance(spellInstances);
             if (nextInstance != null) {
-                spellDisplay = spellDisplay.append(Component.text(" → ").color(NamedTextColor.GOLD));
+                spellDisplay = spellDisplay.append(Component.text(" → ").color(MenuUtils.ACCENTS_STYLE));
                 spellDisplay = spellDisplay.append(nextInstance.getDefinition().displayName().color(NamedTextColor.GRAY));
             }
 

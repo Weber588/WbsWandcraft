@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.ComponentRepresentable;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
+import wbs.wandcraft.util.MenuUtils;
 
 public final class SpellAttributeInstance<T> implements ComponentRepresentable, Comparable<SpellAttributeInstance<?>>, Cloneable {
     private final SpellAttribute<T> attribute;
@@ -60,9 +61,11 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
 
     @Override
     public Component toComponent() {
-        return attribute.displayName().color(NamedTextColor.GOLD)
-                .append(Component.text(": "))
-                .append(Component.text(attribute.toString(value)).color(NamedTextColor.AQUA));
+        return attribute.displayName().color(MenuUtils.EXTRAS_COLOUR)
+                .append(Component.text(": ").color(MenuUtils.ACCENTS_STYLE))
+                .append(Component.text(attribute.toString(value))
+                        .color(NamedTextColor.AQUA)
+                );
     }
 
     @Override

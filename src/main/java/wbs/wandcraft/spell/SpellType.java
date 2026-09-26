@@ -2,7 +2,6 @@ package wbs.wandcraft.spell;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Color;
@@ -17,6 +16,7 @@ import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
+import wbs.wandcraft.util.MenuUtils;
 
 import java.util.Random;
 import java.util.function.BiConsumer;
@@ -44,10 +44,10 @@ public class SpellType implements Keyed {
     public static final TextColor ARCANE_COLOUR = color("bd9a0c");
     public static final Color ARCANE_WAND_COLOR = wandColor("d7c719");
 
-    public static final TextColor NETHER_COLOR = color("9e3d3b");
+    public static final TextColor NETHER_COLOR = color("b3413f");
     public static final Color NETHER_WAND_COLOR = wandColor("95232c");
 
-    public static final TextColor ENDER_COLOR = color("a34796");
+    public static final TextColor ENDER_COLOR = color("ad31c6");
     public static final Color ENDER_WAND_COLOR = wandColor("c719d7");
 
     public static final TextColor SCULK_COLOR = color("007494");
@@ -80,7 +80,7 @@ public class SpellType implements Keyed {
             ).defaultParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.02, Particle.REVERSE_PORTAL)
             .secondaryParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.2, Particle.PORTAL)
             .velocityAffectedParticle(Particle.DRAGON_BREATH);
-    
+
     public static final SpellType SCULK = new SpellType("sculk", SCULK_COLOR, SCULK_WAND_COLOR)
             .rawDescription("""
                     The domain of corruption, contradiction, and chaos. Sculk magic makes you doubt your senses, and \
@@ -189,7 +189,7 @@ public class SpellType implements Keyed {
         return rawDescription == null ? displayName : MiniMessage.miniMessage().deserialize(rawDescription);
     }
 
-    SpellType rawDescription(String rawDescription) {
+    private SpellType rawDescription(String rawDescription) {
         this.rawDescription = rawDescription;
         return this;
     }
@@ -202,7 +202,7 @@ public class SpellType implements Keyed {
         return Component.join(JoinConfiguration.newlines(),
                 SpellTypeModifiers.getSpellTypeModifiers(this).stream()
                         .map(SpellAttributeModifier::toComponent)
-                        .map(c -> c.color(NamedTextColor.GOLD))
+                        .map(c -> c.color(MenuUtils.EXTRAS_COLOUR))
                         .toList()
         );
     }

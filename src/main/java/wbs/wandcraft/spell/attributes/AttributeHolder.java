@@ -1,17 +1,17 @@
 package wbs.wandcraft.spell.attributes;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.*;
-import wbs.wandcraft.spell.attributes.attributable.AttributableSetupHandler;
-import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.spell.attributes.attributable.AttributableSetupHandler;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
+import wbs.wandcraft.util.ItemDecorator;
+import wbs.wandcraft.util.MenuUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -119,7 +119,7 @@ public interface AttributeHolder extends ItemDecorator {
                 .sorted()
                 .filter(instance -> instance.shouldShow(this))
                 .map(instance ->
-                        (Component) Component.text("  - ").style(Style.style(NamedTextColor.GOLD, Set.of()))
+                        (Component) Component.text("  - ").style(Style.style(MenuUtils.EXTRAS_COLOUR, Set.of()))
                                 .append(instance.toComponent())
                 )
                 .toList();

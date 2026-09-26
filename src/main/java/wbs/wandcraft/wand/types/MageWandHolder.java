@@ -1,13 +1,12 @@
 package wbs.wandcraft.wand.types;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.wand.WandHolder;
 
 import java.util.LinkedList;
@@ -49,19 +48,18 @@ public final class MageWandHolder extends WandHolder<MageWand> {
     protected @NotNull ItemStack getFakeWand() {
         ItemStack fakeWand = super.getFakeWand();
 
-        Style style = Style.style(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false);
-        Style keybindStyle = Style.style(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false);
+        Style keybindStyle = FAKE_WAND_DESC.color(MenuUtils.EXTRAS_COLOUR);
 
         // TODO: Make this configurable
         fakeWand.lore(List.of(
-                Component.text("Place spell scrolls in the below slots!").style(style),
-                Component.text("You can cycle between spells to cast with").style(style),
+                Component.text("Place spell scrolls in the below slots!").style(FAKE_WAND_DESC),
+                Component.text("You can cycle between spells to cast with").style(FAKE_WAND_DESC),
                 Component.keybind("key.drop").style(keybindStyle).append(
-                        Component.text(" and ").style(style)
+                        Component.text(" and ").style(FAKE_WAND_DESC)
                 ).append(
                         Component.keybind("key.sneak").style(keybindStyle)
                 ).append(
-                        Component.text("+").style(style)
+                        Component.text("+").color(MenuUtils.ACCENTS_STYLE)
                 ).append(
                         Component.keybind("key.drop").style(keybindStyle)
                 )

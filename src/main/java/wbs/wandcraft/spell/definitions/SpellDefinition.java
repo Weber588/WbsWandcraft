@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static wbs.wandcraft.spellbook.Spellbook.DESCRIPTION_COLOR;
+import static wbs.wandcraft.util.MenuUtils.DESCRIPTION_COLOR;
 
 @NullMarked
 public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTextureProvider, ParticleDataProvider {

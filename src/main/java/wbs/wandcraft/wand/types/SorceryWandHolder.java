@@ -2,9 +2,6 @@ package wbs.wandcraft.wand.types;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -64,14 +61,12 @@ public final class SorceryWandHolder extends WandHolder<SorceryWand> {
     protected @NotNull ItemStack getFakeWand() {
         ItemStack fakeWand = super.getFakeWand();
 
-        Style style = Style.style(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false);
-
         // TODO: Make this configurable
         String description = "Place spell scrolls in the below slots!\nEach one uses a different control, as labelled above each slot.";
 
         List<Component> lore = new LinkedList<>(WbsStrings.wrapText(description, 141).stream()
                 .map(Component::text)
-                .map(component -> component.style(style))
+                .map(component -> component.style(FAKE_WAND_DESC))
                 .toList());
 
         fakeWand.lore(lore);

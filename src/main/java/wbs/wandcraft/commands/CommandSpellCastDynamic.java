@@ -6,7 +6,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,6 +21,7 @@ import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.dynamic.DynamicSpell;
 import wbs.wandcraft.spell.dynamic.SpellAspect;
+import wbs.wandcraft.util.MenuUtils;
 
 import java.util.Set;
 
@@ -86,8 +86,9 @@ public class CommandSpellCastDynamic extends WbsSubcommand {
                 instance.deriveAttributeValues().stream()
                         .sorted()
                         .map(attr ->
-                                (Component) Component.text("  - ").style(Style.style(NamedTextColor.GOLD, Set.of()))
-                                        .append(attr.toComponent())
+                                (Component) Component.text("  - ")
+                                        .style(Style.style(MenuUtils.ACCENTS_STYLE, Set.of()))
+                                        .append(attr.toComponent().color(MenuUtils.EXTRAS_COLOUR))
                         )
                         .toList()
         );

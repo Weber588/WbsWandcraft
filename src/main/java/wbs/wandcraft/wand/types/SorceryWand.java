@@ -24,6 +24,7 @@ import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -171,16 +172,29 @@ public class SorceryWand extends Wand {
 
         Map<WandControl, SpellInstance> spellInstances = getSpellInstances();
         if (getAllItems().size() > 1) {
-            lore.add(Component.text("Current Tier:").color(NamedTextColor.AQUA).append(Component.text(" " + (tier + 1)).color(NamedTextColor.GOLD)));
+            lore.add(Component.text("Current Tier:")
+                    .color(NamedTextColor.AQUA)
+                    .append(Component.text(" " + (tier + 1))
+                            .color(MenuUtils.EXTRAS_COLOUR)
+                    )
+            );
         }
 
         if (spellInstances.isEmpty()) {
-            lore.add(Component.text("Spells:").color(NamedTextColor.AQUA).append(Component.text(" None").color(NamedTextColor.GOLD)));
+            lore.add(Component.text("Spells:")
+                    .color(NamedTextColor.AQUA)
+                    .append(Component.text(" None")
+                            .color(MenuUtils.EXTRAS_COLOUR)
+                    )
+            );
         } else {
             lore.add(Component.text("Spells:").color(NamedTextColor.AQUA));
 
             spellInstances.forEach((control, spell) -> {
-                lore.add(Component.text("  " + WbsEnums.toPrettyString(control) + " - ").color(NamedTextColor.GOLD)
+                lore.add(Component.text("  " + WbsEnums.toPrettyString(control)).color(MenuUtils.EXTRAS_COLOUR)
+                        .append(Component.text(" - ")
+                                .color(MenuUtils.ACCENTS_STYLE)
+                        )
                         .append(
                                 spell.getDefinition().displayName().color(NamedTextColor.AQUA)
                         ));

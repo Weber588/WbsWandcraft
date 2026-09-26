@@ -28,6 +28,12 @@ public class EffectUtils {
     public static @NotNull TextDisplay getGlyphDisplay(Component glyph, Location spawnLoc, Vector3f translation, Vector3f scale, AxisAngle4f leftRotation, AxisAngle4f rightRotation) {
         TextDisplay entity = spawnLoc.getWorld().createEntity(spawnLoc, TextDisplay.class);
 
+        updateGlyphDisplay(entity, glyph, translation, scale, leftRotation, rightRotation);
+
+        return entity;
+    }
+
+    public static void updateGlyphDisplay(TextDisplay entity, Component glyph, Vector3f translation, Vector3f scale, AxisAngle4f leftRotation, AxisAngle4f rightRotation) {
         entity.text(glyph);
         entity.setTextOpacity((byte) 255);
         entity.setBrightness(new Display.Brightness(15, 15));
@@ -41,7 +47,5 @@ public class EffectUtils {
         ));
 
         entity.setPersistent(false);
-
-        return entity;
     }
 }

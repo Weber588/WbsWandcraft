@@ -15,6 +15,7 @@ import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -101,14 +102,19 @@ public class WildenWand extends Wand {
 
         List<SpellInstance> spellInstances = getSpellInstances();
         if (spellInstances.isEmpty()) {
-            lore.add(Component.text("Spells:").color(NamedTextColor.AQUA).append(Component.text(" None").color(NamedTextColor.GOLD)));
+            lore.add(Component.text("Spells:")
+                    .color(NamedTextColor.AQUA)
+                    .append(Component.text(" None")
+                            .color(MenuUtils.EXTRAS_COLOUR)
+                    )
+            );
         } else {
             lore.add(Component.text("Spells:").color(NamedTextColor.AQUA));
 
             for (SpellInstance instance : spellInstances) {
-                lore.add(Component.text("  - ").color(NamedTextColor.GOLD)
+                lore.add(Component.text("  - ").color(MenuUtils.ACCENTS_STYLE)
                         .append(
-                                instance.getDefinition().displayName()
+                                instance.getDefinition().displayName().applyFallbackStyle(MenuUtils.EXTRAS_COLOUR)
                         ));
             }
         }

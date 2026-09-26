@@ -4,10 +4,12 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
-import wbs.utils.util.commands.brigadier.WbsSubcommand;
+import org.jetbrains.annotations.UnknownNullability;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import wbs.utils.util.commands.brigadier.argument.WbsRegistrySimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsMessageBuilder;
@@ -15,8 +17,9 @@ import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.util.MenuUtils;
 
-public class CommandSpellTypeInfo extends WbsSubcommand {
+public class CommandSpellTypeInfo extends CommandInfo<SpellType> {
     private static final WbsRegistrySimpleArgument<SpellType> SPELL_TYPE = new WbsRegistrySimpleArgument<>(
             "spell_type",
             WbsWandcraft.getInstance(),
@@ -26,37 +29,49 @@ public class CommandSpellTypeInfo extends WbsSubcommand {
     ).isRequired(true);
 
     public CommandSpellTypeInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
-        super(plugin, label);
+        super(plugin, label, WandcraftRegistries.SPELL_TYPES);
         
         this.addSimpleArgument(SPELL_TYPE);
     }
 
     @Override
-    protected int onSimpleArgumentCallback(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
-        SpellType type = SPELL_TYPE.getRequiredValue(context);
+    protected Component getComponent(@UnknownNullability SpellType type, boolean collapse) {
+        Component attributeComponent = getAttributeComponent(type, collapse);
 
-        if (type == null) {
-            return Command.SINGLE_SUCCESS;
+        WbsMessageBuilder builder = plugin.buildMessageNoPrefix(type.displayName());
+
+        if (collapse) {
+            builder.append(" ").append(attributeComponent);
         }
 
-        WbsMessageBuilder builder = plugin.buildMessageNoPrefix("=======================")
-                .append("\nSpell Type: ")
-                .append(type.displayName())
-                .append("\nDescription: ")
-                .append(type.description().color(NamedTextColor.GOLD))
-                .append("\nFeatures: ");
+        builder.append(MenuUtils.LINE_BREAK)
+                .append(type.description().applyFallbackStyle(MenuUtils.DESCRIPTION_COLOR));
 
-        Component attributeEffects = Component.text("\n[Attributes]").color(NamedTextColor.AQUA);
+        if (!collapse) {
+            builder.append(attributeComponent);
+        }
 
-        builder.append(attributeEffects.hoverEvent(HoverEvent.showText(type.getAttributesText())));
+        return builder.toComponent();
+    }
 
-        // TODO: Show triggered events? Sorted by spell aspect?
+    @Override
+    protected @Nullable SpellType getT(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
+        return SPELL_TYPE.getRequiredValue(context);
+    }
 
-        builder
-                .append("\n=======================")
-                .send(context.getSource().getSender());
+    private static @NonNull Component getAttributeComponent(SpellType type, boolean collapse) {
+        Component attributes = type.getAttributesText();
+        TextComponent descriptionText = Component.text("Attributes: \n")
+                .color(MenuUtils.EXTRAS_COLOUR)
+                .append(attributes);
 
-        return Command.SINGLE_SUCCESS;
+        if (collapse) {
+            return Component.text("[A]")
+                    .color(MenuUtils.EXTRAS_COLOUR)
+                    .hoverEvent(HoverEvent.showText(descriptionText));
+        } else {
+            return descriptionText;
+        }
     }
 
     @Override

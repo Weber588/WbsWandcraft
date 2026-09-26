@@ -16,6 +16,7 @@ import wbs.utils.util.WbsColours;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -100,11 +101,11 @@ public class ApprenticeWand extends Wand {
         Component rightSpellText = getSpellText(getRightSpell());
 
         lore.add(Component.text("Left: ").color(NamedTextColor.AQUA)
-                .append(leftSpellText.color(NamedTextColor.GOLD))
+                .append(leftSpellText.color(MenuUtils.EXTRAS_COLOUR))
         );
 
         lore.add(Component.text("Right: ").color(NamedTextColor.AQUA)
-                .append(rightSpellText.color(NamedTextColor.GOLD))
+                .append(rightSpellText.color(MenuUtils.EXTRAS_COLOUR))
         );
 
         return lore;

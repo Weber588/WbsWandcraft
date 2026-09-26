@@ -8,10 +8,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.learning.LearningMethod;
 import wbs.wandcraft.spell.learning.LearningTrigger;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
@@ -38,6 +41,21 @@ public class LearningEvents implements Listener {
         });
 
         Spellbook.teachSpells(player, spells);
+    }
+
+    @EventHandler
+    public void onRightClickSpell(PlayerInteractEvent event) {
+        if (!event.getAction().isRightClick()) {
+            return;
+        }
+        Player player = event.getPlayer();
+
+        ItemStack item = event.getItem();
+
+        SpellInstance spell = SpellInstance.fromItem(item);
+        if (spell != null) {
+            Spellbook.teachSpell(player, spell.getDefinition());
+        }
     }
 
     @EventHandler
@@ -83,5 +101,4 @@ public class LearningEvents implements Listener {
             }
         });
     }
-
 }

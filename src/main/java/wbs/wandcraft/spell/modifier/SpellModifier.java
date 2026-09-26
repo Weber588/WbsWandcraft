@@ -13,6 +13,7 @@ import wbs.wandcraft.spell.WandEntry;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.effect.SpellEffectInstance;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 
 import java.util.ArrayList;
@@ -82,14 +83,18 @@ public class SpellModifier implements WandEntry<SpellModifier> {
         List<Component> loreList = new LinkedList<>();
 
         if (modifiers.isEmpty()) {
-            loreList.add(Component.text("Attributes:").color(NamedTextColor.AQUA).append(Component.text(" None").color(NamedTextColor.GOLD)));
+            loreList.add(Component.text("Attributes:")
+                    .color(NamedTextColor.AQUA).append(
+                            Component.text(" None").color(MenuUtils.EXTRAS_COLOUR)
+                    )
+            );
         } else {
             loreList.add(Component.text("Attributes:").color(NamedTextColor.AQUA));
 
             loreList.addAll(modifiers.stream()
                     .map(modifier ->
-                            (Component) Component.text("  - ").color(NamedTextColor.GOLD)
-                                    .append(modifier.toComponent())
+                            (Component) Component.text("  - ").color(MenuUtils.ACCENTS_STYLE)
+                                    .append(modifier.toComponent().color(MenuUtils.EXTRAS_COLOUR))
                     )
                     .toList());
         }
@@ -102,7 +107,11 @@ public class SpellModifier implements WandEntry<SpellModifier> {
             List<Component> list = new ArrayList<>();
 
             for (SpellEffectInstance<?> effect : effects) {
-                Component effectEntry = Component.text("  - ").append(effect.toComponent()).color(NamedTextColor.GOLD);
+                Component effectEntry = Component.text("  - ")
+                        .color(MenuUtils.ACCENTS_STYLE)
+                        .append(effect.toComponent()
+                                .color(MenuUtils.EXTRAS_COLOUR)
+                        );
 
                 list.add(effectEntry);
             }

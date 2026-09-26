@@ -6,6 +6,8 @@ import io.papermc.paper.datacomponent.item.CustomModelData;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -20,6 +22,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.resourcepack.FontOffsets;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.modifier.SpellModifier;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.wand.background.WandBackground;
 import wbs.wandcraft.wand.types.WandType;
 
@@ -28,6 +31,9 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class WandHolder<T extends Wand> implements InventoryHolder {
+    public static final Style FAKE_WAND_DESC = Style.style(MenuUtils.DESCRIPTION_COLOR)
+            .decoration(TextDecoration.ITALIC, false);
+
     protected static int slot(int row, int column) {
         return row * 9 + column;
     }

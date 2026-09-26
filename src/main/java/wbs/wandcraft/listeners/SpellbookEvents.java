@@ -3,7 +3,6 @@ package wbs.wandcraft.listeners;
 import io.papermc.paper.event.player.PlayerLecternPageChangeEvent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.Ticks;
@@ -19,6 +18,7 @@ import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -41,15 +41,31 @@ import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.crafting.ArtificingTable;
 import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.EffectUtils;
 import wbs.wandcraft.util.ItemUtils;
+import wbs.wandcraft.util.MenuUtils;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 public class SpellbookEvents implements Listener {
     public static final int INTERPOLATION_DURATION = (int) (2.5 * Ticks.TICKS_PER_SECOND);
+    public static final Vector3f UP_VECTOR = new Vector3f(0, 1, 0);
+    public static final Vector DEFAULT_DIRECTION = BlockFace.SOUTH.getDirection();
+    public static final Vector NORTH = BlockFace.NORTH.getDirection();
+
+    private static final int WORD_ROWS = 7;
+    private static final double OFFSET_INTERVAL = 0.2;
+    private static final List<Double> WORD_ROW_OFFSETS;
+
+    static {
+        WORD_ROW_OFFSETS = new LinkedList<>();
+        for (int i = 0; i < WORD_ROWS; i++) {
+            WORD_ROW_OFFSETS.add(OFFSET_INTERVAL * (i - 1));
+        }
+    }
 
     @EventHandler(ignoreCancelled = true)
     public void onConsumeSpellbook(PlayerItemConsumeEvent event) {
@@ -96,6 +112,8 @@ public class SpellbookEvents implements Listener {
             if (currentSpell != null && player.isSneaking()) {
                 boolean knowsSpell = Spellbook.knowsSpell(player, currentSpell);
 
+                List<Double> history = new LinkedList<>();
+
                 WbsWandcraft.getInstance().runLater(() -> {
                     ItemStack activeItem = player.getActiveItem();
                     if (!activeItem.isEmpty()) {
@@ -108,12 +126,11 @@ public class SpellbookEvents implements Listener {
                             }
 
                             if (knowsSpell) {
-
                                 int remainingTicks = updatedPlayer.getActiveItemRemainingTime();
                                 int remainingSeconds = (int) Math.ceil(((double) remainingTicks) / Ticks.TICKS_PER_SECOND);
                                 if (remainingSeconds > 0) {
                                     Component remainingTimeMessage = Component.empty().append(Component.text(remainingSeconds)).append(Component.text("..."))
-                                            .color(Spellbook.DESCRIPTION_COLOR)
+                                            .color(MenuUtils.DESCRIPTION_COLOR)
                                             .decorate(TextDecoration.ITALIC);
 
                                     updatedPlayer.sendActionBar(remainingTimeMessage);
@@ -125,7 +142,14 @@ public class SpellbookEvents implements Listener {
                                 return;
                             }
 
-                            spawnParticleWord(updatedPlayer, currentSpell);
+                            spawnParticleWord(updatedPlayer, currentSpell,
+                                    WbsCollectionUtil.getAvoidRepeats(
+                                            () -> WbsCollectionUtil.getRandom(WORD_ROW_OFFSETS),
+                                            WORD_ROW_OFFSETS.size(),
+                                            history,
+                                            1.5
+                                    )
+                            );
                         }, 1, 5);
                     }}, 1);
                 return;
@@ -147,7 +171,7 @@ public class SpellbookEvents implements Listener {
 
     private static final String CHARS_IN_ILLAGERALT = "abcdefghijklmnopqrstuvwxyz";
 
-    private static void spawnParticleWord(Player updatedPlayer, SpellDefinition spell) {
+    private static void spawnParticleWord(Player updatedPlayer, SpellDefinition spell, double yOffset) {
         Location playerLoc = WbsEntityUtil.getMiddleLocation(updatedPlayer);
 
         TextColor color = getWordColour(spell);
@@ -156,11 +180,11 @@ public class SpellbookEvents implements Listener {
 
         float scaleValue = 0.7f;
         Vector3f scale = new Vector3f(scaleValue, scaleValue, scaleValue);
+        Vector3f minScale = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
 
         Vector offset = WbsEntityUtil.getFacingVector(updatedPlayer);
         offset.setY(0);
         offset = WbsMath.scaleVector(offset, 1.2 * scaleValue);
-        double yOffset = Math.round(Math.random() * 5) / 5.0;
 
         Random random = new Random();
         World world = updatedPlayer.getWorld();
@@ -172,10 +196,6 @@ public class SpellbookEvents implements Listener {
         float angleBetweenGlyphs = (float) (direction * Math.toRadians(7));
         double animationRotation = Math.toRadians(45) * direction;
 
-        Vector entityFacing = BlockFace.SOUTH.getDirection();
-        Vector north = BlockFace.NORTH.getDirection();
-        Vector3f yVector = new Vector3f(0, 1, 0);
-
         // TODO: Optimize this to only create 1 runnable
         int characters = (int) (5 + Math.random() * 5);
         for (int charIndex = 0; charIndex < characters; charIndex++) {
@@ -185,7 +205,7 @@ public class SpellbookEvents implements Listener {
             }
 
             Location spawnLoc = playerLoc.clone();
-            spawnLoc.setDirection(entityFacing);
+            spawnLoc.setDirection(DEFAULT_DIRECTION);
             spawnLoc.add(0, yOffset, 0);
 
             Component glyph = Component.text(CHARS_IN_ILLAGERALT.charAt(random.nextInt(CHARS_IN_ILLAGERALT.length())))
@@ -196,52 +216,54 @@ public class SpellbookEvents implements Listener {
                 glyph = glyph.decorate(TextDecoration.OBFUSCATED);
             }
 
-            Vector3f translation = offset.toVector3f();
-            float angleFromNorth = north.angle(Vector.fromJOML(translation));
-            if (translation.x >= 0) {
+            Vector3f initialTranslation = offset.toVector3f();
+            float angleFromNorth = NORTH.angle(Vector.fromJOML(initialTranslation));
+            if (initialTranslation.x >= 0) {
                 angleFromNorth *= -1;
             }
             AxisAngle4f startingRotation = new AxisAngle4f(
                     angleFromNorth,
-                    yVector
+                    UP_VECTOR
             );
 
-            TextDisplay entity = getTextDisplay(spawnLoc, glyph, translation, startingRotation, scale);
+            TextDisplay entity = getTextDisplay(spawnLoc, glyph, initialTranslation, startingRotation, scale);
 
             AxisAngle4f startingRotationReversed = new AxisAngle4f(
                     (float) Math.abs((angleFromNorth + Math.PI) % Math.TAU),
-                    yVector
+                    UP_VECTOR
             );
-            TextDisplay reversed = getTextDisplay(spawnLoc, glyph, translation, startingRotationReversed, scale);
+            TextDisplay reversed = getTextDisplay(spawnLoc, glyph, initialTranslation, startingRotationReversed, scale);
 
             for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
-                PacketEventsWrapper.get().ifPresent(pe -> pe.showFakeEntity(entity, player));
-                PacketEventsWrapper.get().ifPresent(pe -> pe.showFakeEntity(reversed, player));
+                showFakeEntity(player, entity);
+                showFakeEntity(player, reversed);
             }
 
-            Vector3f finalTranslation = offset.clone().rotateAroundY(animationRotation).toVector3f();
-            float finalAngleFromNorth = north.angle(Vector.fromJOML(finalTranslation));
-            if (finalTranslation.x >= 0) {
-                finalAngleFromNorth *= -1;
+            Vector3f endingTranslation = offset.clone().rotateAroundY(animationRotation).toVector3f();
+            float checkAngle = NORTH.angle(Vector.fromJOML(endingTranslation));
+            if (endingTranslation.x >= 0) {
+                checkAngle *= -1;
             }
+            final float finalRotationAngle = checkAngle;
             AxisAngle4f finalRotation = new AxisAngle4f(
-                    finalAngleFromNorth,
-                    yVector
+                    finalRotationAngle,
+                    UP_VECTOR
             );
+            float finalReversedRotation = (float) Math.abs((finalRotationAngle + Math.PI) % Math.TAU);
             AxisAngle4f finalRotationReversed = new AxisAngle4f(
-                    (float) Math.abs((finalAngleFromNorth + Math.PI) % Math.TAU),
-                    yVector
+                    finalReversedRotation,
+                    UP_VECTOR
             );
 
             WbsWandcraft.getInstance().runLater(() -> {
                 entity.setTransformation(new Transformation(
-                        finalTranslation,
+                        endingTranslation,
                         finalRotation,
                         scale,
                         new AxisAngle4f()
                 ));
                 reversed.setTransformation(new Transformation(
-                        finalTranslation,
+                        endingTranslation,
                         finalRotationReversed,
                         scale,
                         new AxisAngle4f()
@@ -250,28 +272,75 @@ public class SpellbookEvents implements Listener {
                 entity.setTextOpacity(Byte.MIN_VALUE);
                 reversed.setTextOpacity(Byte.MIN_VALUE);
 
-                for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
-                    PacketEventsWrapper.get().ifPresent(pe -> pe.updateEntity(entity, player));
-                    PacketEventsWrapper.get().ifPresent(pe -> pe.updateEntity(reversed, player));
-                }
+                PacketEventsWrapper.get().ifPresent(pe -> {
+                    for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
+                        pe.updateEntity(entity, player);
+                        pe.updateEntity(reversed, player);
+                    }
+                });
             }, 1);
+
+            long removeAnimationDelay = INTERPOLATION_DURATION - ((charIndex + characters) * 2L) - updatedPlayer.getPing() / Ticks.SINGLE_TICK_DURATION_MS;
+            int removeAnimationDuration = 10;
+            WbsWandcraft.getInstance().runLater(() -> {
+                entity.setInterpolationDelay(0);
+                entity.setInterpolationDuration(removeAnimationDuration);
+                reversed.setInterpolationDelay(0);
+                reversed.setInterpolationDuration(removeAnimationDuration);
+
+                Vector3f randomizedTranslation = endingTranslation.add(
+                        (float) (Math.random() * OFFSET_INTERVAL),
+                        (float) (Math.random() * OFFSET_INTERVAL),
+                        (float) (Math.random() * OFFSET_INTERVAL)
+                );
+                entity.setTransformation(new Transformation(
+                        randomizedTranslation,
+                        finalRotation,
+                        minScale,
+                        new AxisAngle4f()
+                ));
+
+                reversed.setTransformation(new Transformation(
+                        randomizedTranslation,
+                        finalRotationReversed,
+                        minScale,
+                        new AxisAngle4f()
+                ));
+
+                PacketEventsWrapper.get().ifPresent(pe -> {
+                    for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
+                        pe.updateEntity(entity, player);
+                        pe.updateEntity(reversed, player);
+                    }
+                });
+            }, removeAnimationDelay);
 
             WbsWandcraft.getInstance().runLater(() -> {
                 for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
-                    PacketEventsWrapper.get().ifPresent(pe -> pe.removeEntity(entity, player));
-                    PacketEventsWrapper.get().ifPresent(pe -> pe.removeEntity(reversed, player));
+                    removeEntity(player, entity);
+                    removeEntity(player, reversed);
                 }
-
-            }, INTERPOLATION_DURATION - charIndex + characters - updatedPlayer.getPing() / Ticks.SINGLE_TICK_DURATION_MS);
+            }, removeAnimationDelay + removeAnimationDuration);
 
             offset.rotateAroundY(angleBetweenGlyphs);
         }
     }
 
+    private static void removeEntity(Player player, TextDisplay entity) {
+        PacketEventsWrapper.get().ifPresentOrElse(
+                pe -> pe.removeEntity(entity, player),
+                entity::remove
+        );
+    }
+
+    private static void showFakeEntity(Player player, TextDisplay entity) {
+        PacketEventsWrapper.get().ifPresent(pe -> pe.showFakeEntity(entity, player));
+    }
+
     private static @NotNull TextColor getWordColour(SpellDefinition spell) {
         TextColor color;
         if (spell == null) {
-            color = NamedTextColor.GOLD;
+            color = MenuUtils.EXTRAS_COLOUR;
         } else {
             if (WbsMath.chance(50)) {
                 SpellType type = WbsCollectionUtil.getRandom(spell.getTypes());
@@ -284,8 +353,16 @@ public class SpellbookEvents implements Listener {
     }
 
     private static @NotNull TextDisplay getTextDisplay(Location spawnLoc, Component glyph, Vector3f translation, AxisAngle4f startingRotation, Vector3f scale) {
-        TextDisplay entity = EffectUtils.getGlyphDisplay(glyph, spawnLoc, translation, scale, startingRotation, new AxisAngle4f());
+        TextDisplay entity;
 
+        if (PacketEventsWrapper.get().isPresent()) {
+            entity = EffectUtils.getGlyphDisplay(glyph, spawnLoc, translation, scale, startingRotation, new AxisAngle4f());
+        } else {
+            entity = spawnLoc.getWorld().spawn(spawnLoc, TextDisplay.class, CreatureSpawnEvent.SpawnReason.CUSTOM, display -> {
+                EffectUtils.updateGlyphDisplay(display, glyph, translation, scale, startingRotation, new AxisAngle4f());
+            });
+        }
+        entity.setInterpolationDelay(0);
         entity.setInterpolationDuration(INTERPOLATION_DURATION);
         entity.setTeleportDuration(INTERPOLATION_DURATION);
 
@@ -313,7 +390,7 @@ public class SpellbookEvents implements Listener {
             return;
         }
 
-        if (book.getPersistentDataContainer().has(ItemUtils.WANDCRAFT_ITEM_KEY)) {
+        if (ItemUtils.isWandcraftItem(book)) {
             event.setCancelled(true);
         }
     }
@@ -326,7 +403,6 @@ public class SpellbookEvents implements Listener {
 
         ItemStack activeItem = player.getActiveItem();
         if (Spellbook.isSpellbook(activeItem)) {
-
             double chancePerHealth = 0.5;
 
             double chance = 1 - (Math.pow(1 - chancePerHealth, event.getDamage()));
@@ -379,25 +455,10 @@ public class SpellbookEvents implements Listener {
     public void onCloseLectern(InventoryCloseEvent event) {
         if (event.getView() instanceof LecternView view) {
             ItemStack book = view.getTopInventory().getItem(0);
-            if (Spellbook.isSpellbook(book)) {
+            if (ItemUtils.isWandcraftItem(book)) {
                 Player player = (Player) event.getPlayer();
                 PacketEventsWrapper.get().ifPresent(pe -> pe.sendGameModeChange(player.getGameMode(), player));
             }
-        }
-    }
-
-    @EventHandler
-    public void onRightClickSpell(PlayerInteractEvent event) {
-        if (!event.getAction().isRightClick()) {
-            return;
-        }
-        Player player = event.getPlayer();
-
-        ItemStack item = event.getItem();
-
-        SpellInstance spell = SpellInstance.fromItem(item);
-        if (spell != null) {
-            Spellbook.teachSpell(player, spell.getDefinition());
         }
     }
 }

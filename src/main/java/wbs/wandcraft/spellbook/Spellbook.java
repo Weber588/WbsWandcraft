@@ -5,10 +5,10 @@ import io.papermc.paper.advancement.AdvancementDisplay;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.CustomModelData;
-import io.papermc.paper.datacomponent.item.WrittenBookContent;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import io.papermc.paper.persistence.PersistentDataViewHolder;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
@@ -16,15 +16,13 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.Ticks;
-import org.bukkit.*;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MenuType;
-import org.bukkit.inventory.view.LecternView;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
@@ -46,6 +44,7 @@ import wbs.wandcraft.spell.learning.LearningMethod;
 import wbs.wandcraft.spell.learning.RegistrableLearningMethod;
 import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.util.ItemUtils;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.types.WandType;
 
@@ -58,14 +57,6 @@ import java.util.List;
 public class Spellbook implements ItemDecorator {
     private static final NamespacedKey SPELL_BOOK = WbsWandcraft.getKey("spellbook");
     public static final NamespacedKey KNOWN_SPELLS = WbsWandcraft.getKey("known_spells");
-    public static final TextColor DESCRIPTION_COLOR = TextColor.color(0x6F47A3);
-    public static final Style COST_STYLE = Style.style()
-            .color(TextColor.color(0x006661))
-            .decorate(TextDecoration.ITALIC)
-            .build();
-
-    public static final TextComponent LINE_BREAK = Component.newline().append(Component.text("                            ").decorate(TextDecoration.STRIKETHROUGH)).appendNewline();
-    public static final NamedTextColor WAND_COLOR = NamedTextColor.GOLD;
 
     public static List<SpellDefinition> getKnownSpells(PersistentDataViewHolder holder) {
         return getKnownSpells(holder.getPersistentDataContainer());
@@ -227,17 +218,13 @@ public class Spellbook implements ItemDecorator {
     }
 
     public Spellbook openBook(Player player) {
-        if (player.getGameMode() == GameMode.SURVIVAL) {
-            PacketEventsWrapper.get().ifPresent(pe -> pe.sendGameModeChange(GameMode.ADVENTURE, player));
-        }
-
         List<WandType<?>> wandDefinitions = getOrderedWands();
         List<SpellDefinition> spellDefinitions = getOrderedSpells();
 
         Component chapterPage = Component.empty();
 
         chapterPage = chapterPage.append(Component.text("Contents").decorate(TextDecoration.BOLD));
-        chapterPage = chapterPage.append(LINE_BREAK.color(NamedTextColor.GOLD));
+        chapterPage = chapterPage.append(MenuUtils.LINE_BREAK);
 
         chapterPage = chapterPage.append(getChapterLink(1, "Contents"));
         chapterPage = chapterPage.append(getChapterLink(2, "Wands"));
@@ -247,38 +234,17 @@ public class Spellbook implements ItemDecorator {
 
         List<Component> spellPages = getSpellPages(player, spellDefinitions);
 
-        WrittenBookContent.Builder book = WrittenBookContent.writtenBookContent("Spellbook", player.getName());
+        List<Component> pages = new LinkedList<>();
+        pages.add(chapterPage);
+        pages.addAll(wandPages);
+        pages.addAll(spellPages);
 
-        book.addPage(chapterPage);
-        wandPages.forEach(book::addPage);
-        spellPages.forEach(book::addPage);
+        Book book = Book.book(Component.text("Spellbook"), player.name(), pages);
+        ItemStack item = MenuUtils.getBookItem(book);
 
-        ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
         toItem(item);
-        item.setData(DataComponentTypes.WRITTEN_BOOK_CONTENT, book);
 
-        Location checkLoc = player.getLocation();
-        checkLoc.setY(player.getWorld().getMaxHeight());
-        while (checkLoc.getY() >= checkLoc.getWorld().getMinHeight() && !checkLoc.getBlock().isEmpty()) {
-            checkLoc = checkLoc.add(0, -1, 0);
-        }
-
-        if (checkLoc.getY() < checkLoc.getWorld().getMinHeight()) {
-            checkLoc = player.getLocation().add(0, 2, 0);
-        }
-
-        Location createLoc = checkLoc;
-        LecternView lecternView = MenuType.LECTERN.builder().checkReachable(false).location(createLoc).build(player);
-        lecternView.setPage(currentPage);
-        lecternView.setItem(0, item);
-        lecternView.open();
-
-        createLoc.getBlock().setType(Material.AIR);
-
-        WbsWandcraft.getInstance().runAtEndOfTick(() -> {
-            lecternView.setPage(currentPage);
-            createLoc.getBlock().setType(Material.AIR);
-        });
+        MenuUtils.showBook(player, item, currentPage);
 
         return this;
     }
@@ -286,10 +252,10 @@ public class Spellbook implements ItemDecorator {
     private static List<Component> getWandPages(List<WandType<?>> wandDefinitions) {
         List<Component> wandPages = new LinkedList<>();
         for (WandType<?> type : wandDefinitions) {
-            Component page = Component.empty().append(type.getItemName().color(WAND_COLOR))
-                    .append(Component.text(" (" + type.getEchoShardCost() + ")").style(COST_STYLE))
-                    .append(LINE_BREAK)
-                    .append(type.getDescription().color(DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC));
+            Component page = Component.empty().append(type.getItemName().color(MenuUtils.DEFAULT_TITLE_COLOUR))
+                    .append(Component.text(" (" + type.getEchoShardCost() + ")").style(MenuUtils.COST_STYLE))
+                    .append(MenuUtils.LINE_BREAK)
+                    .append(type.getDescription().color(MenuUtils.DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC));
 
             wandPages.add(page);
         }
@@ -306,13 +272,13 @@ public class Spellbook implements ItemDecorator {
 
             page = page.append(displayName);
             if (isKnown) {
-                page = page.append(Component.text(" (" + definition.getEchoShardCost() + ")").style(COST_STYLE));
+                page = page.append(Component.text(" (" + definition.getEchoShardCost() + ")").style(MenuUtils.COST_STYLE));
             }
             page = page.appendNewline().append(definition.getTypesDisplay());
 
-            page = page.append(LINE_BREAK.color(NamedTextColor.GOLD));
+            page = page.append(MenuUtils.LINE_BREAK);
 
-            Component description = definition.description().color(DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC);
+            Component description = definition.description().color(MenuUtils.DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC);
             if (!isKnown) {
                 description = description.font(Key.key("illageralt"));
             }
@@ -333,7 +299,7 @@ public class Spellbook implements ItemDecorator {
                                     .separator(Component.newline())
                                     .build(),
                             methodList.stream().map(method ->
-                                            method.describe(indent, false).color(NamedTextColor.GOLD)
+                                            method.describe(indent, false).color(MenuUtils.EXTRAS_COLOUR)
                                     ).toList()
                             ));
                 }
@@ -345,7 +311,7 @@ public class Spellbook implements ItemDecorator {
                     for (RegistrableLearningMethod method : generationMethods) {
                         if (method.getResultGenerator() instanceof SpellInstanceGenerator generator) {
                             if (generator.getSpells().contains(definition)) {
-                                registrableMethods.add(method.describe(indent).color(NamedTextColor.GOLD));
+                                registrableMethods.add(method.describe(indent).color(MenuUtils.EXTRAS_COLOUR));
                             }
                         }
                     }
@@ -367,7 +333,7 @@ public class Spellbook implements ItemDecorator {
                 }
 
                 if (!isObtainable) {
-                    hoverText = Component.text("Unknown...").decorate(TextDecoration.ITALIC).color(DESCRIPTION_COLOR);
+                    hoverText = Component.text("Unknown...").decorate(TextDecoration.ITALIC).color(MenuUtils.DESCRIPTION_COLOR);
                 }
             }
             page = page.hoverEvent(HoverEvent.showText(hoverText))
@@ -451,7 +417,7 @@ public class Spellbook implements ItemDecorator {
         components.add(Component.empty());
 
         Component pageName = getCurrentPageName();
-        components.add(Component.text("Page " + (currentPage + 1) + ": ").color(DESCRIPTION_COLOR).append(pageName));
+        components.add(Component.text("Page " + (currentPage + 1) + ": ").color(MenuUtils.DESCRIPTION_COLOR).append(pageName));
 
         return components;
     }
@@ -460,7 +426,7 @@ public class Spellbook implements ItemDecorator {
         Component pageName = null;
         WandType<?> currentWandType = getCurrentWandType();
         if (currentWandType != null) {
-            pageName = currentWandType.getItemName().color(WAND_COLOR);
+            pageName = currentWandType.getItemName().color(MenuUtils.DEFAULT_TITLE_COLOUR);
         } else {
             SpellDefinition currentSpell = getCurrentSpell();
             if (currentSpell != null) {

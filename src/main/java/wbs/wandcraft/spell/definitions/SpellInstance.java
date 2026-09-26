@@ -2,7 +2,6 @@ package wbs.wandcraft.spell.definitions;
 
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -24,6 +23,7 @@ import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.effect.SpellEffectInstance;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvent;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -174,8 +174,9 @@ public class SpellInstance implements WandEntry<SpellInstance>, AttributeHolder 
                 .sorted()
                 .filter(instance -> !instance.value().equals(definition.getDefault(instance.attribute())))
                 .map(instance ->
-                        (Component) Component.text("  - ").style(Style.style(NamedTextColor.GOLD, Set.of()))
-                                .append(instance.toComponent())
+                        (Component) Component.text("  - ")
+                                .style(Style.style(MenuUtils.ACCENTS_STYLE, Set.of()))
+                                .append(instance.toComponent().color(MenuUtils.EXTRAS_COLOUR))
                 )
                 .forEachOrdered(lore::add);
 

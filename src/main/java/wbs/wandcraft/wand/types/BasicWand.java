@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
 
@@ -72,7 +73,7 @@ public class BasicWand extends Wand {
         }
 
         lore.add(Component.text("Spell: ").color(NamedTextColor.AQUA)
-                .append(spellText.color(NamedTextColor.GOLD)));
+                .append(spellText.color(MenuUtils.EXTRAS_COLOUR)));
 
         return lore;
     }

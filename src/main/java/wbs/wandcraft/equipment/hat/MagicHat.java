@@ -15,8 +15,8 @@ import wbs.utils.util.WbsMath;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.equipment.MagicEquipmentType;
-import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.ItemUtils;
+import wbs.wandcraft.util.MenuUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -111,7 +111,7 @@ public abstract class MagicHat implements MagicEquipmentType {
 
         if (credit != null) {
             lore.add(Component.empty());
-            lore.add(Component.text("Artist: ").color(Spellbook.DESCRIPTION_COLOR).append(Component.text(credit).decorate(TextDecoration.ITALIC)));
+            lore.add(Component.text("Artist: ").color(MenuUtils.DESCRIPTION_COLOR).append(Component.text(credit).decorate(TextDecoration.ITALIC)));
         }
 
         return lore;

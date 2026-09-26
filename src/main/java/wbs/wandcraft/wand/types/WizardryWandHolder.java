@@ -1,9 +1,6 @@
 package wbs.wandcraft.wand.types;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -47,13 +44,11 @@ public final class WizardryWandHolder extends WandHolder<WizardryWand> {
     protected @NotNull ItemStack getFakeWand() {
         ItemStack fakeWand = super.getFakeWand();
 
-        Style style = Style.style(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false);
-
         // TODO: Make this configurable
         fakeWand.lore(List.of(
-                Component.text("Place spell scrolls in the below slots!").style(style),
-                Component.text("When you use the wand, they'll ALL be cast").style(style),
-                Component.text("in quick succession!").style(style)
+                Component.text("Place spell scrolls in the below slots!").style(FAKE_WAND_DESC),
+                Component.text("When you use the wand, they'll ALL be cast").style(FAKE_WAND_DESC),
+                Component.text("in quick succession!").style(FAKE_WAND_DESC)
         ));
 
         return fakeWand;

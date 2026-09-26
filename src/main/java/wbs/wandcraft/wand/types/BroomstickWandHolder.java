@@ -1,9 +1,6 @@
 package wbs.wandcraft.wand.types;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -39,14 +36,12 @@ public final class BroomstickWandHolder extends WandHolder<BroomstickWand> {
     protected @NotNull ItemStack getFakeWand() {
         ItemStack fakeWand = super.getFakeWand();
 
-        Style style = Style.style(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false);
-
         // TODO: Make this configurable
         String description = "This wand will cast the last spell you cast - no spell slots!";
 
         List<Component> lore = new LinkedList<>(WbsStrings.wrapText(description, 141).stream()
                 .map(Component::text)
-                .map(component -> component.style(style))
+                .map(component -> component.style(FAKE_WAND_DESC))
                 .toList());
 
         fakeWand.lore(lore);
