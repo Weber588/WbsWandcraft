@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.dynamic;
 
 import com.google.common.collect.Multimap;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Particle;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -17,6 +18,7 @@ import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.effect.SpellEffectInstance;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @NullMarked
@@ -94,6 +96,9 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
     }
 
     protected WbsParticleGroup getParticleGroup(WbsParticleEffect primaryEffect, WbsParticleEffect secondaryEffect) {
+        return getParticleGroup(primaryEffect, secondaryEffect, false);
+    }
+    protected WbsParticleGroup getParticleGroup(WbsParticleEffect primaryEffect, WbsParticleEffect secondaryEffect, boolean directional) {
         WbsParticleGroup particleGroup = new WbsParticleGroup()
                 .perEffectChance(true);
 
@@ -101,12 +106,12 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
         SpellType secondarySpellType = getSecondarySpellType();
 
         primarySpellType.defaultEffect().accept(primaryEffect);
-        particleGroup.addEffect(primaryEffect, primarySpellType.defaultParticle());
+        particleGroup.addEffect(primaryEffect, directional ? primarySpellType.velocityAffectedParticle() : primarySpellType.defaultParticle());
 
         if (secondarySpellType != null) {
             Consumer<WbsParticleEffect> secondaryModifier = secondarySpellType.defaultEffect();
             secondaryModifier.accept(secondaryEffect);
-            particleGroup.addEffect(secondaryEffect, secondarySpellType.defaultParticle(), SECONDARY_PARTICLE_CHANCE);
+            particleGroup.addEffect(secondaryEffect, directional ? secondarySpellType.velocityAffectedParticle() : secondarySpellType.defaultParticle(), SECONDARY_PARTICLE_CHANCE);
         } else {
             Particle secondaryParticle = primarySpellType.secondaryParticle();
             Consumer<WbsParticleEffect> secondaryModifier = primarySpellType.secondaryEffect();
@@ -125,5 +130,11 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
     @Override
     public Particle getDefaultParticle() {
         return Particle.INSTANT_EFFECT;
+    }
+
+    protected List<TextColor> getTypeColours() {
+        return spellTypes.stream()
+                .map(SpellType::textColor)
+                .toList();
     }
 }

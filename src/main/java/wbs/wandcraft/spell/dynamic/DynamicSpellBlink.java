@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.dynamic;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -34,11 +35,11 @@ import java.util.List;
 
 @NullMarked
 public class DynamicSpellBlink extends DynamicSpell implements CastableSpell, RangeAttributable, SpeedAttributable, DirectionAttributable {
-    public static SpellAspect BLINK_ASPECT = new SpellAspect("blink", DynamicSpellBlink::new);
+    public static SpellAspect BLINK_ASPECT = new FixedTypeSpellAspect("blink", DynamicSpellBlink::new);
     private final WbsParticleGroup particleGroup;
 
-    public DynamicSpellBlink(SpellType primary, @Nullable SpellType secondary) {
-        super("blink", primary, secondary);
+    public DynamicSpellBlink(@Nullable SpellType secondary) {
+        super("blink", SpellType.ENDER, secondary);
 
         particleGroup = getParticleGroup(
                 new NormalParticleEffect().setXYZ(0.6).setY(1).setAmount(250)
@@ -121,5 +122,10 @@ public class DynamicSpellBlink extends DynamicSpell implements CastableSpell, Ra
     @Override
     protected String getTextureKeyValue() {
         return "blink";
+    }
+
+    @Override
+    public Component displayName() {
+        return super.displayName().color(getTypeColours().getLast());
     }
 }

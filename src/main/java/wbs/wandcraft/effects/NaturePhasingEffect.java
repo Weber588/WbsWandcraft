@@ -1,13 +1,11 @@
 package wbs.wandcraft.effects;
 
 import io.papermc.paper.event.player.PlayerFailMoveEvent;
-import io.papermc.paper.registry.keys.tags.BlockTypeTagKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockType;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -17,14 +15,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsEventUtils;
 import wbs.utils.util.WbsLocationUtil;
-import wbs.utils.util.WbsRegistryUtil;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.util.BlockUtils;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -133,9 +129,9 @@ public class NaturePhasingEffect extends StatusEffect {
         return false;
     }
 
-    private static @NotNull BoundingBox getPhaseBox(Player player, int radius) {
+    private static BoundingBox getPhaseBox(Player player, int radius) {
         BoundingBox boundingBox = player.getBoundingBox().expand(radius, 0, radius).expandDirectional(0, 2, 0);
-        if (player.isSneaking() && Bukkit.getCurrentTick() % FREQUENCY * 3 == 0) {
+        if (player.isSneaking() && Bukkit.getCurrentTick() % (FREQUENCY * 3) == 0) {
             boundingBox.expandDirectional(0, -0.2, 0);
         }
         return boundingBox;
@@ -146,20 +142,7 @@ public class NaturePhasingEffect extends StatusEffect {
             return true;
         }
 
-        Material material = block.getType();
-        switch (material) {
-            case COBBLESTONE, END_STONE, COBBLED_DEEPSLATE, GRASS_BLOCK -> {
-                return true;
-            }
-        }
-
-        BlockType blockType = Objects.requireNonNull(material.asBlockType(), "Block had non-block material!");
-
-        boolean canPhase = WbsRegistryUtil.isTagged(blockType, BlockTypeTagKeys.BASE_STONE_OVERWORLD);
-        canPhase |= WbsRegistryUtil.isTagged(blockType, BlockTypeTagKeys.DIRT);
-        canPhase |= blockType.key().value().toLowerCase().endsWith("_ore");
-
-        return canPhase;
+        return BlockUtils.isNatureGroundBlock(block.getType().asBlockType());
     }
 
     private void onWalkThroughBlock(PlayerFailMoveEvent event) {
@@ -186,7 +169,7 @@ public class NaturePhasingEffect extends StatusEffect {
     }
 
     @Override
-    public @NotNull NamespacedKey getKey() {
+    public NamespacedKey getKey() {
         return WbsWandcraft.getKey("nature_phasing");
     }
 }

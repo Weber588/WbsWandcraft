@@ -24,7 +24,7 @@ import java.util.List;
 
 @NullMarked
 public class DynamicSpellProjectile extends DynamicSpell implements CustomProjectileSpell {
-    public static SpellAspect PROJECTILE_ASPECT = new SpellAspect("projectile", DynamicSpellProjectile::new);
+    public static SpellAspect PROJECTILE_ASPECT = new GenericSpellAspect("projectile", DynamicSpellProjectile::new);
 
     public DynamicSpellProjectile(SpellType primary, @Nullable SpellType secondary) {
         super("projectile", primary, secondary);

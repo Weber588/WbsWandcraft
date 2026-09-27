@@ -63,7 +63,8 @@ public class SpellType implements Keyed {
             .rawDescription("""
                     The domain of order, information, and reason. Arcane magic is \
                     coordinated, efficient, and precise; the science of magic."""
-            ).defaultParticle(Particle.DUST_COLOR_TRANSITION);
+            ).defaultParticle(Particle.DUST_COLOR_TRANSITION)
+            .velocityAffectedParticle(Particle.CRIT, 12.5);
 
     public static final SpellType NETHER = new SpellType("nether", NETHER_COLOR, NETHER_WAND_COLOR)
             .rawDescription("""
@@ -79,7 +80,7 @@ public class SpellType implements Keyed {
                     treating physics and reality as obstacles to be ignored."""
             ).defaultParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.02, Particle.REVERSE_PORTAL)
             .secondaryParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.2, Particle.PORTAL)
-            .velocityAffectedParticle(Particle.DRAGON_BREATH);
+            .velocityAffectedParticle(Particle.DRAGON_BREATH, 0.8);
 
     public static final SpellType SCULK = new SpellType("sculk", SCULK_COLOR, SCULK_WAND_COLOR)
             .rawDescription("""
@@ -89,13 +90,13 @@ public class SpellType implements Keyed {
                     (_, _) -> (float) Math.random() * Math.PI * 2),
                     Particle.SCULK_CHARGE
             )
-            .velocityAffectedParticle(Particle.SCULK_CHARGE);
+            .velocityAffectedParticle(Particle.SCULK_CHARGE, 1.5);
 
     public static final SpellType VOID = new SpellType("void", VOID_COLOR, VOID_WAND_COLOR)
             .rawDescription("""
                     The domain of eternity and absence. Everything ends except for darkness, the cold, and time."""
             ).defaultParticle(Particle.SMOKE)
-            .velocityAffectedParticle(Particle.SMOKE);
+            .velocityAffectedParticle(Particle.SMOKE, 2);
 
     public static final SpellType NATURE = new SpellType("nature", NATURE_COLOR, NATURE_WAND_COLOUR)
             .rawDescription("""
@@ -107,7 +108,7 @@ public class SpellType implements Keyed {
                     ),
                     Particle.TINTED_LEAVES
             )
-            .velocityAffectedParticle(Particle.HAPPY_VILLAGER);
+            .velocityAffectedParticle(Particle.SCRAPE, 100);
     
 
     public static SpellType getOpposite(SpellType type) {
@@ -141,6 +142,7 @@ public class SpellType implements Keyed {
     @Nullable
     private Consumer<WbsParticleEffect> secondaryEffectModifier = null;
     private Particle velocityAffectedParticle = Particle.END_ROD;
+    private double velocityParticleModifier = 1;
 
     // TODO: Clean up the particle nonsense and have a single related object that defines certain types/shapes of particle usage;
     //  For example, generic, around_player, directional_point, velocity
@@ -215,15 +217,15 @@ public class SpellType implements Keyed {
         return particleEffectModifier;
     }
 
-    public SpellType defaultParticle(Particle defaultParticle) {
+    private SpellType defaultParticle(Particle defaultParticle) {
         return defaultParticle(_ -> {}, defaultParticle);
     }
-    public SpellType defaultParticle(Consumer<WbsParticleEffect> effectModifier, Particle defaultParticle) {
+    private SpellType defaultParticle(Consumer<WbsParticleEffect> effectModifier, Particle defaultParticle) {
         this.defaultParticle = defaultParticle;
         this.particleEffectModifier = effectModifier;
         return this;
     }
-    public <T, R> SpellType defaultParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
+    private <T, R> SpellType defaultParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
         this.defaultParticle = defaultParticle;
         this.particleEffectModifier = toModifier(clazz, function, value);
         return this;
@@ -246,15 +248,15 @@ public class SpellType implements Keyed {
         return secondaryEffectModifier;
     }
 
-    public SpellType secondaryParticle(@Nullable Particle secondaryParticle) {
+    private SpellType secondaryParticle(@Nullable Particle secondaryParticle) {
         return secondaryParticle(_ -> {}, secondaryParticle);
     }
-    public SpellType secondaryParticle(Consumer<WbsParticleEffect> secondaryModifier, @Nullable Particle secondaryParticle) {
+    private SpellType secondaryParticle(Consumer<WbsParticleEffect> secondaryModifier, @Nullable Particle secondaryParticle) {
         this.secondaryParticle = secondaryParticle;
         this.secondaryEffectModifier = secondaryModifier;
         return this;
     }
-    public <T, R> SpellType secondaryParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
+    private <T, R> SpellType secondaryParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
         this.secondaryParticle = defaultParticle;
         this.secondaryEffectModifier = toModifier(clazz, function, value);
         return this;
@@ -264,8 +266,23 @@ public class SpellType implements Keyed {
         return velocityAffectedParticle;
     }
 
-    public SpellType velocityAffectedParticle(Particle velocityAffectedParticle) {
+    private SpellType velocityAffectedParticle(Particle velocityAffectedParticle) {
         this.velocityAffectedParticle = velocityAffectedParticle;
+        return this;
+    }
+
+    private SpellType velocityAffectedParticle(Particle velocityAffectedParticle, double speedModifier) {
+        this.velocityAffectedParticle = velocityAffectedParticle;
+        this.velocityParticleModifier = speedModifier;
+        return this;
+    }
+
+    public double velocityParticleModifier() {
+        return velocityParticleModifier;
+    }
+
+    private SpellType velocityParticleModifier(double velocityParticleModifier) {
+        this.velocityParticleModifier = velocityParticleModifier;
         return this;
     }
 }

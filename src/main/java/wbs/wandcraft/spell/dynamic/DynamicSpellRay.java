@@ -25,7 +25,7 @@ import java.util.Set;
 
 @NullMarked
 public class DynamicSpellRay extends DynamicSpell implements RaySpell {
-    public static SpellAspect RAY_ASPECT = new SpellAspect("ray", DynamicSpellRay::new);
+    public static SpellAspect RAY_ASPECT = new GenericSpellAspect("ray", DynamicSpellRay::new);
     private final WbsParticleGroup particleGroup;
 
     public DynamicSpellRay(SpellType primary, @Nullable SpellType secondary) {

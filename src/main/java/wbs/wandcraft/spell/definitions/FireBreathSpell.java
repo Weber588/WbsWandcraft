@@ -38,6 +38,8 @@ public class FireBreathSpell extends SpellDefinition implements ContinuousCastab
         setAttribute(COST, 100);
         setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);
 
+        setAttribute(IMPRECISION, 15d);
+
         setAttribute(FIXED_DURATION, 3 * Ticks.TICKS_PER_SECOND);
         setAttribute(MAX_DURATION, 10 * Ticks.TICKS_PER_SECOND);
         setAttribute(RANGE, 5d);

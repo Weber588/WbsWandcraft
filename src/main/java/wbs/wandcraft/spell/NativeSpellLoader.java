@@ -1,6 +1,7 @@
 package wbs.wandcraft.spell;
 
 import wbs.wandcraft.spell.definitions.*;
+import wbs.wandcraft.spell.dynamic.DynamicSpellScry;
 
 import java.util.List;
 
@@ -22,7 +23,6 @@ public class NativeSpellLoader extends SpellLoader {
             new ConcreteLoader<>(FireBreathSpell::new),
             new ConcreteLoader<>(ArcaneSparkSpell::new),
             new ConcreteLoader<>(PlanarBindingSpell::new),
-            new ConcreteLoader<>(DiscoverItemSpell::new),
             new ConcreteLoader<>(ChainLightningSpell::new),
             new ConcreteLoader<>(CharmSpell::new),
             new ConcreteLoader<>(DisplaceSpell::new),

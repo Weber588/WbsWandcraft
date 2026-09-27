@@ -18,6 +18,7 @@ public class SpellEffectInstance<T> implements AttributeHolder, ComponentReprese
     private final SpellEffectDefinition<T> effect;
     private final Set<SpellAttributeInstance<?>> attributeValues = new HashSet<>();
     private final Set<SpellTriggeredEvent<?>> triggers = new HashSet<>();
+    private double chance = 1;
 
     public SpellEffectInstance(SpellEffectDefinition<T> effect) {
         this.effect = effect;
@@ -30,6 +31,10 @@ public class SpellEffectInstance<T> implements AttributeHolder, ComponentReprese
     }
 
     public <O> boolean run(CastContext context, SpellTriggeredEvent<O> trigger, O event) {
+        if (Math.random() < chance) {
+            return false;
+        }
+
         Function<O, T> mapper = effect.getSupportFor(trigger);
         if (mapper == null) {
             return false;
@@ -88,6 +93,15 @@ public class SpellEffectInstance<T> implements AttributeHolder, ComponentReprese
 
     public boolean allowsEvent(SpellTriggeredEvent<?> trigger) {
         return triggers.isEmpty() || triggers.contains(trigger);
+    }
+
+    public double chance() {
+        return chance;
+    }
+
+    public SpellEffectInstance<T> chance(double chance) {
+        this.chance = chance;
+        return this;
     }
 
     @Override

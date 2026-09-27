@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
+import wbs.utils.util.commands.brigadier.WbsSuggestionProvider;
 import wbs.utils.util.commands.brigadier.argument.WbsRegistrySimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
@@ -20,6 +21,8 @@ import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.dynamic.DynamicSpell;
+import wbs.wandcraft.spell.dynamic.FixedTypeSpellAspect;
+import wbs.wandcraft.spell.dynamic.GenericSpellAspect;
 import wbs.wandcraft.spell.dynamic.SpellAspect;
 import wbs.wandcraft.util.MenuUtils;
 
@@ -33,26 +36,41 @@ public class CommandSpellCastDynamic extends WbsSubcommand {
             SpellAspect.class,
             WandcraftRegistries.SPELL_ASPECTS
     ).isRequired(true);
-    private static final WbsRegistrySimpleArgument<SpellType> PRIMARY_SPELL_TYPE = new WbsRegistrySimpleArgument<>(
-            "spell_type_primary",
-            WbsWandcraft.getInstance(),
-            "spell type",
-            SpellType.class,
-            WandcraftRegistries.SPELL_TYPES
-    ).isRequired(true);
-    private static final WbsRegistrySimpleArgument<SpellType> SECONDARY_SPELL_TYPE = new WbsRegistrySimpleArgument<>(
-            "spell_type_secondary",
+    private static final WbsRegistrySimpleArgument<SpellType> SPELL_TYPE = new WbsRegistrySimpleArgument<>(
+            "spell_type",
             WbsWandcraft.getInstance(),
             "spell type",
             SpellType.class,
             WandcraftRegistries.SPELL_TYPES
     );
+    private static final WbsRegistrySimpleArgument<SpellType> SECONDARY_SPELL_TYPE =
+            (WbsRegistrySimpleArgument<SpellType>) new WbsRegistrySimpleArgument<>(
+                    "spell_type_secondary",
+                    WbsWandcraft.getInstance(),
+                    "spell type",
+                    SpellType.class,
+                    WandcraftRegistries.SPELL_TYPES
+            ).setSuggestionProvider(((context, builder) -> {
+                SpellAspect value = ASPECT.getValue(context);
+
+                // Don't suggest a 2nd type if a fixed aspect already has a first
+                if (value instanceof FixedTypeSpellAspect) {
+                    return builder.buildFuture();
+                }
+
+                return WbsSuggestionProvider.getStatic(
+                        WandcraftRegistries.SPELL_TYPES.values(),
+                        t -> t.getKey().asString(),
+                        ""
+                ).getSuggestions(context, builder);
+
+            }));
 
     public CommandSpellCastDynamic(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
 
         this.addSimpleArgument(ASPECT);
-        this.addSimpleArgument(PRIMARY_SPELL_TYPE);
+        this.addSimpleArgument(SPELL_TYPE);
         this.addSimpleArgument(SECONDARY_SPELL_TYPE);
     }
 
@@ -70,14 +88,23 @@ public class CommandSpellCastDynamic extends WbsSubcommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        SpellType primarySpellType = PRIMARY_SPELL_TYPE.getRequiredValue(context);
-        if (primarySpellType == null) {
-            return Command.SINGLE_SUCCESS;
+        DynamicSpell built;
+        if (aspect instanceof GenericSpellAspect genericAspect) {
+            SpellType primarySpellType = SPELL_TYPE.getRequiredValue(context);
+            if (primarySpellType == null) {
+                return Command.SINGLE_SUCCESS;
+            }
+
+            SpellType secondarySpellType = configuredArgumentMap.get(SECONDARY_SPELL_TYPE);
+
+            built = genericAspect.build(primarySpellType, secondarySpellType);
+        } else if (aspect instanceof FixedTypeSpellAspect fixedAspect) {
+            SpellType primarySpellType = configuredArgumentMap.get(SPELL_TYPE);
+
+            built = fixedAspect.build(primarySpellType);
+        } else {
+            throw new IllegalStateException("Unknown spell aspect!");
         }
-
-        SpellType secondarySpellType = configuredArgumentMap.get(SECONDARY_SPELL_TYPE);
-
-        DynamicSpell built = aspect.build(primarySpellType, secondarySpellType);
 
         SpellInstance instance = built.newInstance();
 

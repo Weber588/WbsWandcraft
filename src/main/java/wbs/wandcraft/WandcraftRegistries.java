@@ -15,10 +15,7 @@ import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.dynamic.DynamicSpellBlink;
-import wbs.wandcraft.spell.dynamic.DynamicSpellProjectile;
-import wbs.wandcraft.spell.dynamic.DynamicSpellRay;
-import wbs.wandcraft.spell.dynamic.SpellAspect;
+import wbs.wandcraft.spell.dynamic.*;
 import wbs.wandcraft.spell.effect.SpellEffectDefinition;
 import wbs.wandcraft.spell.effect.SpellEffectDefinitions;
 import wbs.wandcraft.spell.learning.*;
@@ -118,7 +115,9 @@ public class WandcraftRegistries {
     public static final WbsRegistry<SpellAspect> SPELL_ASPECTS = new WbsRegistry<>(
             DynamicSpellProjectile.PROJECTILE_ASPECT,
             DynamicSpellRay.RAY_ASPECT,
-            DynamicSpellBlink.BLINK_ASPECT
+            DynamicSpellBlink.BLINK_ASPECT,
+            DynamicConeSpell.CONE_ASPECT,
+            DynamicSpellScry.SCRY
     );
     public static final WbsRegistry<LearningMethodType<?>> LEARNING_PROVIDERS = new WbsRegistry<>(
             LearningMethodType.build("advancements", AdvancementLearningTrigger::new),
