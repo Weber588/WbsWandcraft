@@ -67,6 +67,10 @@ public class SpellInstance implements WandEntry<SpellInstance>, AttributeHolder 
         for (SpellAttributeInstance<?> otherAttribute : other.getAttributeInstances()) {
             attributeValues.add(otherAttribute.clone());
         }
+
+        for (SpellEffectInstance<?> effect : other.triggeredEffects) {
+            triggeredEffects.add(effect.clone());
+        }
     }
 
     public Set<SpellAttributeInstance<?>> getAttributeInstances() {

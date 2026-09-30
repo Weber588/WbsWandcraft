@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import wbs.utils.util.WbsRegistry;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
@@ -37,7 +38,7 @@ public abstract class CommandInfo<T extends Keyed> extends WbsSubcommand {
     }
 
     private Book buildBook() {
-        List<T> entries = registry.stream().toList();
+        List<T> entries = getEntries(registry);
         List<Component> pages = new LinkedList<>();
         for (int i = 0; i < entries.size(); i++) {
             T type = entries.get(i);
@@ -50,6 +51,10 @@ public abstract class CommandInfo<T extends Keyed> extends WbsSubcommand {
                 Component.text("WbsWandcraft"),
                 Component.text("??? ???????").decorate(TextDecoration.OBFUSCATED),
                 pages);
+    }
+
+    protected @NonNull List<T> getEntries(WbsRegistry<T> registry) {
+        return this.registry.stream().toList();
     }
 
     protected abstract Component getComponent(@UnknownNullability T T, boolean collapse);

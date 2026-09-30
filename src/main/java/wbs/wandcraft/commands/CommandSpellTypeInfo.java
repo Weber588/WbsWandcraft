@@ -5,19 +5,39 @@ import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickCallback;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Display;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
+import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import wbs.utils.util.WbsMath;
 import wbs.utils.util.commands.brigadier.argument.WbsRegistrySimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
+import wbs.utils.util.entities.WbsEntityUtil;
+import wbs.utils.util.particles.entity.TextDisplayParticleBuilder;
 import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
+import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.util.MenuUtils;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommandSpellTypeInfo extends CommandInfo<SpellType> {
     private static final WbsRegistrySimpleArgument<SpellType> SPELL_TYPE = new WbsRegistrySimpleArgument<>(
@@ -50,8 +70,113 @@ public class CommandSpellTypeInfo extends CommandInfo<SpellType> {
         if (!collapse) {
             builder.append(attributeComponent);
         }
+        
+        builder = builder.onClick(ClickEvent.callback(audience -> {
+            readImage(WbsStrings.capitalize(type.getKey().value()) + ".png", (Player) audience, 0.1, 1, 1);
+        }, ClickCallback.Options.builder().uses(Integer.MAX_VALUE).build()));
 
         return builder.toComponent();
+    }
+
+    private void readImage(String fileName, Player player, double scale, int granularity, double particleSize) {
+        File file = new File(plugin.getDataFolder(), fileName);
+
+        if (!file.exists()) {
+            WbsWandcraft.getInstance().sendMessage("&wFile not found: " + file.getPath(), player);
+            return;
+        }
+
+        BufferedImage image;
+        try {
+            image = ImageIO.read(file);
+        } catch (IOException e) {
+            WbsWandcraft.getInstance().sendMessage("&wIOException occurred: \"&4" + e.getMessage() + "&w\"", player);
+            e.printStackTrace();
+            return;
+        }
+
+        WbsWandcraft.getInstance().sendMessage("&hFile loaded. Reading...", player);
+
+        Map<Vector, Color> colorMap = new HashMap<>();
+        int seed = 0;
+        for (int y = 0; y < image.getHeight(); y++) {
+            if (y % granularity == 0) {
+                seed++;
+                for (int x = 0; x < image.getWidth(); x++) {
+                    int rgb = image.getRGB(x, y);
+                    java.awt.Color color = new java.awt.Color(rgb, true);
+                    if (color.getAlpha() != 0 && (x + seed) % granularity == 0) {
+                        double xScaled = WbsMath.roundTo(x * scale, 3);
+                        double yScaled = WbsMath.roundTo(y * scale, 3);
+                        Color bukkitColor = Color.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
+
+                        colorMap.put(new Vector(xScaled, yScaled, 0), bukkitColor);
+                    }
+                }
+            }
+        }
+
+        plugin.runSync(() -> {
+            Location center = player.getEyeLocation().add(WbsEntityUtil.getFacingVector(player).multiply(3));
+            Vector offset = new Vector(image.getWidth() * scale / 2, image.getHeight() * scale / 2, 0);
+
+            World world = player.getWorld();
+
+            Map<Vector, Color> rotated = new HashMap<>();
+
+            Vector localUp = WbsEntityUtil.getLocalUp(player);
+            Vector up = new Vector(0, 1, 0);
+
+            offset = WbsMath.rotateFrom(offset, localUp, up);
+            offset = WbsMath.rotateVector(offset, localUp, 0 - player.getLocation().getYaw());
+            center.add(offset);
+
+            for (Vector imagePos : colorMap.keySet()) {
+                Vector rotatedPos = WbsMath.rotateFrom(imagePos, localUp, up);
+                rotatedPos = WbsMath.rotateVector(rotatedPos, localUp, 0 - player.getLocation().getYaw());
+                rotatedPos.multiply(-1);
+                rotated.put(rotatedPos, colorMap.get(imagePos));
+            }
+
+            for (Vector pos : rotated.keySet()) {
+                Location loc = center.clone().add(pos);
+                loc.setDirection(loc.getDirection().multiply(-1));
+                new TextDisplayParticleBuilder()
+                        .setBackgroundColor(rotated.get(pos))
+                        .setScale(new Vector3f((float) scale * 4))
+                        .configure(display -> {
+                            display.setBillboard(Display.Billboard.FIXED);
+                        })
+                        .usePackets(false)
+                        .playParticle(loc, player);
+
+
+//
+//                EffectUtils.showTextDisplay(loc, Component.text(" "), )
+//
+//                Particle.DustOptions data = new Particle.DustOptions(rotated.get(pos), (float) particleSize);
+//
+//                world.spawnParticle(Particle.DUST, , 0, data);
+            }
+//
+//            new BukkitRunnable() {
+//                int age = 0;
+//                @Override
+//                public void run() {
+//                    age++;
+//                    if (age > 15) {
+//                        cancel();
+//                        return;
+//                    }
+//
+//                    for (Vector pos : rotated.keySet()) {
+//                        Particle.DustOptions data = new Particle.DustOptions(rotated.get(pos), (float) particleSize);
+//
+//                        world.spawnParticle(Particle.DUST, center.clone().add(pos), 0, data);
+//                    }
+//                }
+//            }.runTaskTimer(plugin, 5, 5);
+        });
     }
 
     @Override

@@ -1,7 +1,6 @@
 package wbs.wandcraft.spell;
 
 import wbs.wandcraft.spell.definitions.*;
-import wbs.wandcraft.spell.dynamic.DynamicSpellScry;
 
 import java.util.List;
 
@@ -9,7 +8,6 @@ public class NativeSpellLoader extends SpellLoader {
     public static final List<Loader> LOADERS = List.of(
             new ConcreteLoader<>(FireballSpell::new),
             new ConcreteLoader<>(LeapSpell::new),
-            new ConcreteLoader<>(BlinkSpell::new),
             new ConcreteLoader<>(PrismaticRaySpell::new),
             new ConcreteLoader<>(EldritchBlastSpell::new),
             new ConcreteLoader<>(WarpSpell::new),
@@ -20,7 +18,6 @@ public class NativeSpellLoader extends SpellLoader {
             new ConcreteLoader<>(WindWalkSpell::new),
             new ConcreteLoader<>(CrowsCallSpell::new),
             new ConcreteLoader<>(StunSpell::new),
-            new ConcreteLoader<>(FireBreathSpell::new),
             new ConcreteLoader<>(ArcaneSparkSpell::new),
             new ConcreteLoader<>(PlanarBindingSpell::new),
             new ConcreteLoader<>(ChainLightningSpell::new),
@@ -38,15 +35,13 @@ public class NativeSpellLoader extends SpellLoader {
             new ConcreteLoader<>(TurnUndeadSpell::new),
             new ConcreteLoader<>(GrowSpell::new),
             new ConcreteLoader<>(HealSpell::new),
-            new ConcreteLoader<>(HealingCircleSpell::new),
             new ConcreteLoader<>(EmergencyTeleportSpell::new),
             new ConcreteLoader<>(MageLightSpell::new),
             new ConcreteLoader<>(AmorphousEarthSpell::new),
             new ConcreteLoader<>(BlackHoleSpell::new),
             new ConcreteLoader<>(AcidBombSpell::new),
             new ConcreteLoader<>(VoidStepSpell::new),
-            new ConcreteLoader<>(DeathWalkSpell::new),
-            new ConcreteLoader<>(ManaCircleSpell::new)
+            new ConcreteLoader<>(DeathWalkSpell::new)
     );
 
     public List<Loader> getEntries() {

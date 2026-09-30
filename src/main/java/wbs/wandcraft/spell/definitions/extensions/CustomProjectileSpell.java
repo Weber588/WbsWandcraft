@@ -76,6 +76,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributab
 
         projectile.setHitBoxSize(hitboxSize);
         tickEffects.addEffect(new NormalParticleEffect().setXYZ(hitboxSize / 3).setAmount(2), particle);
+        tickEffects.perEffectChance(true);
 
         projectile.setRange(range);
         projectile.setVelocity(getDirection(context, speed));

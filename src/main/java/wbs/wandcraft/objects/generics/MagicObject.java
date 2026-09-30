@@ -28,6 +28,7 @@ public abstract class MagicObject {
 	public Player caster;
 	@NotNull
 	public CastContext context;
+	private boolean playEffectsOnTick = true;
 
 	public MagicObject(Location location, @NotNull CastContext context) {
 		this.spawnLocation = location;
@@ -132,7 +133,12 @@ public abstract class MagicObject {
 	}
 
 	protected boolean playEffectsOnTick() {
-		return true;
+		return playEffectsOnTick;
+	}
+
+	public MagicObject playEffectsOnTick(boolean playEffectsOnTick) {
+		this.playEffectsOnTick = playEffectsOnTick;
+		return this;
 	}
 
 	protected void onMaxAgeHit() {
@@ -248,8 +254,9 @@ public abstract class MagicObject {
 	}
 
 	public MagicObject setTickEffects(WbsParticleGroup effects) {
-		this.tickEffects = effects.clone().setPlayFunction(((effect, location, particle) ->
-				ParticleDataProvider.playEffectSafely(effect, location, particle, context.instance().getDefinition())
+		this.tickEffects = effects.clone().setPlayFunction(((effect, location, particle) -> {
+            ParticleDataProvider.playEffectSafely(effect, location, particle, context.instance().getDefinition());
+        }
 		));
 		return this;
 	}

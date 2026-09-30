@@ -40,6 +40,7 @@ public class DynamicSpellProjectile extends DynamicSpell implements CustomProjec
         );
 
         projectile.setTickEffects(particleGroup);
+        projectile.playEffectsOnTick(false);
     }
 
     private static WbsParticleEffect buildParticleEffect(DynamicProjectileObject projectile) {

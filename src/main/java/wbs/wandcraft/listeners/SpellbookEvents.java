@@ -18,7 +18,6 @@ import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -226,18 +225,37 @@ public class SpellbookEvents implements Listener {
                     UP_VECTOR
             );
 
-            TextDisplay entity = getTextDisplay(spawnLoc, glyph, initialTranslation, startingRotation, scale);
+            TextDisplay entity = EffectUtils.showTextDisplay(
+                    spawnLoc,
+                    glyph,
+                    new Transformation(
+                            initialTranslation,
+                            startingRotation,
+                            scale,
+                            new AxisAngle4f()
+                    ),
+                    display -> {
+
+                    }
+            );
 
             AxisAngle4f startingRotationReversed = new AxisAngle4f(
                     (float) Math.abs((angleFromNorth + Math.PI) % Math.TAU),
                     UP_VECTOR
             );
-            TextDisplay reversed = getTextDisplay(spawnLoc, glyph, initialTranslation, startingRotationReversed, scale);
+            TextDisplay reversed = EffectUtils.showTextDisplay(
+                    spawnLoc,
+                    glyph,
+                    new Transformation(
+                            initialTranslation,
+                            startingRotationReversed,
+                            scale,
+                            new AxisAngle4f()
+                    ),
+                    display -> {
 
-            for (Player player : world.getPlayersSeeingChunk(updatedPlayer.getChunk())) {
-                showFakeEntity(player, entity);
-                showFakeEntity(player, reversed);
-            }
+                    }
+            );
 
             Vector3f endingTranslation = offset.clone().rotateAroundY(animationRotation).toVector3f();
             float checkAngle = NORTH.angle(Vector.fromJOML(endingTranslation));
@@ -350,23 +368,6 @@ public class SpellbookEvents implements Listener {
             }
         }
         return color;
-    }
-
-    private static @NotNull TextDisplay getTextDisplay(Location spawnLoc, Component glyph, Vector3f translation, AxisAngle4f startingRotation, Vector3f scale) {
-        TextDisplay entity;
-
-        if (PacketEventsWrapper.get().isPresent()) {
-            entity = EffectUtils.getGlyphDisplay(glyph, spawnLoc, translation, scale, startingRotation, new AxisAngle4f());
-        } else {
-            entity = spawnLoc.getWorld().spawn(spawnLoc, TextDisplay.class, CreatureSpawnEvent.SpawnReason.CUSTOM, display -> {
-                EffectUtils.updateGlyphDisplay(display, glyph, translation, scale, startingRotation, new AxisAngle4f());
-            });
-        }
-        entity.setInterpolationDelay(0);
-        entity.setInterpolationDuration(INTERPOLATION_DURATION);
-        entity.setTeleportDuration(INTERPOLATION_DURATION);
-
-        return entity;
     }
 
     private static @NotNull String toComponents(Vector3f translation) {

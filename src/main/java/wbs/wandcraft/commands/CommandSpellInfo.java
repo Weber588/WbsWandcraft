@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import wbs.utils.util.WbsRegistry;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
@@ -28,6 +29,7 @@ import wbs.wandcraft.spell.learning.RegistrableLearningMethod;
 import wbs.wandcraft.util.MenuUtils;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +44,10 @@ public class CommandSpellInfo extends CommandInfo<SpellDefinition> {
         super(plugin, label, WandcraftRegistries.SPELLS);
         
         this.addSimpleArgument(DEFINITION);
+    }
+
+    protected @NonNull List<SpellDefinition> getEntries(WbsRegistry<SpellDefinition> registry) {
+        return registry.stream().sorted(Comparator.comparing(Keyed::key)).toList();
     }
 
     protected Component getComponent(SpellDefinition spell, boolean collapse) {

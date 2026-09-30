@@ -5,47 +5,76 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
-import org.joml.AxisAngle4f;
-import org.joml.Vector3f;
+import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class EffectUtils {
     public static final Random RANDOM = new Random();
     private static final String CHARS_IN_ILLAGERALT = "abcdefghijklmnopqrstuvwxyz";
     private static final Key fontKey = Key.key("illageralt");
 
-    public static @NotNull TextDisplay getGlyphDisplay(TextColor textColor, Location spawnLoc, Vector3f translation, Vector3f scale, AxisAngle4f leftRotation, AxisAngle4f rightRotation) {
+    public static @NotNull TextDisplay getGlyphDisplay(TextColor textColor, Location spawnLoc, Transformation transformation) {
         Component glyph = Component.text(CHARS_IN_ILLAGERALT.charAt(RANDOM.nextInt(CHARS_IN_ILLAGERALT.length())))
                 .color(textColor)
                 .font(fontKey);
-        return getGlyphDisplay(glyph, spawnLoc, translation, scale, leftRotation, rightRotation);
+        return getGlyphDisplay(glyph, spawnLoc, transformation);
     }
-    public static @NotNull TextDisplay getGlyphDisplay(Component glyph, Location spawnLoc, Vector3f translation, Vector3f scale, AxisAngle4f leftRotation, AxisAngle4f rightRotation) {
+    public static @NotNull TextDisplay getGlyphDisplay(Component glyph, Location spawnLoc, Transformation transformation) {
         TextDisplay entity = spawnLoc.getWorld().createEntity(spawnLoc, TextDisplay.class);
 
-        updateGlyphDisplay(entity, glyph, translation, scale, leftRotation, rightRotation);
+        updateGlyphDisplay(entity, glyph, transformation);
 
         return entity;
     }
 
-    public static void updateGlyphDisplay(TextDisplay entity, Component glyph, Vector3f translation, Vector3f scale, AxisAngle4f leftRotation, AxisAngle4f rightRotation) {
+    public static @NotNull TextDisplay showTextDisplay(Location spawnLoc, Component glyph, Transformation transformation, Consumer<TextDisplay> preSpawn) {
+        TextDisplay entity;
+
+        PacketEventsWrapper pe = PacketEventsWrapper.get().orElse(null);
+        if (pe != null) {
+            entity = getGlyphDisplay(glyph, spawnLoc, transformation);
+            preSpawn.accept(entity);
+
+            pe.showFakeEntity(entity, spawnLoc.getWorld().getPlayersSeeingChunk(spawnLoc.getChunk()));
+        } else {
+            entity = spawnLoc.getWorld().spawn(spawnLoc, TextDisplay.class, CreatureSpawnEvent.SpawnReason.CUSTOM, display -> {
+                EffectUtils.updateGlyphDisplay(display, glyph, transformation);
+                preSpawn.accept(display);
+            });
+        }
+
+        return entity;
+    }
+
+    public static void showFakeEntity(Player player, TextDisplay entity) {
+        PacketEventsWrapper.get().ifPresent(pe -> pe.showFakeEntity(entity, player));
+    }
+
+    public static void updateGlyphDisplay(TextDisplay entity, Component glyph, Transformation transformation) {
         entity.text(glyph);
         entity.setTextOpacity((byte) 255);
         entity.setBrightness(new Display.Brightness(15, 15));
         entity.setBackgroundColor(Color.fromARGB(1, 0, 0, 0));
 
-        entity.setTransformation(new Transformation(
-                translation,
-                leftRotation,
-                scale,
-                rightRotation
-        ));
+        entity.setTransformation(transformation);
 
         entity.setPersistent(false);
+    }
+
+    public static void playTeleportEffect(Location loc) {
+        loc = loc.clone();
+        World world = loc.getWorld();
+        world.spawnParticle(Particle.DRAGON_BREATH, loc.add(0, 1, 0), 25, 0.15, 0.15, 0.15, 0, 1f);
+        world.spawnParticle(Particle.WITCH, loc, 400, 0.6, 1, 0.6, 0);
     }
 }

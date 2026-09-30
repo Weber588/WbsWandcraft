@@ -64,6 +64,7 @@ public class SpellType implements Keyed {
                     The domain of order, information, and reason. Arcane magic is \
                     coordinated, efficient, and precise; the science of magic."""
             ).defaultParticle(Particle.DUST_COLOR_TRANSITION)
+            .ambientParticle(Particle.ENCHANT)
             .velocityAffectedParticle(Particle.CRIT, 12.5);
 
     public static final SpellType NETHER = new SpellType("nether", NETHER_COLOR, NETHER_WAND_COLOR)
@@ -72,6 +73,7 @@ public class SpellType implements Keyed {
                     depending on how well it's controlled."""
             ).defaultParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.02, Particle.SMALL_FLAME)
             .velocityAffectedParticle(Particle.FLAME)
+            .ambientParticle(Particle.LAVA)
             .secondaryParticle(effect -> effect.setChance(1), Particle.FLAME);
 
     public static final SpellType ENDER = new SpellType("ender", ENDER_COLOR, ENDER_WAND_COLOR)
@@ -80,6 +82,7 @@ public class SpellType implements Keyed {
                     treating physics and reality as obstacles to be ignored."""
             ).defaultParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.02, Particle.REVERSE_PORTAL)
             .secondaryParticle(SpeedParticleEffect.class, SpeedParticleEffect::setSpeed, 0.2, Particle.PORTAL)
+            .ambientParticle(Particle.PORTAL)
             .velocityAffectedParticle(Particle.DRAGON_BREATH, 0.8);
 
     public static final SpellType SCULK = new SpellType("sculk", SCULK_COLOR, SCULK_WAND_COLOR)
@@ -90,12 +93,14 @@ public class SpellType implements Keyed {
                     (_, _) -> (float) Math.random() * Math.PI * 2),
                     Particle.SCULK_CHARGE
             )
+            .ambientParticle(Particle.SCULK_SOUL)
             .velocityAffectedParticle(Particle.SCULK_CHARGE, 1.5);
 
     public static final SpellType VOID = new SpellType("void", VOID_COLOR, VOID_WAND_COLOR)
             .rawDescription("""
                     The domain of eternity and absence. Everything ends except for darkness, the cold, and time."""
             ).defaultParticle(Particle.SMOKE)
+            .ambientParticle(Particle.SMOKE)
             .velocityAffectedParticle(Particle.SMOKE, 2);
 
     public static final SpellType NATURE = new SpellType("nature", NATURE_COLOR, NATURE_WAND_COLOUR)
@@ -108,6 +113,7 @@ public class SpellType implements Keyed {
                     ),
                     Particle.TINTED_LEAVES
             )
+            .ambientParticle(Particle.SPORE_BLOSSOM_AIR)
             .velocityAffectedParticle(Particle.SCRAPE, 100);
     
 
@@ -143,6 +149,8 @@ public class SpellType implements Keyed {
     private Consumer<WbsParticleEffect> secondaryEffectModifier = null;
     private Particle velocityAffectedParticle = Particle.END_ROD;
     private double velocityParticleModifier = 1;
+    @Nullable
+    private Particle ambientParticle;
 
     // TODO: Clean up the particle nonsense and have a single related object that defines certain types/shapes of particle usage;
     //  For example, generic, around_player, directional_point, velocity
@@ -284,5 +292,14 @@ public class SpellType implements Keyed {
     private SpellType velocityParticleModifier(double velocityParticleModifier) {
         this.velocityParticleModifier = velocityParticleModifier;
         return this;
+    }
+
+    private SpellType ambientParticle(@Nullable Particle ambientParticle) {
+        this.ambientParticle = ambientParticle;
+        return this;
+    }
+
+    public @Nullable Particle ambientParticle() {
+        return this.ambientParticle;
     }
 }

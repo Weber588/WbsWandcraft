@@ -7,6 +7,8 @@ import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
@@ -23,12 +25,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@NullMarked
 public class AcidBombSpell extends SpellDefinition implements CustomProjectileSpell, DurationAttributable, DamageAttributable, RadiusAttributable {
     private static final NormalParticleEffect BOMB_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
-            .setXYZ(0.4)
-            .setAmount(0)
+            .setXYZ(0.2)
+            .setAmount(2)
             .setData(new Particle.DustOptions(Color.fromRGB(156, 222, 98), 1f));
     private static final NormalParticleEffect EXPLODE_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
+            .setSpeed(0.75)
+            .setAmount(60);
+    private static final NormalParticleEffect EXPLODE_EFFECT_2 = (NormalParticleEffect) new NormalParticleEffect()
             .setSpeed(0.2)
             .setAmount(60);
 
@@ -62,13 +68,17 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
 
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
-        projectile.setTickEffects(new WbsParticleGroup().addEffect(BOMB_EFFECT, Particle.DUST));
         SpellInstance instance = context.instance();
+        projectile.setTickEffects(new WbsParticleGroup().addEffect(
+                BOMB_EFFECT.clone()
+                        .setXYZ(instance.getAttribute(SIZE) / 3),
+                Particle.DUST)
+        );
 
         SpellTriggeredEvents.OBJECT_EXPIRE_TRIGGER.registerAnonymous(instance, (expiringObject) -> {
             Location location = expiringObject.getLocation();
-            EXPLODE_EFFECT.play(Particle.SNEEZE, location);
             EXPLODE_EFFECT.play(Particle.TOTEM_OF_UNDYING, location);
+            EXPLODE_EFFECT_2.play(Particle.SNEEZE, location);
 
             RadiusSelector<LivingEntity> selector = new RadiusSelector<>(LivingEntity.class);
             selector.setRange(instance.getAttribute(RADIUS));
@@ -92,6 +102,11 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
                 });
             }
         });
+    }
+
+    @Override
+    public Color getColor(Particle particle, @Nullable Location location) {
+        return Color.fromRGB(156, 222, 98);
     }
 
     @Override

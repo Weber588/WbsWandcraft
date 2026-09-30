@@ -63,12 +63,6 @@ public class DynamicProjectileObject extends DynamicMagicObject {
         return cancel;
     }
 
-    // Handled in onStep
-    @Override
-    protected boolean playEffectsOnTick() {
-        return false;
-    }
-
     public double getRange() {
         return range;
     }

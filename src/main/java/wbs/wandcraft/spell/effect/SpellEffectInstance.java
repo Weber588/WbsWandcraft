@@ -31,7 +31,7 @@ public class SpellEffectInstance<T> implements AttributeHolder, ComponentReprese
     }
 
     public <O> boolean run(CastContext context, SpellTriggeredEvent<O> trigger, O event) {
-        if (Math.random() < chance) {
+        if (Math.random() > chance) {
             return false;
         }
 
@@ -107,5 +107,18 @@ public class SpellEffectInstance<T> implements AttributeHolder, ComponentReprese
     @Override
     public String toString() {
         return PlainTextComponentSerializer.plainText().serialize(toComponent());
+    }
+
+    @Override
+    public SpellEffectInstance<T> clone() {
+        SpellEffectInstance<T> other = new SpellEffectInstance<>(effect);
+
+        other.chance = chance;
+        for (SpellAttributeInstance<?> attributeValue : this.attributeValues) {
+            other.attributeValues.add(attributeValue.clone());
+        }
+        other.triggers.addAll(triggers);
+
+        return other;
     }
 }
