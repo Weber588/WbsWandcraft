@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.definitions;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.apache.commons.lang3.NotImplementedException;
 import org.bukkit.Color;
@@ -162,6 +163,7 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
                         .map(spellType ->
                                 spellType.displayName()
                                         .decorate(TextDecoration.ITALIC)
+                                        .hoverEvent(HoverEvent.showText(spellType.getAttributesText(this)))
                         )
                         .toList()
         );

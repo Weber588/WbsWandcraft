@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.commands.brigadier.WbsSubcommand;
-import wbs.utils.util.commands.brigadier.WbsSuggestionProvider;
 import wbs.utils.util.commands.brigadier.argument.WbsRegistrySimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.utils.util.plugin.WbsPlugin;
@@ -43,28 +42,26 @@ public class CommandSpellCastDynamic extends WbsSubcommand {
             SpellType.class,
             WandcraftRegistries.SPELL_TYPES
     );
-    private static final WbsRegistrySimpleArgument<SpellType> SECONDARY_SPELL_TYPE =
-            (WbsRegistrySimpleArgument<SpellType>) new WbsRegistrySimpleArgument<>(
-                    "spell_type_secondary",
-                    WbsWandcraft.getInstance(),
-                    "spell type",
-                    SpellType.class,
-                    WandcraftRegistries.SPELL_TYPES
-            ).setSuggestionProvider(((context, builder) -> {
-                SpellAspect value = ASPECT.getValue(context);
+    private static final WbsRegistrySimpleArgument<SpellType> SECONDARY_SPELL_TYPE = new WbsRegistrySimpleArgument<>(
+            "spell_type_secondary",
+            WbsWandcraft.getInstance(),
+            "spell type",
+            SpellType.class,
+            WandcraftRegistries.SPELL_TYPES
+    );
 
-                // Don't suggest a 2nd type if a fixed aspect already has a first
-                if (value instanceof FixedTypeSpellAspect) {
-                    return builder.buildFuture();
-                }
+    static {
+        SECONDARY_SPELL_TYPE.setSuggestionProvider((context, builder) -> {
+            SpellAspect value = ASPECT.getValue(context);
 
-                return WbsSuggestionProvider.getStatic(
-                        WandcraftRegistries.SPELL_TYPES.values(),
-                        t -> t.getKey().asString(),
-                        ""
-                ).getSuggestions(context, builder);
+            // Don't suggest a 2nd type if a fixed aspect already has a first
+            if (value instanceof FixedTypeSpellAspect) {
+                return builder.buildFuture();
+            }
 
-            }));
+            return SECONDARY_SPELL_TYPE.getSuggestions(context, builder);
+        });
+    }
 
     public CommandSpellCastDynamic(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);

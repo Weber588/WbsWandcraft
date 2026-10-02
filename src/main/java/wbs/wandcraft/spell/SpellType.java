@@ -15,6 +15,7 @@ import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.util.MenuUtils;
 
@@ -209,8 +210,12 @@ public class SpellType implements Keyed {
     }
 
     public Component getAttributesText() {
+        return getAttributesText(null);
+    }
+    public Component getAttributesText(@Nullable AttributeHolder holder) {
         return Component.join(JoinConfiguration.newlines(),
                 SpellTypeModifiers.getSpellTypeModifiers(this).stream()
+                        .filter(modifier -> holder == null || holder.hasAttribute(modifier.attribute()))
                         .map(SpellAttributeModifier::toComponent)
                         .map(c -> c.color(MenuUtils.EXTRAS_COLOUR))
                         .toList()

@@ -3,6 +3,7 @@ package wbs.wandcraft.objects.generics;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -61,6 +62,9 @@ public abstract class MagicObject {
 	@Nullable
 	protected WbsParticleGroup dispelEffects = null;
 
+	@Nullable
+	private Entity follower = null;
+
 	protected boolean debug = false;
 
 	protected void debug(String message) {
@@ -101,12 +105,24 @@ public abstract class MagicObject {
 					cancel = tick();
 				}
 
-				if (playEffectsOnTick() && !cancel && tickEffects != null) {
-					tickEffects.play(getLocation());
-				}
+                if (!cancel) {
+                    if (playEffectsOnTick() && tickEffects != null) {
+                        tickEffects.play(getLocation());
+                    }
 
-				if (!cancel) {
 					context.runEffects(SpellTriggeredEvents.OBJECT_TICK_TRIGGER, MagicObject.this);
+
+					if (follower != null) {
+						Location currentLoc = follower.getLocation();
+						if (!currentLoc.toVector().equals(getLocation().toVector())) {
+							Vector direction = currentLoc.getDirection();
+							if (direction.lengthSquared() == 0) {
+								follower.teleport(getLocation());
+							} else {
+								follower.teleport(getLocation().setDirection(direction));
+							}
+						}
+					}
 				}
 
 				age++;
@@ -179,6 +195,10 @@ public abstract class MagicObject {
 		MagicObjectManager.remove(caster.getUniqueId(), this);
 		if (timerID != -1) {
 			Bukkit.getScheduler().cancelTask(timerID);
+		}
+
+		if (follower != null) {
+			follower.remove();
 		}
 
 		debug("Object Expire Trigger start");
@@ -254,10 +274,13 @@ public abstract class MagicObject {
 	}
 
 	public MagicObject setTickEffects(WbsParticleGroup effects) {
-		this.tickEffects = effects.clone().setPlayFunction(((effect, location, particle) -> {
-            ParticleDataProvider.playEffectSafely(effect, location, particle, context.instance().getDefinition());
-        }
-		));
+		if (effects == null) {
+			this.tickEffects = null;
+		} else {
+			this.tickEffects = effects.clone().setPlayFunction(((effect, location, particle) -> {
+				ParticleDataProvider.playEffectSafely(effect, location, particle, context.instance().getDefinition());
+			}));
+		}
 		return this;
 	}
 
@@ -347,6 +370,15 @@ public abstract class MagicObject {
 
 	public void requiresConcentration(boolean requiresConcentration) {
 		this.requiresConcentration = requiresConcentration;
+	}
+
+	public Entity follower() {
+		return follower;
+	}
+
+	public MagicObject follower(Entity follower) {
+		this.follower = follower;
+		return this;
 	}
 
 	@Override

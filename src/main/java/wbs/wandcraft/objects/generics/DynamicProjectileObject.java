@@ -1,12 +1,11 @@
 package wbs.wandcraft.objects.generics;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.WbsSoundGroup;
 import wbs.wandcraft.context.CastContext;
-
-import java.util.function.Predicate;
 
 public class DynamicProjectileObject extends DynamicMagicObject {
 
@@ -22,7 +21,18 @@ public class DynamicProjectileObject extends DynamicMagicObject {
     public DynamicProjectileObject(Location location, Player caster, CastContext context) {
         super(location, caster, context);
 
-        setEntityPredicate(Predicate.not(caster::equals));
+        setEntityPredicate(entity -> {
+            if (entity.equals(caster)) {
+                return false;
+            }
+
+            Entity follower = follower();
+            if (entity.equals(follower)) {
+                return false;
+            }
+
+            return true;
+        });
         setOnHitBlock((result) -> true);
         setOnHitEntity((result) -> true);
     }

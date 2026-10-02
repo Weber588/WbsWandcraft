@@ -1,6 +1,5 @@
 package wbs.wandcraft.spellbook;
 
-import com.google.common.collect.Multimap;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
@@ -11,14 +10,13 @@ import io.papermc.paper.persistence.PersistentDataViewHolder;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -29,26 +27,24 @@ import org.bukkit.persistence.PersistentDataType;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
+import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.commands.CommandSpellInfo;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
-import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.learning.LearningMethod;
-import wbs.wandcraft.spell.learning.RegistrableLearningMethod;
 import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.types.WandType;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -265,80 +261,8 @@ public class Spellbook implements ItemDecorator {
     private static List<Component> getSpellPages(Player player, List<SpellDefinition> allDefinitions) {
         List<Component> spellPages = new LinkedList<>();
         for (SpellDefinition definition : allDefinitions) {
-            Component page = Component.empty();
-
-            Component displayName = definition.displayName();
             boolean isKnown = knowsSpell(player, definition);
-
-            page = page.append(displayName);
-            if (isKnown) {
-                page = page.append(Component.text(" (" + definition.getEchoShardCost() + ")").style(MenuUtils.COST_STYLE));
-            }
-            page = page.appendNewline().append(definition.getTypesDisplay());
-
-            page = page.append(MenuUtils.LINE_BREAK);
-
-            Component description = definition.description().color(MenuUtils.DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC);
-            if (!isKnown) {
-                description = description.font(Key.key("illageralt"));
-            }
-            page = page.append(description);
-
-            Component hoverText = Component.empty();
-            if (!isKnown) {
-                boolean isObtainable = false;
-
-                Multimap<SpellDefinition, LearningMethod> learningMap = WbsWandcraft.getInstance().getSettings().getLearningMap();
-
-                Collection<LearningMethod> methodList = learningMap.get(definition);
-                Component indent = Component.text("  ");
-                if (!methodList.isEmpty()) {
-                    isObtainable = true;
-                    hoverText = hoverText.append(Component.join(
-                            JoinConfiguration.builder()
-                                    .separator(Component.newline())
-                                    .build(),
-                            methodList.stream().map(method ->
-                                            method.describe(indent, false).color(MenuUtils.EXTRAS_COLOUR)
-                                    ).toList()
-                            ));
-                }
-
-                List<RegistrableLearningMethod> generationMethods = WbsWandcraft.getInstance().getSettings().getGenerationMethods();
-
-                if (!generationMethods.isEmpty()) {
-                    List<Component> registrableMethods = new LinkedList<>();
-                    for (RegistrableLearningMethod method : generationMethods) {
-                        if (method.getResultGenerator() instanceof SpellInstanceGenerator generator) {
-                            if (generator.getSpells().contains(definition)) {
-                                registrableMethods.add(method.describe(indent).color(MenuUtils.EXTRAS_COLOUR));
-                            }
-                        }
-                    }
-
-                    if (!registrableMethods.isEmpty()) {
-                        if (isObtainable) {
-                            hoverText = hoverText.appendNewline();
-                        }
-
-                        isObtainable = true;
-
-                        hoverText = hoverText.append(
-                                Component.join(
-                                        JoinConfiguration.builder().separator(Component.newline()).build(),
-                                        registrableMethods
-                                )
-                        );
-                    }
-                }
-
-                if (!isObtainable) {
-                    hoverText = Component.text("Unknown...").decorate(TextDecoration.ITALIC).color(MenuUtils.DESCRIPTION_COLOR);
-                }
-            }
-            page = page.hoverEvent(HoverEvent.showText(hoverText))
-                    .clickEvent(ClickEvent.runCommand("wbswandcraft:wbswandcraft spell info " + definition.key().asString()));
-            spellPages.add(page);
+            spellPages.add(CommandSpellInfo.getSpellPage(definition, isKnown, true));
         }
         return spellPages;
     }
@@ -452,6 +376,10 @@ public class Spellbook implements ItemDecorator {
 
                 player.sendActionBar(errorMessage);
 
+                Particle.FLASH.builder()
+                        .location(player.getEyeLocation().add(WbsEntityUtil.getFacingVector(player, 0.5)))
+                        .data(definition.getPrimarySpellType().color())
+                        .spawn();
                 player.getWorld().playSound(player.getEyeLocation(), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 1, 2);
                 return;
             }

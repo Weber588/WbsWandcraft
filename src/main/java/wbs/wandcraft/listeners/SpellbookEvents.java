@@ -235,7 +235,8 @@ public class SpellbookEvents implements Listener {
                             new AxisAngle4f()
                     ),
                     display -> {
-
+                        display.setInterpolationDelay(0); // If you don't do this, nothing happens :)))))
+                        display.setInterpolationDuration(INTERPOLATION_DURATION);
                     }
             );
 
@@ -253,7 +254,8 @@ public class SpellbookEvents implements Listener {
                             new AxisAngle4f()
                     ),
                     display -> {
-
+                        display.setInterpolationDelay(0);
+                        display.setInterpolationDuration(INTERPOLATION_DURATION);
                     }
             );
 

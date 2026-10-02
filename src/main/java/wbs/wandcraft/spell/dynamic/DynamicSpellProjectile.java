@@ -2,15 +2,22 @@ package wbs.wandcraft.spell.dynamic;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.bukkit.Material;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.util.Vector;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import wbs.utils.util.WbsCollectionUtil;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
+import wbs.utils.util.particles.entity.DisplayParticleBuilder;
+import wbs.utils.util.particles.entity.EntityParticle;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostType;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
@@ -34,12 +41,34 @@ public class DynamicSpellProjectile extends DynamicSpell implements CustomProjec
 
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
-        WbsParticleGroup particleGroup = getParticleGroup(
-                buildParticleEffect(projectile).setAmount(2),
-                buildParticleEffect(projectile).setAmount(1)
-        );
+        if (getPrimarySpellType() == SpellType.NATURE) {
+            float size = (float) (double) context.instance().getAttribute(SIZE);
+            float speed  = (float) (double) context.instance().getAttribute(SPEED) * 3;
 
-        projectile.setTickEffects(particleGroup);
+            Vector3fc axis = new Vector3f(1, 0, (float) Math.random() * 2 - 1);
+
+            EntityParticle<BlockDisplay> particle = new DisplayParticleBuilder<>(BlockDisplay.class)
+                    .rotationPivot(new Vector(-size / 2, -size / 2, -size / 2))
+                    .setAngularVelocity(Vector.fromJOML(axis).normalize().multiply(speed / 10))
+                    .setInterpolationDuration(1)
+                    .editTransformation(t -> {
+                        t.translate(-size / 2, -size / 2, -size / 2)
+                                .scale(size);
+                    })
+                    .configure(display -> {
+                        display.setBlock(Material.MOSS_BLOCK.createBlockData());
+                    }).playParticle(context.location());
+
+            projectile.follower(particle.getEntity());
+            projectile.setTickEffects(null);
+        } else {
+            WbsParticleGroup particleGroup = getParticleGroup(
+                    buildParticleEffect(projectile).setAmount(2),
+                    buildParticleEffect(projectile).setAmount(1)
+            );
+
+            projectile.setTickEffects(particleGroup);
+        }
         projectile.playEffectsOnTick(false);
     }
 

@@ -43,7 +43,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     private int currentBounces = 0;
 
     private boolean hitEntities = true;
-    private Predicate<Entity> entityPredicate = entity -> true;
+    private Predicate<Entity> entityPredicate = entity -> !entity.hasNoPhysics();
     private double hitBoxSize = 0;
 
     // ================================== //
@@ -136,24 +136,33 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
         if (doCollisions) {
             RayTraceResult result;
 
-            if (!hitEntities) {
-                result = world.rayTraceBlocks(
-                                getLocation(),
-                                velocity,
-                                velocityThisStep.length(),
-                                fluidCollisionMode,
-                                true
-                        );
+            Vector direction = velocity;
+            if (direction.lengthSquared() == 0) {
+                direction = getLocation().getDirection();
+            }
+
+            if (!(direction.lengthSquared() > 0)) {
+                result = null;
             } else {
-                result = world.rayTrace(
-                        getLocation(),
-                        velocity,
-                        velocityThisStep.length(),
-                        fluidCollisionMode,
-                        true,
-                        hitBoxSize,
-                        entityPredicate
-                );
+                if (!hitEntities) {
+                    result = world.rayTraceBlocks(
+                            getLocation(),
+                            direction,
+                            velocityThisStep.length(),
+                            fluidCollisionMode,
+                            true
+                    );
+                } else {
+                    result = world.rayTrace(
+                            getLocation(),
+                            direction,
+                            velocityThisStep.length(),
+                            fluidCollisionMode,
+                            true,
+                            hitBoxSize,
+                            entityPredicate
+                    );
+                }
             }
 
             if (result == null) {
@@ -187,6 +196,10 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
 
                                 newLocation = getLocation().add(velocityThisStep);
 
+                                Entity follower = follower();
+                                if (follower != null) {
+                                    follower.teleport(getLocation().setDirection(velocity));
+                                }
                                 onBounce();
                             }
                         } else {
@@ -252,6 +265,10 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
         if (!event.isCancelled()) {
             setDirection(WbsMath.reflectVector(velocity, normal));
 
+            Entity follower = follower();
+            if (follower != null) {
+                follower.teleport(getLocation().setDirection(velocity));
+            }
             onBounce();
         }
 
@@ -472,7 +489,7 @@ public abstract class DynamicMagicObject extends KinematicMagicObject {
     }
 
     public DynamicMagicObject setEntityPredicate(Predicate<Entity> entityPredicate) {
-        this.entityPredicate = entityPredicate;
+        this.entityPredicate = entityPredicate.and(Predicate.not(Entity::hasNoPhysics));
         return this;
     }
 

@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
@@ -40,24 +41,22 @@ public class CommandSpellInfo extends CommandInfo<SpellDefinition> {
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
-    public CommandSpellInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
-        super(plugin, label, WandcraftRegistries.SPELLS);
-        
-        this.addSimpleArgument(DEFINITION);
-    }
-
-    protected @NonNull List<SpellDefinition> getEntries(WbsRegistry<SpellDefinition> registry) {
-        return registry.stream().sorted(Comparator.comparing(Keyed::key)).toList();
-    }
-
-    protected Component getComponent(SpellDefinition spell, boolean collapse) {
+    public static Component getSpellPage(SpellDefinition spell, boolean isKnown, boolean collapse) {
         Component types = spell.getTypesDisplay();
 
         Component attributeComponent = getAttributeComponent(spell, collapse);
         Component learningComponent = getLearningComponent(spell, collapse);
         Component generationComponent = getGenerationComponent(spell, collapse);
 
-        WbsMessageBuilder builder = plugin.buildMessageNoPrefix(spell.displayName());
+        WbsMessageBuilder builder = WbsWandcraft.getInstance().buildMessageNoPrefix(spell.displayName());
+
+        if (isKnown) {
+            int cost = spell.getEchoShardCost();
+            builder.append(Component.text(" (" + cost + ")")
+                    .style(MenuUtils.COST_STYLE)
+                    .hoverEvent(HoverEvent.showText(Component.text("Costs " + cost + " echo shards to craft").style(MenuUtils.COST_STYLE)))
+            );
+        }
 
         if (collapse) {
             builder.append(" ").append(attributeComponent);
@@ -81,11 +80,18 @@ public class CommandSpellInfo extends CommandInfo<SpellDefinition> {
             )));
         }
 
+        Component description = spell.description();
+
+        if (!isKnown) {
+            description = description.font(Key.key("illageralt"))
+                    .decorate(TextDecoration.ITALIC);
+        }
+
         builder.append(MenuUtils.LINE_BREAK)
-                .append(spell.description().applyFallbackStyle(MenuUtils.DESCRIPTION_COLOR));
+                .append(description.applyFallbackStyle(MenuUtils.DESCRIPTION_COLOR));
 
         if (!collapse) {
-            builder.append(attributeComponent);
+            builder.append(Component.newline()).append(attributeComponent);
 
             // TODO: Show triggered events? Sorted by spell aspect?
 
@@ -99,6 +105,21 @@ public class CommandSpellInfo extends CommandInfo<SpellDefinition> {
         }
 
         return builder.toComponent();
+    }
+
+    public CommandSpellInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
+        super(plugin, label, WandcraftRegistries.SPELLS);
+        
+        this.addSimpleArgument(DEFINITION);
+    }
+
+    protected @NonNull List<SpellDefinition> getEntries(WbsRegistry<SpellDefinition> registry) {
+        return registry.stream().sorted(Comparator.comparing(Keyed::key)).toList();
+    }
+
+    protected Component getComponent(SpellDefinition spell, boolean collapse) {
+        // TODO: Make it configurable for if the command can force isKnown
+        return getSpellPage(spell, true, collapse);
     }
 
     @Override

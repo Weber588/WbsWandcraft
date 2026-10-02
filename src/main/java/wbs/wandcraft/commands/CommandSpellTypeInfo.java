@@ -5,8 +5,6 @@ import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickCallback;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -26,7 +24,6 @@ import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.particles.entity.TextDisplayParticleBuilder;
 import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
-import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.SpellType;
@@ -48,17 +45,10 @@ public class CommandSpellTypeInfo extends CommandInfo<SpellType> {
             WandcraftRegistries.SPELL_TYPES
     ).isRequired(true);
 
-    public CommandSpellTypeInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
-        super(plugin, label, WandcraftRegistries.SPELL_TYPES);
-        
-        this.addSimpleArgument(SPELL_TYPE);
-    }
-
-    @Override
-    protected Component getComponent(@UnknownNullability SpellType type, boolean collapse) {
+    public static Component getSpellTypePage(SpellType type, boolean collapse) {
         Component attributeComponent = getAttributeComponent(type, collapse);
 
-        WbsMessageBuilder builder = plugin.buildMessageNoPrefix(type.displayName());
+        WbsMessageBuilder builder = WbsWandcraft.getInstance().buildMessageNoPrefix(type.displayName());
 
         if (collapse) {
             builder.append(" ").append(attributeComponent);
@@ -70,12 +60,23 @@ public class CommandSpellTypeInfo extends CommandInfo<SpellType> {
         if (!collapse) {
             builder.append(attributeComponent);
         }
-        
+        /*
         builder = builder.onClick(ClickEvent.callback(audience -> {
             readImage(WbsStrings.capitalize(type.getKey().value()) + ".png", (Player) audience, 0.1, 1, 1);
         }, ClickCallback.Options.builder().uses(Integer.MAX_VALUE).build()));
-
+*/
         return builder.toComponent();
+    }
+
+    public CommandSpellTypeInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
+        super(plugin, label, WandcraftRegistries.SPELL_TYPES);
+        
+        this.addSimpleArgument(SPELL_TYPE);
+    }
+
+    @Override
+    protected Component getComponent(@UnknownNullability SpellType type, boolean collapse) {
+        return getSpellTypePage(type, collapse);
     }
 
     private void readImage(String fileName, Player player, double scale, int granularity, double particleSize) {
@@ -143,39 +144,15 @@ public class CommandSpellTypeInfo extends CommandInfo<SpellType> {
                 loc.setDirection(loc.getDirection().multiply(-1));
                 new TextDisplayParticleBuilder()
                         .setBackgroundColor(rotated.get(pos))
-                        .setScale(new Vector3f((float) scale * 4))
+                        .editTransformation(t -> {
+                          t.scale(new Vector3f((float) scale * 4));
+                        })
                         .configure(display -> {
                             display.setBillboard(Display.Billboard.FIXED);
                         })
                         .usePackets(false)
                         .playParticle(loc, player);
-
-
-//
-//                EffectUtils.showTextDisplay(loc, Component.text(" "), )
-//
-//                Particle.DustOptions data = new Particle.DustOptions(rotated.get(pos), (float) particleSize);
-//
-//                world.spawnParticle(Particle.DUST, , 0, data);
             }
-//
-//            new BukkitRunnable() {
-//                int age = 0;
-//                @Override
-//                public void run() {
-//                    age++;
-//                    if (age > 15) {
-//                        cancel();
-//                        return;
-//                    }
-//
-//                    for (Vector pos : rotated.keySet()) {
-//                        Particle.DustOptions data = new Particle.DustOptions(rotated.get(pos), (float) particleSize);
-//
-//                        world.spawnParticle(Particle.DUST, center.clone().add(pos), 0, data);
-//                    }
-//                }
-//            }.runTaskTimer(plugin, 5, 5);
         });
     }
 
