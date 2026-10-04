@@ -425,27 +425,24 @@ public class SpellbookEvents implements Listener {
         if (spellbook != null) {
             Player player = event.getPlayer();
             spellbook.currentPage(event.getNewPage());
-            ItemStack heldItem = player.getInventory().getItemInMainHand();
-            if (Spellbook.isSpellbook(heldItem)) {
-                spellbook.toItem(heldItem);
-            } else {
-                ItemStack offHandItem = player.getInventory().getItemInOffHand();
-                if (Spellbook.isSpellbook(offHandItem)) {
-                    spellbook.toItem(offHandItem);
-                }
-            }
             if (player.getOpenInventory() instanceof LecternView view) {
                 Lectern holder = view.getTopInventory().getHolder();
                 if (holder != null) {
                     player.sendBlockChange(holder.getLocation(), Material.AIR.createBlockData());
-                    holder.getLocation().getBlock().setType(Material.AIR);
+                    Block block = holder.getLocation().getBlock();
+                    if (block.getType() == Material.LECTERN) {
+                        block.setType(Material.AIR);
+                    }
 
                     WbsWandcraft.getInstance().runAtEndOfTick(() -> {
                         Player updatedPlayer = Bukkit.getPlayer(player.getUniqueId());
                         if (updatedPlayer != null && updatedPlayer.isOnline() && updatedPlayer.getOpenInventory() instanceof LecternView updatedView) {
                             Lectern lectern = updatedView.getTopInventory().getHolder();
                             if (lectern != null) {
-                                lectern.getBlock().setType(Material.AIR);
+                                Block updatedBlock = lectern.getBlock();
+                                if (updatedBlock.getType() == Material.LECTERN) {
+                                    updatedBlock.setType(Material.AIR);
+                                }
                             }
                         }
                     });
@@ -454,13 +451,32 @@ public class SpellbookEvents implements Listener {
         }
     }
 
+    private static void updateSpellbook(Player player, Spellbook spellbook) {
+        ItemStack heldItem = player.getInventory().getItemInMainHand();
+        if (Spellbook.isSpellbook(heldItem)) {
+            spellbook.toItem(heldItem);
+        } else {
+            ItemStack offHandItem = player.getInventory().getItemInOffHand();
+            if (Spellbook.isSpellbook(offHandItem)) {
+                spellbook.toItem(offHandItem);
+            }
+        }
+    }
+
     @EventHandler
     public void onCloseLectern(InventoryCloseEvent event) {
         if (event.getView() instanceof LecternView view) {
             ItemStack book = view.getTopInventory().getItem(0);
+            Player player = (Player) event.getPlayer();
+
             if (ItemUtils.isWandcraftItem(book)) {
-                Player player = (Player) event.getPlayer();
                 PacketEventsWrapper.get().ifPresent(pe -> pe.sendGameModeChange(player.getGameMode(), player));
+            }
+
+            Spellbook spellbook = Spellbook.fromItem(book);
+            if (spellbook != null) {
+                spellbook.currentPage(view.getPage());
+                updateSpellbook(player, spellbook);
             }
         }
     }

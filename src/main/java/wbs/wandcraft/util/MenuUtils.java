@@ -32,12 +32,21 @@ public class MenuUtils {
     public static final NamedTextColor DEFAULT_TITLE_COLOUR = NamedTextColor.GOLD;
     public static final TextColor EXTRAS_COLOUR = TextColor.color(0xe3a11c);
     public static final TextColor ACCENTS_STYLE = NamedTextColor.GOLD;
-
+/*
     public static final TextComponent LINE_BREAK = Component.newline()
             .append(Component.text("                            ")
                     .decorate(TextDecoration.STRIKETHROUGH)
                     .color(ACCENTS_STYLE)
-            ).appendNewline();
+            ).appendNewline();*/
+
+    public static final TextComponent LINE_BREAK = Component.newline()
+            .append(Component.text("❯")
+                    .append(Component.text("                          ")
+                                    .decorate(TextDecoration.STRIKETHROUGH)
+                    ).append(Component.text("❮"))
+            )
+            .color(ACCENTS_STYLE)
+            .appendNewline();
 
     public static void showBook(Player player, Book book, int pageNum) {
         showBook(player, getBookItem(book), pageNum);

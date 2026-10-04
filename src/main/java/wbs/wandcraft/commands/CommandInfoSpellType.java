@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CommandSpellTypeInfo extends CommandInfo<SpellType> {
+public class CommandInfoSpellType extends CommandInfo<SpellType> {
     private static final WbsRegistrySimpleArgument<SpellType> SPELL_TYPE = new WbsRegistrySimpleArgument<>(
             "spell_type",
             WbsWandcraft.getInstance(),
@@ -68,7 +68,7 @@ public class CommandSpellTypeInfo extends CommandInfo<SpellType> {
         return builder.toComponent();
     }
 
-    public CommandSpellTypeInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandInfoSpellType(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label, WandcraftRegistries.SPELL_TYPES);
         
         this.addSimpleArgument(SPELL_TYPE);

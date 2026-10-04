@@ -20,14 +20,14 @@ import wbs.wandcraft.wand.types.WandType;
 
 import java.util.stream.Collectors;
 
-public class CommandWandInfo extends CommandInfo<WandType<?>> {
+public class CommandInfoWand extends CommandInfo<WandType<?>> {
     protected static final WbsSimpleArgument.KeyedSimpleArgument WAND_TYPE = new WbsSimpleArgument.KeyedSimpleArgument(
             "wand_type",
             WbsWandcraft.getInstance(),
             null
     ).addKeyedSuggestions(WandcraftRegistries.WAND_TYPES.values());
 
-    public CommandWandInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandInfoWand(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label, WandcraftRegistries.WAND_TYPES);
         
         this.addSimpleArgument(WAND_TYPE);

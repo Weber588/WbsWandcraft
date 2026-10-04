@@ -2,7 +2,6 @@ package wbs.wandcraft.spell.dynamic;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import io.papermc.paper.entity.TeleportFlag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.util.Ticks;
@@ -12,7 +11,6 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
@@ -30,7 +28,6 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.events.SpellCastEvent;
-import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.generics.MagicObject;
 import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.SpellTypeModifiers;
@@ -41,33 +38,43 @@ import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.dynamic.circle.CircleEnder;
 import wbs.wandcraft.spell.effect.SpellEffectDefinitions;
 import wbs.wandcraft.spell.effect.SpellEffectInstance;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 import wbs.wandcraft.util.EffectUtils;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @NullMarked
 public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpell, HealthAttributable, RadiusAttributable, DurationAttributable {
-    public static final org.bukkit.NamespacedKey ENDER_CIRCLE_TP_TAG = WbsWandcraft.getKey("ender_circle_tp");
-    public static SpellAspect MAGIC_CIRCLE = new FixedTypeSpellAspect("magic_circle", DynamicSpellMagicCircle::new);
+    public static final SpellType PRIMARY = SpellType.ARCANE;
+    public static SpellAspect MAGIC_CIRCLE = new FixedTypeSpellAspect(
+            "magic_circle", PRIMARY,
+            Component.text("Draw a circle of glyphs on the ground around the caster."),
+            secondary -> {
+                if (secondary == SpellType.ENDER) {
+                    return new CircleEnder(secondary);
+                }
+
+                return new DynamicSpellMagicCircle(secondary);
+            }
+    );
 
     public DynamicSpellMagicCircle(@Nullable SpellType secondary) {
-        super("magic_circle", SpellType.ARCANE, secondary);
+        super("magic_circle", PRIMARY, secondary);
 
         setAttribute(COST, 500);
         setAttribute(COOLDOWN, 60 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(RADIUS, 1.5d);
-        if (secondary == SpellType.ENDER) {
-            setAttribute(DURATION, 15 * 60 * Ticks.TICKS_PER_SECOND);
-        } else {
-            setAttribute(DURATION, 15 * Ticks.TICKS_PER_SECOND);
-        }
+        setAttribute(DURATION, 15 * Ticks.TICKS_PER_SECOND);
     }
+
     private static final int GLYPHS_PER_BLOCK = 3;
-    private static final int MANA_PER_TICK = 3;
 
     @Override
     public void cast(CastContext context) {
@@ -77,31 +84,19 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
             circle.startConcentrating();
         }
 
-        if (getSecondarySpellType() == SpellType.ENDER) {
-            context.player().getPersistentDataContainer().set(ENDER_CIRCLE_TP_TAG, PersistentDataType.INTEGER, Bukkit.getCurrentTick());
-        }
-
         circle.spawn();
     }
 
     @Override
     public boolean requiresConcentration() {
-        if (getSecondarySpellType() == SpellType.ENDER) {
-            return false;
-        }
         return true;
     }
 
-    @Override
-    protected String rawDescription() {
-        return "Create a circle of runes that regenerates mana and magic attacks.";
-    }
-
-    private class MagicCircleObject extends MagicObject {
+    protected class MagicCircleObject extends MagicObject {
         private final List<TextDisplay> displays = new LinkedList<>();
         private final double radius;
         private final RadiusSelector<LivingEntity> selector;
-        private WbsEventUtils.EventHandlerMethod<SpellCastEvent> registeredEvent;
+        private WbsEventUtils.@Nullable EventHandlerMethod<SpellCastEvent> registeredEvent;
 
         public MagicCircleObject(Location location, CastContext context) {
             super(location.setRotation(0, 0), context);
@@ -148,17 +143,10 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
             }
 
             PacketEventsWrapper.get().ifPresentOrElse(
-                    pe -> {
-                        world.getPlayersSeeingChunk(location.getChunk()).forEach(
-                                player -> {
-                                    displays.forEach(display -> {
-                                        pe.showFakeEntity(display, player);
-                                    });
-                                });
-                        },
-                    () -> {
-                        displays.forEach(world::addEntity);
-                    }
+                    pe -> displays.forEach(display ->
+                            pe.showFakeEntity(display, world.getPlayersSeeingChunk(location.getChunk()))
+                    ),
+                    () -> displays.forEach(world::addEntity)
             );
         }
 
@@ -208,22 +196,21 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
             return DynamicSpellMagicCircle.this.requiresConcentration() && !CastingManager.isConcentrating(context.player(), context);
         }
 
-
         @Override
         protected void onRemove() {
             Location location = getLocation();
             World world = location.getWorld();
 
-            world.getPlayersSeeingChunk(location.getChunk()).forEach(player -> {
-                displays.forEach(display -> {
+            PacketEventsWrapper.get().ifPresentOrElse(pe ->
+                    displays.forEach(display ->
+                            pe.removeEntity(display, world.getPlayersSeeingChunk(location.getChunk()))
+                    ),
+                    () -> displays.forEach(Entity::remove)
+            );
 
-                    PacketEventsWrapper.get().ifPresentOrElse(pe -> {
-                        pe.removeEntity(display, player);
-                    }, display::remove);
-                });
-            });
-
-            SpellCastEvent.getHandlerList().unregister(registeredEvent);
+            if (registeredEvent != null) {
+                SpellCastEvent.getHandlerList().unregister(registeredEvent);
+            }
         }
     }
 
@@ -239,10 +226,10 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
         events.put(
                 SpellType.ARCANE,
                 SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER.getAnonymousInstance(
-                        ((context, instance, entity) -> {
+                        ((_, _, entity) -> {
                             switch (entity) {
                                 case Player player -> new PlayerMana(player)
-                                        .addMana(MANA_PER_TICK)
+                                        .addMana(3)
                                         .saveTo(player);
                                 case Spellcaster spellcaster -> {
                                     if (spellcaster.getTarget() != null) {
@@ -257,44 +244,7 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
                 )
         );
 
-        events.put(
-                SpellType.ENDER,
-                SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER.getAnonymousInstance(((context, instance, entity) -> {
-                    int lastTPTick = entity.getPersistentDataContainer().getOrDefault(ENDER_CIRCLE_TP_TAG, PersistentDataType.INTEGER, 0);
-
-                    // If entity has been out of the circle for less than 0.5 seconds (or never left), update the tag and stop.
-                    // This way the value is always current until they're outside for long enough.
-                    if (Bukkit.getCurrentTick() - lastTPTick < 0.5 * Ticks.TICKS_PER_SECOND) {
-                        entity.getPersistentDataContainer().set(ENDER_CIRCLE_TP_TAG, PersistentDataType.INTEGER, Bukkit.getCurrentTick());
-                        return;
-                    }
-
-                    List<MagicCircleObject> sortedEnderCircles = MagicObjectManager.getAllActive(MagicCircleObject.class)
-                            .stream()
-                            .filter(activeCircle ->
-                                    activeCircle.getContext().instance().getDefinition().getSecondarySpellType() == SpellType.ENDER
-                            ).sorted(Comparator.comparing(
-                                    MagicObject::getLocation,
-                                    Comparator.comparingDouble(loc -> loc.distance(entity.getLocation()))
-                            )).toList();
-
-                    if (sortedEnderCircles.size() > 1) {
-                        MagicCircleObject target = sortedEnderCircles.get(1);
-                        Location targetLoc = target.getLocation();
-
-                        EffectUtils.playTeleportEffect(entity.getLocation());
-                        Vector direction = entity.getLocation().getDirection();
-                        entity.teleport(targetLoc.setDirection(direction), TeleportFlag.Relative.VELOCITY_ROTATION);
-                        EffectUtils.playTeleportEffect(targetLoc);
-                        
-                        entity.getPersistentDataContainer().set(
-                                ENDER_CIRCLE_TP_TAG,
-                                PersistentDataType.INTEGER, 
-                                Bukkit.getCurrentTick()
-                        );
-                    }
-                }))
-        );
+        // Ender is done in child class -- don't need to configure here
 
         events.put(
                 SpellType.NATURE,

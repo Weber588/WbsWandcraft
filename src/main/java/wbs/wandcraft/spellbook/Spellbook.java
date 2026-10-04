@@ -10,10 +10,7 @@ import io.papermc.paper.persistence.PersistentDataViewHolder;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -24,7 +21,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
-import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.entities.WbsEntityUtil;
@@ -33,21 +29,19 @@ import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.commands.CommandSpellInfo;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
+import wbs.wandcraft.spell.dynamic.SpellAspect;
 import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.types.WandType;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @NullMarked
 public class Spellbook implements ItemDecorator {
@@ -214,73 +208,14 @@ public class Spellbook implements ItemDecorator {
     }
 
     public Spellbook openBook(Player player) {
-        List<WandType<?>> wandDefinitions = getOrderedWands();
-        List<SpellDefinition> spellDefinitions = getOrderedSpells();
+        Book book = SpellbookUI.getBook(player);
 
-        Component chapterPage = Component.empty();
-
-        chapterPage = chapterPage.append(Component.text("Contents").decorate(TextDecoration.BOLD));
-        chapterPage = chapterPage.append(MenuUtils.LINE_BREAK);
-
-        chapterPage = chapterPage.append(getChapterLink(1, "Contents"));
-        chapterPage = chapterPage.append(getChapterLink(2, "Wands"));
-        chapterPage = chapterPage.append(getChapterLink(2 + wandDefinitions.size(), "Spell Descriptions"));
-
-        List<Component> wandPages = getWandPages(wandDefinitions);
-
-        List<Component> spellPages = getSpellPages(player, spellDefinitions);
-
-        List<Component> pages = new LinkedList<>();
-        pages.add(chapterPage);
-        pages.addAll(wandPages);
-        pages.addAll(spellPages);
-
-        Book book = Book.book(Component.text("Spellbook"), player.name(), pages);
         ItemStack item = MenuUtils.getBookItem(book);
-
         toItem(item);
 
         MenuUtils.showBook(player, item, currentPage);
 
         return this;
-    }
-
-    private static List<Component> getWandPages(List<WandType<?>> wandDefinitions) {
-        List<Component> wandPages = new LinkedList<>();
-        for (WandType<?> type : wandDefinitions) {
-            Component page = Component.empty().append(type.getItemName().color(MenuUtils.DEFAULT_TITLE_COLOUR))
-                    .append(Component.text(" (" + type.getEchoShardCost() + ")").style(MenuUtils.COST_STYLE))
-                    .append(MenuUtils.LINE_BREAK)
-                    .append(type.getDescription().color(MenuUtils.DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC));
-
-            wandPages.add(page);
-        }
-        return wandPages;
-    }
-
-    private static List<Component> getSpellPages(Player player, List<SpellDefinition> allDefinitions) {
-        List<Component> spellPages = new LinkedList<>();
-        for (SpellDefinition definition : allDefinitions) {
-            boolean isKnown = knowsSpell(player, definition);
-            spellPages.add(CommandSpellInfo.getSpellPage(definition, isKnown, true));
-        }
-        return spellPages;
-    }
-
-    private List<WandType<?>> getOrderedWands() {
-        return WandcraftRegistries.WAND_TYPES.stream()
-                .sorted(Comparator.comparing(WandType::getKey))
-                .toList();
-    }
-
-    private static List<SpellDefinition> getOrderedSpells() {
-        return WandcraftRegistries.SPELLS.stream()
-                .sorted(Comparator.comparing(SpellDefinition::getKey))
-                .toList();
-    }
-
-    private static TextComponent getChapterLink(@Positive int page, String title) {
-        return Component.text(page + ". " + title).clickEvent(ClickEvent.changePage(page)).appendNewline();
     }
 
     @Override
@@ -347,20 +282,63 @@ public class Spellbook implements ItemDecorator {
     }
 
     private Component getCurrentPageName() {
-        Component pageName = null;
-        WandType<?> currentWandType = getCurrentWandType();
-        if (currentWandType != null) {
-            pageName = currentWandType.getItemName().color(MenuUtils.DEFAULT_TITLE_COLOUR);
-        } else {
-            SpellDefinition currentSpell = getCurrentSpell();
-            if (currentSpell != null) {
-                pageName = currentSpell.displayName();
+        String currentChapter = getCurrentChapter();
+
+        int index = SpellbookUI.getPageInChapter(currentPage) - 1;
+        switch (currentChapter) {
+            case SpellbookUI.CHAPTER_CONTENTS -> {
+                return Component.text("Contents");
+            }
+            case SpellbookUI.CHAPTER_WANDS -> {
+                WandType<?> currentWandType = getCurrentWandType();
+                if (currentWandType != null) {
+                    return currentWandType.getItemName();
+                }
+                return Component.text("Wands");
+            }
+            case SpellbookUI.CHAPTER_SPELL_ASPECTS -> {
+                if (index >= 0) {
+                    SpellAspect spellAspect = WandcraftRegistries.SPELL_ASPECTS.ordered().get(index);
+
+                    return spellAspect.displayName();
+                }
+
+                return Component.text("Spell Aspects");
+            }
+            case SpellbookUI.CHAPTER_CANONICAL_SPELLS -> {
+                SpellDefinition currentSpell = getCurrentSpell();
+                if (currentSpell != null) {
+                    return currentSpell.displayName();
+                }
+                return Component.text("Spells");
             }
         }
-        if (pageName == null) {
-            pageName = Component.text("Contents");
+
+        throw new IllegalStateException("Page name not found! Page %d, Chapter %s, Chapter Page %d"
+                .formatted(
+                        currentPage,
+                        currentChapter,
+                        index
+                )
+        );
+    }
+
+    @Nullable
+    public SpellDefinition getCurrentSpell() {
+        int index = SpellbookUI.getPageInChapter(currentPage) - 1;
+        if (index >= 0) {
+            return WandcraftRegistries.SPELLS.ordered().get(index);
         }
-        return pageName;
+        return null;
+    }
+
+    @Nullable
+    public WandType<?> getCurrentWandType() {
+        int index = SpellbookUI.getPageInChapter(currentPage) - 1;
+        if (index >= 0) {
+            return WandcraftRegistries.WAND_TYPES.ordered().get(index);
+        }
+        return null;
     }
 
     public void tryCasting(Player player, ItemStack item) {
@@ -398,27 +376,10 @@ public class Spellbook implements ItemDecorator {
     }
 
     public void currentPage(int newPage) {
-        this.currentPage = Math.clamp(newPage, 0, 1 + getOrderedSpells().size() + getOrderedWands().size());
+        this.currentPage = Math.clamp(newPage, 0, SpellbookUI.getBookLength());
     }
 
-    @Nullable
-    public SpellDefinition getCurrentSpell() {
-        List<SpellDefinition> allDefinitions = getOrderedSpells();
-        int wandPages = WandcraftRegistries.WAND_TYPES.keys().size();
-        if (currentPage >= wandPages + 1) {
-            return allDefinitions.get(currentPage - wandPages - 1);
-        }
-
-        return null;
-    }
-
-    @Nullable
-    public WandType<?> getCurrentWandType() {
-        List<WandType<?>> allWands = getOrderedWands();
-        if (currentPage >= 1 && currentPage < allWands.size() + 1) {
-            return allWands.get(currentPage - 1);
-        }
-
-        return null;
+    public String getCurrentChapter() {
+        return SpellbookUI.getChapterName(currentPage);
     }
 }

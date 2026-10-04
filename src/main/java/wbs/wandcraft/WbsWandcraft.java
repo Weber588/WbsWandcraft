@@ -23,6 +23,10 @@ import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
 
 public class WbsWandcraft extends WbsPlugin {
+
+    public static final String LABEL_CANONICAL = "canonical";
+    public static final String LABEL_DYNAMIC = "dynamic";
+
     public static NamespacedKey getKey(String key) {
         NamespacedKey built = NamespacedKey.fromString(key, getInstance());
 
@@ -58,24 +62,36 @@ public class WbsWandcraft extends WbsPlugin {
         WbsCommand.getStatic(this, "wandcraft")
                 .setPermission("wbswandcraft.command")
                 .addSubcommands(
-                        new CommandSpellCastDynamic(this, "dynTest"),
                         WbsCommand.getStatic(this, "info").addSubcommands(
-                                new CommandSpellInfo(this, "spell"),
-                                new CommandSpellTypeInfo(this, "type"),
-                                new CommandWandInfo(this, "wand")
-                                // TODO: Add modifiers & dynamic spells (and maybe attributes?)
+                                WbsCommand.getStatic(this, "spell").addSubcommands(
+                                        new CommandInfoSpell(this, LABEL_CANONICAL),
+                                        new CommandInfoSpellAspect(this, LABEL_DYNAMIC)
+                                ).inferSubPermissions(),
+                                new CommandInfoSpellType(this, "type"),
+                                new CommandInfoWand(this, "wand")
+                                // TODO: Add modifiers (and maybe attributes?)
                         ).inferSubPermissions(),
                         WbsCommand.getStatic(this, "spell").addSubcommands(
                                 new CommandSpellLearn(this, "learn"),
                                 new CommandSpellForget(this, "forget"),
                                 new CommandModifyAttributes(this, "attribute"),
-                                new CommandSpellInfo(this, "info"),
-                                new CommandSpellBuild(this, "build"),
+                                WbsCommand.getStatic(this, "info").addSubcommands(
+                                        new CommandInfoSpell(this, LABEL_CANONICAL),
+                                        new CommandInfoSpellAspect(this, LABEL_DYNAMIC)
+                                ).inferSubPermissions(),
+                                WbsCommand.getStatic(this, "build").addSubcommands(
+                                        new CommandSpellBuildCanonical(this, LABEL_CANONICAL),
+                                        new CommandSpellBuildDynamic(this, LABEL_DYNAMIC)
+                                ).inferSubPermissions(),
+                                WbsCommand.getStatic(this, "cast").addSubcommands(
+                                        new CommandSpellCastDynamic(this, "dynamic"),
+                                        new CommandSpellCast(this, "canonical")
+                                ).inferSubPermissions(),
                                 new CommandSpellGenerate(this, "generate")
                         ).inferSubPermissions(),
                         WbsCommand.getStatic(this, "wand").addSubcommands(
                                 new CommandWandBuild(this, "build"),
-                                new CommandWandInfo(this, "info"),
+                                new CommandInfoWand(this, "info"),
                                 new CommandModifyAttributes(this, "attribute"),
                                 new CommandWandGenerate(this, "generate"),
                                 WbsSubcommand.simpleSubcommand(this, "modify", context -> {
@@ -101,7 +117,10 @@ public class WbsWandcraft extends WbsPlugin {
                         ).inferSubPermissions(),
                         WbsCommand.getStatic(this, "item").addSubcommands(
                                 new CommandWandBuild(this, "wand"),
-                                new CommandSpellBuild(this, "spell"),
+                                WbsCommand.getStatic(this, "spell").addSubcommands(
+                                        new CommandSpellBuildCanonical(this, LABEL_CANONICAL),
+                                        new CommandSpellBuildDynamic(this, LABEL_DYNAMIC)
+                                ).inferSubPermissions(),
                                 new CommandEquipmentBuild(this, "equipment"),
                                 new CommandSpellbookBuild(this, "spellbook"),
                                 WbsSubcommand.simpleSubcommand(this, "artificer", context -> {
@@ -115,8 +134,10 @@ public class WbsWandcraft extends WbsPlugin {
                                     sender.getInventory().addItem(ItemUtils.buildBlankScroll());
                                 })
                         ).inferSubPermissions(),
-                        new CommandSpellCast(this, "cast"),
-                        new CommandSpellTypeInfo(this, "type"),
+                        WbsCommand.getStatic(this, "cast").addSubcommands(
+                                new CommandSpellCastDynamic(this, "dynamic"),
+                                new CommandSpellCast(this, "canonical")
+                        ).inferSubPermissions(),
                         new CommandSpellCancel(this, "cancel"),
                         new CommandSpellbook(this, "spellbooktest"),
                         new CommandRecipes(this, "recipes"),

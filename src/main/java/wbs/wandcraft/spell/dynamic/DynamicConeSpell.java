@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.dynamic;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -34,7 +35,10 @@ import java.util.List;
 
 @NullMarked
 public class DynamicConeSpell extends DynamicSpell implements ContinuousCastableSpell, DirectionAttributable, RangeAttributable {
-    public static SpellAspect CONE_ASPECT = new GenericSpellAspect("cone", DynamicConeSpell::new);
+    public static SpellAspect CONE_ASPECT = new GenericSpellAspect(
+            "cone",
+            Component.text("Emits a blast of energy in a cone in front of the caster."),
+            DynamicConeSpell::new);
     private final WbsParticleGroup particleGroup;
 
     public DynamicConeSpell(SpellType primary, @Nullable SpellType secondary) {

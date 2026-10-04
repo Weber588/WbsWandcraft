@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.dynamic;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -25,7 +26,11 @@ import java.util.Set;
 
 @NullMarked
 public class DynamicSpellRay extends DynamicSpell implements RaySpell {
-    public static SpellAspect RAY_ASPECT = new GenericSpellAspect("ray", DynamicSpellRay::new);
+    public static SpellAspect RAY_ASPECT = new GenericSpellAspect(
+            "ray",
+            Component.text("Project a ray in the direction the caster is facing, instantly affecting everything in the path."),
+            DynamicSpellRay::new
+    );
     private final WbsParticleGroup particleGroup;
 
     public DynamicSpellRay(SpellType primary, @Nullable SpellType secondary) {

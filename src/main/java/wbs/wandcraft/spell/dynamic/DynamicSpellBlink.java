@@ -35,11 +35,16 @@ import java.util.List;
 
 @NullMarked
 public class DynamicSpellBlink extends DynamicSpell implements CastableSpell, RangeAttributable, SpeedAttributable, DirectionAttributable {
-    public static SpellAspect BLINK_ASPECT = new FixedTypeSpellAspect("blink", DynamicSpellBlink::new);
+    public static final SpellType PRIMARY = SpellType.ENDER;
+    public static SpellAspect BLINK_ASPECT = new FixedTypeSpellAspect(
+            "blink", PRIMARY,
+            Component.text("Teleport a short distance in the direction the caster is facing."),
+            DynamicSpellBlink::new
+    );
     private final WbsParticleGroup particleGroup;
 
     public DynamicSpellBlink(@Nullable SpellType secondary) {
-        super("blink", SpellType.ENDER, secondary);
+        super("blink", PRIMARY, secondary);
 
         particleGroup = getParticleGroup(
                 new NormalParticleEffect().setXYZ(0.6).setY(1).setAmount(250)
@@ -64,9 +69,11 @@ public class DynamicSpellBlink extends DynamicSpell implements CastableSpell, Ra
 
         double range = context.instance().getAttribute(RANGE);
         Vector direction = getDirection(context, range);
+        // TODO: Change for safety works for different types
         Block tpLocation = WbsEntityUtil.getSafeLocation(player, context.location().add(direction), range);
 
         if (tpLocation != null) {
+            // TODO: Create new triggers & configure by type
             player.teleport(tpLocation.getLocation().setDirection(WbsEntityUtil.getFacingVector(player)));
             loc = player.getLocation();
 
@@ -86,6 +93,7 @@ public class DynamicSpellBlink extends DynamicSpell implements CastableSpell, Ra
     protected Multimap<SpellType, SpellEffectInstance<?>> typedEvents() {
         HashMultimap<SpellType, SpellEffectInstance<?>> typedEvents = HashMultimap.create();
 
+        // TODO: Update these to make sense for blink lol
         typedEvents.put(
                 SpellType.NETHER,
                 // Damage is already handled by attributes

@@ -2,6 +2,7 @@ package wbs.wandcraft.spell.dynamic;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
@@ -31,7 +32,11 @@ import java.util.List;
 
 @NullMarked
 public class DynamicSpellProjectile extends DynamicSpell implements CustomProjectileSpell {
-    public static SpellAspect PROJECTILE_ASPECT = new GenericSpellAspect("projectile", DynamicSpellProjectile::new);
+    public static SpellAspect PROJECTILE_ASPECT = new GenericSpellAspect(
+            "projectile",
+            Component.text("Fires a projectile in the direction the caster is facing."),
+            DynamicSpellProjectile::new
+    );
 
     public DynamicSpellProjectile(SpellType primary, @Nullable SpellType secondary) {
         super("projectile", primary, secondary);

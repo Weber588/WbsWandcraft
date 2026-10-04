@@ -49,7 +49,10 @@ import java.util.function.Predicate;
 
 @NullMarked
 public abstract class DynamicSpellScry<T> extends DynamicSpell implements CastableSpell, RadiusAttributable {
-    public static final SpellAspect SCRY = new FixedTypeSpellAspect("scry", type -> {
+    public static final SpellType PRIMARY = SpellType.ARCANE;
+    public static final SpellAspect SCRY = new FixedTypeSpellAspect("scry", PRIMARY,
+            Component.text("Taps into the arcane, revealing information about the immediate surroundings to the caster."),
+            type -> {
         // TODO: Replace this with a map?
         if (type == null || type == SpellType.ARCANE) {
             return new ScryNearbyContainers(SpellType.ARCANE);
@@ -99,7 +102,7 @@ public abstract class DynamicSpellScry<T> extends DynamicSpell implements Castab
     );
 
     public DynamicSpellScry(@Nullable SpellType secondary) {
-        super("scry", SpellType.ARCANE, secondary);
+        super("scry", PRIMARY, secondary);
     }
 
     @Override

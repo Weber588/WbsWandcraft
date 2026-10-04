@@ -25,14 +25,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CommandSpellBuild extends WbsSubcommand {
+public class CommandSpellBuildCanonical extends WbsSubcommand {
     private static final KeyedSimpleArgument DEFINITION = new KeyedSimpleArgument(
             "definition",
             WbsWandcraft.getInstance(),
             null
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
-    public CommandSpellBuild(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandSpellBuildCanonical(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
         addSimpleArgument(DEFINITION);
     }
@@ -43,7 +43,6 @@ public class CommandSpellBuild extends WbsSubcommand {
             plugin.sendMessage("This command is only usable by players.", context.getSource().getSender());
             return 1;
         }
-
 
         NamespacedKey definitionKey = configuredArgumentMap.get(DEFINITION);
 

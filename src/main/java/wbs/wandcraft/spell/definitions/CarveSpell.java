@@ -29,6 +29,7 @@ import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
+import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.wand.Wand;
 
 import java.util.HashMap;
@@ -80,7 +81,6 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
         double range = instance.getAttribute(RANGE);
         Vector facingVector = WbsEntityUtil.getFacingVector(player, range);
         Location beamStartLocation = player.getEyeLocation();
-
 
         handleCarveCollisions(context, beamStartLocation, facingVector, range);
     }
@@ -190,9 +190,7 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
                 heldItem = inventory.getItemInOffHand();
             }
 
-            Wand wand = Wand.fromItem(heldItem);
-
-            if (wand != null) {
+            if (Wand.isWand(heldItem) || Spellbook.isSpellbook(heldItem)) {
                 boolean broke = player.breakBlock(hitBlock);
                 if (hardness >= 1) {
                     if (!broke) {

@@ -34,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CommandSpellInfo extends CommandInfo<SpellDefinition> {
+public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
     private static final WbsSimpleArgument.KeyedSimpleArgument DEFINITION = new WbsSimpleArgument.KeyedSimpleArgument(
             "definition",
             WbsWandcraft.getInstance(),
@@ -107,7 +107,7 @@ public class CommandSpellInfo extends CommandInfo<SpellDefinition> {
         return builder.toComponent();
     }
 
-    public CommandSpellInfo(@NotNull WbsPlugin plugin, @NotNull String label) {
+    public CommandInfoSpell(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label, WandcraftRegistries.SPELLS);
         
         this.addSimpleArgument(DEFINITION);
