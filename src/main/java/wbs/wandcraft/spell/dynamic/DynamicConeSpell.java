@@ -42,7 +42,7 @@ public class DynamicConeSpell extends DynamicSpell implements ContinuousCastable
     private final WbsParticleGroup particleGroup;
 
     public DynamicConeSpell(SpellType primary, @Nullable SpellType secondary) {
-        super("cone", primary, secondary);
+        super(CONE_ASPECT, primary, secondary);
 
         particleGroup = getParticleGroup(
                 new RingParticleEffect()

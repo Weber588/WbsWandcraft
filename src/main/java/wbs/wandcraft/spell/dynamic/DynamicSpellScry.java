@@ -102,7 +102,7 @@ public abstract class DynamicSpellScry<T> extends DynamicSpell implements Castab
     );
 
     public DynamicSpellScry(@Nullable SpellType secondary) {
-        super("scry", PRIMARY, secondary);
+        super(SCRY, PRIMARY, secondary);
     }
 
     @Override

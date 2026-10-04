@@ -65,7 +65,7 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
     );
 
     public DynamicSpellMagicCircle(@Nullable SpellType secondary) {
-        super("magic_circle", PRIMARY, secondary);
+        super(MAGIC_CIRCLE, PRIMARY, secondary);
 
         setAttribute(COST, 500);
         setAttribute(COOLDOWN, 60 * Ticks.TICKS_PER_SECOND);

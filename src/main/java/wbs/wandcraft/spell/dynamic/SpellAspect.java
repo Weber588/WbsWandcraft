@@ -4,9 +4,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
+import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import wbs.utils.util.WbsKeyed;
 import wbs.wandcraft.WbsWandcraft;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.util.MenuUtils;
 
 @NullMarked
@@ -44,4 +47,6 @@ public abstract class SpellAspect implements Keyed {
     public Component description() {
         return description;
     }
+
+    public abstract DynamicSpell build(@UnknownNullability SpellType primary, @Nullable SpellType secondary);
 }

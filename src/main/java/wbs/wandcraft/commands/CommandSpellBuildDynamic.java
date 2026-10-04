@@ -16,7 +16,10 @@ import wbs.wandcraft.util.ItemUtils;
 public class CommandSpellBuildDynamic extends WbsSubcommand implements CommandDynamicSpell {
     public CommandSpellBuildDynamic(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
-        addSimpleArgument(ASPECT);
+
+        this.addSimpleArgument(ASPECT);
+        this.addSimpleArgument(SPELL_TYPE);
+        this.addSimpleArgument(SECONDARY_SPELL_TYPE);
     }
 
     @Override

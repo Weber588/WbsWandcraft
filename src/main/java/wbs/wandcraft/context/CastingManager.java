@@ -45,6 +45,17 @@ public class CastingManager {
         return CASTING.containsKey(uuid);
     }
 
+    public static boolean isCasting(Entity entity, CastContext context) {
+        return isCasting(entity.getUniqueId(), context);
+    }
+    public static boolean isCasting(UUID uuid, CastContext context) {
+        CastingQueue castingQueue = CASTING.get(uuid);
+        if (castingQueue == null) {
+            return false;
+        }
+        return context.equals(castingQueue.getCurrent());
+    }
+
     public static boolean stopCasting(Entity entity) {
         return stopCasting(entity.getUniqueId());
     }

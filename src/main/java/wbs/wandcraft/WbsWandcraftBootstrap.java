@@ -33,7 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnstableApiUsage"})
 public class WbsWandcraftBootstrap implements PluginBootstrap {
     public static final TagKey<BlockType> ALL_BLOCKS = BlockTypeTagKeys.create(getKey("all"));
 

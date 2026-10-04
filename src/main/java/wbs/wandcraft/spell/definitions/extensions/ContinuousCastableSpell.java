@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
+import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.cost.CostUtils;
 import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
@@ -66,7 +67,23 @@ public interface ContinuousCastableSpell extends CastableSpell {
             @Override
             public void run() {
                 Player player = context.getOnlinePlayer();
-                if (endTick <= Bukkit.getCurrentTick() || player == null || isContinuousCast && !isContinuousCast(player) || !player.isOnline() || player.isDead()) {
+
+                if (endTick <= Bukkit.getCurrentTick()) {
+                    cancel();
+                    return;
+                }
+
+                if (player == null || !player.isOnline() || player.isDead()) {
+                    cancel();
+                    return;
+                }
+
+                if (!CastingManager.isCasting(player, context) || context.hasFinished()) {
+                    cancel();
+                    return;
+                }
+
+                if ((isContinuousCast && !isContinuousCast(player))) {
                     cancel();
                     return;
                 }
@@ -78,8 +95,10 @@ public interface ContinuousCastableSpell extends CastableSpell {
             @Override
             public synchronized void cancel() {
                 super.cancel();
-                onStopCasting(context);
-                context.finish();
+                if (!context.hasFinished()) {
+                    onStopCasting(context, Bukkit.getCurrentTick() - startTick, endTick - Bukkit.getCurrentTick());
+                    context.finish();
+                }
             }
         }.runTaskTimer(plugin, 0L, 1L);
     }
@@ -94,5 +113,5 @@ public interface ContinuousCastableSpell extends CastableSpell {
 
     default void onStartCasting(CastContext context) {}
     void tick(CastContext context, int tick, int ticksLeft);
-    default void onStopCasting(CastContext context) {}
+    default void onStopCasting(CastContext context, int tick, int ticksLeft) {}
 }

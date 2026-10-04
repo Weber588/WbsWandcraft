@@ -44,7 +44,7 @@ public class DynamicSpellBlink extends DynamicSpell implements CastableSpell, Ra
     private final WbsParticleGroup particleGroup;
 
     public DynamicSpellBlink(@Nullable SpellType secondary) {
-        super("blink", PRIMARY, secondary);
+        super(BLINK_ASPECT, PRIMARY, secondary);
 
         particleGroup = getParticleGroup(
                 new NormalParticleEffect().setXYZ(0.6).setY(1).setAmount(250)

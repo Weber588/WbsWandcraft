@@ -90,7 +90,7 @@ public class CrowsCallSpell extends SpellDefinition implements ContinuousCastabl
     }
 
     @Override
-    public void onStopCasting(CastContext context) {
+    public void onStopCasting(CastContext context, int tick, int ticksLeft) {
         StatusEffectInstance instance = StatusEffectManager.getInstance(context.player(), StatusEffectManager.GLIDING);
         if (instance != null) {
             instance.cancel(true);

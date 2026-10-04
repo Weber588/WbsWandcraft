@@ -28,6 +28,7 @@ import wbs.wandcraft.WbsWandcraftBootstrap;
 import wbs.wandcraft.equipment.MagicEquipmentType;
 import wbs.wandcraft.equipment.hat.MagicHat;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
@@ -204,7 +205,16 @@ public class ItemUtils {
 
         item.getDataTypes().forEach(item::unsetData);
 
-        spellInstance.getDefinition().applyCustomModelData(item, builder -> builder.addColor(spell.getPrimarySpellType().color()));
+        spellInstance.getDefinition().applyCustomModelData(item, builder -> {
+            Color primaryColor = spell.getPrimarySpellType().color();
+            Color secondaryColor = primaryColor;
+            SpellType secondaryType = spell.getSecondarySpellType();
+            if (secondaryType != null) {
+                secondaryColor = secondaryType.color();
+            }
+            builder.addColor(primaryColor);
+            builder.addColor(secondaryColor);
+        });
 
         NamespacedKey itemModelKey = BASE_MATERIAL_SPELL.getKey();
 

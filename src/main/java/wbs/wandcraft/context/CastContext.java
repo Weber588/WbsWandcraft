@@ -81,8 +81,8 @@ public final class CastContext {
         if (hasFinished) {
             throw new IllegalStateException("Finish invoked twice on cast context.");
         }
+        this.hasFinished = true;
         if (this.finishCallback != null) {
-            this.hasFinished = true;
             this.finishCallback.run();
         }
         CastingManager.stopCasting(player);
@@ -99,7 +99,7 @@ public final class CastContext {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (CastContext) obj;
@@ -120,5 +120,9 @@ public final class CastContext {
 
     public EquipmentSlot slot() {
         return slot;
+    }
+
+    public boolean hasFinished() {
+        return hasFinished;
     }
 }

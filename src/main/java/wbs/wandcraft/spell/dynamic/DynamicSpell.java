@@ -25,13 +25,16 @@ import java.util.function.Consumer;
 // Add all attributes with non-affecting values that may be used
 public abstract class DynamicSpell extends SpellDefinition implements BurnDamageAttributable, ParticleAttributable {
     public static final int SECONDARY_PARTICLE_CHANCE = 5;
+
     private final String dynamicType;
+    private final SpellAspect aspect;
 
     private static String getStrippedKey(SpellType primary) {
         return primary.getKey().asString().replace(":", "_");
     }
 
-    public DynamicSpell(String dynamicType, SpellType primary, @Nullable SpellType secondary) {
+    public DynamicSpell(SpellAspect aspect, SpellType primary, @Nullable SpellType secondary) {
+        String dynamicType = aspect.getKey().value();
         super(WbsWandcraft.getKey(
                         "dynamic/" + dynamicType + "/"
                                 + getStrippedKey(primary)
@@ -39,6 +42,7 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
                 )
         );
         this.dynamicType = dynamicType;
+        this.aspect = aspect;
 
         addSpellType(primary);
         if (secondary != null) {
@@ -136,5 +140,14 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
         return spellTypes.stream()
                 .map(SpellType::textColor)
                 .toList();
+    }
+
+    public SpellAspect aspect() {
+        return aspect;
+    }
+
+    @Override
+    public String modelKey() {
+        return namespace() + ":dynamic_spell";
     }
 }

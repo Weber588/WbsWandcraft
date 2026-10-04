@@ -149,7 +149,14 @@ public class ResourcePackBuilder {
                     WandHolder.MATERIAL_SLOT_LABEL
             ));
 
-            resourcesToLoad.addAll(writeItemProviders(WandcraftRegistries.SPELLS.stream().toList(), ItemUtils.BASE_MATERIAL_SPELL));
+            List<ItemModelProvider> spellProviders = new LinkedList<>(WandcraftRegistries.SPELLS.values());
+            spellProviders.add(getSimpleProvider(WbsWandcraft.getKey("dynamic_spell"), List.of(
+                    new TextureLayer("default_spell_text_overlay").defaultTint(0x008000),
+                    new TextureLayer("default_spell_text_overlay_secondary").defaultTint(0x000080),
+                            new TextureLayer("default_spell_background")
+                    ))
+            );
+            resourcesToLoad.addAll(writeItemProviders(spellProviders, ItemUtils.BASE_MATERIAL_SPELL));
             resourcesToLoad.addAll(writeItemProviders(WandcraftRegistries.ATTRIBUTES.stream().toList(), ItemUtils.BASE_MATERIAL_MODIFIER));
             resourcesToLoad.addAll(writeItemProviders(WandcraftRegistries.WAND_MODELS.stream().toList(), ItemUtils.BASE_MATERIAL_WAND));
             //resourcesToLoad.addAll(writeProviders(gson, List.of(new SpellbookItemTextureProvider()), ItemUtils.DISPLAY_MATERIAL_SPELLBOOK));
@@ -430,12 +437,13 @@ public class ResourcePackBuilder {
         return getSimpleProvider(WbsWandcraft.getKey(key), new TextureLayer(key));
     }
     private static DynamicItemTextureProvider getSimpleProvider(NamespacedKey key, TextureLayer layer) {
+        return getSimpleProvider(key, List.of(layer));
+    }
+    private static DynamicItemTextureProvider getSimpleProvider(NamespacedKey key, List<TextureLayer> layers) {
         return new DynamicItemTextureProvider() {
             @Override
             public @NotNull List<TextureLayer> getTextures() {
-                return List.of(
-                        layer
-                );
+                return layers;
             }
 
             @Override

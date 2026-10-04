@@ -7,14 +7,19 @@ import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import wbs.utils.util.WbsEnums;
+import wbs.utils.util.persistent.KeyedPersistentDataType;
 import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.effects.StatusEffectInstance;
+import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
+import wbs.wandcraft.spell.dynamic.DynamicSpell;
+import wbs.wandcraft.spell.dynamic.SpellAspect;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -23,6 +28,7 @@ public class CustomPersistentDataTypes {
     public static final PersistentSpellEffectInstanceType SPELL_EFFECT = new PersistentSpellEffectInstanceType();
     public static final PersistentSpellModifierType SPELL_MODIFIER = new PersistentSpellModifierType();
     public static final PersistentSpellInstanceType SPELL_INSTANCE = new PersistentSpellInstanceType();
+    public static final PersistentDynamicSpellType DYNAMIC_SPELL = new PersistentDynamicSpellType();
     public static final PersistentAttributeModifierType SPELL_ATTRIBUTE_MODIFIER = new PersistentAttributeModifierType();
 
     public static final PersistentBasicWandType BASIC_WAND_TYPE = new PersistentBasicWandType();
@@ -35,6 +41,16 @@ public class CustomPersistentDataTypes {
     public static final PersistentBroomstickWandType BROOMSTICK_WAND_TYPE = new PersistentBroomstickWandType();
 
     public static final PersistentSpellbookType SPELLBOOK_TYPE = new PersistentSpellbookType();
+
+    @SuppressWarnings("Convert2MethodRef") // Registries may be null when this is called; wrap in lambda to lazy reference
+    public static final KeyedPersistentDataType<SpellDefinition> CANONICAL_SPELL
+            = new KeyedPersistentDataType<>(SpellDefinition.class, key -> WandcraftRegistries.SPELLS.get(key));
+    @SuppressWarnings("Convert2MethodRef") // Registries may be null when this is called; wrap in lambda to lazy reference
+    public static final KeyedPersistentDataType<SpellType> SPELL_TYPE
+            = new KeyedPersistentDataType<>(SpellType.class, key -> WandcraftRegistries.SPELL_TYPES.get(key));
+    @SuppressWarnings("Convert2MethodRef") // Registries may be null when this is called; wrap in lambda to lazy reference
+    public static final KeyedPersistentDataType<SpellAspect> SPELL_ASPECT
+            = new KeyedPersistentDataType<>(SpellAspect.class, key -> WandcraftRegistries.SPELL_ASPECTS.get(key));
 
     public static final PersistentStatusEffectType STATUS_EFFECT = new PersistentStatusEffectType();
 
@@ -86,8 +102,51 @@ public class CustomPersistentDataTypes {
         }
     }
 
+    public static class PersistentDynamicSpellType implements PersistentDataType<PersistentDataContainer, DynamicSpell> {
+        private static final NamespacedKey ASPECT = WbsWandcraft.getKey("aspect");
+        private static final NamespacedKey PRIMARY_SPELL_TYPE = WbsWandcraft.getKey("primary_spell_type");
+        private static final NamespacedKey SECONDARY_SPELL_TYPE = WbsWandcraft.getKey("secondary_spell_type");
+
+        @Override
+        public @NotNull Class<PersistentDataContainer> getPrimitiveType() {
+            return PersistentDataContainer.class;
+        }
+
+        @Override
+        public @NotNull Class<DynamicSpell> getComplexType() {
+            return DynamicSpell.class;
+        }
+
+        @Override
+        public @NonNull PersistentDataContainer toPrimitive(@NonNull DynamicSpell definition, @NotNull PersistentDataAdapterContext context) {
+            PersistentDataContainer container = context.newPersistentDataContainer();
+
+            container.set(ASPECT, SPELL_ASPECT, definition.aspect());
+            container.set(PRIMARY_SPELL_TYPE, SPELL_TYPE, definition.getPrimarySpellType());
+            SpellType secondaryType = definition.getSecondarySpellType();
+            if (secondaryType != null) {
+                container.set(SECONDARY_SPELL_TYPE, SPELL_TYPE, secondaryType);
+            }
+
+            return container;
+        }
+
+        @Override
+        public @NonNull DynamicSpell fromPrimitive(@NonNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
+            SpellAspect aspect = container.get(ASPECT, SPELL_ASPECT);
+            if (aspect == null) {
+                throw new IllegalStateException("Spell aspect missing!");
+            }
+            SpellType primaryType = container.get(PRIMARY_SPELL_TYPE, SPELL_TYPE);
+            SpellType secondaryType = container.get(SECONDARY_SPELL_TYPE, SPELL_TYPE);
+
+            return aspect.build(primaryType, secondaryType);
+        }
+    }
+
     public static class PersistentSpellInstanceType implements PersistentDataType<PersistentDataContainer, SpellInstance> {
         private static final NamespacedKey ATTRIBUTES = WbsWandcraft.getKey( "attributes");
+        private static final NamespacedKey DYNAMIC = WbsWandcraft.getKey( "dynamic");
         private static final NamespacedKey DEFINITION = WbsWandcraft.getKey( "definition");
 
         @Override
@@ -105,21 +164,34 @@ public class CustomPersistentDataTypes {
             PersistentDataContainer container = context.newPersistentDataContainer();
 
             spellInstance.writeAttributes(container, ATTRIBUTES);
-            container.set(DEFINITION, WbsPersistentDataType.NAMESPACED_KEY, spellInstance.getDefinition().getKey());
+
+            SpellDefinition definition = spellInstance.getDefinition();
+
+            if (definition instanceof DynamicSpell dynamicSpell) {
+                container.set(DEFINITION, DYNAMIC_SPELL, dynamicSpell);
+                container.set(DYNAMIC, BOOLEAN, true);
+            } else {
+                container.set(DEFINITION, CANONICAL_SPELL, definition);
+            }
 
             return container;
         }
 
         @Override
         public @NotNull SpellInstance fromPrimitive(@NotNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
-            NamespacedKey definitionKey = container.get(DEFINITION, WbsPersistentDataType.NAMESPACED_KEY);
-            if (definitionKey == null) {
-                throw new IllegalStateException("Spell definition key missing!");
-            }
+            boolean dynamic = container.getOrDefault(DYNAMIC, BOOLEAN, false);
 
-            SpellDefinition definition = WandcraftRegistries.SPELLS.get(definitionKey);
-            if (definition == null) {
-                throw new IllegalStateException("Spell definition not recognised:" + definitionKey.asString());
+            SpellDefinition definition;
+            if (dynamic) {
+                definition = container.get(DEFINITION, DYNAMIC_SPELL);
+                if (definition == null) {
+                    throw new IllegalStateException("Dynamic spell definition missing!");
+                }
+            } else {
+                definition = container.get(DEFINITION, CANONICAL_SPELL);
+                if (definition == null) {
+                    throw new IllegalStateException("Canonical spell definition missing!");
+                }
             }
 
             SpellInstance spellInstance = definition.newInstance();

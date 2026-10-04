@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
@@ -79,7 +80,8 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributab
         tickEffects.perEffectChance(true);
 
         projectile.setRange(range);
-        projectile.setVelocity(getDirection(context, speed));
+        Vector direction = getDirection(context, speed);
+        projectile.setVelocity(direction);
         projectile.setDrag(drag);
         projectile.setTickEffects(tickEffects);
         projectile.setGravity(gravity);

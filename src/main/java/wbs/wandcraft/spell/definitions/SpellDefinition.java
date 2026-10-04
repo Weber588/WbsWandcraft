@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.lang3.NotImplementedException;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -100,7 +101,7 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
     }
     public List<Component> loreDescription() {
         LinkedList<Component> components = new LinkedList<>();
-        WbsStrings.wrapText(rawDescription(), 140).stream()
+        WbsStrings.wrapText(PlainTextComponentSerializer.plainText().serialize(description()), 140).stream()
                 .map(Component::text)
                 .map(component -> component.style(DESCRIPTION_STYLE))
                 .forEachOrdered(components::add);

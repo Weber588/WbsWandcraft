@@ -34,7 +34,7 @@ public class DynamicSpellRay extends DynamicSpell implements RaySpell {
     private final WbsParticleGroup particleGroup;
 
     public DynamicSpellRay(SpellType primary, @Nullable SpellType secondary) {
-        super("ray", primary, secondary);
+        super(RAY_ASPECT, primary, secondary);
 
         particleGroup = getParticleGroup(
                 new NormalParticleEffect().setAmount(2),

@@ -118,7 +118,8 @@ public class WandcraftRegistries {
             DynamicSpellBlink.BLINK_ASPECT,
             DynamicConeSpell.CONE_ASPECT,
             DynamicSpellScry.SCRY,
-            DynamicSpellMagicCircle.MAGIC_CIRCLE
+            DynamicSpellMagicCircle.MAGIC_CIRCLE,
+            DynamicSpellBarrage.BARRAGE_ASPECT
     );
     public static final WbsRegistry<LearningMethodType<?>> LEARNING_PROVIDERS = new WbsRegistry<>(
             LearningMethodType.build("advancements", AdvancementLearningTrigger::new),

@@ -2,11 +2,13 @@ package wbs.wandcraft.spell.dynamic;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import wbs.wandcraft.spell.SpellType;
 
 import java.util.function.BiFunction;
 
+@NullMarked
 public class GenericSpellAspect extends SpellAspect {
     private final BiFunction<SpellType, @Nullable SpellType, DynamicSpell> baseBuilder;
 
@@ -23,5 +25,4 @@ public class GenericSpellAspect extends SpellAspect {
     public DynamicSpell build(SpellType primary, @Nullable SpellType secondary) {
         return baseBuilder.apply(primary, secondary);
     }
-
 }
