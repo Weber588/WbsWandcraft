@@ -34,7 +34,7 @@ public class CommandInfoSpellAspect extends CommandInfo<SpellAspect> {
         }
 
         builder.append(MenuUtils.LINE_BREAK)
-                .append(aspect.description().applyFallbackStyle(MenuUtils.DESCRIPTION_COLOR));
+                .append(aspect.description().applyFallbackStyle(MenuUtils.DESCRIPTION_STYLE));
 
         /*
         builder = builder.onClick(ClickEvent.callback(audience -> {

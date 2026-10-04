@@ -101,11 +101,11 @@ public class ApprenticeWand extends Wand {
         Component rightSpellText = getSpellText(getRightSpell());
 
         lore.add(Component.text("Left: ").color(NamedTextColor.AQUA)
-                .append(leftSpellText.color(MenuUtils.EXTRAS_COLOUR))
+                .append(leftSpellText.style(MenuUtils.EXTRAS_STYLE))
         );
 
         lore.add(Component.text("Right: ").color(NamedTextColor.AQUA)
-                .append(rightSpellText.color(MenuUtils.EXTRAS_COLOUR))
+                .append(rightSpellText.style(MenuUtils.EXTRAS_STYLE))
         );
 
         return lore;

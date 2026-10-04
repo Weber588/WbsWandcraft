@@ -91,14 +91,14 @@ public class WizardryWand extends Wand {
             lore.add(Component.text("Spells:")
                     .color(NamedTextColor.AQUA)
                     .append(Component.text(" None")
-                            .color(MenuUtils.EXTRAS_COLOUR)
+                            .style(MenuUtils.EXTRAS_STYLE)
                     )
             );
         } else {
             lore.add(Component.text("Spells:").color(NamedTextColor.AQUA));
 
             for (SpellInstance instance : spellInstances) {
-                lore.add(Component.text("  - ").color(MenuUtils.ACCENTS_STYLE)
+                lore.add(Component.text("  - ").style(MenuUtils.ACCENTS_STYLE)
                         .append(
                                 instance.getDefinition().displayName()
                         ));

@@ -73,7 +73,7 @@ public class BasicWand extends Wand {
         }
 
         lore.add(Component.text("Spell: ").color(NamedTextColor.AQUA)
-                .append(spellText.color(MenuUtils.EXTRAS_COLOUR)));
+                .append(spellText.style(MenuUtils.EXTRAS_STYLE)));
 
         return lore;
     }

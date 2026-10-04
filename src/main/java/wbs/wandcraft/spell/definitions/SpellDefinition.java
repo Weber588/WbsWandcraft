@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static wbs.wandcraft.util.MenuUtils.DESCRIPTION_COLOR;
+import static wbs.wandcraft.util.MenuUtils.DESCRIPTION_STYLE;
 
 @NullMarked
 public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTextureProvider, ParticleDataProvider {
@@ -102,7 +102,7 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
         LinkedList<Component> components = new LinkedList<>();
         WbsStrings.wrapText(rawDescription(), 140).stream()
                 .map(Component::text)
-                .map(component -> component.color(DESCRIPTION_COLOR))
+                .map(component -> component.style(DESCRIPTION_STYLE))
                 .forEachOrdered(components::add);
         return components;
     }
@@ -154,8 +154,8 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
         return Component.join(
                 JoinConfiguration.builder()
                         .separator(Component.text(" - ")
+                                .style(DESCRIPTION_STYLE)
                                 .decorate(TextDecoration.ITALIC)
-                                .color(DESCRIPTION_COLOR)
                         )
                         .build(),
                 getTypes()

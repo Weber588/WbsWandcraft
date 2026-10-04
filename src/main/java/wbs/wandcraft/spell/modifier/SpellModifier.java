@@ -85,7 +85,7 @@ public class SpellModifier implements WandEntry<SpellModifier> {
         if (modifiers.isEmpty()) {
             loreList.add(Component.text("Attributes:")
                     .color(NamedTextColor.AQUA).append(
-                            Component.text(" None").color(MenuUtils.EXTRAS_COLOUR)
+                            Component.text(" None").style(MenuUtils.EXTRAS_STYLE)
                     )
             );
         } else {
@@ -93,8 +93,8 @@ public class SpellModifier implements WandEntry<SpellModifier> {
 
             loreList.addAll(modifiers.stream()
                     .map(modifier ->
-                            (Component) Component.text("  - ").color(MenuUtils.ACCENTS_STYLE)
-                                    .append(modifier.toComponent().color(MenuUtils.EXTRAS_COLOUR))
+                            (Component) Component.text("  - ").style(MenuUtils.ACCENTS_STYLE)
+                                    .append(modifier.toComponent().style(MenuUtils.EXTRAS_STYLE))
                     )
                     .toList());
         }
@@ -108,9 +108,9 @@ public class SpellModifier implements WandEntry<SpellModifier> {
 
             for (SpellEffectInstance<?> effect : effects) {
                 Component effectEntry = Component.text("  - ")
-                        .color(MenuUtils.ACCENTS_STYLE)
+                        .style(MenuUtils.ACCENTS_STYLE)
                         .append(effect.toComponent()
-                                .color(MenuUtils.EXTRAS_COLOUR)
+                                .style(MenuUtils.EXTRAS_STYLE)
                         );
 
                 list.add(effectEntry);

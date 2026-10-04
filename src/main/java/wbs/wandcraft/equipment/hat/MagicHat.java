@@ -111,7 +111,7 @@ public abstract class MagicHat implements MagicEquipmentType {
 
         if (credit != null) {
             lore.add(Component.empty());
-            lore.add(Component.text("Artist: ").color(MenuUtils.DESCRIPTION_COLOR).append(Component.text(credit).decorate(TextDecoration.ITALIC)));
+            lore.add(Component.text("Artist: ").style(MenuUtils.DESCRIPTION_STYLE).append(Component.text(credit).decorate(TextDecoration.ITALIC)));
         }
 
         return lore;

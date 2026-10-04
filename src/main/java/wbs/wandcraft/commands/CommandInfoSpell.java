@@ -71,12 +71,12 @@ public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
         builder.append("\n").append(types);
 
         if (spell instanceof CastableSpell castableSpell && castableSpell.requiresConcentration()) {
-            builder.append(Component.text("\nConcentration").color(MenuUtils.EXTRAS_COLOUR).hoverEvent(HoverEvent.showText(
+            builder.append(Component.text("\nConcentration").style(MenuUtils.EXTRAS_STYLE).hoverEvent(HoverEvent.showText(
                     Component.text("""
                             This spell requires concentration for
                             the duration of the spell.
                             You can only concentrate on a single
-                            spell at a time.""").color(MenuUtils.DESCRIPTION_COLOR)
+                            spell at a time.""").style(MenuUtils.DESCRIPTION_STYLE)
             )));
         }
 
@@ -88,7 +88,7 @@ public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
         }
 
         builder.append(MenuUtils.LINE_BREAK)
-                .append(description.applyFallbackStyle(MenuUtils.DESCRIPTION_COLOR));
+                .append(description.applyFallbackStyle(MenuUtils.DESCRIPTION_STYLE));
 
         if (!collapse) {
             builder.append(Component.newline()).append(attributeComponent);
@@ -170,17 +170,17 @@ public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
                         component = component.append(indent);
                     }
                     return component.append(
-                            method.describe(indent).color(MenuUtils.EXTRAS_COLOUR)
+                            method.describe(indent).style(MenuUtils.EXTRAS_STYLE)
                     );
                 }).toList()
         );
 
-        TextComponent textDescription = Component.text("Generation: \n").color(MenuUtils.EXTRAS_COLOUR)
+        TextComponent textDescription = Component.text("Generation: \n").style(MenuUtils.EXTRAS_STYLE)
                 .append(generation);
 
         if (collapse) {
             return Component.text("[G]")
-                    .color(MenuUtils.EXTRAS_COLOUR)
+                    .style(MenuUtils.EXTRAS_STYLE)
                     .hoverEvent(HoverEvent.showText(textDescription));
         } else {
             return textDescription;
@@ -200,7 +200,7 @@ public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
                             if (!collapse) {
                                 component = component.append(indent);
                             }
-                            return component.append(criteria.describe(indent).color(MenuUtils.EXTRAS_COLOUR));
+                            return component.append(criteria.describe(indent).style(MenuUtils.EXTRAS_STYLE));
                         }).toList()
         );
 
@@ -208,13 +208,13 @@ public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
             return null;
         }
 
-        TextComponent descriptionText = Component.text("Learning criteria: \n").color(MenuUtils.EXTRAS_COLOUR)
+        TextComponent descriptionText = Component.text("Learning criteria: \n").style(MenuUtils.EXTRAS_STYLE)
                 .append(learning);
 
         TextComponent text;
         if (collapse) {
             text = Component.text("[L]")
-                    .color(MenuUtils.EXTRAS_COLOUR)
+                    .style(MenuUtils.EXTRAS_STYLE)
                     .hoverEvent(HoverEvent.showText(descriptionText));
         } else {
             text = descriptionText;
@@ -225,12 +225,12 @@ public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
     private static @NonNull Component getAttributeComponent(SpellDefinition spell, boolean collapse) {
         Component attributes = Component.join(JoinConfiguration.newlines(), spell.getLore());
         TextComponent descriptionText = Component.text("Attributes: \n")
-                .color(MenuUtils.EXTRAS_COLOUR)
+                .style(MenuUtils.EXTRAS_STYLE)
                 .append(attributes);
 
         if (collapse) {
             return Component.text("[A]")
-                    .color(MenuUtils.EXTRAS_COLOUR)
+                    .style(MenuUtils.EXTRAS_STYLE)
                     .hoverEvent(HoverEvent.showText(descriptionText));
         } else {
             return descriptionText;

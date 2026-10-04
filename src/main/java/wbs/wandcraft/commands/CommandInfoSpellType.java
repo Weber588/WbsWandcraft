@@ -55,7 +55,7 @@ public class CommandInfoSpellType extends CommandInfo<SpellType> {
         }
 
         builder.append(MenuUtils.LINE_BREAK)
-                .append(type.description().applyFallbackStyle(MenuUtils.DESCRIPTION_COLOR));
+                .append(type.description().applyFallbackStyle(MenuUtils.DESCRIPTION_STYLE));
 
         if (!collapse) {
             builder.append(attributeComponent);
@@ -164,12 +164,12 @@ public class CommandInfoSpellType extends CommandInfo<SpellType> {
     private static @NonNull Component getAttributeComponent(SpellType type, boolean collapse) {
         Component attributes = type.getAttributesText();
         TextComponent descriptionText = Component.text("Attributes: \n")
-                .color(MenuUtils.EXTRAS_COLOUR)
+                .style(MenuUtils.EXTRAS_STYLE)
                 .append(attributes);
 
         if (collapse) {
             return Component.text("[A]")
-                    .color(MenuUtils.EXTRAS_COLOUR)
+                    .style(MenuUtils.EXTRAS_STYLE)
                     .hoverEvent(HoverEvent.showText(descriptionText));
         } else {
             return descriptionText;

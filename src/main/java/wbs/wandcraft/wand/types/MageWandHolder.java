@@ -48,7 +48,7 @@ public final class MageWandHolder extends WandHolder<MageWand> {
     protected @NotNull ItemStack getFakeWand() {
         ItemStack fakeWand = super.getFakeWand();
 
-        Style keybindStyle = FAKE_WAND_DESC.color(MenuUtils.EXTRAS_COLOUR);
+        Style keybindStyle = FAKE_WAND_DESC.color(MenuUtils.EXTRAS_STYLE.color());
 
         // TODO: Make this configurable
         fakeWand.lore(List.of(
@@ -59,7 +59,7 @@ public final class MageWandHolder extends WandHolder<MageWand> {
                 ).append(
                         Component.keybind("key.sneak").style(keybindStyle)
                 ).append(
-                        Component.text("+").color(MenuUtils.ACCENTS_STYLE)
+                        Component.text("+").style(MenuUtils.ACCENTS_STYLE)
                 ).append(
                         Component.keybind("key.drop").style(keybindStyle)
                 )

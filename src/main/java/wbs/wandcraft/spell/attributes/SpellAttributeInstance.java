@@ -61,8 +61,8 @@ public final class SpellAttributeInstance<T> implements ComponentRepresentable, 
 
     @Override
     public Component toComponent() {
-        return attribute.displayName().color(MenuUtils.EXTRAS_COLOUR)
-                .append(Component.text(": ").color(MenuUtils.ACCENTS_STYLE))
+        return attribute.displayName().style(MenuUtils.EXTRAS_STYLE)
+                .append(Component.text(": ").style(MenuUtils.ACCENTS_STYLE))
                 .append(Component.text(attribute.toString(value))
                         .color(NamedTextColor.AQUA)
                 );

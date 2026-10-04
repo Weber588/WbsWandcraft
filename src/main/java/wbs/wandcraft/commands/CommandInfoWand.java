@@ -36,9 +36,9 @@ public class CommandInfoWand extends CommandInfo<WandType<?>> {
     @Override
     protected Component getComponent(@UnknownNullability WandType<?> type, boolean collapse) {
         WbsMessageBuilder builder = plugin.buildMessageNoPrefix("")
-                .append(type.getItemName().color(MenuUtils.DEFAULT_TITLE_COLOUR))
+                .append(type.getItemName().style(MenuUtils.DEFAULT_TITLE_STYLE))
                 .append(MenuUtils.LINE_BREAK)
-                .append(type.getDescription().applyFallbackStyle(MenuUtils.DESCRIPTION_COLOR));
+                .append(type.getDescription().applyFallbackStyle(MenuUtils.DESCRIPTION_STYLE));
 
         return builder.toComponent();
     }

@@ -276,7 +276,7 @@ public class Spellbook implements ItemDecorator {
         components.add(Component.empty());
 
         Component pageName = getCurrentPageName();
-        components.add(Component.text("Page " + (currentPage + 1) + ": ").color(MenuUtils.DESCRIPTION_COLOR).append(pageName));
+        components.add(Component.text("Page " + (currentPage + 1) + ": ").style(MenuUtils.DESCRIPTION_STYLE).append(pageName));
 
         return components;
     }

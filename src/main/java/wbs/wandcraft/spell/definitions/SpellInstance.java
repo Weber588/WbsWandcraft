@@ -2,7 +2,6 @@ package wbs.wandcraft.spell.definitions;
 
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
@@ -179,8 +178,8 @@ public class SpellInstance implements WandEntry<SpellInstance>, AttributeHolder 
                 .filter(instance -> !instance.value().equals(definition.getDefault(instance.attribute())))
                 .map(instance ->
                         (Component) Component.text("  - ")
-                                .style(Style.style(MenuUtils.ACCENTS_STYLE, Set.of()))
-                                .append(instance.toComponent().color(MenuUtils.EXTRAS_COLOUR))
+                                .style(MenuUtils.ACCENTS_STYLE)
+                                .append(instance.toComponent().style(MenuUtils.EXTRAS_STYLE))
                 )
                 .forEachOrdered(lore::add);
 

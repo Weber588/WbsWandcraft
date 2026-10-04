@@ -84,7 +84,7 @@ public class MageWand extends Wand {
             lore.add(Component.text("Spells:")
                     .color(NamedTextColor.AQUA)
                     .append(Component.text(" None")
-                            .color(MenuUtils.EXTRAS_COLOUR)
+                            .style(MenuUtils.EXTRAS_STYLE)
                     )
             );
             return lore;
@@ -94,7 +94,7 @@ public class MageWand extends Wand {
                 .color(NamedTextColor.AQUA)
                 .append(currentSpell.getDefinition()
                         .displayName()
-                        .color(MenuUtils.EXTRAS_COLOUR)
+                        .style(MenuUtils.EXTRAS_STYLE)
                 )
         );
 
@@ -109,7 +109,7 @@ public class MageWand extends Wand {
                             .color(NamedTextColor.AQUA)
                             .append(prevInstance.getDefinition()
                                     .displayName()
-                                    .color(MenuUtils.EXTRAS_COLOUR)
+                                    .style(MenuUtils.EXTRAS_STYLE)
                             )
                     );
                 }
@@ -118,7 +118,7 @@ public class MageWand extends Wand {
                             .color(NamedTextColor.AQUA)
                             .append(nextInstance.getDefinition()
                                     .displayName()
-                                    .color(MenuUtils.EXTRAS_COLOUR)
+                                    .style(MenuUtils.EXTRAS_STYLE)
                             )
                     );
                 }
@@ -199,14 +199,14 @@ public class MageWand extends Wand {
             SpellInstance prevInstance = getPrevInstance(spellInstances);
             if (prevInstance != null) {
                 spellDisplay = spellDisplay.append(prevInstance.getDefinition().displayName().color(NamedTextColor.GRAY));
-                spellDisplay = spellDisplay.append(Component.text(" ← ").color(MenuUtils.ACCENTS_STYLE));
+                spellDisplay = spellDisplay.append(Component.text(" ← ").style(MenuUtils.ACCENTS_STYLE));
             }
 
             spellDisplay = spellDisplay.append(currentSpellDisplay);
 
             SpellInstance nextInstance = getNextInstance(spellInstances);
             if (nextInstance != null) {
-                spellDisplay = spellDisplay.append(Component.text(" → ").color(MenuUtils.ACCENTS_STYLE));
+                spellDisplay = spellDisplay.append(Component.text(" → ").style(MenuUtils.ACCENTS_STYLE));
                 spellDisplay = spellDisplay.append(nextInstance.getDefinition().displayName().color(NamedTextColor.GRAY));
             }
 

@@ -1,7 +1,7 @@
 package wbs.wandcraft.spell.dynamic;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.Style;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.jspecify.annotations.NullMarked;
@@ -30,13 +30,13 @@ public abstract class SpellAspect implements Keyed {
     public Component displayName() {
         Component displayName = Component.text(WbsKeyed.toPrettyString(this));
 
-        TextColor color;
+        Style style;
         if (this instanceof FixedTypeSpellAspect fixed) {
-            color = fixed.primaryType().textColor();
+            style = Style.style(fixed.primaryType().textColor());
         } else {
-            color = MenuUtils.DEFAULT_TITLE_COLOUR;
+            style = MenuUtils.DEFAULT_TITLE_STYLE;
         }
-        displayName = displayName.color(color);
+        displayName = displayName.style(style);
 
         return displayName;
     }

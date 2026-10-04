@@ -217,7 +217,7 @@ public class SpellType implements Keyed {
                 SpellTypeModifiers.getSpellTypeModifiers(this).stream()
                         .filter(modifier -> holder == null || holder.hasAttribute(modifier.attribute()))
                         .map(SpellAttributeModifier::toComponent)
-                        .map(c -> c.color(MenuUtils.EXTRAS_COLOUR))
+                        .map(c -> c.style(MenuUtils.EXTRAS_STYLE))
                         .toList()
         );
     }

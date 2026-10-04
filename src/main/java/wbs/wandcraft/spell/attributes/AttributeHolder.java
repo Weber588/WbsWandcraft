@@ -1,7 +1,6 @@
 package wbs.wandcraft.spell.attributes;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -119,7 +118,7 @@ public interface AttributeHolder extends ItemDecorator {
                 .sorted()
                 .filter(instance -> instance.shouldShow(this))
                 .map(instance ->
-                        (Component) Component.text("  - ").style(Style.style(MenuUtils.EXTRAS_COLOUR, Set.of()))
+                        (Component) Component.text("  - ").style(MenuUtils.EXTRAS_STYLE)
                                 .append(instance.toComponent())
                 )
                 .toList();

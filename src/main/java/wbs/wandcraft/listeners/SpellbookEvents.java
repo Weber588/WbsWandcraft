@@ -3,7 +3,7 @@ package wbs.wandcraft.listeners;
 import io.papermc.paper.event.player.PlayerLecternPageChangeEvent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.Bukkit;
@@ -129,7 +129,7 @@ public class SpellbookEvents implements Listener {
                                 int remainingSeconds = (int) Math.ceil(((double) remainingTicks) / Ticks.TICKS_PER_SECOND);
                                 if (remainingSeconds > 0) {
                                     Component remainingTimeMessage = Component.empty().append(Component.text(remainingSeconds)).append(Component.text("..."))
-                                            .color(MenuUtils.DESCRIPTION_COLOR)
+                                            .style(MenuUtils.DESCRIPTION_STYLE)
                                             .decorate(TextDecoration.ITALIC);
 
                                     updatedPlayer.sendActionBar(remainingTimeMessage);
@@ -173,7 +173,7 @@ public class SpellbookEvents implements Listener {
     private static void spawnParticleWord(Player updatedPlayer, SpellDefinition spell, double yOffset) {
         Location playerLoc = WbsEntityUtil.getMiddleLocation(updatedPlayer);
 
-        TextColor color = getWordColour(spell);
+        Style color = getWordColour(spell);
 
         boolean knowsSpell = Spellbook.getKnownSpells(updatedPlayer).contains(spell);
 
@@ -208,7 +208,7 @@ public class SpellbookEvents implements Listener {
             spawnLoc.add(0, yOffset, 0);
 
             Component glyph = Component.text(CHARS_IN_ILLAGERALT.charAt(random.nextInt(CHARS_IN_ILLAGERALT.length())))
-                    .color(color)
+                    .style(color)
                     .font(Key.key("illageralt"));
 
             if (!knowsSpell && WbsMath.chance(30)) {
@@ -357,19 +357,19 @@ public class SpellbookEvents implements Listener {
         PacketEventsWrapper.get().ifPresent(pe -> pe.showFakeEntity(entity, player));
     }
 
-    private static @NotNull TextColor getWordColour(SpellDefinition spell) {
-        TextColor color;
+    private static @NotNull Style getWordColour(SpellDefinition spell) {
+        Style style;
         if (spell == null) {
-            color = MenuUtils.EXTRAS_COLOUR;
+            style = MenuUtils.EXTRAS_STYLE;
         } else {
             if (WbsMath.chance(50)) {
                 SpellType type = WbsCollectionUtil.getRandom(spell.getTypes());
-                color = type.textColor();
+                style = Style.style(type.textColor());
             } else {
-                color = spell.getPrimarySpellType().textColor();
+                style = Style.style(spell.getPrimarySpellType().textColor());
             }
         }
-        return color;
+        return style;
     }
 
     private static @NotNull String toComponents(Vector3f translation) {

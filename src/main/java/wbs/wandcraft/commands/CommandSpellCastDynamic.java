@@ -6,7 +6,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.Style;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -20,8 +19,6 @@ import wbs.wandcraft.spell.dynamic.DynamicSpell;
 import wbs.wandcraft.spell.dynamic.FixedTypeSpellAspect;
 import wbs.wandcraft.spell.dynamic.SpellAspect;
 import wbs.wandcraft.util.MenuUtils;
-
-import java.util.Set;
 
 public class CommandSpellCastDynamic extends WbsSubcommand implements CommandDynamicSpell {
     static {
@@ -64,8 +61,8 @@ public class CommandSpellCastDynamic extends WbsSubcommand implements CommandDyn
                         .sorted()
                         .map(attr ->
                                 (Component) Component.text("  - ")
-                                        .style(Style.style(MenuUtils.ACCENTS_STYLE, Set.of()))
-                                        .append(attr.toComponent().color(MenuUtils.EXTRAS_COLOUR))
+                                        .style(MenuUtils.ACCENTS_STYLE)
+                                        .append(attr.toComponent().style(MenuUtils.EXTRAS_STYLE))
                         )
                         .toList()
         );

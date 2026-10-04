@@ -116,17 +116,19 @@ public class SpellbookUI {
 
     private static Component buildChapterPage(Map<String, Integer> chapters, String chapterName, Component description) {
         // TODO: Center chapter name
-        Component page = Component.text(chapterName).color(MenuUtils.DEFAULT_TITLE_COLOUR);
+        Component page = Component.empty().append(
+                Component.text(chapterName).style(MenuUtils.DEFAULT_TITLE_STYLE.decorate(TextDecoration.BOLD))
+        );
 
         page = page.appendNewline()
                 .append(
                         //    Component.text("============================")
-                        Component.text("╔════ ▣◎▣ ════╗").color(MenuUtils.EXTRAS_COLOUR)
+                        Component.text("╔════ ▣◎▣ ════╗").style(MenuUtils.EXTRAS_STYLE)
                 )
                 .appendNewline()
-                .append(description.color(MenuUtils.DESCRIPTION_COLOR))
+                .append(description.style(MenuUtils.DESCRIPTION_STYLE))
                 .appendNewline()
-                .append(Component.text("╚════ ▣◎▣ ════╝").color(MenuUtils.EXTRAS_COLOUR));
+                .append(Component.text("╚════ ▣◎▣ ════╝").style(MenuUtils.EXTRAS_STYLE));
 
         return buildHeader(chapters.get(chapterName)).appendNewline().append(page);
     }
@@ -141,7 +143,7 @@ public class SpellbookUI {
         String prevChapterName = getChapterName(prevChapter);
         Component header = Component.empty().append(Component.text("⮜ ")
                 .clickEvent(ClickEvent.changePage(prevChapter + 1))
-                .hoverEvent(HoverEvent.showText(Component.text(prevChapterName).color(MenuUtils.DEFAULT_TITLE_COLOUR)))
+                .hoverEvent(HoverEvent.showText(Component.text(prevChapterName).style(MenuUtils.DEFAULT_TITLE_STYLE)))
         );
 
         header = header.append(
@@ -155,11 +157,11 @@ public class SpellbookUI {
             String nextChapterName = getChapterName(nextChapter);
             header = header.append(Component.text(" ⮞")
                     .clickEvent(ClickEvent.changePage(nextChapter + 1))
-                    .hoverEvent(HoverEvent.showText(Component.text(nextChapterName).color(MenuUtils.DEFAULT_TITLE_COLOUR)))
+                    .hoverEvent(HoverEvent.showText(Component.text(nextChapterName).style(MenuUtils.DEFAULT_TITLE_STYLE)))
             );
         }
 
-        return header.color(MenuUtils.EXTRAS_COLOUR);
+        return header.style(MenuUtils.EXTRAS_STYLE);
     }
 
     public static int getPageInChapter(int atPage) {
@@ -228,10 +230,10 @@ public class SpellbookUI {
             Component page = Component.empty()
                     .append(buildHeader(chapterStart + i))
                     .appendNewline()
-                    .append(type.getItemName().color(MenuUtils.DEFAULT_TITLE_COLOUR))
+                    .append(type.getItemName().style(MenuUtils.DEFAULT_TITLE_STYLE))
                     .append(Component.text(" (" + type.getEchoShardCost() + ")").style(MenuUtils.COST_STYLE))
                     .append(MenuUtils.LINE_BREAK)
-                    .append(type.getDescription().color(MenuUtils.DESCRIPTION_COLOR).decorate(TextDecoration.ITALIC));
+                    .append(type.getDescription().style(MenuUtils.DESCRIPTION_STYLE).decorate(TextDecoration.ITALIC));
 
             wandPages.add(page);
         }

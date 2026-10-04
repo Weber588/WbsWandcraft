@@ -301,8 +301,8 @@ public abstract class Wand implements AttributeHolder {
             lore.addAll(attributeModifiers.stream()
                     .map(modifier ->
                             (Component) Component.text("  - ")
-                                    .color(MenuUtils.ACCENTS_STYLE)
-                                    .append(modifier.toComponent().color(MenuUtils.EXTRAS_COLOUR))
+                                    .style(MenuUtils.ACCENTS_STYLE)
+                                    .append(modifier.toComponent().style(MenuUtils.EXTRAS_STYLE))
                     )
                     .toList());
         }

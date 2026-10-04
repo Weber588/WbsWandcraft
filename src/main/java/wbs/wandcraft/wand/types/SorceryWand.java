@@ -175,7 +175,7 @@ public class SorceryWand extends Wand {
             lore.add(Component.text("Current Tier:")
                     .color(NamedTextColor.AQUA)
                     .append(Component.text(" " + (tier + 1))
-                            .color(MenuUtils.EXTRAS_COLOUR)
+                            .style(MenuUtils.EXTRAS_STYLE)
                     )
             );
         }
@@ -184,16 +184,16 @@ public class SorceryWand extends Wand {
             lore.add(Component.text("Spells:")
                     .color(NamedTextColor.AQUA)
                     .append(Component.text(" None")
-                            .color(MenuUtils.EXTRAS_COLOUR)
+                            .style(MenuUtils.EXTRAS_STYLE)
                     )
             );
         } else {
             lore.add(Component.text("Spells:").color(NamedTextColor.AQUA));
 
             spellInstances.forEach((control, spell) -> {
-                lore.add(Component.text("  " + WbsEnums.toPrettyString(control)).color(MenuUtils.EXTRAS_COLOUR)
+                lore.add(Component.text("  " + WbsEnums.toPrettyString(control)).style(MenuUtils.EXTRAS_STYLE)
                         .append(Component.text(" - ")
-                                .color(MenuUtils.ACCENTS_STYLE)
+                                .style(MenuUtils.ACCENTS_STYLE)
                         )
                         .append(
                                 spell.getDefinition().displayName().color(NamedTextColor.AQUA)

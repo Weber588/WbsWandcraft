@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class WandHolder<T extends Wand> implements InventoryHolder {
-    public static final Style FAKE_WAND_DESC = Style.style(MenuUtils.DESCRIPTION_COLOR)
+    public static final Style FAKE_WAND_DESC = MenuUtils.DESCRIPTION_STYLE
             .decoration(TextDecoration.ITALIC, false);
 
     protected static int slot(int row, int column) {

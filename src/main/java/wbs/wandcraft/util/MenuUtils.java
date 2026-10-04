@@ -24,14 +24,14 @@ import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.wandcraft.WbsWandcraft;
 
 public class MenuUtils {
-    public static final TextColor DESCRIPTION_COLOR = TextColor.color(0x6F47A3);
+    public static final Style DESCRIPTION_STYLE = Style.style(TextColor.color(0x6F47A3));
     public static final Style COST_STYLE = Style.style()
             .color(TextColor.color(0x006661))
             .decorate(TextDecoration.ITALIC)
             .build();
-    public static final NamedTextColor DEFAULT_TITLE_COLOUR = NamedTextColor.GOLD;
-    public static final TextColor EXTRAS_COLOUR = TextColor.color(0xe3a11c);
-    public static final TextColor ACCENTS_STYLE = NamedTextColor.GOLD;
+    public static final Style DEFAULT_TITLE_STYLE = Style.style(TextColor.color(0x9C4C18));
+    public static final Style EXTRAS_STYLE = Style.style(TextColor.color(0xe3a11c));
+    public static final Style ACCENTS_STYLE = Style.style(NamedTextColor.GOLD);
 /*
     public static final TextComponent LINE_BREAK = Component.newline()
             .append(Component.text("                            ")
@@ -45,7 +45,7 @@ public class MenuUtils {
                                     .decorate(TextDecoration.STRIKETHROUGH)
                     ).append(Component.text("❮"))
             )
-            .color(ACCENTS_STYLE)
+            .style(ACCENTS_STYLE)
             .appendNewline();
 
     public static void showBook(Player player, Book book, int pageNum) {
