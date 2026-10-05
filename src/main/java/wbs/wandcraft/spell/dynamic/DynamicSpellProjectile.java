@@ -41,7 +41,7 @@ public class DynamicSpellProjectile extends DynamicSpell implements CustomProjec
             DynamicSpellProjectile::new
     );
 
-    private static final Set<Material> NATURE_BLOCKS = Set.of(
+    protected static final Set<Material> NATURE_BLOCKS = Set.of(
             Material.MOSS_BLOCK,
             Material.STONE,
             Material.COBBLESTONE,
