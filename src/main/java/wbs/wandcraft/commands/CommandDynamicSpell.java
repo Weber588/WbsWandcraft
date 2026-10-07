@@ -7,58 +7,58 @@ import wbs.utils.util.commands.brigadier.argument.WbsRegistrySimpleArgument;
 import wbs.utils.util.commands.brigadier.argument.WbsSimpleArgument;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.dynamic.DynamicSpell;
-import wbs.wandcraft.spell.dynamic.FixedTypeSpellAspect;
-import wbs.wandcraft.spell.dynamic.GenericSpellAspect;
-import wbs.wandcraft.spell.dynamic.SpellAspect;
+import wbs.wandcraft.spell.dynamic.FixedDomainSpellArchetype;
+import wbs.wandcraft.spell.dynamic.GenericSpellArchetype;
+import wbs.wandcraft.spell.dynamic.SpellArchetype;
 
 public interface CommandDynamicSpell {
-    WbsRegistrySimpleArgument<SpellAspect> ASPECT = new WbsRegistrySimpleArgument<>(
-            "aspect",
+    WbsRegistrySimpleArgument<SpellArchetype> ARCHETYPE = new WbsRegistrySimpleArgument<>(
+            "archetype",
             WbsWandcraft.getInstance(),
-            "spell aspect",
-            SpellAspect.class,
-            WandcraftRegistries.SPELL_ASPECTS
+            "spell archetype",
+            SpellArchetype.class,
+            WandcraftRegistries.SPELL_ARCHETYPES
     ).isRequired(true);
-    WbsRegistrySimpleArgument<SpellType> SPELL_TYPE = new WbsRegistrySimpleArgument<>(
-            "spell_type",
+    WbsRegistrySimpleArgument<MagicDomain> MAGIC_DOMAIN = new WbsRegistrySimpleArgument<>(
+            "magic_domain",
             WbsWandcraft.getInstance(),
-            "spell type",
-            SpellType.class,
-            WandcraftRegistries.SPELL_TYPES
+            "magic domain",
+            MagicDomain.class,
+            WandcraftRegistries.MAGIC_DOMAINS
     );
-    WbsRegistrySimpleArgument<SpellType> SECONDARY_SPELL_TYPE = new WbsRegistrySimpleArgument<>(
-            "spell_type_secondary",
+    WbsRegistrySimpleArgument<MagicDomain> SECONDARY_DOMAIN = new WbsRegistrySimpleArgument<>(
+            "magic_domain_secondary",
             WbsWandcraft.getInstance(),
-            "spell type",
-            SpellType.class,
-            WandcraftRegistries.SPELL_TYPES
+            "magic domain",
+            MagicDomain.class,
+            WandcraftRegistries.MAGIC_DOMAINS
     );
 
 
     @Nullable
     default DynamicSpell getDynamicSpell(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
-        SpellAspect aspect = ASPECT.getRequiredValue(context);
+        SpellArchetype archetype = ARCHETYPE.getRequiredValue(context);
 
-        if (aspect == null) {
+        if (archetype == null) {
             return null;
         }
 
         DynamicSpell built;
-        if (aspect instanceof GenericSpellAspect genericAspect) {
-            SpellType primarySpellType = SPELL_TYPE.getRequiredValue(context);
-            if (primarySpellType == null) {
+        if (archetype instanceof GenericSpellArchetype genericAspect) {
+            MagicDomain primaryMagicDomain = MAGIC_DOMAIN.getRequiredValue(context);
+            if (primaryMagicDomain == null) {
                 return null;
             }
 
-            SpellType secondarySpellType = configuredArgumentMap.get(SECONDARY_SPELL_TYPE);
+            MagicDomain secondaryMagicDomain = configuredArgumentMap.get(SECONDARY_DOMAIN);
 
-            built = genericAspect.build(primarySpellType, secondarySpellType);
-        } else if (aspect instanceof FixedTypeSpellAspect fixedAspect) {
-            SpellType primarySpellType = configuredArgumentMap.get(SPELL_TYPE);
+            built = genericAspect.build(primaryMagicDomain, secondaryMagicDomain);
+        } else if (archetype instanceof FixedDomainSpellArchetype fixedAspect) {
+            MagicDomain primaryMagicDomain = configuredArgumentMap.get(MAGIC_DOMAIN);
 
-            built = fixedAspect.build(primarySpellType);
+            built = fixedAspect.build(primaryMagicDomain);
         } else {
             throw new IllegalStateException("Unknown spell aspect!");
         }

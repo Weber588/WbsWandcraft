@@ -21,7 +21,7 @@ import wbs.wandcraft.spell.RequiresPlugin;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.TargetAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -32,8 +32,8 @@ public class MassIllusionSpell extends SpellDefinition implements CastableSpell,
     public MassIllusionSpell() {
         super("mass_illusion");
 
-        addSpellType(SpellType.SCULK);
-        addSpellType(SpellType.ENDER);
+        addMagicDomain(MagicDomain.SCULK);
+        addMagicDomain(MagicDomain.ENDER);
 
         setAttribute(COST, 750);
         setAttribute(COOLDOWN, 60 * Ticks.TICKS_PER_SECOND);

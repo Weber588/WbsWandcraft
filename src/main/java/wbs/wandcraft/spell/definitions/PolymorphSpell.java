@@ -7,7 +7,7 @@ import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.RequiresPlugin;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 @RequiresPlugin("LibsDisguises")
 @NullMarked
@@ -15,8 +15,8 @@ public class PolymorphSpell extends SpellDefinition implements StatusEffectSpell
     public PolymorphSpell() {
         super("polymorph");
 
-        addSpellType(SpellType.SCULK);
-        addSpellType(SpellType.NATURE);
+        addMagicDomain(MagicDomain.SCULK);
+        addMagicDomain(MagicDomain.NATURE);
 
         setAttribute(COST, 500);
         setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);

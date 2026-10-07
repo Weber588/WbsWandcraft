@@ -10,8 +10,8 @@ import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.SpellType;
-import wbs.wandcraft.spell.SpellTypeModifiers;
+import wbs.wandcraft.spell.MagicDomain;
+import wbs.wandcraft.spell.MagicDomainModifiers;
 import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
 import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
@@ -27,14 +27,14 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
     public static final int SECONDARY_PARTICLE_CHANCE = 5;
 
     private final String dynamicType;
-    private final SpellAspect aspect;
+    private final SpellArchetype archetype;
 
-    private static String getStrippedKey(SpellType primary) {
+    private static String getStrippedKey(MagicDomain primary) {
         return primary.getKey().asString().replace(":", "_");
     }
 
-    public DynamicSpell(SpellAspect aspect, SpellType primary, @Nullable SpellType secondary) {
-        String dynamicType = aspect.getKey().value();
+    public DynamicSpell(SpellArchetype archetype, MagicDomain primary, @Nullable MagicDomain secondary) {
+        String dynamicType = archetype.getKey().value();
         super(WbsWandcraft.getKey(
                         "dynamic/" + dynamicType + "/"
                                 + getStrippedKey(primary)
@@ -42,11 +42,11 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
                 )
         );
         this.dynamicType = dynamicType;
-        this.aspect = aspect;
+        this.archetype = archetype;
 
-        addSpellType(primary);
+        addMagicDomain(primary);
         if (secondary != null) {
-            addSpellType(secondary);
+            addMagicDomain(secondary);
         }
 
         setAttribute(DAMAGE, 0d);
@@ -58,19 +58,19 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
         return Component.text(
                 WbsStrings.capitalizeAll("Dynamic " + dynamicType.replace("_", " ") + " Spell")
         ).color(
-                getPrimarySpellType().textColor()
+                getPrimaryDomain().textColor()
         );
     }
 
     @Override
     public Component description() {
         Component description = Component.text("A ")
-                .append(getPrimarySpellType().displayName());
+                .append(getPrimaryDomain().displayName());
 
-        SpellType secondarySpellType = getSecondarySpellType();
-        if (secondarySpellType != null) {
+        MagicDomain secondaryMagicDomain = getSecondaryDomain();
+        if (secondaryMagicDomain != null) {
             description = description.append(Component.text("/"))
-                    .append(secondarySpellType.displayName());
+                    .append(secondaryMagicDomain.displayName());
         }
 
         description = description.append(Component.text(" " + dynamicType + " spell."));
@@ -82,10 +82,10 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
     public SpellInstance newInstance() {
         SpellInstance newInstance = super.newInstance();
 
-        Multimap<SpellType, SpellEffectInstance<?>> typedEvents = typedEvents();
+        Multimap<MagicDomain, SpellEffectInstance<?>> typedEvents = typedEvents();
 
-        spellTypes.forEach(type -> {
-            SpellTypeModifiers.getSpellTypeModifiers(type)
+        magicDomains.forEach(type -> {
+            MagicDomainModifiers.getMagicDomainModifiers(type)
                     .stream()
                     .sorted()
                     .forEachOrdered(modifier -> modifier.modify(newInstance));
@@ -106,19 +106,19 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
         WbsParticleGroup particleGroup = new WbsParticleGroup()
                 .perEffectChance(true);
 
-        SpellType primarySpellType = getPrimarySpellType();
-        SpellType secondarySpellType = getSecondarySpellType();
+        MagicDomain primaryMagicDomain = getPrimaryDomain();
+        MagicDomain secondaryMagicDomain = getSecondaryDomain();
 
-        primarySpellType.defaultEffect().accept(primaryEffect);
-        particleGroup.addEffect(primaryEffect, directional ? primarySpellType.velocityAffectedParticle() : primarySpellType.defaultParticle());
+        primaryMagicDomain.defaultEffect().accept(primaryEffect);
+        particleGroup.addEffect(primaryEffect, directional ? primaryMagicDomain.velocityAffectedParticle() : primaryMagicDomain.defaultParticle());
 
-        if (secondarySpellType != null) {
-            Consumer<WbsParticleEffect> secondaryModifier = secondarySpellType.defaultEffect();
+        if (secondaryMagicDomain != null) {
+            Consumer<WbsParticleEffect> secondaryModifier = secondaryMagicDomain.defaultEffect();
             secondaryModifier.accept(secondaryEffect);
-            particleGroup.addEffect(secondaryEffect, directional ? secondarySpellType.velocityAffectedParticle() : secondarySpellType.defaultParticle(), SECONDARY_PARTICLE_CHANCE);
+            particleGroup.addEffect(secondaryEffect, directional ? secondaryMagicDomain.velocityAffectedParticle() : secondaryMagicDomain.defaultParticle(), SECONDARY_PARTICLE_CHANCE);
         } else {
-            Particle secondaryParticle = primarySpellType.secondaryParticle();
-            Consumer<WbsParticleEffect> secondaryModifier = primarySpellType.secondaryEffect();
+            Particle secondaryParticle = primaryMagicDomain.secondaryParticle();
+            Consumer<WbsParticleEffect> secondaryModifier = primaryMagicDomain.secondaryEffect();
             if (secondaryParticle != null) {
                 if (secondaryModifier != null) {
                     secondaryModifier.accept(secondaryEffect);
@@ -129,7 +129,7 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
         return particleGroup;
     }
 
-    protected abstract Multimap<SpellType, SpellEffectInstance<?>> typedEvents();
+    protected abstract Multimap<MagicDomain, SpellEffectInstance<?>> typedEvents();
 
     @Override
     public Particle getDefaultParticle() {
@@ -137,13 +137,13 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
     }
 
     protected List<TextColor> getTypeColours() {
-        return spellTypes.stream()
-                .map(SpellType::textColor)
+        return magicDomains.stream()
+                .map(MagicDomain::textColor)
                 .toList();
     }
 
-    public SpellAspect aspect() {
-        return aspect;
+    public SpellArchetype archetype() {
+        return archetype;
     }
 
     @Override

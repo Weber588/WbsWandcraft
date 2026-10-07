@@ -15,7 +15,7 @@ import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
@@ -120,8 +120,8 @@ public class WizardryWand extends Wand {
     protected @Nullable Color getWandColour() {
         List<Color> colors = new LinkedList<>(getSpellInstances().stream()
                 .map(SpellInstance::getDefinition)
-                .map(SpellDefinition::getPrimarySpellType)
-                .map(SpellType::wandColor)
+                .map(SpellDefinition::getPrimaryDomain)
+                .map(MagicDomain::wandColor)
                 .toList());
 
         if (colors.isEmpty()) {

@@ -7,7 +7,6 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.RayTraceResult;
@@ -21,15 +20,16 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostUtils;
-import wbs.wandcraft.objects.colliders.MagicObjectCollider;
 import wbs.wandcraft.objects.colliders.Collision;
+import wbs.wandcraft.objects.colliders.MagicObjectCollider;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.attributable.BurnDamageAttributable;
+import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
-import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
-import wbs.wandcraft.spell.SpellType;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 import wbs.wandcraft.spellbook.Spellbook;
+import wbs.wandcraft.util.EffectUtils;
 import wbs.wandcraft.wand.Wand;
 
 import java.util.HashMap;
@@ -38,8 +38,8 @@ import java.util.Set;
 
 public class CarveSpell extends SpellDefinition implements ContinuousCastableSpell, CastableSpell, BurnDamageAttributable, RangeAttributable {
     private static final Particle.DustTransition PARTICLE_DATA = new Particle.DustTransition(
-            SpellType.ARCANE.color(),
-            SpellType.NETHER.color(),
+            MagicDomain.ARCANE.color(),
+            MagicDomain.NETHER.color(),
             0.7f
     );
     private static final LineParticleEffect LINE_EFFECT = (LineParticleEffect) new LineParticleEffect()
@@ -55,8 +55,8 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
     public CarveSpell() {
         super("carve");
 
-        addSpellType(SpellType.NETHER);
-        addSpellType(SpellType.ARCANE);
+        addMagicDomain(MagicDomain.NETHER);
+        addMagicDomain(MagicDomain.ARCANE);
 
         setAttribute(COST, 50);
         setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
@@ -144,16 +144,7 @@ public class CarveSpell extends SpellDefinition implements ContinuousCastableSpe
             }
         }
 
-        Vector offsetToWand = new Vector(-0.35, -0.55, 0.65);
-
-        if (player.isSneaking()) {
-            offsetToWand.add(new Vector(0, -0.25, -0.05));
-        }
-        if (context.slot() == EquipmentSlot.OFF_HAND) {
-            offsetToWand.setX(offsetToWand.getX() * -1);
-        }
-
-        offsetToWand.rotateAroundY(Math.toRadians(-player.getYaw()));
+        Vector offsetToWand = EffectUtils.getOffsetToWand(context);
 
         Location particleStartLocation = beamStartLocation.clone().add(offsetToWand);
         LINE_EFFECT.play(Particle.DUST_COLOR_TRANSITION, particleStartLocation, endLocation);

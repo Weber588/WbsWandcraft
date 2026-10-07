@@ -17,7 +17,7 @@ import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Collection;
 
-import static wbs.wandcraft.spell.SpellType.NETHER;
+import static wbs.wandcraft.spell.MagicDomain.NETHER;
 
 public class ConflagrationSpell extends SpellDefinition implements CastableSpell, BurnDamageAttributable, ForceAttributable, RadiusAttributable {
     public static final double DAMAGE_RANGE = 3d;
@@ -33,7 +33,7 @@ public class ConflagrationSpell extends SpellDefinition implements CastableSpell
     public ConflagrationSpell() {
         super("conflagration");
 
-        addSpellType(NETHER);
+        addMagicDomain(NETHER);
 
         setAttribute(COST, 100);
         setAttribute(COOLDOWN, 7 * Ticks.TICKS_PER_SECOND);

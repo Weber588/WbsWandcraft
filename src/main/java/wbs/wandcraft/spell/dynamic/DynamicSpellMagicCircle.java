@@ -29,8 +29,8 @@ import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.events.SpellCastEvent;
 import wbs.wandcraft.objects.generics.MagicObject;
-import wbs.wandcraft.spell.SpellType;
-import wbs.wandcraft.spell.SpellTypeModifiers;
+import wbs.wandcraft.spell.MagicDomain;
+import wbs.wandcraft.spell.MagicDomainModifiers;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.HealthAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
@@ -51,12 +51,12 @@ import java.util.Set;
 
 @NullMarked
 public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpell, HealthAttributable, RadiusAttributable, DurationAttributable {
-    public static final SpellType PRIMARY = SpellType.ARCANE;
-    public static SpellAspect MAGIC_CIRCLE = new FixedTypeSpellAspect(
+    public static final MagicDomain PRIMARY = MagicDomain.ARCANE;
+    public static SpellArchetype MAGIC_CIRCLE = new FixedDomainSpellArchetype(
             "magic_circle", PRIMARY,
             Component.text("Draw a circle of glyphs on the ground around the caster."),
             secondary -> {
-                if (secondary == SpellType.ENDER) {
+                if (secondary == MagicDomain.ENDER) {
                     return new CircleEnder(secondary);
                 }
 
@@ -64,7 +64,7 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
             }
     );
 
-    public DynamicSpellMagicCircle(@Nullable SpellType secondary) {
+    public DynamicSpellMagicCircle(@Nullable MagicDomain secondary) {
         super(MAGIC_CIRCLE, PRIMARY, secondary);
 
         setAttribute(COST, 500);
@@ -158,12 +158,12 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
             SpellInstance instance = event.getContext().instance();
             SpellDefinition definition = instance.getDefinition();
 
-            SpellType thisSpellType = getSecondarySpellType();
-            if (thisSpellType == null) {
-                thisSpellType = getPrimarySpellType();
+            MagicDomain thisMagicDomain = getSecondaryDomain();
+            if (thisMagicDomain == null) {
+                thisMagicDomain = getPrimaryDomain();
             }
-            if (definition.getPrimarySpellType() == thisSpellType) {
-                Set<SpellAttributeModifier<?, ?>> modifiers = SpellTypeModifiers.getSpellTypeModifiers(thisSpellType);
+            if (definition.getPrimaryDomain() == thisMagicDomain) {
+                Set<SpellAttributeModifier<?, ?>> modifiers = MagicDomainModifiers.getMagicDomainModifiers(thisMagicDomain);
                 for (SpellAttributeModifier<?, ?> modifier : modifiers) {
                     modifier.modify(instance);
                 }
@@ -172,8 +172,8 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
 
         @Override
         protected boolean tick() {
-            Particle ambientParticle = spellTypes.stream()
-                    .map(SpellType::ambientParticle)
+            Particle ambientParticle = magicDomains.stream()
+                    .map(MagicDomain::ambientParticle)
                     .filter(Objects::nonNull)
                     .toList()
                     .getLast();
@@ -220,11 +220,11 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
     }
 
     @Override
-    protected Multimap<SpellType, SpellEffectInstance<?>> typedEvents() {
-        Multimap<SpellType, SpellEffectInstance<?>> events = HashMultimap.create();
+    protected Multimap<MagicDomain, SpellEffectInstance<?>> typedEvents() {
+        Multimap<MagicDomain, SpellEffectInstance<?>> events = HashMultimap.create();
 
         events.put(
-                SpellType.ARCANE,
+                MagicDomain.ARCANE,
                 SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER.getAnonymousInstance(
                         ((_, _, entity) -> {
                             switch (entity) {
@@ -247,7 +247,7 @@ public class DynamicSpellMagicCircle extends DynamicSpell implements CastableSpe
         // Ender is done in child class -- don't need to configure here
 
         events.put(
-                SpellType.NATURE,
+                MagicDomain.NATURE,
                 SpellTriggeredEvents.INDIRECT_TARGET_ENTITY_TRIGGER.getInstance(SpellEffectDefinitions.HEAL)
         );
 

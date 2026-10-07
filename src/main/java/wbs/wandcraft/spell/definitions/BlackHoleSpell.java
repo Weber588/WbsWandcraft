@@ -27,7 +27,7 @@ import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 import wbs.wandcraft.spell.attributes.attributable.ForceAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class BlackHoleSpell extends SpellDefinition implements CustomProjectileS
     public BlackHoleSpell() {
         super("black_hole");
 
-        addSpellType(SpellType.VOID);
+        addMagicDomain(MagicDomain.VOID);
 
         setAttribute(COST, 1000);
         setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);

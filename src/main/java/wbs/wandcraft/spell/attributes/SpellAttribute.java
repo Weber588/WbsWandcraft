@@ -30,8 +30,8 @@ import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.spell.SpellType;
-import wbs.wandcraft.spell.SpellTypeModifiers;
+import wbs.wandcraft.spell.MagicDomain;
+import wbs.wandcraft.spell.MagicDomainModifiers;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModificationOperator;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
@@ -426,31 +426,31 @@ public class SpellAttribute<T> implements Keyed, Comparable<SpellAttribute<?>>, 
         };
     }
 
-    public <M> SpellAttribute<T> typeModifier(SpellType spellType,
-                                              AttributeModifierType modifierDefinition,
-                                              AttributeDataType<M> modifierDataType,
-                                              @UnknownNullability M value) {
+    public <M> SpellAttribute<T> domainModifier(MagicDomain magicDomain,
+                                                AttributeModifierType modifierDefinition,
+                                                AttributeDataType<M> modifierDataType,
+                                                @UnknownNullability M value) {
         if (value != null) {
-            SpellTypeModifiers.registerTypeModifier(spellType, createModifier(modifierDefinition, modifierDataType, value));
+            MagicDomainModifiers.registerDomainModifier(magicDomain, createModifier(modifierDefinition, modifierDataType, value));
         }
         return this;
     }
 
-    public SpellAttribute<T> typeModifier(SpellType spellType, AttributeModifierType modifierDefinition, @UnknownNullability T value) {
-        return typeModifier(spellType, modifierDefinition, type, value);
+    public SpellAttribute<T> domainModifier(MagicDomain magicDomain, AttributeModifierType modifierDefinition, @UnknownNullability T value) {
+        return domainModifier(magicDomain, modifierDefinition, type, value);
     }
 
-    public SpellAttribute<T> typeModifiers(SpellType spellType, @Nullable T setUp, @Nullable T set) {
-        return typeModifiers(spellType, setUp, set, null);
+    public SpellAttribute<T> domainModifiers(MagicDomain magicDomain, @Nullable T setUp, @Nullable T set) {
+        return domainModifiers(magicDomain, setUp, set, null);
     }
-    public SpellAttribute<T> typeModifiers(SpellType spellType, @Nullable T setUp, @Nullable T set, @Nullable T add) {
-        return typeModifiers(spellType, setUp, set, add, null);
+    public SpellAttribute<T> domainModifiers(MagicDomain magicDomain, @Nullable T setUp, @Nullable T set, @Nullable T add) {
+        return domainModifiers(magicDomain, setUp, set, add, null);
     }
-    public SpellAttribute<T> typeModifiers(SpellType spellType, @Nullable T setUp, @Nullable T set, @Nullable T add, @Nullable T mul) {
-        typeModifier(spellType, AttributeModifierType.SET_UP, type, setUp);
-        typeModifier(spellType, AttributeModifierType.SET, type, set);
-        typeModifier(spellType, AttributeModifierType.ADD, type, add);
-        return typeModifier(spellType, AttributeModifierType.MULTIPLY, type, mul);
+    public SpellAttribute<T> domainModifiers(MagicDomain magicDomain, @Nullable T setUp, @Nullable T set, @Nullable T add, @Nullable T mul) {
+        domainModifier(magicDomain, AttributeModifierType.SET_UP, type, setUp);
+        domainModifier(magicDomain, AttributeModifierType.SET, type, set);
+        domainModifier(magicDomain, AttributeModifierType.ADD, type, add);
+        return domainModifier(magicDomain, AttributeModifierType.MULTIPLY, type, mul);
     }
 
     private record TypedFormatter<M>(AttributeDataType<M> dataType, Function<@Nullable M, String> formatter) {

@@ -11,7 +11,7 @@ import wbs.wandcraft.generation.SpellInstanceGenerator;
 import wbs.wandcraft.generation.WandGenerator;
 import wbs.wandcraft.spell.NativeSpellLoader;
 import wbs.wandcraft.spell.SpellLoader;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
@@ -30,7 +30,7 @@ import wbs.wandcraft.wand.background.WandBackground;
 import wbs.wandcraft.wand.types.WandType;
 
 public class WandcraftRegistries {
-    public static final WbsRegistry<SpellType> SPELL_TYPES = new WbsRegistry<>();
+    public static final WbsRegistry<MagicDomain> MAGIC_DOMAINS = new WbsRegistry<>();
     public static final WbsRegistry<AttributeDataType<?>> DATA_TYPES = new WbsRegistry<>();
     public static final WbsRegistry<SpellAttribute<?>> ATTRIBUTES = new WbsRegistry<>();
     public static final WbsRegistry<AttributeModifierType> MODIFIER_TYPES = new WbsRegistry<>(
@@ -112,14 +112,15 @@ public class WandcraftRegistries {
             ItemUtils::buildSpell,
             SpellLoader.loadSpells(new NativeSpellLoader())
     );
-    public static final WbsRegistry<SpellAspect> SPELL_ASPECTS = new WbsRegistry<>(
-            DynamicSpellProjectile.PROJECTILE_ASPECT,
-            DynamicSpellRay.RAY_ASPECT,
-            DynamicSpellBlink.BLINK_ASPECT,
-            DynamicConeSpell.CONE_ASPECT,
+    public static final WbsRegistry<SpellArchetype> SPELL_ARCHETYPES = new WbsRegistry<>(
+            DynamicSpellProjectile.PROJECTILE,
+            DynamicSpellRay.RAY,
+            DynamicSpellBlink.BLINK,
+            DynamicConeSpell.CONE,
             DynamicSpellScry.SCRY,
             DynamicSpellMagicCircle.MAGIC_CIRCLE,
-            DynamicSpellBarrage.BARRAGE_ASPECT
+            DynamicSpellBarrage.BARRAGE,
+            DynamicSpellBeam.BEAM
     );
     public static final WbsRegistry<LearningMethodType<?>> LEARNING_PROVIDERS = new WbsRegistry<>(
             LearningMethodType.build("advancements", AdvancementLearningTrigger::new),

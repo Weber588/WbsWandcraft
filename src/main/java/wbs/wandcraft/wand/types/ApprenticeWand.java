@@ -146,8 +146,8 @@ public class ApprenticeWand extends Wand {
         SpellInstance leftSpell = getLeftSpell();
         SpellInstance rightSpell = getRightSpell();
 
-        Color leftColor = leftSpell != null ? leftSpell.getDefinition().getPrimarySpellType().wandColor() : null;
-        Color rightColor = rightSpell != null ? rightSpell.getDefinition().getPrimarySpellType().wandColor() : null;
+        Color leftColor = leftSpell != null ? leftSpell.getDefinition().getPrimaryDomain().wandColor() : null;
+        Color rightColor = rightSpell != null ? rightSpell.getDefinition().getPrimaryDomain().wandColor() : null;
 
         if (leftColor != null && rightColor != null) {
             return WbsColours.mix(leftColor, rightColor);

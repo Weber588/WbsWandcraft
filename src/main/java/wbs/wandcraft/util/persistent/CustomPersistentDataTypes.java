@@ -14,12 +14,12 @@ import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.effects.StatusEffectInstance;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.modifier.SpellAttributeModifier;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.dynamic.DynamicSpell;
-import wbs.wandcraft.spell.dynamic.SpellAspect;
+import wbs.wandcraft.spell.dynamic.SpellArchetype;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -46,11 +46,11 @@ public class CustomPersistentDataTypes {
     public static final KeyedPersistentDataType<SpellDefinition> CANONICAL_SPELL
             = new KeyedPersistentDataType<>(SpellDefinition.class, key -> WandcraftRegistries.SPELLS.get(key));
     @SuppressWarnings("Convert2MethodRef") // Registries may be null when this is called; wrap in lambda to lazy reference
-    public static final KeyedPersistentDataType<SpellType> SPELL_TYPE
-            = new KeyedPersistentDataType<>(SpellType.class, key -> WandcraftRegistries.SPELL_TYPES.get(key));
+    public static final KeyedPersistentDataType<MagicDomain> MAGIC_DOMAIN
+            = new KeyedPersistentDataType<>(MagicDomain.class, key -> WandcraftRegistries.MAGIC_DOMAINS.get(key));
     @SuppressWarnings("Convert2MethodRef") // Registries may be null when this is called; wrap in lambda to lazy reference
-    public static final KeyedPersistentDataType<SpellAspect> SPELL_ASPECT
-            = new KeyedPersistentDataType<>(SpellAspect.class, key -> WandcraftRegistries.SPELL_ASPECTS.get(key));
+    public static final KeyedPersistentDataType<SpellArchetype> SPELL_ARCHETYPE
+            = new KeyedPersistentDataType<>(SpellArchetype.class, key -> WandcraftRegistries.SPELL_ARCHETYPES.get(key));
 
     public static final PersistentStatusEffectType STATUS_EFFECT = new PersistentStatusEffectType();
 
@@ -103,9 +103,9 @@ public class CustomPersistentDataTypes {
     }
 
     public static class PersistentDynamicSpellType implements PersistentDataType<PersistentDataContainer, DynamicSpell> {
-        private static final NamespacedKey ASPECT = WbsWandcraft.getKey("aspect");
-        private static final NamespacedKey PRIMARY_SPELL_TYPE = WbsWandcraft.getKey("primary_spell_type");
-        private static final NamespacedKey SECONDARY_SPELL_TYPE = WbsWandcraft.getKey("secondary_spell_type");
+        private static final NamespacedKey ARCHETYPE = WbsWandcraft.getKey("archetype");
+        private static final NamespacedKey PRIMARY_DOMAIN = WbsWandcraft.getKey("primary_magic_domain");
+        private static final NamespacedKey SECONDARY_DOMAIN = WbsWandcraft.getKey("secondary_magic_domain");
 
         @Override
         public @NotNull Class<PersistentDataContainer> getPrimitiveType() {
@@ -121,11 +121,11 @@ public class CustomPersistentDataTypes {
         public @NonNull PersistentDataContainer toPrimitive(@NonNull DynamicSpell definition, @NotNull PersistentDataAdapterContext context) {
             PersistentDataContainer container = context.newPersistentDataContainer();
 
-            container.set(ASPECT, SPELL_ASPECT, definition.aspect());
-            container.set(PRIMARY_SPELL_TYPE, SPELL_TYPE, definition.getPrimarySpellType());
-            SpellType secondaryType = definition.getSecondarySpellType();
-            if (secondaryType != null) {
-                container.set(SECONDARY_SPELL_TYPE, SPELL_TYPE, secondaryType);
+            container.set(ARCHETYPE, SPELL_ARCHETYPE, definition.archetype());
+            container.set(PRIMARY_DOMAIN, MAGIC_DOMAIN, definition.getPrimaryDomain());
+            MagicDomain secondaryDomain = definition.getSecondaryDomain();
+            if (secondaryDomain != null) {
+                container.set(SECONDARY_DOMAIN, MAGIC_DOMAIN, secondaryDomain);
             }
 
             return container;
@@ -133,14 +133,14 @@ public class CustomPersistentDataTypes {
 
         @Override
         public @NonNull DynamicSpell fromPrimitive(@NonNull PersistentDataContainer container, @NotNull PersistentDataAdapterContext context) {
-            SpellAspect aspect = container.get(ASPECT, SPELL_ASPECT);
-            if (aspect == null) {
-                throw new IllegalStateException("Spell aspect missing!");
+            SpellArchetype archetype = container.get(ARCHETYPE, SPELL_ARCHETYPE);
+            if (archetype == null) {
+                throw new IllegalStateException("Spell archetype missing!");
             }
-            SpellType primaryType = container.get(PRIMARY_SPELL_TYPE, SPELL_TYPE);
-            SpellType secondaryType = container.get(SECONDARY_SPELL_TYPE, SPELL_TYPE);
+            MagicDomain primaryDomain = container.get(PRIMARY_DOMAIN, MAGIC_DOMAIN);
+            MagicDomain secondaryDomain = container.get(SECONDARY_DOMAIN, MAGIC_DOMAIN);
 
-            return aspect.build(primaryType, secondaryType);
+            return archetype.build(primaryDomain, secondaryDomain);
         }
     }
 

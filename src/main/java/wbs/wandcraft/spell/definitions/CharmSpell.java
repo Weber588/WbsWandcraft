@@ -7,15 +7,15 @@ import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
 
-import static wbs.wandcraft.spell.SpellType.NATURE;
-import static wbs.wandcraft.spell.SpellType.SCULK;
+import static wbs.wandcraft.spell.MagicDomain.NATURE;
+import static wbs.wandcraft.spell.MagicDomain.SCULK;
 
 public class CharmSpell extends SpellDefinition implements StatusEffectSpell<Mob> {
     public CharmSpell() {
         super("charm");
 
-        addSpellType(NATURE);
-        addSpellType(SCULK);
+        addMagicDomain(NATURE);
+        addMagicDomain(SCULK);
 
         setAttribute(COST, 300);
         setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);

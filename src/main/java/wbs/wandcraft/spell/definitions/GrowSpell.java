@@ -11,7 +11,7 @@ import wbs.utils.util.WbsMath;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.RaySpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 import java.util.Set;
 
@@ -23,7 +23,7 @@ public class GrowSpell extends SpellDefinition implements RaySpell {
     public GrowSpell() {
         super("grow");
 
-        addSpellType(SpellType.NATURE);
+        addMagicDomain(MagicDomain.NATURE);
 
         setAttribute(COST, 75);
         setAttribute(COOLDOWN, 0.5 * Ticks.TICKS_PER_SECOND);

@@ -21,7 +21,7 @@ import wbs.utils.util.particles.RingParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostType;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.SpellInstance;
@@ -35,14 +35,14 @@ import java.util.List;
 
 @NullMarked
 public class DynamicConeSpell extends DynamicSpell implements ContinuousCastableSpell, DirectionAttributable, RangeAttributable {
-    public static SpellAspect CONE_ASPECT = new GenericSpellAspect(
+    public static SpellArchetype CONE = new GenericSpellArchetype(
             "cone",
             Component.text("Emits a blast of energy in a cone in front of the caster."),
             DynamicConeSpell::new);
     private final WbsParticleGroup particleGroup;
 
-    public DynamicConeSpell(SpellType primary, @Nullable SpellType secondary) {
-        super(CONE_ASPECT, primary, secondary);
+    public DynamicConeSpell(MagicDomain primary, @Nullable MagicDomain secondary) {
+        super(CONE, primary, secondary);
 
         particleGroup = getParticleGroup(
                 new RingParticleEffect()
@@ -88,14 +88,14 @@ public class DynamicConeSpell extends DynamicSpell implements ContinuousCastable
 
         Location location = player.getEyeLocation();
 
-        double spellTypeSpeedModifier = getPrimarySpellType().velocityParticleModifier();
+        double magicDomainSpeedModifier = getPrimaryDomain().velocityParticleModifier();
 
         particleGroup.effects().forEach((effect, particle) -> {
             if (effect instanceof RingParticleEffect ring) {
                 ring.setRotation(Math.random() * 360)
                         .setAbout(direction)
                         .setDirection(direction)
-                        .setSpeed((range + 1) / 4 * spellTypeSpeedModifier);
+                        .setSpeed((range + 1) / 4 * magicDomainSpeedModifier);
             }
         });
 
@@ -129,23 +129,23 @@ public class DynamicConeSpell extends DynamicSpell implements ContinuousCastable
     }
 
     @Override
-    protected Multimap<SpellType, SpellEffectInstance<?>> typedEvents() {
-        HashMultimap<SpellType, SpellEffectInstance<?>> typedEvents = HashMultimap.create();
+    protected Multimap<MagicDomain, SpellEffectInstance<?>> typedEvents() {
+        HashMultimap<MagicDomain, SpellEffectInstance<?>> typedEvents = HashMultimap.create();
 
         double chance = 0.05;
         typedEvents.put(
-                SpellType.NETHER,
+                MagicDomain.NETHER,
                 // Damage is already handled by attributes
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.IGNITE).chance(chance)
         );
 
         typedEvents.put(
-                SpellType.ENDER,
+                MagicDomain.ENDER,
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.RANDOM_TELEPORT).chance(chance)
         );
 
         typedEvents.put(
-                SpellType.SCULK,
+                MagicDomain.SCULK,
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getAnonymousInstance(((context, effectInstance, result) -> {
                     Entity hitEntity = result.getHitEntity();
                     if (hitEntity instanceof LivingEntity entity) {
@@ -156,7 +156,7 @@ public class DynamicConeSpell extends DynamicSpell implements ContinuousCastable
         );
 
         typedEvents.putAll(
-                SpellType.NATURE,
+                MagicDomain.NATURE,
                 List.of(
                         SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.HEAL).chance(chance),
                         SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.GROW).chance(chance)

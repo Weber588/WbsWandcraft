@@ -5,7 +5,7 @@ import org.bukkit.entity.Damageable;
 import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -18,8 +18,8 @@ public interface BurnTimeAttributable extends AttributeHolder {
     SpellAttribute<Integer> BURN_TIME = new IntegerSpellAttribute("burn_time", Ticks.TICKS_PER_SECOND)
             .setTicksToSecondsFormatter()
             .overrideTextureValue("duration")
-            .typeModifiers(SpellType.NETHER, Ticks.TICKS_PER_SECOND, null, Ticks.TICKS_PER_SECOND)
-            .typeModifier(SpellType.VOID, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, 0.5d);
+            .domainModifiers(MagicDomain.NETHER, Ticks.TICKS_PER_SECOND, null, Ticks.TICKS_PER_SECOND)
+            .domainModifier(MagicDomain.VOID, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, 0.5d);
 
     @AttributableSetupHandler
     default void setupBurnTime() {

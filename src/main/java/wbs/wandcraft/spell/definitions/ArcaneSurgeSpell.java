@@ -25,8 +25,8 @@ import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Collection;
 
-import static wbs.wandcraft.spell.SpellType.ARCANE;
-import static wbs.wandcraft.spell.SpellType.VOID;
+import static wbs.wandcraft.spell.MagicDomain.ARCANE;
+import static wbs.wandcraft.spell.MagicDomain.VOID;
 
 // TODO: Make this a continuous cast spell
 public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, DurationAttributable, DamageAttributable, SpeedAttributable, ParticleAttributable {
@@ -45,8 +45,8 @@ public class ArcaneSurgeSpell extends SpellDefinition implements CastableSpell, 
     public ArcaneSurgeSpell() {
         super("arcane_surge");
 
-        addSpellType(ARCANE);
-        addSpellType(VOID);
+        addMagicDomain(ARCANE);
+        addMagicDomain(VOID);
 
         setAttribute(DAMAGE, 4d);
         setAttribute(DURATION, 2 * Ticks.TICKS_PER_SECOND);

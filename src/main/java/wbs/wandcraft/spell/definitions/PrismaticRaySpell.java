@@ -14,7 +14,7 @@ import wbs.wandcraft.spell.definitions.extensions.RaySpell;
 
 import java.util.Set;
 
-import static wbs.wandcraft.spell.SpellType.ARCANE;
+import static wbs.wandcraft.spell.MagicDomain.ARCANE;
 
 public class PrismaticRaySpell extends SpellDefinition implements CastableSpell, RaySpell, DamageAttributable {
 
@@ -24,7 +24,7 @@ public class PrismaticRaySpell extends SpellDefinition implements CastableSpell,
     public PrismaticRaySpell() {
         super("prismatic_ray");
 
-        addSpellType(ARCANE);
+        addMagicDomain(ARCANE);
 
         setAttribute(COST, 100);
         setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);

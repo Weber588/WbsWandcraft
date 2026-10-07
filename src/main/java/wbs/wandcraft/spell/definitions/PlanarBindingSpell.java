@@ -7,15 +7,15 @@ import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
 
-import static wbs.wandcraft.spell.SpellType.ENDER;
-import static wbs.wandcraft.spell.SpellType.SCULK;
+import static wbs.wandcraft.spell.MagicDomain.ENDER;
+import static wbs.wandcraft.spell.MagicDomain.SCULK;
 
 public class PlanarBindingSpell extends SpellDefinition implements StatusEffectSpell<LivingEntity> {
     public PlanarBindingSpell() {
         super("planar_binding");
 
-        addSpellType(SCULK);
-        addSpellType(ENDER);
+        addMagicDomain(SCULK);
+        addMagicDomain(ENDER);
 
         setAttribute(COST, 100);
         setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);

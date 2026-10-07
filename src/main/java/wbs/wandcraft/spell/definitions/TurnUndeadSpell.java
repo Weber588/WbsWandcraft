@@ -17,7 +17,7 @@ import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.TargetAttributable;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 public class TurnUndeadSpell extends SpellDefinition implements CastableSpell, DurationAttributable, TargetAttributable<Mob> {
     private static final NormalParticleEffect EFFECT = (NormalParticleEffect) new NormalParticleEffect()
@@ -27,8 +27,8 @@ public class TurnUndeadSpell extends SpellDefinition implements CastableSpell, D
     public TurnUndeadSpell() {
         super("turn_undead");
 
-        addSpellType(SpellType.NETHER);
-        addSpellType(SpellType.SCULK);
+        addMagicDomain(MagicDomain.NETHER);
+        addMagicDomain(MagicDomain.SCULK);
 
         setAttribute(COST, 350);
         setAttribute(COOLDOWN, 60 * Ticks.TICKS_PER_SECOND);

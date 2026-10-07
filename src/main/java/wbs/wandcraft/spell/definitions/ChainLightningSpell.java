@@ -22,7 +22,7 @@ import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Collection;
@@ -44,7 +44,7 @@ public class ChainLightningSpell extends SpellDefinition implements ContinuousCa
     public ChainLightningSpell() {
         super("chain_lightning");
 
-        addSpellType(SpellType.NATURE);
+        addMagicDomain(MagicDomain.NATURE);
 
         setAttribute(COST, 500);
         setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);

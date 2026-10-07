@@ -24,7 +24,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @NullMarked
-public class SpellType implements Keyed {
+public class MagicDomain implements Keyed {
     private static Color mulColor(Color base, double factor) {
         return Color.fromRGB(
                 (int) Math.clamp(base.getRed() * factor, 0, 255),
@@ -60,7 +60,7 @@ public class SpellType implements Keyed {
     public static final TextColor NATURE_COLOR = color("2d7922");
     public static final Color NATURE_WAND_COLOUR = wandColor("41d035");
     
-    public static final SpellType ARCANE = new SpellType("arcane", ARCANE_COLOUR, ARCANE_WAND_COLOR)
+    public static final MagicDomain ARCANE = new MagicDomain("arcane", ARCANE_COLOUR, ARCANE_WAND_COLOR)
             .rawDescription("""
                     The domain of order, information, and reason. Arcane magic is \
                     coordinated, efficient, and precise; the science of magic."""
@@ -68,7 +68,7 @@ public class SpellType implements Keyed {
             .ambientParticle(Particle.ENCHANT)
             .velocityAffectedParticle(Particle.CRIT, 12.5);
 
-    public static final SpellType NETHER = new SpellType("nether", NETHER_COLOR, NETHER_WAND_COLOR)
+    public static final MagicDomain NETHER = new MagicDomain("nether", NETHER_COLOR, NETHER_WAND_COLOR)
             .rawDescription("""
                     The domain of controlled chaos; fire and undeath. Fire can be a sign of danger, or of warmth and safety, \
                     depending on how well it's controlled."""
@@ -77,7 +77,7 @@ public class SpellType implements Keyed {
             .ambientParticle(Particle.LAVA)
             .secondaryParticle(effect -> effect.setChance(1), Particle.FLAME);
 
-    public static final SpellType ENDER = new SpellType("ender", ENDER_COLOR, ENDER_WAND_COLOR)
+    public static final MagicDomain ENDER = new MagicDomain("ender", ENDER_COLOR, ENDER_WAND_COLOR)
             .rawDescription("""
                     The domain of dimensionality, spacetime, and geometry. Ender magic is a corruption of natural law, \
                     treating physics and reality as obstacles to be ignored."""
@@ -86,7 +86,7 @@ public class SpellType implements Keyed {
             .ambientParticle(Particle.PORTAL)
             .velocityAffectedParticle(Particle.DRAGON_BREATH, 0.8);
 
-    public static final SpellType SCULK = new SpellType("sculk", SCULK_COLOR, SCULK_WAND_COLOR)
+    public static final MagicDomain SCULK = new MagicDomain("sculk", SCULK_COLOR, SCULK_WAND_COLOR)
             .rawDescription("""
                     The domain of corruption, contradiction, and chaos. Sculk magic makes you doubt your senses, and \
                     fight to retain control of the very magic you call forth."""
@@ -97,14 +97,14 @@ public class SpellType implements Keyed {
             .ambientParticle(Particle.SCULK_SOUL)
             .velocityAffectedParticle(Particle.SCULK_CHARGE, 1.5);
 
-    public static final SpellType VOID = new SpellType("void", VOID_COLOR, VOID_WAND_COLOR)
+    public static final MagicDomain VOID = new MagicDomain("void", VOID_COLOR, VOID_WAND_COLOR)
             .rawDescription("""
                     The domain of eternity and absence. Everything ends except for darkness, the cold, and time."""
             ).defaultParticle(Particle.SMOKE)
             .ambientParticle(Particle.SMOKE)
             .velocityAffectedParticle(Particle.SMOKE, 2);
 
-    public static final SpellType NATURE = new SpellType("nature", NATURE_COLOR, NATURE_WAND_COLOUR)
+    public static final MagicDomain NATURE = new MagicDomain("nature", NATURE_COLOR, NATURE_WAND_COLOUR)
             .rawDescription("""
                        The domain of the natural world, life, and adaptability. Natural magic respects the natural laws \
                        of reality, but uses them to its advantage."""
@@ -118,7 +118,7 @@ public class SpellType implements Keyed {
             .velocityAffectedParticle(Particle.SCRAPE, 100);
     
 
-    public static SpellType getOpposite(SpellType type) {
+    public static MagicDomain getOpposite(MagicDomain type) {
         if (type == ARCANE) {
             return SCULK;
         } else if (type == NETHER) {
@@ -156,19 +156,19 @@ public class SpellType implements Keyed {
     // TODO: Clean up the particle nonsense and have a single related object that defines certain types/shapes of particle usage;
     //  For example, generic, around_player, directional_point, velocity
 
-    protected SpellType(NamespacedKey key, Component displayName, TextColor textColor, Color wandColor) {
+    protected MagicDomain(NamespacedKey key, Component displayName, TextColor textColor, Color wandColor) {
         this.key = key;
         this.displayName = displayName;
         this.textColor = textColor;
         this.wandColor = wandColor;
 
-        WandcraftRegistries.SPELL_TYPES.register(this);
+        WandcraftRegistries.MAGIC_DOMAINS.register(this);
     }
 
-    SpellType(String nativeKey, Component displayName, TextColor textColor, Color wandColor) {
+    MagicDomain(String nativeKey, Component displayName, TextColor textColor, Color wandColor) {
         this(WbsWandcraft.getKey(nativeKey), displayName, textColor, wandColor);
     }
-    SpellType(String nativeKey, TextColor textColor, Color wandColor) {
+    MagicDomain(String nativeKey, TextColor textColor, Color wandColor) {
         this(nativeKey, Component.text(WbsStrings.capitalizeAll(nativeKey.replace("_", " "))), textColor, wandColor);
     }
 
@@ -200,7 +200,7 @@ public class SpellType implements Keyed {
         return rawDescription == null ? displayName : MiniMessage.miniMessage().deserialize(rawDescription);
     }
 
-    private SpellType rawDescription(String rawDescription) {
+    private MagicDomain rawDescription(String rawDescription) {
         this.rawDescription = rawDescription;
         return this;
     }
@@ -214,7 +214,7 @@ public class SpellType implements Keyed {
     }
     public Component getAttributesText(@Nullable AttributeHolder holder) {
         return Component.join(JoinConfiguration.newlines(),
-                SpellTypeModifiers.getSpellTypeModifiers(this).stream()
+                MagicDomainModifiers.getMagicDomainModifiers(this).stream()
                         .filter(modifier -> holder == null || holder.hasAttribute(modifier.attribute()))
                         .map(SpellAttributeModifier::toComponent)
                         .map(c -> c.style(MenuUtils.EXTRAS_STYLE))
@@ -230,15 +230,15 @@ public class SpellType implements Keyed {
         return particleEffectModifier;
     }
 
-    private SpellType defaultParticle(Particle defaultParticle) {
+    private MagicDomain defaultParticle(Particle defaultParticle) {
         return defaultParticle(_ -> {}, defaultParticle);
     }
-    private SpellType defaultParticle(Consumer<WbsParticleEffect> effectModifier, Particle defaultParticle) {
+    private MagicDomain defaultParticle(Consumer<WbsParticleEffect> effectModifier, Particle defaultParticle) {
         this.defaultParticle = defaultParticle;
         this.particleEffectModifier = effectModifier;
         return this;
     }
-    private <T, R> SpellType defaultParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
+    private <T, R> MagicDomain defaultParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
         this.defaultParticle = defaultParticle;
         this.particleEffectModifier = toModifier(clazz, function, value);
         return this;
@@ -261,15 +261,15 @@ public class SpellType implements Keyed {
         return secondaryEffectModifier;
     }
 
-    private SpellType secondaryParticle(@Nullable Particle secondaryParticle) {
+    private MagicDomain secondaryParticle(@Nullable Particle secondaryParticle) {
         return secondaryParticle(_ -> {}, secondaryParticle);
     }
-    private SpellType secondaryParticle(Consumer<WbsParticleEffect> secondaryModifier, @Nullable Particle secondaryParticle) {
+    private MagicDomain secondaryParticle(Consumer<WbsParticleEffect> secondaryModifier, @Nullable Particle secondaryParticle) {
         this.secondaryParticle = secondaryParticle;
         this.secondaryEffectModifier = secondaryModifier;
         return this;
     }
-    private <T, R> SpellType secondaryParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
+    private <T, R> MagicDomain secondaryParticle(Class<T> clazz, BiConsumer<T, R> function, R value, Particle defaultParticle) {
         this.secondaryParticle = defaultParticle;
         this.secondaryEffectModifier = toModifier(clazz, function, value);
         return this;
@@ -279,12 +279,12 @@ public class SpellType implements Keyed {
         return velocityAffectedParticle;
     }
 
-    private SpellType velocityAffectedParticle(Particle velocityAffectedParticle) {
+    private MagicDomain velocityAffectedParticle(Particle velocityAffectedParticle) {
         this.velocityAffectedParticle = velocityAffectedParticle;
         return this;
     }
 
-    private SpellType velocityAffectedParticle(Particle velocityAffectedParticle, double speedModifier) {
+    private MagicDomain velocityAffectedParticle(Particle velocityAffectedParticle, double speedModifier) {
         this.velocityAffectedParticle = velocityAffectedParticle;
         this.velocityParticleModifier = speedModifier;
         return this;
@@ -294,12 +294,12 @@ public class SpellType implements Keyed {
         return velocityParticleModifier;
     }
 
-    private SpellType velocityParticleModifier(double velocityParticleModifier) {
+    private MagicDomain velocityParticleModifier(double velocityParticleModifier) {
         this.velocityParticleModifier = velocityParticleModifier;
         return this;
     }
 
-    private SpellType ambientParticle(@Nullable Particle ambientParticle) {
+    private MagicDomain ambientParticle(@Nullable Particle ambientParticle) {
         this.ambientParticle = ambientParticle;
         return this;
     }

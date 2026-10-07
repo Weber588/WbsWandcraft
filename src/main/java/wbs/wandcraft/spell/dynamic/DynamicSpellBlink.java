@@ -22,7 +22,7 @@ import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostType;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
@@ -35,16 +35,16 @@ import java.util.List;
 
 @NullMarked
 public class DynamicSpellBlink extends DynamicSpell implements CastableSpell, RangeAttributable, SpeedAttributable, DirectionAttributable {
-    public static final SpellType PRIMARY = SpellType.ENDER;
-    public static SpellAspect BLINK_ASPECT = new FixedTypeSpellAspect(
+    public static final MagicDomain PRIMARY = MagicDomain.ENDER;
+    public static SpellArchetype BLINK = new FixedDomainSpellArchetype(
             "blink", PRIMARY,
             Component.text("Teleport a short distance in the direction the caster is facing."),
             DynamicSpellBlink::new
     );
     private final WbsParticleGroup particleGroup;
 
-    public DynamicSpellBlink(@Nullable SpellType secondary) {
-        super(BLINK_ASPECT, PRIMARY, secondary);
+    public DynamicSpellBlink(@Nullable MagicDomain secondary) {
+        super(BLINK, PRIMARY, secondary);
 
         particleGroup = getParticleGroup(
                 new NormalParticleEffect().setXYZ(0.6).setY(1).setAmount(250)
@@ -90,23 +90,23 @@ public class DynamicSpellBlink extends DynamicSpell implements CastableSpell, Ra
     }
 
     @Override
-    protected Multimap<SpellType, SpellEffectInstance<?>> typedEvents() {
-        HashMultimap<SpellType, SpellEffectInstance<?>> typedEvents = HashMultimap.create();
+    protected Multimap<MagicDomain, SpellEffectInstance<?>> typedEvents() {
+        HashMultimap<MagicDomain, SpellEffectInstance<?>> typedEvents = HashMultimap.create();
 
         // TODO: Update these to make sense for blink lol
         typedEvents.put(
-                SpellType.NETHER,
+                MagicDomain.NETHER,
                 // Damage is already handled by attributes
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.IGNITE)
         );
 
         typedEvents.put(
-                SpellType.ENDER,
+                MagicDomain.ENDER,
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.RANDOM_TELEPORT)
         );
 
         typedEvents.put(
-                SpellType.SCULK,
+                MagicDomain.SCULK,
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getAnonymousInstance(((context, effectInstance, result) -> {
                     Entity hitEntity = result.getHitEntity();
                     if (hitEntity instanceof LivingEntity entity) {
@@ -117,7 +117,7 @@ public class DynamicSpellBlink extends DynamicSpell implements CastableSpell, Ra
         );
 
         typedEvents.putAll(
-                SpellType.NATURE,
+                MagicDomain.NATURE,
                 List.of(
                         SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.HEAL),
                         SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.GROW)

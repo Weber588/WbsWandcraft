@@ -14,7 +14,7 @@ import wbs.utils.util.entities.selector.RadiusSelector;
 import wbs.utils.util.string.WbsStrings;
 import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.*;
 import wbs.wandcraft.spell.attributes.modifier.AttributeModifierType;
 import wbs.wandcraft.spell.definitions.SpellInstance;
@@ -35,13 +35,13 @@ public interface TargetAttributable<T extends Entity> extends AttributeHolder {
     SpellAttribute<Integer> MAX_TARGETS = new IntegerSpellAttribute("max_targets", 1)
             .setShowAttribute((val, attributable) -> val > 1 && attributable.getAttribute(TARGET) != TargeterType.SELF)
             // Multiply by fraction less than 1.5 -- it won't increase from 1 to 2, but it'll increase group targeting
-            .typeModifier(SpellType.ARCANE, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, 1.4);
+            .domainModifier(MagicDomain.ARCANE, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, 1.4);
 
     SpellAttribute<Double> TARGET_RANGE = new DoubleSpellAttribute("target_range", 20)
             .setShowAttribute((val, attributable) -> attributable.getAttribute(TARGET) != TargeterType.SELF)
             .overrideTextureValue("range")
-            .typeModifier(SpellType.ARCANE, AttributeModifierType.MULTIPLY, RangeAttributable.ARCANE_MULTIPLIER)
-            .typeModifier(SpellType.ENDER, AttributeModifierType.MULTIPLY, RangeAttributable.ENDER_MULTIPLIER);
+            .domainModifier(MagicDomain.ARCANE, AttributeModifierType.MULTIPLY, RangeAttributable.ARCANE_MULTIPLIER)
+            .domainModifier(MagicDomain.ENDER, AttributeModifierType.MULTIPLY, RangeAttributable.ENDER_MULTIPLIER);
 
     SpellAttribute<Double> TARGET_RAY_SIZE = new DoubleSpellAttribute("target_ray_size", 1)
             .setShowAttribute((val, attributable) -> attributable.getAttribute(TARGET) == TargeterType.LINE_OF_SIGHT)

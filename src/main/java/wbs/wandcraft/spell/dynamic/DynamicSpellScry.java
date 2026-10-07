@@ -36,7 +36,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.dynamic.scry.ScryBlocks;
@@ -49,22 +49,22 @@ import java.util.function.Predicate;
 
 @NullMarked
 public abstract class DynamicSpellScry<T> extends DynamicSpell implements CastableSpell, RadiusAttributable {
-    public static final SpellType PRIMARY = SpellType.ARCANE;
-    public static final SpellAspect SCRY = new FixedTypeSpellAspect("scry", PRIMARY,
+    public static final MagicDomain PRIMARY = MagicDomain.ARCANE;
+    public static final SpellArchetype SCRY = new FixedDomainSpellArchetype("scry", PRIMARY,
             Component.text("Taps into the arcane, revealing information about the immediate surroundings to the caster."),
             type -> {
         // TODO: Replace this with a map?
-        if (type == null || type == SpellType.ARCANE) {
-            return new ScryNearbyContainers(SpellType.ARCANE);
-        } else if (type == SpellType.NETHER) {
+        if (type == null || type == MagicDomain.ARCANE) {
+            return new ScryNearbyContainers(MagicDomain.ARCANE);
+        } else if (type == MagicDomain.NETHER) {
 
-        } else if (type == SpellType.ENDER) {
+        } else if (type == MagicDomain.ENDER) {
             return new ScryTranslocateItem(type);
-        } else if (type == SpellType.SCULK) {
+        } else if (type == MagicDomain.SCULK) {
 
-        } else if (type == SpellType.VOID) {
+        } else if (type == MagicDomain.VOID) {
 
-        } else if (type == SpellType.NATURE) {
+        } else if (type == MagicDomain.NATURE) {
             return new ScryBlocks(type);
         }
 
@@ -101,12 +101,12 @@ public abstract class DynamicSpellScry<T> extends DynamicSpell implements Castab
             Material.PINK_SHULKER_BOX
     );
 
-    public DynamicSpellScry(@Nullable SpellType secondary) {
+    public DynamicSpellScry(@Nullable MagicDomain secondary) {
         super(SCRY, PRIMARY, secondary);
     }
 
     @Override
-    protected Multimap<SpellType, SpellEffectInstance<?>> typedEvents() {
+    protected Multimap<MagicDomain, SpellEffectInstance<?>> typedEvents() {
         return HashMultimap.create();
     }
 
@@ -247,10 +247,10 @@ public abstract class DynamicSpellScry<T> extends DynamicSpell implements Castab
                 display.setPersistent(false);
                 display.setGlowing(true);
 
-                Color color = getPrimarySpellType().color();
-                SpellType secondarySpellType = this.getSecondarySpellType();
-                if (secondarySpellType != null) {
-                    color = secondarySpellType.color();
+                Color color = getPrimaryDomain().color();
+                MagicDomain secondaryMagicDomain = this.getSecondaryDomain();
+                if (secondaryMagicDomain != null) {
+                    color = secondaryMagicDomain.color();
                 }
                 display.setGlowColorOverride(color);
 

@@ -22,8 +22,8 @@ import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.Collection;
 
-import static wbs.wandcraft.spell.SpellType.ARCANE;
-import static wbs.wandcraft.spell.SpellType.VOID;
+import static wbs.wandcraft.spell.MagicDomain.ARCANE;
+import static wbs.wandcraft.spell.MagicDomain.VOID;
 
 public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectileSpell, DamageAttributable, RadiusAttributable, ForceAttributable {
     private static final WbsParticleGroup EXPLODE_GROUP = new WbsParticleGroup();
@@ -45,8 +45,8 @@ public class ArcaneBurstSpell extends SpellDefinition implements CustomProjectil
     public ArcaneBurstSpell() {
         super("arcane_burst");
 
-        addSpellType(ARCANE);
-        addSpellType(VOID);
+        addMagicDomain(ARCANE);
+        addMagicDomain(VOID);
 
         setAttribute(COST, 250);
         setAttribute(COOLDOWN, 7 * Ticks.TICKS_PER_SECOND);

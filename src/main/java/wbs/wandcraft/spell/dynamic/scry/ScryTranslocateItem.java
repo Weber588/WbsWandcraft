@@ -11,7 +11,7 @@ import org.jspecify.annotations.Nullable;
 import wbs.utils.util.inventory.WbsInventoryUtil;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 
 import java.util.HashSet;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 @NullMarked
 public class ScryTranslocateItem extends ScryNearbyContainers {
-    public ScryTranslocateItem(@Nullable SpellType secondary) {
+    public ScryTranslocateItem(@Nullable MagicDomain secondary) {
         super(secondary);
 
         setAttribute(RADIUS, 5d);

@@ -27,7 +27,7 @@ import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,8 +36,8 @@ public class HeatRaySpell extends SpellDefinition implements DirectionAttributab
     public static final int WATER_PER_TICK = 3;
     public static final double BEAM_RADIUS = 0.6;
     private static final Particle.DustTransition PARTICLE_DATA = new Particle.DustTransition(
-            SpellType.NETHER.color(),
-            SpellType.NETHER.mulColor(1.5),
+            MagicDomain.NETHER.color(),
+            MagicDomain.NETHER.mulColor(1.5),
             1.1f
     );
     private static final LineParticleEffect LINE_EFFECT = (LineParticleEffect) new LineParticleEffect()
@@ -52,8 +52,8 @@ public class HeatRaySpell extends SpellDefinition implements DirectionAttributab
     public HeatRaySpell() {
         super("heat_ray");
 
-        addSpellType(SpellType.NETHER);
-        addSpellType(SpellType.NATURE);
+        addMagicDomain(MagicDomain.NETHER);
+        addMagicDomain(MagicDomain.NATURE);
 
         setAttribute(COST, 50);
         setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);

@@ -31,10 +31,10 @@ import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingManager;
 import wbs.wandcraft.context.CastingQueue;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.dynamic.SpellAspect;
+import wbs.wandcraft.spell.dynamic.SpellArchetype;
 import wbs.wandcraft.util.ItemDecorator;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.util.MenuUtils;
@@ -228,14 +228,14 @@ public class Spellbook implements ItemDecorator {
         if (currentSpell != null) {
             consumeTicks = currentSpell.getAttribute(CastableSpell.COOLDOWN);
 
-            List<SpellType> types = currentSpell.getTypes();
+            List<MagicDomain> types = currentSpell.getDomains();
 
-            modelData.addColor(currentSpell.getPrimarySpellType().color());
+            modelData.addColor(currentSpell.getPrimaryDomain().color());
 
             if (types.size() > 1) {
                 modelData.addColor(types.get(1).color());
             } else {
-                modelData.addColor(currentSpell.getPrimarySpellType().color());
+                modelData.addColor(currentSpell.getPrimaryDomain().color());
             }
         }
         item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, modelData);
@@ -287,30 +287,30 @@ public class Spellbook implements ItemDecorator {
         int index = SpellbookUI.getPageInChapter(currentPage) - 1;
         switch (currentChapter) {
             case SpellbookUI.CHAPTER_CONTENTS -> {
-                return Component.text("Contents");
+                return Component.text(SpellbookUI.CHAPTER_CONTENTS);
             }
             case SpellbookUI.CHAPTER_WANDS -> {
                 WandType<?> currentWandType = getCurrentWandType();
                 if (currentWandType != null) {
                     return currentWandType.getItemName();
                 }
-                return Component.text("Wands");
+                return Component.text(SpellbookUI.CHAPTER_WANDS);
             }
-            case SpellbookUI.CHAPTER_SPELL_ASPECTS -> {
+            case SpellbookUI.CHAPTER_SPELL_ARCHETYPES -> {
                 if (index >= 0) {
-                    SpellAspect spellAspect = WandcraftRegistries.SPELL_ASPECTS.ordered().get(index);
+                    SpellArchetype spellArchetype = WandcraftRegistries.SPELL_ARCHETYPES.ordered().get(index);
 
-                    return spellAspect.displayName();
+                    return spellArchetype.displayName();
                 }
 
-                return Component.text("Spell Aspects");
+                return Component.text(SpellbookUI.CHAPTER_SPELL_ARCHETYPES);
             }
             case SpellbookUI.CHAPTER_CANONICAL_SPELLS -> {
                 SpellDefinition currentSpell = getCurrentSpell();
                 if (currentSpell != null) {
                     return currentSpell.displayName();
                 }
-                return Component.text("Spells");
+                return Component.text(SpellbookUI.CHAPTER_CANONICAL_SPELLS);
             }
         }
 
@@ -356,7 +356,7 @@ public class Spellbook implements ItemDecorator {
 
                 Particle.FLASH.builder()
                         .location(player.getEyeLocation().add(WbsEntityUtil.getFacingVector(player, 0.5)))
-                        .data(definition.getPrimarySpellType().color())
+                        .data(definition.getPrimaryDomain().color())
                         .spawn();
                 player.getWorld().playSound(player.getEyeLocation(), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 1, 2);
                 return;

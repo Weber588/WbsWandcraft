@@ -36,7 +36,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.*;
@@ -57,8 +57,8 @@ public class MageLightSpell extends SpellDefinition implements CustomProjectileS
     public MageLightSpell() {
         super("mage_light");
 
-        addSpellType(SpellType.ARCANE);
-        addSpellType(SpellType.NETHER);
+        addMagicDomain(MagicDomain.ARCANE);
+        addMagicDomain(MagicDomain.NETHER);
 
         setAttribute(COST, 100);
         setAttribute(COOLDOWN, (int) (1.5 * Ticks.TICKS_PER_SECOND));

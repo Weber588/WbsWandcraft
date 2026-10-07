@@ -12,9 +12,9 @@ import org.jspecify.annotations.NullMarked;
 import wbs.utils.util.WbsRegistry;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.commands.CommandInfoSpell;
-import wbs.wandcraft.commands.CommandInfoSpellAspect;
+import wbs.wandcraft.commands.CommandInfoSpellArchetype;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
-import wbs.wandcraft.spell.dynamic.SpellAspect;
+import wbs.wandcraft.spell.dynamic.SpellArchetype;
 import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.wand.types.WandType;
 
@@ -29,7 +29,7 @@ public class SpellbookUI {
     private static final Map<String, Integer> CHAPTER_LENGTHS = new HashMap<>();
     public static final String CHAPTER_CONTENTS = "Contents";
     public static final String CHAPTER_WANDS = "Wands";
-    public static final String CHAPTER_SPELL_ASPECTS = "Spell Aspects";
+    public static final String CHAPTER_SPELL_ARCHETYPES = "Spell Archetypes";
     public static final String CHAPTER_CANONICAL_SPELLS = "Canonical Spells";
 
     public static Map<String, Integer> getChapters() {
@@ -38,12 +38,12 @@ public class SpellbookUI {
 
             CHAPTERS.put(CHAPTER_CONTENTS, page);
             page += 1;
-            CHAPTER_LENGTHS.put("Contents", 0);
+            CHAPTER_LENGTHS.put(CHAPTER_CONTENTS, 0);
 
             int count = addChapter(CHAPTER_WANDS, page, WandcraftRegistries.WAND_TYPES);
             page += count + 1;
 
-            count = addChapter(CHAPTER_SPELL_ASPECTS, page, WandcraftRegistries.SPELL_ASPECTS);
+            count = addChapter(CHAPTER_SPELL_ARCHETYPES, page, WandcraftRegistries.SPELL_ARCHETYPES);
             page += count + 1;
 
             count = addChapter(CHAPTER_CANONICAL_SPELLS, page, WandcraftRegistries.SPELLS);
@@ -66,40 +66,40 @@ public class SpellbookUI {
 
     public static Book getBook(Player player) {
         List<WandType<?>> wandDefinitions = WandcraftRegistries.WAND_TYPES.ordered();
-        List<SpellAspect> aspects = WandcraftRegistries.SPELL_ASPECTS.ordered();
+        List<SpellArchetype> aspects = WandcraftRegistries.SPELL_ARCHETYPES.ordered();
         List<SpellDefinition> spellDefinitions = WandcraftRegistries.SPELLS.ordered();
 
         Map<String, Integer> chapters = getChapters();
 
         Component contentsPage = Component.empty();
 
-        contentsPage = contentsPage.append(Component.text("Contents").decorate(TextDecoration.BOLD));
+        contentsPage = contentsPage.append(Component.text(CHAPTER_CONTENTS).decorate(TextDecoration.BOLD));
         contentsPage = contentsPage.append(MenuUtils.LINE_BREAK);
 
-        contentsPage = contentsPage.append(getChapterLink(chapters.get("Contents"), "Contents"));
-        contentsPage = contentsPage.append(getChapterLink(chapters.get("Wands"), "Wands"));
-        contentsPage = contentsPage.append(getChapterLink(chapters.get("Spell Aspects"), "Spell Aspects"));
-        contentsPage = contentsPage.append(getChapterLink(chapters.get("Canonical Spells"), "Canonical Spells"));
+        contentsPage = contentsPage.append(getChapterLink(chapters.get(CHAPTER_CONTENTS), CHAPTER_CONTENTS));
+        contentsPage = contentsPage.append(getChapterLink(chapters.get(CHAPTER_WANDS), CHAPTER_WANDS));
+        contentsPage = contentsPage.append(getChapterLink(chapters.get(CHAPTER_SPELL_ARCHETYPES), CHAPTER_SPELL_ARCHETYPES));
+        contentsPage = contentsPage.append(getChapterLink(chapters.get(CHAPTER_CANONICAL_SPELLS), CHAPTER_CANONICAL_SPELLS));
 
         Component wandsChapterPage = buildChapterPage(
                 chapters,
-                "Wands",
+                CHAPTER_WANDS,
                 Component.text("Types of wands that can be crafted at an artificing table")
         );
         Component spellAspectsChapterPage = buildChapterPage(
                 chapters,
-                "Spell Aspects",
+                CHAPTER_SPELL_ARCHETYPES,
                 Component.text("Types/forms of craftable spells")
         );
         Component canonicalSpellsChapterPage = buildChapterPage(
                 chapters,
-                "Canonical Spells",
+                CHAPTER_CANONICAL_SPELLS,
                 Component.text("Pre-made spells with custom effects")
         );
 
         // TODO: Add chapter start pages? And chapter skip buttons at top of each page???
         List<Component> wandPages = getWandPages(wandDefinitions, chapters.get(CHAPTER_WANDS));
-        List<Component> aspectPages = getAspectPages(player, aspects, chapters.get(CHAPTER_SPELL_ASPECTS));
+        List<Component> aspectPages = getArchetypePages(player, aspects, chapters.get(CHAPTER_SPELL_ARCHETYPES));
         List<Component> spellPages = getSpellPages(player, spellDefinitions, chapters.get(CHAPTER_CANONICAL_SPELLS));
 
         List<Component> pages = new LinkedList<>();
@@ -240,14 +240,14 @@ public class SpellbookUI {
         return wandPages;
     }
 
-    private static List<Component> getAspectPages(Player player, List<SpellAspect> allAspects, int chapterStart) {
+    private static List<Component> getArchetypePages(Player player, List<SpellArchetype> allArchetypes, int chapterStart) {
         List<Component> spellPages = new LinkedList<>();
         int i = 0;
-        for (SpellAspect aspect : allAspects) {
+        for (SpellArchetype aspect : allArchetypes) {
             i++;
             // TODO: Add aspect learning???
             // boolean isKnown = knowsSpell(player, aspect);
-            spellPages.add(buildHeader(chapterStart + i).appendNewline().append(CommandInfoSpellAspect.getSpellAspectPage(aspect)));
+            spellPages.add(buildHeader(chapterStart + i).appendNewline().append(CommandInfoSpellArchetype.getSpellArchetypePage(aspect)));
         }
         return spellPages;
     }

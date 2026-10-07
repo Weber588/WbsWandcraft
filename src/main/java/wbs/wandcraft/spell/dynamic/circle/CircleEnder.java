@@ -13,7 +13,7 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.MagicObjectManager;
 import wbs.wandcraft.objects.generics.MagicObject;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.dynamic.DynamicSpellMagicCircle;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 import wbs.wandcraft.util.EffectUtils;
@@ -25,7 +25,7 @@ import java.util.List;
 public class CircleEnder extends DynamicSpellMagicCircle {
     public static final org.bukkit.NamespacedKey ENDER_CIRCLE_TP_TAG = WbsWandcraft.getKey("ender_circle_tp");
 
-    public CircleEnder(@Nullable SpellType secondary) {
+    public CircleEnder(@Nullable MagicDomain secondary) {
         super(secondary);
 
         setAttribute(DURATION, 15 * 60 * Ticks.TICKS_PER_SECOND);
@@ -50,7 +50,7 @@ public class CircleEnder extends DynamicSpellMagicCircle {
             List<MagicCircleObject> sortedEnderCircles = MagicObjectManager.getAllActive(MagicCircleObject.class)
                     .stream()
                     .filter(activeCircle ->
-                            activeCircle.getContext().instance().getDefinition().getSecondarySpellType() == SpellType.ENDER
+                            activeCircle.getContext().instance().getDefinition().getSecondaryDomain() == MagicDomain.ENDER
                     ).sorted(Comparator.comparing(
                             MagicObject::getLocation,
                             Comparator.comparingDouble(loc -> loc.distance(entity.getLocation()))

@@ -6,14 +6,14 @@ import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 public class AmorphousEarthSpell extends SpellDefinition implements StatusEffectSpell<Player> {
     public AmorphousEarthSpell() {
         super("amorphous_earth");
 
-        addSpellType(SpellType.NATURE);
-        addSpellType(SpellType.VOID);
+        addMagicDomain(MagicDomain.NATURE);
+        addMagicDomain(MagicDomain.VOID);
 
         setAttribute(COST, 1000);
         setAttribute(COOLDOWN, 90 * Ticks.TICKS_PER_SECOND);

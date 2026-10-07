@@ -42,7 +42,7 @@ public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
     ).setKeyedSuggestions(WandcraftRegistries.SPELLS.values());
 
     public static Component getSpellPage(SpellDefinition spell, boolean isKnown, boolean collapse) {
-        Component types = spell.getTypesDisplay();
+        Component domains = spell.getDomainDisplays();
 
         Component attributeComponent = getAttributeComponent(spell, collapse);
         Component learningComponent = getLearningComponent(spell, collapse);
@@ -68,7 +68,7 @@ public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
             }
         }
 
-        builder.append("\n").append(types);
+        builder.append("\n").append(domains);
 
         if (spell instanceof CastableSpell castableSpell && castableSpell.requiresConcentration()) {
             builder.append(Component.text("\nConcentration").style(MenuUtils.EXTRAS_STYLE).hoverEvent(HoverEvent.showText(
@@ -93,7 +93,7 @@ public class CommandInfoSpell extends CommandInfo<SpellDefinition> {
         if (!collapse) {
             builder.append(Component.newline()).append(attributeComponent);
 
-            // TODO: Show triggered events? Sorted by spell aspect?
+            // TODO: Show triggered events? Sorted by spell archetype?
 
             if (learningComponent != null) {
                 builder.append(Component.newline()).append(learningComponent);

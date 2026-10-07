@@ -1,7 +1,7 @@
 package wbs.wandcraft.spell.attributes.attributable;
 
 import net.kyori.adventure.util.Ticks;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -12,7 +12,7 @@ public interface ForceAttributable extends AttributeHolder {
             .setShowAttribute(value -> value != 0)
             .overrideTextureValue("speed")
             .setNumericFormatter(Ticks.TICKS_PER_SECOND, speed -> speed + " blocks/second")
-            .typeModifier(SpellType.VOID, AttributeModifierType.MULTIPLY, 1.25);
+            .domainModifier(MagicDomain.VOID, AttributeModifierType.MULTIPLY, 1.25);
 
     @AttributableSetupHandler
     default void setupForce() {

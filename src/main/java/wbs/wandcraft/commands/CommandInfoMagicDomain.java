@@ -26,7 +26,7 @@ import wbs.utils.util.plugin.WbsMessageBuilder;
 import wbs.utils.util.plugin.WbsPlugin;
 import wbs.wandcraft.WandcraftRegistries;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.util.MenuUtils;
 
 import javax.imageio.ImageIO;
@@ -36,47 +36,47 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CommandInfoSpellType extends CommandInfo<SpellType> {
-    private static final WbsRegistrySimpleArgument<SpellType> SPELL_TYPE = new WbsRegistrySimpleArgument<>(
-            "spell_type",
+public class CommandInfoMagicDomain extends CommandInfo<MagicDomain> {
+    private static final WbsRegistrySimpleArgument<MagicDomain> MAGIC_DOMAIN = new WbsRegistrySimpleArgument<>(
+            "magic_domain",
             WbsWandcraft.getInstance(),
-            "spell type",
-            SpellType.class,
-            WandcraftRegistries.SPELL_TYPES
+            "magic domain",
+            MagicDomain.class,
+            WandcraftRegistries.MAGIC_DOMAINS
     ).isRequired(true);
 
-    public static Component getSpellTypePage(SpellType type, boolean collapse) {
-        Component attributeComponent = getAttributeComponent(type, collapse);
+    public static Component getMagicDomainPage(MagicDomain domain, boolean collapse) {
+        Component attributeComponent = getAttributeComponent(domain, collapse);
 
-        WbsMessageBuilder builder = WbsWandcraft.getInstance().buildMessageNoPrefix(type.displayName());
+        WbsMessageBuilder builder = WbsWandcraft.getInstance().buildMessageNoPrefix(domain.displayName());
 
         if (collapse) {
             builder.append(" ").append(attributeComponent);
         }
 
         builder.append(MenuUtils.LINE_BREAK)
-                .append(type.description().applyFallbackStyle(MenuUtils.DESCRIPTION_STYLE));
+                .append(domain.description().applyFallbackStyle(MenuUtils.DESCRIPTION_STYLE));
 
         if (!collapse) {
             builder.append(attributeComponent);
         }
         /*
         builder = builder.onClick(ClickEvent.callback(audience -> {
-            readImage(WbsStrings.capitalize(type.getKey().value()) + ".png", (Player) audience, 0.1, 1, 1);
+            readImage(WbsStrings.capitalize(domain.getKey().value()) + ".png", (Player) audience, 0.1, 1, 1);
         }, ClickCallback.Options.builder().uses(Integer.MAX_VALUE).build()));
 */
         return builder.toComponent();
     }
 
-    public CommandInfoSpellType(@NotNull WbsPlugin plugin, @NotNull String label) {
-        super(plugin, label, WandcraftRegistries.SPELL_TYPES);
+    public CommandInfoMagicDomain(@NotNull WbsPlugin plugin, @NotNull String label) {
+        super(plugin, label, WandcraftRegistries.MAGIC_DOMAINS);
         
-        this.addSimpleArgument(SPELL_TYPE);
+        this.addSimpleArgument(MAGIC_DOMAIN);
     }
 
     @Override
-    protected Component getComponent(@UnknownNullability SpellType type, boolean collapse) {
-        return getSpellTypePage(type, collapse);
+    protected Component getComponent(@UnknownNullability MagicDomain domain, boolean collapse) {
+        return getMagicDomainPage(domain, collapse);
     }
 
     private void readImage(String fileName, Player player, double scale, int granularity, double particleSize) {
@@ -157,11 +157,11 @@ public class CommandInfoSpellType extends CommandInfo<SpellType> {
     }
 
     @Override
-    protected @Nullable SpellType getT(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
-        return SPELL_TYPE.getRequiredValue(context);
+    protected @Nullable MagicDomain getT(CommandContext<CommandSourceStack> context, WbsSimpleArgument.ConfiguredArgumentMap configuredArgumentMap) {
+        return MAGIC_DOMAIN.getRequiredValue(context);
     }
 
-    private static @NonNull Component getAttributeComponent(SpellType type, boolean collapse) {
+    private static @NonNull Component getAttributeComponent(MagicDomain type, boolean collapse) {
         Component attributes = type.getAttributesText();
         TextComponent descriptionText = Component.text("Attributes: \n")
                 .style(MenuUtils.EXTRAS_STYLE)

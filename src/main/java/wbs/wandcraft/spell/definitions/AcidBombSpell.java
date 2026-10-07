@@ -18,7 +18,7 @@ import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.trigger.SpellTriggeredEvents;
 
 import java.util.LinkedList;
@@ -47,7 +47,7 @@ public class AcidBombSpell extends SpellDefinition implements CustomProjectileSp
     public AcidBombSpell() {
         super("acid_bomb");
 
-        addSpellType(SpellType.NATURE);
+        addMagicDomain(MagicDomain.NATURE);
 
         setAttribute(COST, 300);
         setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);

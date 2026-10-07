@@ -13,7 +13,7 @@ import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.particles.RingParticleEffect;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
 
 @NullMarked
@@ -22,14 +22,14 @@ public class DynamicSpellBarrage extends DynamicSpellProjectile implements Conti
     private static final double MIN_IMPRECISION_FACTOR = 3;
     public static final int ROTATION_SPEED = 30 / Ticks.TICKS_PER_SECOND;
 
-    public static SpellAspect BARRAGE_ASPECT = new GenericSpellAspect(
+    public static SpellArchetype BARRAGE = new GenericSpellArchetype(
             "barrage",
             Component.text("Fires a series of projectiles in the direction the caster is facing."),
             DynamicSpellBarrage::new
     );
 
-    public DynamicSpellBarrage(SpellType primary, @Nullable SpellType secondary) {
-        super(BARRAGE_ASPECT, primary, secondary);
+    public DynamicSpellBarrage(MagicDomain primary, @Nullable MagicDomain secondary) {
+        super(BARRAGE, primary, secondary);
 
         setAttribute(COST_PER_TICK, 0);
         setAttribute(FIXED_DURATION, 5 * Ticks.TICKS_PER_SECOND);

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static wbs.wandcraft.spell.SpellType.ARCANE;
+import static wbs.wandcraft.spell.MagicDomain.ARCANE;
 
 public class ShieldSpell extends SpellDefinition implements ContinuousCastableSpell, DirectionAttributable, RadiusAttributable, MaterialAttributable, FollowAttributable {
     private static final SpellAttribute<Boolean> IS_BUBBLE = new BooleanSpellAttribute("is_bubble", false);
@@ -38,7 +38,7 @@ public class ShieldSpell extends SpellDefinition implements ContinuousCastableSp
     public ShieldSpell() {
         super("shield");
 
-        addSpellType(ARCANE);
+        addMagicDomain(ARCANE);
 
         setAttribute(COST, 50);
         setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);

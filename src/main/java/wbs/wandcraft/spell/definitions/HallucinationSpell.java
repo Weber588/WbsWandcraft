@@ -26,7 +26,7 @@ import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.RequiresPlugin;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -39,8 +39,8 @@ public class HallucinationSpell extends SpellDefinition implements CastableSpell
     public HallucinationSpell() {
         super("hallucination");
 
-        addSpellType(SpellType.SCULK);
-        addSpellType(SpellType.NATURE);
+        addMagicDomain(MagicDomain.SCULK);
+        addMagicDomain(MagicDomain.NATURE);
 
         setAttribute(COST, 350);
         setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);

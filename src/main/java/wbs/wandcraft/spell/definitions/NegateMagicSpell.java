@@ -18,7 +18,7 @@ import wbs.wandcraft.objects.PersistenceLevel;
 import wbs.wandcraft.objects.generics.MagicObject;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.wand.Wand;
 
@@ -59,8 +59,8 @@ public class NegateMagicSpell extends SpellDefinition implements CastableSpell, 
     public NegateMagicSpell() {
         super("negate_magic");
 
-        addSpellType(SpellType.SCULK);
-        addSpellType(SpellType.VOID);
+        addMagicDomain(MagicDomain.SCULK);
+        addMagicDomain(MagicDomain.VOID);
 
         setAttribute(COST, 500);
         setAttribute(COOLDOWN, 30 * Ticks.TICKS_PER_SECOND);

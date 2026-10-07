@@ -168,7 +168,7 @@ public class SpellInstance implements WandEntry<SpellInstance>, AttributeHolder 
     public @NotNull List<Component> getLore() {
         List<Component> lore = new LinkedList<>();
 
-        Component types = definition.getTypesDisplay();
+        Component types = definition.getDomainDisplays();
 
         lore.add(types);
         lore.addAll(definition.loreDescription());

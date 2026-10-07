@@ -94,7 +94,7 @@ public class BasicWand extends Wand {
     protected @Nullable Color getWandColour() {
         SpellInstance spellInstance = getSpellInstance();
         if (spellInstance != null) {
-            return spellInstance.getDefinition().getPrimarySpellType().wandColor();
+            return spellInstance.getDefinition().getPrimaryDomain().wandColor();
         }
         return null;
     }

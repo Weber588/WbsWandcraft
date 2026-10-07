@@ -14,7 +14,7 @@ import wbs.utils.util.WbsColours;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.util.MenuUtils;
 import wbs.wandcraft.util.persistent.CustomPersistentDataTypes;
 import wbs.wandcraft.wand.Wand;
@@ -134,8 +134,8 @@ public class WildenWand extends Wand {
     protected @Nullable Color getWandColour() {
         List<Color> colors = new LinkedList<>(getSpellInstances().stream()
                 .map(SpellInstance::getDefinition)
-                .map(SpellDefinition::getPrimarySpellType)
-                .map(SpellType::wandColor)
+                .map(SpellDefinition::getPrimaryDomain)
+                .map(MagicDomain::wandColor)
                 .toList());
 
         if (colors.isEmpty()) {

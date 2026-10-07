@@ -9,18 +9,18 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import wbs.utils.util.WbsKeyed;
 import wbs.wandcraft.WbsWandcraft;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.util.MenuUtils;
 
 @NullMarked
-public abstract class SpellAspect implements Keyed {
+public abstract class SpellArchetype implements Keyed {
     private final NamespacedKey key;
     private final Component description;
 
-    public SpellAspect(String nativeKey, Component description) {
+    public SpellArchetype(String nativeKey, Component description) {
         this(WbsWandcraft.getKey(nativeKey), description);
     }
-    public SpellAspect(NamespacedKey key, Component description) {
+    public SpellArchetype(NamespacedKey key, Component description) {
         this.key = key;
         this.description = description;
     }
@@ -34,8 +34,8 @@ public abstract class SpellAspect implements Keyed {
         Component displayName = Component.text(WbsKeyed.toPrettyString(this));
 
         Style style;
-        if (this instanceof FixedTypeSpellAspect fixed) {
-            style = Style.style(fixed.primaryType().textColor());
+        if (this instanceof FixedDomainSpellArchetype fixed) {
+            style = Style.style(fixed.primaryDomain().textColor());
         } else {
             style = MenuUtils.DEFAULT_TITLE_STYLE;
         }
@@ -48,5 +48,5 @@ public abstract class SpellAspect implements Keyed {
         return description;
     }
 
-    public abstract DynamicSpell build(@UnknownNullability SpellType primary, @Nullable SpellType secondary);
+    public abstract DynamicSpell build(@UnknownNullability MagicDomain primary, @Nullable MagicDomain secondary);
 }

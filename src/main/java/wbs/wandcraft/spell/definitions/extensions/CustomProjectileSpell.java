@@ -11,7 +11,7 @@ import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.IntegerSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -24,14 +24,14 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributab
     SpellAttribute<Integer> BOUNCES = new IntegerSpellAttribute("bounces", 0)
             .setShowAttribute(value -> value > 0)
             .sentiment(SpellAttribute.Sentiment.NEUTRAL)
-            .typeModifier(SpellType.SCULK, AttributeModifierType.SET_UP, 1);
+            .domainModifier(MagicDomain.SCULK, AttributeModifierType.SET_UP, 1);
     SpellAttribute<Double> GRAVITY = new DoubleSpellAttribute("gravity", 0)
             .addSuggestions(0.08, 0.16)
             .setShowAttribute(value -> value != 0)
             .setNumericFormatter(20d, value -> value + " blocks/second²")
             .sentiment(SpellAttribute.Sentiment.NEUTRAL)
-            .typeModifier(SpellType.NATURE, AttributeModifierType.SET_UP, 0.02)
-            .typeModifier(SpellType.VOID, AttributeModifierType.ADD, 0.04);
+            .domainModifier(MagicDomain.NATURE, AttributeModifierType.SET_UP, 0.02)
+            .domainModifier(MagicDomain.VOID, AttributeModifierType.ADD, 0.04);
     SpellAttribute<Double> SIZE = new DoubleSpellAttribute("size",0.3)
             .setNumericFormatter(value -> value + " blocks")
             .sentiment(SpellAttribute.Sentiment.NEUTRAL);
@@ -39,7 +39,7 @@ public interface CustomProjectileSpell extends IProjectileSpell, RangeAttributab
             .setShowAttribute(value -> value != 0)
             .setNumericFormatter(20d, value -> value + " blocks/second²")
             .sentiment(SpellAttribute.Sentiment.NEUTRAL)
-            .typeModifier(SpellType.VOID, AttributeModifierType.ADD, 0.04);
+            .domainModifier(MagicDomain.VOID, AttributeModifierType.ADD, 0.04);
 
     @AttributableSetupHandler
     default void setupCustomProjectile() {

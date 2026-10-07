@@ -15,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 import wbs.utils.util.WbsLocationUtil;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.dynamic.DynamicSpellScry;
 
@@ -26,7 +26,7 @@ import java.util.Set;
 
 @NullMarked
 public class ScryNearbyContainers extends DynamicSpellScry<ItemStack> {
-    public ScryNearbyContainers(@Nullable SpellType secondary) {
+    public ScryNearbyContainers(@Nullable MagicDomain secondary) {
         super(secondary);
 
         setAttribute(RADIUS, 8d);

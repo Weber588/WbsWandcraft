@@ -15,7 +15,7 @@ import wbs.utils.util.particles.ParticleDataProvider;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostType;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.definitions.extensions.RaySpell;
 import wbs.wandcraft.spell.effect.SpellEffectDefinitions;
 import wbs.wandcraft.spell.effect.SpellEffectInstance;
@@ -26,15 +26,15 @@ import java.util.Set;
 
 @NullMarked
 public class DynamicSpellRay extends DynamicSpell implements RaySpell {
-    public static SpellAspect RAY_ASPECT = new GenericSpellAspect(
+    public static SpellArchetype RAY = new GenericSpellArchetype(
             "ray",
             Component.text("Project a ray in the direction the caster is facing, instantly affecting everything in the path."),
             DynamicSpellRay::new
     );
     private final WbsParticleGroup particleGroup;
 
-    public DynamicSpellRay(SpellType primary, @Nullable SpellType secondary) {
-        super(RAY_ASPECT, primary, secondary);
+    public DynamicSpellRay(MagicDomain primary, @Nullable MagicDomain secondary) {
+        super(RAY, primary, secondary);
 
         particleGroup = getParticleGroup(
                 new NormalParticleEffect().setAmount(2),
@@ -72,22 +72,22 @@ public class DynamicSpellRay extends DynamicSpell implements RaySpell {
     }
 
     @Override
-    protected Multimap<SpellType, SpellEffectInstance<?>> typedEvents() {
-        HashMultimap<SpellType, SpellEffectInstance<?>> typedEvents = HashMultimap.create();
+    protected Multimap<MagicDomain, SpellEffectInstance<?>> typedEvents() {
+        HashMultimap<MagicDomain, SpellEffectInstance<?>> typedEvents = HashMultimap.create();
 
         typedEvents.put(
-                SpellType.NETHER,
+                MagicDomain.NETHER,
                 // Damage is already handled by attributes
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.IGNITE)
         );
 
         typedEvents.put(
-                SpellType.ENDER,
+                MagicDomain.ENDER,
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.RANDOM_TELEPORT)
         );
 
         typedEvents.put(
-                SpellType.SCULK,
+                MagicDomain.SCULK,
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getAnonymousInstance(((context, effectInstance, result) -> {
                     Entity hitEntity = result.getHitEntity();
                     if (hitEntity instanceof LivingEntity entity) {
@@ -98,7 +98,7 @@ public class DynamicSpellRay extends DynamicSpell implements RaySpell {
         );
 
         typedEvents.putAll(
-                SpellType.NATURE,
+                MagicDomain.NATURE,
                 List.of(
                         SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.HEAL),
                         SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.GROW)

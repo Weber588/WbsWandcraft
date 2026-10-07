@@ -20,8 +20,8 @@ import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import java.time.Duration;
 import java.util.Collection;
 
-import static wbs.wandcraft.spell.SpellType.ARCANE;
-import static wbs.wandcraft.spell.SpellType.ENDER;
+import static wbs.wandcraft.spell.MagicDomain.ARCANE;
+import static wbs.wandcraft.spell.MagicDomain.ENDER;
 
 public class RecallSpell extends SpellDefinition implements CastableSpell, DurationAttributable {
     private static final NormalParticleEffect TELEPORT_EFFECT = (NormalParticleEffect) new NormalParticleEffect()
@@ -36,8 +36,8 @@ public class RecallSpell extends SpellDefinition implements CastableSpell, Durat
         setAttribute(COST, 100);
         setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
 
-        addSpellType(ENDER);
-        addSpellType(ARCANE);
+        addMagicDomain(ENDER);
+        addMagicDomain(ARCANE);
 
         setAttribute(DURATION, 0);
     }

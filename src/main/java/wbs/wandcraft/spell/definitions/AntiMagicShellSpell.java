@@ -30,7 +30,7 @@ import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import java.util.List;
 import java.util.Objects;
 
-import static wbs.wandcraft.spell.SpellType.SCULK;
+import static wbs.wandcraft.spell.MagicDomain.SCULK;
 
 public class AntiMagicShellSpell extends SpellDefinition implements CastableSpell, RadiusAttributable, DurationAttributable, ParticleAttributable, FollowAttributable {
     private static final SpellAttribute<Boolean> IS_REFLECTIVE = new BooleanSpellAttribute("is_reflective", true);
@@ -40,7 +40,7 @@ public class AntiMagicShellSpell extends SpellDefinition implements CastableSpel
     public AntiMagicShellSpell() {
         super("anti_magic_shell");
 
-        addSpellType(SCULK);
+        addMagicDomain(SCULK);
 
         setAttribute(COST, 250);
         setAttribute(COOLDOWN, 15 * Ticks.TICKS_PER_SECOND);

@@ -20,7 +20,7 @@ import wbs.wandcraft.cost.PlayerMana;
 import wbs.wandcraft.resourcepack.DynamicItemTextureProvider;
 import wbs.wandcraft.resourcepack.ResourcePackBuilder;
 import wbs.wandcraft.resourcepack.TextureLayer;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttributeInstance;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
@@ -36,7 +36,7 @@ import static wbs.wandcraft.util.MenuUtils.DESCRIPTION_STYLE;
 public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTextureProvider, ParticleDataProvider {
     protected final Set<SpellAttributeInstance<?>> defaultAttributes = new HashSet<>();
 
-    protected final List<SpellType> spellTypes = new LinkedList<>();
+    protected final List<MagicDomain> magicDomains = new LinkedList<>();
 
     private final NamespacedKey key;
     protected int echoShardCost = -1;
@@ -61,18 +61,18 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
         return Component.text(
                 WbsStrings.capitalizeAll(key.value().replace("_", " "))
         ).color(
-                getPrimarySpellType().textColor()
+                getPrimaryDomain().textColor()
         );
     }
 
-    public SpellType getPrimarySpellType() {
-        return spellTypes.stream().findFirst().orElseThrow(() -> new IllegalStateException("Spell definition lacked spell type!"));
+    public MagicDomain getPrimaryDomain() {
+        return magicDomains.stream().findFirst().orElseThrow(() -> new IllegalStateException("Spell definition lacked magic domain!"));
     }
 
     @Nullable
-    public SpellType getSecondarySpellType() {
-        if (spellTypes.size() > 1) {
-            return spellTypes.get(1);
+    public MagicDomain getSecondaryDomain() {
+        if (magicDomains.size() > 1) {
+            return magicDomains.get(1);
         }
         return null;
     }
@@ -139,19 +139,19 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
         return key().value();
     }
 
-    public void addSpellType(SpellType type) {
-        this.spellTypes.add(type);
+    public void addMagicDomain(MagicDomain domain) {
+        this.magicDomains.add(domain);
     }
 
     public void registerEvents() {
 
     }
 
-    public List<SpellType> getTypes() {
-        return new LinkedList<>(spellTypes);
+    public List<MagicDomain> getDomains() {
+        return new LinkedList<>(magicDomains);
     }
 
-    public Component getTypesDisplay() {
+    public Component getDomainDisplays() {
         return Component.join(
                 JoinConfiguration.builder()
                         .separator(Component.text(" - ")
@@ -159,12 +159,11 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
                                 .decorate(TextDecoration.ITALIC)
                         )
                         .build(),
-                getTypes()
+                getDomains()
                         .stream()
-                        .map(spellType ->
-                                spellType.displayName()
+                        .map(domain ->
+                                domain.displayName()
                                         .decorate(TextDecoration.ITALIC)
-                                        .hoverEvent(HoverEvent.showText(spellType.getAttributesText(this)))
                         )
                         .toList()
         );
@@ -189,14 +188,14 @@ public abstract class SpellDefinition implements ISpellDefinition, DynamicItemTe
 
     @Override
     public Color getColor(Particle particle, @Nullable Location location) {
-        return getPrimarySpellType().color();
+        return getPrimaryDomain().color();
     }
 
     @Override
     public Color getSecondaryColor(Particle particle, @Nullable Location location) {
-        SpellType secondarySpellType = getSecondarySpellType();
-        if (secondarySpellType != null) {
-            return secondarySpellType.color();
+        MagicDomain secondaryMagicDomain = getSecondaryDomain();
+        if (secondaryMagicDomain != null) {
+            return secondaryMagicDomain.color();
         }
 
         return getColor(particle, location);

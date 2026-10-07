@@ -10,7 +10,7 @@ import wbs.wandcraft.objects.generics.DynamicProjectileObject;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.attributes.attributable.DamageAttributable;
 
-import static wbs.wandcraft.spell.SpellType.ARCANE;
+import static wbs.wandcraft.spell.MagicDomain.ARCANE;
 
 public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectileSpell, DamageAttributable {
     private static final WbsParticleEffect EFFECT = new NormalParticleEffect()
@@ -25,7 +25,7 @@ public class ArcaneSparkSpell extends SpellDefinition implements CustomProjectil
     public ArcaneSparkSpell() {
         super("arcane_spark");
 
-        addSpellType(ARCANE);
+        addMagicDomain(ARCANE);
 
         setAttribute(COST, 50);
         setAttribute(COOLDOWN, 2 * Ticks.TICKS_PER_SECOND);

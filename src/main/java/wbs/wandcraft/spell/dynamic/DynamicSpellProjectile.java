@@ -24,7 +24,7 @@ import wbs.utils.util.particles.entity.EntityParticle;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.cost.CostType;
 import wbs.wandcraft.objects.generics.DynamicProjectileObject;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.definitions.extensions.CustomProjectileSpell;
 import wbs.wandcraft.spell.effect.SpellEffectDefinitions;
 import wbs.wandcraft.spell.effect.SpellEffectInstance;
@@ -35,7 +35,7 @@ import java.util.Set;
 
 @NullMarked
 public class DynamicSpellProjectile extends DynamicSpell implements CustomProjectileSpell {
-    public static SpellAspect PROJECTILE_ASPECT = new GenericSpellAspect(
+    public static SpellArchetype PROJECTILE = new GenericSpellArchetype(
             "projectile",
             Component.text("Fires a projectile in the direction the caster is facing."),
             DynamicSpellProjectile::new
@@ -48,18 +48,18 @@ public class DynamicSpellProjectile extends DynamicSpell implements CustomProjec
             Material.MOSSY_COBBLESTONE
     );
 
-    public DynamicSpellProjectile(SpellType primary, @Nullable SpellType secondary) {
-        this(PROJECTILE_ASPECT, primary, secondary);
+    public DynamicSpellProjectile(MagicDomain primary, @Nullable MagicDomain secondary) {
+        this(PROJECTILE, primary, secondary);
     }
-    public DynamicSpellProjectile(SpellAspect aspect, SpellType primary, @Nullable SpellType secondary) {
-        super(aspect, primary, secondary);
+    public DynamicSpellProjectile(SpellArchetype archetype, MagicDomain primary, @Nullable MagicDomain secondary) {
+        super(archetype, primary, secondary);
 
         setAttribute(GRAVITY, 0d);
     }
 
     @Override
     public void configure(DynamicProjectileObject projectile, CastContext context) {
-        if (getPrimarySpellType() == SpellType.NATURE) {
+        if (getPrimaryDomain() == MagicDomain.NATURE) {
             float size = (float) (double) context.instance().getAttribute(SIZE) * 1.7f;
             float speed  = (float) (double) context.instance().getAttribute(SPEED);
 
@@ -95,22 +95,22 @@ public class DynamicSpellProjectile extends DynamicSpell implements CustomProjec
     }
 
     @Override
-    protected Multimap<SpellType, SpellEffectInstance<?>> typedEvents() {
-        HashMultimap<SpellType, SpellEffectInstance<?>> typedEvents = HashMultimap.create();
+    protected Multimap<MagicDomain, SpellEffectInstance<?>> typedEvents() {
+        HashMultimap<MagicDomain, SpellEffectInstance<?>> typedEvents = HashMultimap.create();
 
         typedEvents.put(
-                SpellType.NETHER,
+                MagicDomain.NETHER,
                 // Damage is already handled by attributes
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.IGNITE)
         );
 
         typedEvents.put(
-                SpellType.ENDER,
+                MagicDomain.ENDER,
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.RANDOM_TELEPORT)
         );
 
         typedEvents.put(
-                SpellType.SCULK,
+                MagicDomain.SCULK,
                 SpellTriggeredEvents.ON_HIT_TRIGGER.getAnonymousInstance(((context, effectInstance, result) -> {
                     Entity hitEntity = result.getHitEntity();
                     if (hitEntity instanceof LivingEntity entity) {
@@ -121,7 +121,7 @@ public class DynamicSpellProjectile extends DynamicSpell implements CustomProjec
         );
 
         typedEvents.putAll(
-                SpellType.NATURE,
+                MagicDomain.NATURE,
                 List.of(
                         SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.HEAL),
                         SpellTriggeredEvents.ON_HIT_TRIGGER.getInstance(SpellEffectDefinitions.GROW)

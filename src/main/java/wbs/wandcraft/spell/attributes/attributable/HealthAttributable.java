@@ -11,7 +11,7 @@ import wbs.utils.util.WbsRegistryUtil;
 import wbs.utils.util.entities.WbsEntityUtil;
 import wbs.utils.util.particles.NormalParticleEffect;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -24,8 +24,8 @@ public interface HealthAttributable extends AttributeHolder {
     SpellAttribute<Double> HEALTH = new DoubleSpellAttribute("health", 2)
             .addSuggestions(2.0, 5.0, 10.0, 20.0)
             .overrideTextureValue("health")
-            .typeModifier(SpellType.NATURE, AttributeModifierType.MULTIPLY, 1.5)
-            .typeModifier(SpellType.VOID, AttributeModifierType.MULTIPLY, 0.9);
+            .domainModifier(MagicDomain.NATURE, AttributeModifierType.MULTIPLY, 1.5)
+            .domainModifier(MagicDomain.VOID, AttributeModifierType.MULTIPLY, 0.9);
 
     @AttributableSetupHandler
     default void setupHealth() {

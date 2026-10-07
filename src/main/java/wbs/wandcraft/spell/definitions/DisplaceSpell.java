@@ -18,8 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static wbs.wandcraft.spell.SpellType.ENDER;
-import static wbs.wandcraft.spell.SpellType.SCULK;
+import static wbs.wandcraft.spell.MagicDomain.ENDER;
+import static wbs.wandcraft.spell.MagicDomain.SCULK;
 
 public class DisplaceSpell extends SpellDefinition implements CastableSpell, TargetAttributable<LivingEntity> {
     private static final LineParticleEffect LINE_EFFECT = (LineParticleEffect) new LineParticleEffect()
@@ -34,8 +34,8 @@ public class DisplaceSpell extends SpellDefinition implements CastableSpell, Tar
         setAttribute(COST, 150);
         setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
 
-        addSpellType(ENDER);
-        addSpellType(SCULK);
+        addMagicDomain(ENDER);
+        addMagicDomain(SCULK);
 
         setAttribute(TARGET, TargeterType.LINE_OF_SIGHT);
         setAttribute(TARGET_RANGE, 75d);

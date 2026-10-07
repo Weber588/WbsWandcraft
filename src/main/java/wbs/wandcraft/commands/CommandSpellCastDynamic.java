@@ -16,30 +16,30 @@ import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.context.CastingQueue;
 import wbs.wandcraft.spell.definitions.SpellInstance;
 import wbs.wandcraft.spell.dynamic.DynamicSpell;
-import wbs.wandcraft.spell.dynamic.FixedTypeSpellAspect;
-import wbs.wandcraft.spell.dynamic.SpellAspect;
+import wbs.wandcraft.spell.dynamic.FixedDomainSpellArchetype;
+import wbs.wandcraft.spell.dynamic.SpellArchetype;
 import wbs.wandcraft.util.MenuUtils;
 
 public class CommandSpellCastDynamic extends WbsSubcommand implements CommandDynamicSpell {
     static {
-        SECONDARY_SPELL_TYPE.setSuggestionProvider((context, builder) -> {
-            SpellAspect value = ASPECT.getValue(context);
+        SECONDARY_DOMAIN.setSuggestionProvider((context, builder) -> {
+            SpellArchetype value = ARCHETYPE.getValue(context);
 
             // Don't suggest a 2nd type if a fixed aspect already has a first
-            if (value instanceof FixedTypeSpellAspect) {
+            if (value instanceof FixedDomainSpellArchetype) {
                 return builder.buildFuture();
             }
 
-            return SECONDARY_SPELL_TYPE.getSuggestions(context, builder);
+            return SECONDARY_DOMAIN.getSuggestions(context, builder);
         });
     }
 
     public CommandSpellCastDynamic(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
 
-        this.addSimpleArgument(ASPECT);
-        this.addSimpleArgument(SPELL_TYPE);
-        this.addSimpleArgument(SECONDARY_SPELL_TYPE);
+        this.addSimpleArgument(ARCHETYPE);
+        this.addSimpleArgument(MAGIC_DOMAIN);
+        this.addSimpleArgument(SECONDARY_DOMAIN);
     }
 
     @Override

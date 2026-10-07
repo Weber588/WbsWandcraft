@@ -11,9 +11,13 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Transformation;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
+import wbs.wandcraft.context.CastContext;
 
 import java.util.Random;
 import java.util.function.Consumer;
@@ -76,5 +80,22 @@ public class EffectUtils {
         World world = loc.getWorld();
         world.spawnParticle(Particle.DRAGON_BREATH, loc.add(0, 1, 0), 25, 0.15, 0.15, 0.15, 0, 1f);
         world.spawnParticle(Particle.WITCH, loc, 400, 0.6, 1, 0.6, 0);
+    }
+
+    public static @NonNull Vector getOffsetToWand(CastContext context) {
+        return getOffsetToWand(context, context.player());
+    }
+    public static @NonNull Vector getOffsetToWand(CastContext context, Player player) {
+        Vector offsetToWand = new Vector(-0.35, -0.55, 0.65);
+
+        if (player.isSneaking()) {
+            offsetToWand.add(new Vector(0, -0.25, -0.05));
+        }
+        if (context.slot() == EquipmentSlot.OFF_HAND) {
+            offsetToWand.setX(offsetToWand.getX() * -1);
+        }
+
+        offsetToWand.rotateAroundY(Math.toRadians(-player.getBodyYaw()));
+        return offsetToWand;
     }
 }

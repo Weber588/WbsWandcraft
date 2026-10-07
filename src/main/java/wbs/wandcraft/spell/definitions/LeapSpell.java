@@ -11,15 +11,15 @@ import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.spell.attributes.attributable.DirectionAttributable;
 import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 
-import static wbs.wandcraft.spell.SpellType.ENDER;
-import static wbs.wandcraft.spell.SpellType.VOID;
+import static wbs.wandcraft.spell.MagicDomain.ENDER;
+import static wbs.wandcraft.spell.MagicDomain.VOID;
 
 public class LeapSpell extends SpellDefinition implements CastableSpell, DirectionAttributable, SpeedAttributable {
     public LeapSpell() {
         super("leap");
 
-        addSpellType(VOID);
-        addSpellType(ENDER);
+        addMagicDomain(VOID);
+        addMagicDomain(ENDER);
 
         setAttribute(COST, 50);
         setAttribute(COOLDOWN, Ticks.TICKS_PER_SECOND);

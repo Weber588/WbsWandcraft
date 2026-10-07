@@ -17,9 +17,9 @@ public class CommandSpellBuildDynamic extends WbsSubcommand implements CommandDy
     public CommandSpellBuildDynamic(@NotNull WbsPlugin plugin, @NotNull String label) {
         super(plugin, label);
 
-        this.addSimpleArgument(ASPECT);
-        this.addSimpleArgument(SPELL_TYPE);
-        this.addSimpleArgument(SECONDARY_SPELL_TYPE);
+        this.addSimpleArgument(ARCHETYPE);
+        this.addSimpleArgument(MAGIC_DOMAIN);
+        this.addSimpleArgument(SECONDARY_DOMAIN);
     }
 
     @Override

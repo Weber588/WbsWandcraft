@@ -25,7 +25,7 @@ import wbs.utils.util.persistent.WbsPersistentDataType;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spell.definitions.SpellInstance;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.ItemUtils;
 import wbs.wandcraft.wand.Wand;
@@ -312,7 +312,7 @@ public class ArtificingTable implements InventoryHolder {
     }
 
     private static void playConvertSpell(Location location, SpellDefinition currentSpell) {
-        List<SpellType> types = currentSpell.getTypes();
+        List<MagicDomain> types = currentSpell.getDomains();
         Color color1 = types.get(0).color();
         Color color2 = color1;
         if (types.size() > 1) {

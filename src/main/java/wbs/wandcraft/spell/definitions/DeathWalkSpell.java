@@ -7,8 +7,8 @@ import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
 
-import static wbs.wandcraft.spell.SpellType.NETHER;
-import static wbs.wandcraft.spell.SpellType.SCULK;
+import static wbs.wandcraft.spell.MagicDomain.NETHER;
+import static wbs.wandcraft.spell.MagicDomain.SCULK;
 
 public class DeathWalkSpell extends SpellDefinition implements StatusEffectSpell<LivingEntity> {
     public DeathWalkSpell() {
@@ -17,8 +17,8 @@ public class DeathWalkSpell extends SpellDefinition implements StatusEffectSpell
         setAttribute(COST, 100);
         setAttribute(COOLDOWN, 15 * Ticks.TICKS_PER_SECOND);
 
-        addSpellType(SCULK);
-        addSpellType(NETHER);
+        addMagicDomain(SCULK);
+        addMagicDomain(NETHER);
 
         setAttribute(DURATION, 10 * Ticks.TICKS_PER_SECOND);
         setAttribute(TARGET, TargeterType.SELF);

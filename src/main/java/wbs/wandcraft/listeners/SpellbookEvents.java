@@ -38,7 +38,7 @@ import wbs.utils.util.pluginhooks.hooks.PacketEventsWrapper;
 import wbs.wandcraft.WbsWandcraft;
 import wbs.wandcraft.crafting.ArtificingConfig;
 import wbs.wandcraft.crafting.ArtificingTable;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.definitions.SpellDefinition;
 import wbs.wandcraft.spellbook.Spellbook;
 import wbs.wandcraft.util.EffectUtils;
@@ -363,10 +363,10 @@ public class SpellbookEvents implements Listener {
             style = MenuUtils.EXTRAS_STYLE;
         } else {
             if (WbsMath.chance(50)) {
-                SpellType type = WbsCollectionUtil.getRandom(spell.getTypes());
+                MagicDomain type = WbsCollectionUtil.getRandom(spell.getDomains());
                 style = Style.style(type.textColor());
             } else {
-                style = Style.style(spell.getPrimarySpellType().textColor());
+                style = Style.style(spell.getPrimaryDomain().textColor());
             }
         }
         return style;

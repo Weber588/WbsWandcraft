@@ -6,7 +6,7 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.attributable.RangeAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
 import wbs.wandcraft.util.EntityUtil;
@@ -16,7 +16,7 @@ public class EmergencyTeleportSpell extends SpellDefinition implements CastableS
     public EmergencyTeleportSpell() {
         super("emergency_teleport");
 
-        addSpellType(SpellType.ENDER);
+        addMagicDomain(MagicDomain.ENDER);
 
         setAttribute(COST, 20);
         setAttribute(COOLDOWN, 15 * Ticks.TICKS_PER_SECOND);

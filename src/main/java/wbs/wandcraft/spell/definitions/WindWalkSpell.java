@@ -16,7 +16,7 @@ import wbs.wandcraft.spell.attributes.attributable.ParticleAttributable;
 import wbs.wandcraft.spell.attributes.attributable.RadiusAttributable;
 import wbs.wandcraft.spell.attributes.attributable.SpeedAttributable;
 import wbs.wandcraft.spell.definitions.extensions.*;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 public class WindWalkSpell extends SpellDefinition implements CastableSpell, SpeedAttributable, DurationAttributable, ParticleAttributable, RadiusAttributable {
     private final RingParticleEffect effect = (RingParticleEffect) new RingParticleEffect()
@@ -25,8 +25,8 @@ public class WindWalkSpell extends SpellDefinition implements CastableSpell, Spe
     public WindWalkSpell() {
         super("wind_walk");
 
-        addSpellType(SpellType.VOID);
-        addSpellType(SpellType.ENDER);
+        addMagicDomain(MagicDomain.VOID);
+        addMagicDomain(MagicDomain.ENDER);
 
         setAttribute(COST, 50);
         setAttribute(COOLDOWN, 10 * Ticks.TICKS_PER_SECOND);

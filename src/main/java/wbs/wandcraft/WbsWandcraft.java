@@ -65,9 +65,9 @@ public class WbsWandcraft extends WbsPlugin {
                         WbsCommand.getStatic(this, "info").addSubcommands(
                                 WbsCommand.getStatic(this, "spell").addSubcommands(
                                         new CommandInfoSpell(this, LABEL_CANONICAL),
-                                        new CommandInfoSpellAspect(this, LABEL_DYNAMIC)
+                                        new CommandInfoSpellArchetype(this, LABEL_DYNAMIC)
                                 ).inferSubPermissions(),
-                                new CommandInfoSpellType(this, "type"),
+                                new CommandInfoMagicDomain(this, "domain"),
                                 new CommandInfoWand(this, "wand")
                                 // TODO: Add modifiers (and maybe attributes?)
                         ).inferSubPermissions(),
@@ -77,7 +77,7 @@ public class WbsWandcraft extends WbsPlugin {
                                 new CommandModifyAttributes(this, "attribute"),
                                 WbsCommand.getStatic(this, "info").addSubcommands(
                                         new CommandInfoSpell(this, LABEL_CANONICAL),
-                                        new CommandInfoSpellAspect(this, LABEL_DYNAMIC)
+                                        new CommandInfoSpellArchetype(this, LABEL_DYNAMIC)
                                 ).inferSubPermissions(),
                                 WbsCommand.getStatic(this, "build").addSubcommands(
                                         new CommandSpellBuildCanonical(this, LABEL_CANONICAL),

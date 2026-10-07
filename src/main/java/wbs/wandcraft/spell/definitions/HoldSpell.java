@@ -6,14 +6,14 @@ import org.jetbrains.annotations.NotNull;
 import wbs.wandcraft.effects.StatusEffect;
 import wbs.wandcraft.effects.StatusEffectManager;
 import wbs.wandcraft.spell.definitions.extensions.StatusEffectSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 public class HoldSpell extends SpellDefinition implements StatusEffectSpell<LivingEntity> {
     public HoldSpell() {
         super("hold");
 
-        addSpellType(SpellType.VOID);
-        addSpellType(SpellType.SCULK);
+        addMagicDomain(MagicDomain.VOID);
+        addMagicDomain(MagicDomain.SCULK);
 
         setAttribute(DURATION, 10 * Ticks.TICKS_PER_SECOND);
         setAttribute(TARGET, TargeterType.LINE_OF_SIGHT);

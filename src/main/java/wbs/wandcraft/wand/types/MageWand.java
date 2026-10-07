@@ -151,7 +151,7 @@ public class MageWand extends Wand {
     protected @Nullable Color getWandColour() {
         SpellInstance spellInstance = getCurrentSpellInstance();
         if (spellInstance != null) {
-            return spellInstance.getDefinition().getPrimarySpellType().wandColor();
+            return spellInstance.getDefinition().getPrimaryDomain().wandColor();
         }
         return null;
     }

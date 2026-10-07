@@ -17,15 +17,15 @@ import wbs.wandcraft.spell.definitions.extensions.ContinuousCastableSpell;
 
 import java.util.UUID;
 
-import static wbs.wandcraft.spell.SpellType.ENDER;
-import static wbs.wandcraft.spell.SpellType.VOID;
+import static wbs.wandcraft.spell.MagicDomain.ENDER;
+import static wbs.wandcraft.spell.MagicDomain.VOID;
 
 public class CrowsCallSpell extends SpellDefinition implements ContinuousCastableSpell, DurationAttributable, SpeedAttributable {
     public CrowsCallSpell() {
         super("crows_call");
 
-        addSpellType(ENDER);
-        addSpellType(VOID);
+        addMagicDomain(ENDER);
+        addMagicDomain(VOID);
 
         setAttribute(COST, 500);
         setAttribute(COOLDOWN, 7 * Ticks.TICKS_PER_SECOND);

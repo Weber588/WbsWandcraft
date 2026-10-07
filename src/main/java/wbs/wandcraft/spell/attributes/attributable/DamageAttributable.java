@@ -14,7 +14,7 @@ import org.jspecify.annotations.NonNull;
 import wbs.utils.util.pluginhooks.WbsRegionUtils;
 import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.KeyedSpellAttribute;
@@ -29,8 +29,8 @@ public interface DamageAttributable extends AttributeHolder, DistanceScaler {
     SpellAttribute<Double> DAMAGE = new DoubleSpellAttribute("damage", 1.0)
             .addSuggestions(1.0, 2.0, 5.0)
             .setShowAttribute(value -> value > 0)
-            .typeModifiers(SpellType.NETHER, 2d, null, 1d)
-            .typeModifiers(SpellType.VOID, 3d, null, 2d);
+            .domainModifiers(MagicDomain.NETHER, 2d, null, 1d)
+            .domainModifiers(MagicDomain.VOID, 3d, null, 2d);
     SpellAttribute<DamageType> DAMAGE_TYPE = new KeyedSpellAttribute<>(
             "damage_type",
             DamageType.MAGIC,
@@ -38,7 +38,7 @@ public interface DamageAttributable extends AttributeHolder, DistanceScaler {
             "damage type",
             k -> RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).get(k)
     ).addSuggestions(RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).stream().toList())
-            .typeModifier(SpellType.NETHER, AttributeModifierType.SET, DamageType.IN_FIRE);
+            .domainModifier(MagicDomain.NETHER, AttributeModifierType.SET, DamageType.IN_FIRE);
 
     @AttributableSetupHandler
     default void setUpDamage() {

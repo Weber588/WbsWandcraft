@@ -6,13 +6,13 @@ import org.bukkit.entity.Player;
 import wbs.wandcraft.context.CastContext;
 import wbs.wandcraft.spell.attributes.attributable.DurationAttributable;
 import wbs.wandcraft.spell.definitions.extensions.CastableSpell;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 
 public class ControlWeatherSpell extends SpellDefinition implements CastableSpell, DurationAttributable {
     public ControlWeatherSpell() {
         super("control_weather");
 
-        addSpellType(SpellType.NATURE);
+        addMagicDomain(MagicDomain.NATURE);
 
         setAttribute(COOLDOWN, 30 * 60 * Ticks.TICKS_PER_SECOND);
         setAttribute(DURATION, 5 * 60 * Ticks.TICKS_PER_SECOND);

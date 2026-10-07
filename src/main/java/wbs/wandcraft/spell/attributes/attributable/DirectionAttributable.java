@@ -6,7 +6,7 @@ import org.bukkit.util.Vector;
 import wbs.utils.util.WbsMath;
 import wbs.wandcraft.AttributeDataType;
 import wbs.wandcraft.context.CastContext;
-import wbs.wandcraft.spell.SpellType;
+import wbs.wandcraft.spell.MagicDomain;
 import wbs.wandcraft.spell.attributes.AttributeHolder;
 import wbs.wandcraft.spell.attributes.DoubleSpellAttribute;
 import wbs.wandcraft.spell.attributes.SpellAttribute;
@@ -17,8 +17,8 @@ public interface DirectionAttributable extends AttributeHolder {
             .setShowAttribute(value -> value != 0)
             .setNumericFormatter(accuracy -> accuracy + " degrees")
             .sentiment(SpellAttribute.Sentiment.NEGATIVE)
-            .typeModifier(SpellType.ARCANE, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, 0.5d)
-            .typeModifiers(SpellType.SCULK, 4d, null, null, 1.25);
+            .domainModifier(MagicDomain.ARCANE, AttributeModifierType.MULTIPLY, AttributeDataType.DOUBLE, 0.5d)
+            .domainModifiers(MagicDomain.SCULK, 4d, null, null, 1.25);
 
     default Vector getDirection(CastContext context) {
         double length = 1;
@@ -41,7 +41,7 @@ public interface DirectionAttributable extends AttributeHolder {
     default Vector getDirection(CastContext context, Location location, double magnitude) {
         Vector direction = location.getDirection();
         if (direction.lengthSquared() == 0) {
-            return WbsMath.scaleVector(direction, magnitude);
+            throw new IllegalArgumentException("Location must have a direction!");
         }
 
         double imprecision = context.instance().getAttribute(IMPRECISION);
