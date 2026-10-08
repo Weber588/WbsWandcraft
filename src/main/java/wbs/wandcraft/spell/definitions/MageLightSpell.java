@@ -47,7 +47,7 @@ public class MageLightSpell extends SpellDefinition implements CustomProjectileS
     static {
         NormalParticleEffect effect = new NormalParticleEffect();
         effect.setAmount(0);
-        effect.setY(1);
+        effect.setY(0);
         effect.setSpeed(1);
         effect.setData(new Particle.DustTransition(Color.WHITE, Color.fromRGB(0xf599ff), 1.3f));
 
