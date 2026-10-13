@@ -355,9 +355,11 @@ public class Spellbook implements ItemDecorator {
                 player.sendActionBar(errorMessage);
 
                 Particle.FLASH.builder()
+                        .receivers(player)
                         .location(player.getEyeLocation().add(WbsEntityUtil.getFacingVector(player, 0.5)))
                         .data(definition.getPrimaryDomain().color())
                         .spawn();
+
                 player.getWorld().playSound(player.getEyeLocation(), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 1, 2);
                 return;
             }

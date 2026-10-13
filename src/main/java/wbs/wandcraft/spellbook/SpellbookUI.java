@@ -123,12 +123,11 @@ public class SpellbookUI {
         page = page.appendNewline()
                 .append(
                         //    Component.text("============================")
-                        Component.text("╔════ ▣◎▣ ════╗").style(MenuUtils.EXTRAS_STYLE)
+                        Component.text("-════| ▣◎▣ |════-").style(MenuUtils.EXTRAS_STYLE)
                 )
                 .appendNewline()
                 .append(description.style(MenuUtils.DESCRIPTION_STYLE))
-                .appendNewline()
-                .append(Component.text("╚════ ▣◎▣ ════╝").style(MenuUtils.EXTRAS_STYLE));
+        ;
 
         return buildHeader(chapters.get(chapterName)).appendNewline().append(page);
     }
