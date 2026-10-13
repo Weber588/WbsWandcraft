@@ -21,15 +21,20 @@ public interface DirectionAttributable extends AttributeHolder {
             .domainModifiers(MagicDomain.SCULK, 4d, null, null, 1.25);
 
     default Vector getDirection(CastContext context) {
-        double length = 1;
+        double magnitude = getDefaultMagnitude(context);
+
+        return getDirection(context, magnitude);
+    }
+
+    private double getDefaultMagnitude(CastContext context) {
+        double magnitude = 1;
 
         if (this instanceof RangeAttributable) {
-            length = context.instance().getAttribute(RangeAttributable.RANGE);
+            magnitude = context.instance().getAttribute(RangeAttributable.RANGE);
         } else if (this instanceof DistanceAttributable) {
-            length = context.instance().getAttribute(DistanceAttributable.DISTANCE);
+            magnitude = context.instance().getAttribute(DistanceAttributable.DISTANCE);
         }
-
-        return getDirection(context, length);
+        return magnitude;
     }
 
     default Vector getDirection(CastContext context, double magnitude) {
@@ -57,5 +62,24 @@ public interface DirectionAttributable extends AttributeHolder {
     @AttributableSetupHandler
     default void setupDirectional() {
         addAttribute(IMPRECISION);
+    }
+
+    default Vector getClampedDirection(CastContext context, double angle) {
+        return getClampedDirection(context, angle, getDefaultMagnitude(context));
+    }
+    default Vector getClampedDirection(CastContext context, double angle, double magnitude) {
+        Vector direction = getDirection(context);
+        // TODO: Figure out what to do when looking straight up lol
+        if (direction.getX() != 0 || direction.getZ() != 0) {
+            double maxY = Math.sin(angle);
+
+            direction.normalize();
+            double clamp = Math.clamp(direction.getY(), -maxY, maxY);
+            direction.setY(0)
+                    .normalize()
+                    .multiply(Math.sqrt(1 - (clamp*clamp)))
+                    .setY(clamp);
+        }
+        return WbsMath.scaleVector(direction, magnitude);
     }
 }

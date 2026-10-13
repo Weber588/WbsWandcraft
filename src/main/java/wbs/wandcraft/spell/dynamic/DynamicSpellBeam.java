@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.papermc.paper.raytracing.RayTraceTarget;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.potion.PotionEffect;
@@ -47,6 +48,13 @@ public class DynamicSpellBeam extends DynamicSpell implements ContinuousCastable
 
     public DynamicSpellBeam(MagicDomain primary, @Nullable MagicDomain secondary) {
         super(BEAM, primary, secondary);
+
+        setAttribute(COST, 50);
+        setAttribute(COOLDOWN, 5 * Ticks.TICKS_PER_SECOND);
+
+        setAttribute(COST_PER_TICK, 2);
+        setAttribute(FIXED_DURATION, 5 * Ticks.TICKS_PER_SECOND);
+        setAttribute(MAX_DURATION, 60 * Ticks.TICKS_PER_SECOND);
 
         setAttribute(RADIUS, 0.4d);
         setAttribute(IMPRECISION, 0d);

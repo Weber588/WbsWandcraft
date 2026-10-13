@@ -120,7 +120,9 @@ public class WandcraftRegistries {
             DynamicSpellScry.SCRY,
             DynamicSpellMagicCircle.MAGIC_CIRCLE,
             DynamicSpellBarrage.BARRAGE,
-            DynamicSpellBeam.BEAM
+            DynamicSpellBeam.BEAM,
+            DynamicShieldSpell.SHIELD,
+            DynamicSpellDash.DASH
     );
     public static final WbsRegistry<LearningMethodType<?>> LEARNING_PROVIDERS = new WbsRegistry<>(
             LearningMethodType.build("advancements", AdvancementLearningTrigger::new),

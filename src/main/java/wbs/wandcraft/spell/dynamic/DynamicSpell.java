@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Particle;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import wbs.utils.util.particles.ParticleDataProvider;
 import wbs.utils.util.particles.WbsParticleEffect;
 import wbs.utils.util.particles.WbsParticleGroup;
 import wbs.utils.util.string.WbsStrings;
@@ -106,19 +107,19 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
         WbsParticleGroup particleGroup = new WbsParticleGroup()
                 .perEffectChance(true);
 
-        MagicDomain primaryMagicDomain = getPrimaryDomain();
-        MagicDomain secondaryMagicDomain = getSecondaryDomain();
+        MagicDomain primaryDomain = getPrimaryDomain();
+        MagicDomain secondaryDomain = getSecondaryDomain();
 
-        primaryMagicDomain.defaultEffect().accept(primaryEffect);
-        particleGroup.addEffect(primaryEffect, directional ? primaryMagicDomain.velocityAffectedParticle() : primaryMagicDomain.defaultParticle());
+        primaryDomain.defaultEffect().accept(primaryEffect);
+        particleGroup.addEffect(primaryEffect, directional ? primaryDomain.velocityAffectedParticle() : primaryDomain.defaultParticle());
 
-        if (secondaryMagicDomain != null) {
-            Consumer<WbsParticleEffect> secondaryModifier = secondaryMagicDomain.defaultEffect();
+        if (secondaryDomain != null) {
+            Consumer<WbsParticleEffect> secondaryModifier = secondaryDomain.defaultEffect();
             secondaryModifier.accept(secondaryEffect);
-            particleGroup.addEffect(secondaryEffect, directional ? secondaryMagicDomain.velocityAffectedParticle() : secondaryMagicDomain.defaultParticle(), SECONDARY_PARTICLE_CHANCE);
+            particleGroup.addEffect(secondaryEffect, directional ? secondaryDomain.velocityAffectedParticle() : secondaryDomain.defaultParticle(), SECONDARY_PARTICLE_CHANCE);
         } else {
-            Particle secondaryParticle = primaryMagicDomain.secondaryParticle();
-            Consumer<WbsParticleEffect> secondaryModifier = primaryMagicDomain.secondaryEffect();
+            Particle secondaryParticle = primaryDomain.secondaryParticle();
+            Consumer<WbsParticleEffect> secondaryModifier = primaryDomain.secondaryEffect();
             if (secondaryParticle != null) {
                 if (secondaryModifier != null) {
                     secondaryModifier.accept(secondaryEffect);
@@ -126,7 +127,10 @@ public abstract class DynamicSpell extends SpellDefinition implements BurnDamage
                 particleGroup.addEffect(secondaryEffect, secondaryParticle, SECONDARY_PARTICLE_CHANCE);
             }
         }
-        return particleGroup;
+        return particleGroup.setPlayFunction(((effect, location, particle) -> {
+            effect.build();
+            ParticleDataProvider.playEffectSafely(effect, location, particle, this);
+        }));
     }
 
     protected abstract Multimap<MagicDomain, SpellEffectInstance<?>> typedEvents();

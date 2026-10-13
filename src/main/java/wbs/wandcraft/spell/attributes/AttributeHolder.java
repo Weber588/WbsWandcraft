@@ -36,6 +36,9 @@ public interface AttributeHolder extends ItemDecorator {
         setAttribute(attribute.getInstance(value));
     }
 
+    default void setAttribute(SpellAttribute<Double> attribute, int value) {
+        setAttribute(attribute.getInstance((double) value));
+    }
     default void setAttribute(SpellAttribute<Integer> attribute, double value) {
         setAttribute(attribute.getInstance((int) value));
     }
